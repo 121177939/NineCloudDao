@@ -628,7 +628,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 }
 
 
-/* Web Alpha 0.6.2 · 所有设备统一采用紧凑手机布局 */
+/* Web Alpha 0.6.6 · 所有设备统一采用紧凑手机布局 */
 html {
   width: 100%;
   max-width: 100%;
@@ -1168,7 +1168,7 @@ button, .badge, .hero-chip { max-width: 100%; }
 }
 
 
-/* Web Alpha 0.6.5 · 电脑随窗口等比例放大 + 同名持续加成合并 */
+/* Web Alpha 0.6.6 · 电脑随窗口等比例放大 + 同名持续加成合并 */
 :root {
   --desktop-ui-scale: 1;
   --desktop-stage-width: 760px;

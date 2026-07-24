@@ -32,7 +32,7 @@
   const toast = document.getElementById('toast');
   const modalRoot = document.getElementById('modalRoot');
   const versionText = document.getElementById('versionText');
-  versionText.textContent = config.version || '0.4.0';
+  versionText.textContent = config.version || 'unknown';
   const projectRefText = document.getElementById('projectRefText');
   if (projectRefText) projectRefText.textContent = PROJECT_REF;
 
@@ -572,7 +572,7 @@
           select: 'id,world_year,event_type,title,content,importance,created_at',
           scope_type: 'eq.character',
           scope_id: `eq.${character.id}`,
-          order: 'world_year.asc,created_at.asc',
+          order: 'world_year.desc,created_at.desc',
           limit: '100'
         }
       })
@@ -1645,7 +1645,7 @@
         </section>
 
         <section id="historySection" class="panel" data-mobile-screen="history">
-          <div class="panel-title"><h3>命书</h3><span class="badge">最早 100 条</span></div>
+          <div class="panel-title"><h3>命书</h3><span class="badge">最新 100 条</span></div>
           ${historyHtml(bundle.history)}
         </section>
 
@@ -1774,9 +1774,9 @@
   }
 
   function historyHtml(rows) {
-    const earliestRows = (rows || []).slice(0, 100);
-    if (!earliestRows.length) return '<div class="empty-state">命书尚为空白。</div>';
-    return `<div class="timeline">${earliestRows.map(row => `
+    const latestRows = (rows || []).slice(0, 100);
+    if (!latestRows.length) return '<div class="empty-state">命书尚为空白。</div>';
+    return `<div class="timeline">${latestRows.map(row => `
       <article class="timeline-item">
         <time>仙历 ${escapeHtml(row.world_year)} 年</time>
         <h4>${escapeHtml(row.title)}</h4>
