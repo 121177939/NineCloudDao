@@ -1,20 +1,21 @@
 {
   "projectName": "九霄问道",
-  "version": "0.7.0",
-  "releaseLabel": "Web Alpha 0.7.0",
-  "releaseType": "服务器权威时间、寿元、死亡与轮回",
+  "version": "0.8.0",
+  "releaseLabel": "Web Alpha 0.8.0",
+  "releaseType": "功法体系 V2：品质、熟练、传承、槽位与组合",
   "repository": "121177939/NineCloudDao",
   "productionUrl": "https://121177939.github.io/NineCloudDao/",
   "worldCode": "jiuxiao_world_1",
   "localPort": 8787,
-  "serviceWorkerCache": "nine-cloud-dao-v0.7.0",
+  "serviceWorkerCache": "nine-cloud-dao-v0.8.0",
   "databaseBaseline": {
-    "publicTables": 43,
-    "databaseFunctions": 26,
+    "publicTables": 47,
+    "databaseFunctions": 35,
     "sqlRequired": true,
-    "migration": "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql",
-    "check": "database/V0.7.0/202607240013_check.sql",
-    "emergencyDisable": "database/V0.7.0/202607240013_emergency_disable.sql"
+    "migration": "database/V0.8.0/202607240014_technique_system_v2.sql",
+    "check": "database/V0.8.0/202607240014_check.sql",
+    "emergencyDisable": "database/V0.8.0/202607240014_emergency_disable.sql",
+    "resume": "database/V0.8.0/202607240014_resume.sql"
   },
   "gameTime": {
     "gameYearsPerRealDay": 12,
@@ -29,14 +30,15 @@
     "label": "最新 100 条",
     "newestFirst": true
   },
-  "reincarnation": {
-    "legacyChoices": {
-      "wisdom": "悟性 +2",
-      "fortune": "气运 +2",
-      "steadfast": "心境 +2"
-    },
-    "preserveLineage": true,
-    "rerollSpiritRootAndFate": true
+  "techniqueSystem": {
+    "mainSlots": 1,
+    "supportSlots": 2,
+    "proficiencyPerLevel": 100,
+    "supportTrainingRate": 0.5,
+    "duplicateRule": "重复获得转化为传承点，不再叠加永久修炼效果",
+    "gradeCount": 6,
+    "combinationCount": 4,
+    "serverAuthoritativeTraining": true
   },
   "githubFiles": [
     ".github/workflows/deploy-pages.yml",
@@ -65,10 +67,18 @@
     "database/V0.7.0/202607240013_emergency_disable.sql",
     "database/V0.7.0/202607240013_resume_12x.sql",
     "database/V0.7.0/202607240013_rollback_schema_only.sql",
+    "database/V0.8.0/202607240014_technique_system_v2.sql",
+    "database/V0.8.0/202607240014_check.sql",
+    "database/V0.8.0/202607240014_emergency_disable.sql",
+    "database/V0.8.0/202607240014_resume.sql",
     "docs/V0.7.0_CHANGE_SCOPE.md",
     "docs/V0.7.0_DEPLOYMENT_GUIDE.md",
     "docs/V0.7.0_REAL_DEVICE_TEST_CHECKLIST.md",
     "docs/V0.7.0_TIME_RULES.md",
+    "docs/V0.8.0_CHANGE_SCOPE.md",
+    "docs/V0.8.0_DEPLOYMENT_GUIDE.md",
+    "docs/V0.8.0_REAL_DEVICE_TEST_CHECKLIST.md",
+    "docs/V0.8.0_TECHNIQUE_RULES.md",
     "tools/build_release.py",
     "tools/sync_release_metadata.py",
     "tools/start-server.ps1",

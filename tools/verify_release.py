@@ -224,20 +224,57 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     else:
         report.fail("前端仙历、寿元、死亡或轮回流程不完整")
 
+    technique_expectations = [
+        "rpc/get_technique_system_v2",
+        "rpc/set_technique_slot_v2",
+        "rpc/upgrade_technique_v2",
+        "功法 V2",
+        "传承点",
+        "technique-combination-section",
+    ]
+    if all(item in app for item in technique_expectations):
+        report.ok("前端包含功法 V2 品质、熟练、传承、槽位与组合流程")
+    else:
+        report.fail("前端功法 V2 流程不完整")
+
     if mode == "source":
-        migration_path = root / "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql"
-        migration = read_text(migration_path, report)
-        migration_expectations = [
+        time_migration_path = root / "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql"
+        time_migration = read_text(time_migration_path, report)
+        time_expectations_sql = [
             "game_years_per_real_day numeric(12, 4) not null default 12.0000",
             "create or replace function public.get_game_time_v1()",
             "create or replace function public.settle_character_time_v1()",
             "create or replace function public.reincarnate_character_v1(",
             "create table if not exists public.reincarnation_transitions",
         ]
-        if all(item in migration for item in migration_expectations):
-            report.ok("V0.7.0 数据库迁移包含 12年/日、寿尽与轮回")
+        if all(item in time_migration for item in time_expectations_sql):
+            report.ok("V0.7.0 数据库迁移仍包含 12年/日、寿尽与轮回")
         else:
             report.fail("V0.7.0 数据库迁移内容不完整")
+
+        technique_migration_path = root / "database/V0.8.0/202607240014_technique_system_v2.sql"
+        technique_migration = read_text(technique_migration_path, report)
+        technique_sql_expectations = [
+            "create table if not exists public.technique_system_settings",
+            "create table if not exists public.technique_grade_rules",
+            "create table if not exists public.technique_combinations",
+            "create table if not exists public.character_technique_combo_states",
+            "create unique index if not exists character_techniques_equipped_slot_unique",
+            "create or replace function public.settle_technique_training_v2()",
+            "create or replace function public.set_technique_slot_v2(",
+            "create or replace function public.upgrade_technique_v2(",
+            "create or replace function public.get_technique_system_v2()",
+            "duplicate_technique_effect_replaced_by_mastery",
+            "commit;",
+        ]
+        if all(item in technique_migration for item in technique_sql_expectations):
+            report.ok("V0.8.0 数据库迁移包含功法品质、熟练、传承、槽位与组合")
+        else:
+            report.fail("V0.8.0 数据库迁移内容不完整")
+        if technique_migration.lower().lstrip().startswith("--") and "begin;" in technique_migration.lower() and "drop table" not in technique_migration.lower():
+            report.ok("V0.8.0 迁移使用事务且未包含删表操作")
+        else:
+            report.fail("V0.8.0 迁移事务或数据安全检查失败")
 
     sw = read_text(root / "sw.js", report)
     if "url.hostname.endsWith('.supabase.co')" in sw and "return;" in sw:
@@ -324,6 +361,10 @@ def verify_archive(path: Path, config: dict, report: Report) -> None:
                 report.ok(f"{path.name} 包含 V0.7.0 时间、寿元与轮回前端")
             else:
                 report.fail(f"{path.name} 未包含完整的 V0.7.0 时间与轮回前端")
+            if all(item in app for item in ("rpc/get_technique_system_v2", "rpc/set_technique_slot_v2", "功法 V2", "传承点")):
+                report.ok(f"{path.name} 包含 V0.8.0 功法体系 V2 前端")
+            else:
+                report.fail(f"{path.name} 未包含完整的 V0.8.0 功法体系 V2 前端")
             report.ok(f"{path.name} ZIP 完整性通过，SHA256={sha256(path)}")
     except Exception as exc:
         report.fail(f"无法检查 {path.name}：{exc}")

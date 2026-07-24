@@ -75,6 +75,9 @@
     opportunitySyncing: false,
     supplyStatus: null,
     supplyCountdownTimer: null,
+    techniqueSystem: null,
+    techniqueSyncTimer: null,
+    techniqueSyncing: false,
     timeStatus: null,
     timeStatusStartedAt: 0,
     timeSyncing: false,
@@ -154,7 +157,11 @@
     if (raw.includes('TECHNIQUE_NOT_FOUND')) return '没有找到这门功法。';
     if (raw.includes('SUPPORT_SLOTS_FULL')) return '辅修槽已满，最多同时运转两门辅修功法。';
     if (raw.includes('MAIN_TECHNIQUE_REQUIRED')) return '主修功法不能卸下，请直接切换另一门主修功法。';
-    if (raw.includes('TECHNIQUE_MAX_LEVEL')) return '这门功法已经修至当前版本最高层。';
+    if (raw.includes('TECHNIQUE_MAX_LEVEL')) return '这门功法已经修至当前品质允许的最高层。';
+    if (raw.includes('TECHNIQUE_PROFICIENCY_REQUIRED')) return '功法熟练与传承点合计不足100，继续运转或重复获得后再精进。';
+    if (raw.includes('INVALID_TECHNIQUE_SLOT')) return '功法槽位无效，请重新选择。';
+    if (raw.includes('MAIN_TECHNIQUE_SLOT_ONLY')) return '主修功法只能放入主修槽。';
+    if (raw.includes('SUPPORT_TECHNIQUE_SLOT_ONLY')) return '这门功法只能放入辅修槽。';
     if (raw.includes('INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法提升功法。';
     if (lower.includes('could not find the function') || raw.includes('PGRST202')) return '数据库功能尚未升级到当前版本，请执行游戏包内最新 SQL。';
     if (raw.includes('Failed to fetch')) return '无法连接云端数据库，请检查网络或 Supabase 项目状态。';
@@ -205,15 +212,18 @@
     if (state.opportunityPollTimer) clearInterval(state.opportunityPollTimer);
     if (state.opportunityCountdownTimer) clearInterval(state.opportunityCountdownTimer);
     if (state.supplyCountdownTimer) clearInterval(state.supplyCountdownTimer);
+    if (state.techniqueSyncTimer) clearInterval(state.techniqueSyncTimer);
     if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.cultivationTicker = null;
     state.cultivationSyncTimer = null;
     state.opportunityPollTimer = null;
     state.opportunityCountdownTimer = null;
     state.supplyCountdownTimer = null;
+    state.techniqueSyncTimer = null;
     state.gameSessionHeartbeatTimer = null;
     state.cultivationSyncing = false;
     state.opportunitySyncing = false;
+    state.techniqueSyncing = false;
   }
 
   function clearSession() {
@@ -231,6 +241,7 @@
     state.opportunityStatus = null;
     state.opportunitySyncing = false;
     state.supplyStatus = null;
+    state.techniqueSystem = null;
     state.timeStatus = null;
     state.timeStatusStartedAt = 0;
     state.timeSyncing = false;
@@ -569,6 +580,33 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+  async function rpcGetTechniqueSystemV2() {
+    const result = await restFetch('rpc/get_technique_system_v2', {
+      method: 'POST',
+      body: {}
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcSetTechniqueSlotV2(characterTechniqueId, targetSlot) {
+    const result = await restFetch('rpc/set_technique_slot_v2', {
+      method: 'POST',
+      body: {
+        p_character_technique_id: characterTechniqueId,
+        p_target_slot: targetSlot
+      }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcUpgradeTechniqueV2(characterTechniqueId) {
+    const result = await restFetch('rpc/upgrade_technique_v2', {
+      method: 'POST',
+      body: { p_character_technique_id: characterTechniqueId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function getOne(table, query) {
     const rows = await restFetch(table, { query: { ...query, limit: '1' } });
     return Array.isArray(rows) ? rows[0] || null : null;
@@ -639,7 +677,7 @@
       }),
       restFetch('character_techniques', {
         query: {
-          select: 'id,character_id,technique_id,level,proficiency,is_equipped,slot_type,learned_year',
+          select: 'id,character_id,technique_id,level,proficiency,is_equipped,slot_type,learned_year,acquisition_count,mastery_points,equipped_slot,last_practiced_at',
           character_id: `eq.${character.id}`,
           order: 'is_equipped.desc,created_at.asc'
         }
@@ -1380,6 +1418,29 @@
     }
   }
 
+  async function refreshTechniqueSystem(rebind = false) {
+    if (!state.character || state.techniqueSyncing) return state.techniqueSystem;
+    state.techniqueSyncing = true;
+    try {
+      const system = await rpcGetTechniqueSystemV2();
+      if (!system || system.status !== 'ok') return system;
+      state.techniqueSystem = system;
+      if (state.details) state.details.techniqueSystem = system;
+      const root = document.getElementById('techniqueV2Root');
+      if (root && state.details) {
+        root.outerHTML = techniquePanelHtml(system, state.details.inventory || []);
+        if (rebind) bindInventoryTechniqueActions();
+        else bindInventoryTechniqueActions();
+      }
+      return system;
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      state.techniqueSyncing = false;
+    }
+  }
+
   async function refreshSupplyStatus() {
     if (!state.character) return;
     try {
@@ -1513,52 +1574,129 @@
     });
   }
 
-  function techniquePanelHtml(techniques, inventory) {
-    const stackedTechniques = stackTechniqueAcquisitions(techniques);
+  function techniqueSlotName(value) {
+    const map = {
+      main: '主修槽',
+      support_1: '辅修一',
+      support_2: '辅修二'
+    };
+    return map[value] || '未运转';
+  }
+
+  function techniqueGradeClass(value) {
+    return `grade-${String(value || 'mortal').replace(/[^a-z0-9_-]/gi, '')}`;
+  }
+
+  function techniqueV2EffectText(row) {
+    const fixed = row?.fixed_effects || row?.definition?.fixed_effects || {};
+    const level = Number(row?.level || 1);
+    const flat = Number(fixed.cultivation_per_second || 0) * level;
+    const multiplier = Math.max(0, Number(fixed.cultivation_multiplier || 1) - 1);
+    const parts = [];
+    if (flat) parts.push(`每秒修为 +${formatNumber(flat, 3)}`);
+    if (multiplier) parts.push(`修炼倍率 +${formatNumber(multiplier * 100, 2)}%`);
+    if (Number(fixed.lifespan_bonus || 0)) parts.push(`寿元潜力 +${formatNumber(Number(fixed.lifespan_bonus) * 100, 1)}%`);
+    if (Number(fixed.recovery || 0)) parts.push(`恢复效率 +${formatNumber(Number(fixed.recovery) * 100, 1)}%`);
+    return parts.join(' · ') || '当前没有直接修炼数值加成';
+  }
+
+  function combinationEffectText(row) {
+    const effects = row?.effects || {};
+    const parts = [];
+    if (Number(effects.flat_rate_per_second || 0)) parts.push(`每秒修为 +${formatNumber(effects.flat_rate_per_second, 3)}`);
+    if (Number(effects.multiplier_bonus || 0)) parts.push(`修炼倍率 +${formatNumber(Number(effects.multiplier_bonus) * 100, 2)}%`);
+    return parts.join(' · ') || '组合效果待配置';
+  }
+
+  function techniquePanelHtml(system, inventory) {
+    const rows = Array.isArray(system?.techniques) ? system.techniques : [];
+    const combinations = Array.isArray(system?.combinations) ? system.combinations : [];
     const stone = (inventory || []).find(row => row.definition?.code === 'spirit_stone');
     const stones = Number(stone?.quantity || 0);
-    if (!stackedTechniques.length) return '<div class="empty-state">尚未习得功法。</div>';
+    const slots = system?.slots || {};
+    if (!rows.length) return '<div id="techniqueV2Root"><div class="empty-state">尚未习得功法。</div></div>';
+
     return `
-      <div class="resource-inline"><span>可用灵石</span><strong>${formatNumber(stones)}</strong></div>
-      <div class="technique-manage-list">
-        ${stackedTechniques.map(row => {
-          const definition = row.definition || {};
-          const level = Number(row.level || 1);
-          const cost = level >= 20 ? null : 100 * level * level;
-          const category = definition.category || 'main';
-          const canToggleOff = category !== 'main';
-          const equipLabel = row.is_equipped
-            ? (canToggleOff ? '停止运转' : '主修运转中')
-            : (category === 'main' ? '设为主修' : '开始运转');
-          return `
-            <article class="manage-card ${row.is_equipped ? 'equipped' : ''}">
-              <div class="manage-card-head">
-                <div>
-                  <span>${escapeHtml(techniqueCategoryName(category))} · ${escapeHtml(definition.grade || 'mortal')}</span>
-                  <strong>${escapeHtml(definition.name || '未知功法')} X${formatNumber(row.acquisition_count || 1)} <small>第 ${level} 层</small></strong>
+      <div id="techniqueV2Root" class="technique-v2-root">
+        <div class="resource-inline"><span>可用灵石</span><strong>${formatNumber(stones)}</strong></div>
+        <div class="technique-slot-grid">
+          ${['main', 'support_1', 'support_2'].map(slot => {
+            const equipped = rows.find(row => row.character_technique_id === slots?.[slot] || row.equipped_slot === slot);
+            return `<article class="technique-slot ${equipped ? 'filled' : ''}">
+              <span>${escapeHtml(techniqueSlotName(slot))}</span>
+              <strong>${escapeHtml(equipped?.name || '空置')}</strong>
+              <small>${equipped ? `${escapeHtml(equipped.grade_name || '凡品')} · 第 ${formatNumber(equipped.level)} 层` : '选择功法开始运转'}</small>
+            </article>`;
+          }).join('')}
+        </div>
+        <div class="technique-rule-note">
+          <strong>功法 V2</strong>
+          <span>主修熟练速度100%，辅修50%；每层需要100点熟练/传承进度。重复获得只转化为传承点，不再叠加永久修炼效果。</span>
+        </div>
+        <div class="technique-manage-list">
+          ${rows.map(row => {
+            const category = row.category || 'main';
+            const isMain = category === 'main';
+            const equipped = Boolean(row.equipped_slot);
+            const level = Number(row.level || 1);
+            const maxLevel = Number(row.max_level || 20);
+            const proficiency = Math.max(0, Math.min(100, Number(row.proficiency || 0)));
+            const mastery = Math.max(0, Number(row.mastery_points || 0));
+            const combinedProgress = Math.min(100, proficiency + mastery);
+            const maxed = level >= maxLevel;
+            const canUpgrade = Boolean(row.can_upgrade) && !maxed;
+            const slotTarget = equipped ? 'none' : (isMain ? 'main' : 'auto_support');
+            const slotLabel = equipped ? (isMain ? '主修运转中' : '停止辅修') : (isMain ? '设为主修' : '设为辅修');
+            return `
+              <article class="manage-card technique-v2-card ${equipped ? 'equipped' : ''}">
+                <div class="manage-card-head">
+                  <div>
+                    <span class="technique-grade ${escapeHtml(techniqueGradeClass(row.grade_code))}">${escapeHtml(row.grade_name || row.raw_grade || '凡品')}</span>
+                    <strong>${escapeHtml(row.name || '未知功法')} <small>第 ${level}/${maxLevel} 层</small></strong>
+                  </div>
+                  <span class="badge">${escapeHtml(equipped ? techniqueSlotName(row.equipped_slot) : techniqueCategoryName(category))}</span>
                 </div>
-                <span class="badge">${row.is_equipped ? '运转中' : '未运转'}</span>
-              </div>
-              <p>${escapeHtml(techniqueEffectText(row))}</p>
-              <small class="manage-description">${escapeHtml(definition.description || '')}</small>
-              <div class="manage-actions">
-                <button
-                  class="ghost-btn"
-                  type="button"
-                  data-equip-technique="${escapeHtml(row.id)}"
-                  data-next-equipped="${row.is_equipped ? 'false' : 'true'}"
-                  ${row.is_equipped && !canToggleOff ? 'disabled' : ''}
-                >${escapeHtml(equipLabel)}</button>
-                <button
-                  class="primary-btn"
-                  type="button"
-                  data-upgrade-technique="${escapeHtml(row.id)}"
-                  ${cost === null ? 'disabled' : ''}
-                >${cost === null ? '已满层' : `精进 · ${formatNumber(cost)} 灵石`}</button>
-              </div>
-            </article>
-          `;
-        }).join('')}
+                <p>${escapeHtml(techniqueV2EffectText(row))}</p>
+                <small class="manage-description">${escapeHtml(row.description || '')}</small>
+                <div class="technique-progress-copy">
+                  <span>熟练 ${formatNumber(proficiency)}/100</span>
+                  <span>传承点 ${formatNumber(mastery)}</span>
+                  <span>获得 ${formatNumber(row.acquisition_count || 1)} 次</span>
+                </div>
+                <div class="progress-track technique-progress"><div class="progress-fill" style="width:${combinedProgress}%"></div></div>
+                <small class="technique-progress-hint">${maxed ? '已达到当前品质层数上限' : (canUpgrade ? '已经满足精进条件' : `还需 ${formatNumber(row.progress_needed || Math.max(0, 100 - proficiency - mastery))} 点熟练或传承进度`)}</small>
+                <div class="manage-actions">
+                  <button
+                    class="ghost-btn"
+                    type="button"
+                    data-technique-slot="${escapeHtml(row.character_technique_id)}"
+                    data-target-slot="${escapeHtml(slotTarget)}"
+                    ${equipped && isMain ? 'disabled' : ''}
+                  >${escapeHtml(slotLabel)}</button>
+                  <button
+                    class="primary-btn"
+                    type="button"
+                    data-upgrade-technique-v2="${escapeHtml(row.character_technique_id)}"
+                    ${canUpgrade ? '' : 'disabled'}
+                  >${maxed ? '已满层' : `精进 · ${formatNumber(row.upgrade_cost || 0)} 灵石`}</button>
+                </div>
+              </article>
+            `;
+          }).join('')}
+        </div>
+        <div class="technique-combination-section">
+          <div class="subsection-title"><strong>功法组合</strong><span>${combinations.filter(row => row.is_active).length} 个已激活</span></div>
+          <div class="technique-combination-grid">
+            ${combinations.map(row => `
+              <article class="combination-card ${row.is_active ? 'active' : ''}">
+                <span>${row.is_active ? '已激活' : '未激活'}</span>
+                <strong>${escapeHtml(row.name)}</strong>
+                <p>${escapeHtml(row.description || '')}</p>
+                <small>${escapeHtml(combinationEffectText(row))}</small>
+              </article>
+            `).join('') || '<div class="empty-state">尚无功法组合配置。</div>'}
+          </div>
+        </div>
       </div>
     `;
   }
@@ -1668,19 +1806,20 @@
       });
     });
 
-    document.querySelectorAll('[data-equip-technique]').forEach(button => {
+    document.querySelectorAll('[data-technique-slot]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
       button.addEventListener('click', async () => {
         setBusy(button, true, '调整中……');
         try {
           state.activeMobileTab = 'techniques';
-          const result = await rpcSetTechniqueEquipped(
-            button.dataset.equipTechnique,
-            button.dataset.nextEquipped === 'true'
+          const result = await rpcSetTechniqueSlotV2(
+            button.dataset.techniqueSlot,
+            button.dataset.targetSlot || 'none'
           );
-          showToast(`${result?.technique_name || '功法'}已${result?.equipped ? '开始' : '停止'}运转。`);
-          await enterGame();
+          showToast(`${result?.technique_name || '功法'}${result?.equipped ? `已放入${techniqueSlotName(result?.equipped_slot)}` : '已停止运转'}。`);
+          await refreshTechniqueSystem(true);
+          await syncCultivation(true);
         } catch (error) {
           showToast(translateError(error), 'error');
           setBusy(button, false);
@@ -1688,21 +1827,27 @@
       });
     });
 
-    document.querySelectorAll('[data-upgrade-technique]').forEach(button => {
+    document.querySelectorAll('[data-upgrade-technique-v2]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
       button.addEventListener('click', async () => {
         setBusy(button, true, '参悟中……');
         try {
           state.activeMobileTab = 'techniques';
-          const result = await rpcUpgradeTechnique(button.dataset.upgradeTechnique);
+          const result = await rpcUpgradeTechniqueV2(button.dataset.upgradeTechniqueV2);
+          const spiritStone = state.details?.inventory?.find(row => row.definition?.code === 'spirit_stone');
+          if (spiritStone && Number.isFinite(Number(result?.spirit_stones_remaining))) {
+            spiritStone.quantity = Number(result.spirit_stones_remaining);
+          }
+          await refreshTechniqueSystem(true);
           showResultModal({
             seal: '法',
             title: `功法精进 · 第 ${formatNumber(result?.level || 0)} 层`,
-            message: `${result?.technique_name || '功法'}运转更为纯熟。`,
-            detail: `消耗灵石 ${formatNumber(result?.cost || 0)}，剩余 ${formatNumber(result?.spirit_stones_remaining || 0)}。`,
+            message: `${result?.technique_name || '功法'}已突破本层桎梏。`,
+            detail: `消耗灵石 ${formatNumber(result?.cost || 0)}，熟练消耗 ${formatNumber(result?.proficiency_spent || 0)}，传承点消耗 ${formatNumber(result?.mastery_spent || 0)}。`,
             success: true
           });
+          await syncCultivation(true);
         } catch (error) {
           showToast(translateError(error), 'error');
           setBusy(button, false);
@@ -1726,11 +1871,15 @@
     const rate = Number(cultivation.current_rate_per_second || 0);
     const lifespanRemaining = Math.max(0, Number(c.lifespan_total) - Number(c.lifespan_used));
     const realmLabel = realm.code === 'mortal' ? (stage.stage_name || realm.name || '凡人') : `${realm.name || ''}${stage.stage_name ? ` · ${stage.stage_name}` : ''}`;
-    const techniques = (bundle.techniques || []).filter(row => row.definition);
-    const equippedTechniques = techniques.filter(row => row.is_equipped);
+    const techniqueSystem = bundle.techniqueSystem || state.techniqueSystem || { techniques: [], combinations: [], slots: {} };
+    const techniques = Array.isArray(techniqueSystem.techniques) ? techniqueSystem.techniques : [];
     const inventory = bundle.inventory || [];
     const supplyStatus = bundle.supplyStatus || state.supplyStatus || { can_claim: false, seconds_until_next: 0 };
-    const activeEffects = (bundle.cultivationEffects || []).filter(row => !row.expires_at || new Date(row.expires_at).getTime() > Date.now());
+    const activeEffects = (bundle.cultivationEffects || []).filter(row => {
+      const isCurrent = !row.expires_at || new Date(row.expires_at).getTime() > Date.now();
+      const isCombination = row?.metadata?.v2_kind === 'combination' || String(row?.source_key || '').startsWith('combo:');
+      return isCurrent && !isCombination;
+    });
     const stackedActiveEffects = stackCultivationEffects(activeEffects);
     const offlineGain = Number(cultivation.gained || 0);
     const elapsed = Number(cultivation.elapsed_seconds || 0);
@@ -1837,7 +1986,7 @@
         </section>
 
         <section id="talentSection" class="panel info-section" data-mobile-screen="techniques">
-          <div class="panel-title"><h3>功法</h3><span class="badge">运转与精进</span></div>
+          <div class="panel-title"><h3>功法</h3><span class="badge">品质 · 熟练 · 组合</span></div>
           <div class="foundation-grid">
             <article class="path-card">
               <span>先天灵根 · ${escapeHtml(root.rarity || '未知')}</span>
@@ -1850,7 +1999,7 @@
               <p>${escapeHtml(fate.description || '命格信息尚未读取。')}</p>
             </article>
           </div>
-          ${techniquePanelHtml(techniques, inventory)}
+          ${techniquePanelHtml(techniqueSystem, inventory)}
           ${stackedActiveEffects.length ? `
             <div class="effect-strip">
               ${stackedActiveEffects.map(effect => `
@@ -2022,6 +2171,7 @@
     state.opportunityPollTimer = setInterval(refreshOpportunity, 10000);
     state.opportunityCountdownTimer = setInterval(updateOpportunityCountdown, 1000);
     state.supplyCountdownTimer = setInterval(updateSupplyCountdown, 1000);
+    state.techniqueSyncTimer = setInterval(() => refreshTechniqueSystem(false), 60000);
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
     updateSupplyCountdown();
@@ -2080,18 +2230,21 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, opportunityStatus, supplyStatus] = await Promise.all([
+      const [breakthroughStatus, opportunityStatus, supplyStatus, techniqueSystem] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetOpportunity(),
-        rpcGetDailySupplyStatus()
+        rpcGetDailySupplyStatus(),
+        rpcGetTechniqueSystemV2()
       ]);
       bundle.breakthroughStatus = breakthroughStatus;
       bundle.opportunityStatus = opportunityStatus;
       bundle.supplyStatus = supplyStatus;
+      bundle.techniqueSystem = techniqueSystem;
       state.cultivationStatus = cultivationStatus;
       state.breakthroughStatus = breakthroughStatus;
       state.opportunityStatus = opportunityStatus;
       state.supplyStatus = supplyStatus;
+      state.techniqueSystem = techniqueSystem;
       renderDashboard(bundle);
     } catch (error) {
       console.error(error);
@@ -2137,7 +2290,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshSupplyStatus()]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshSupplyStatus(), refreshTechniqueSystem(false)]);
         }
       }
     });
@@ -2153,7 +2306,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshSupplyStatus()]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshSupplyStatus(), refreshTechniqueSystem(false)]);
         }
       }
     });

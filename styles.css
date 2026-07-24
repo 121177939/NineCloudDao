@@ -1,4 +1,4 @@
-/* Current release: Web Alpha 0.7.0 */
+/* Current release: Web Alpha 0.8.0 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -1244,4 +1244,55 @@ button, .badge, .hero-chip { max-width: 100%; }
   .legacy-choice span { min-height: 75px; padding: 8px 4px; }
   .legacy-choice b { font-size: 10px; }
   .legacy-choice small { font-size: 8px; }
+}
+
+/* Web Alpha 0.8.0 · 功法体系 V2 */
+.technique-v2-root { display: grid; gap: 10px; }
+.technique-slot-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.technique-slot { min-height: 76px; padding: 10px; border: 1px dashed rgba(206,182,126,.23); background: rgba(13,12,10,.24); display: grid; align-content: center; gap: 3px; }
+.technique-slot.filled { border-style: solid; border-color: rgba(206,182,126,.48); background: linear-gradient(180deg,rgba(201,167,95,.09),rgba(13,12,10,.32)); }
+.technique-slot span, .technique-slot small { color: var(--paper-muted); font-size: 10px; }
+.technique-slot strong { color: var(--gold-bright); font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.technique-rule-note { padding: 10px 12px; border-left: 2px solid rgba(206,182,126,.58); background: rgba(201,167,95,.055); display: grid; gap: 3px; }
+.technique-rule-note strong { color: var(--gold-bright); font-size: 12px; font-weight: 500; }
+.technique-rule-note span { color: var(--paper-muted); font-size: 10px; line-height: 1.55; }
+.technique-grade { display: inline-flex; width: fit-content; padding: 2px 6px; border: 1px solid rgba(206,182,126,.25); }
+.technique-grade.grade-yellow { color: #d7bd70; }
+.technique-grade.grade-mystic { color: #a8bfd9; }
+.technique-grade.grade-earth { color: #c49a73; }
+.technique-grade.grade-heaven { color: #cfb2df; }
+.technique-grade.grade-immortal { color: #d9e8dd; text-shadow: 0 0 8px rgba(217,232,221,.2); }
+.technique-progress-copy { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 10px; color: var(--paper-muted); font-size: 10px; }
+.technique-progress { height: 7px; }
+.technique-progress-hint { color: var(--paper-muted); font-size: 10px; }
+.technique-combination-section { display: grid; gap: 8px; margin-top: 2px; }
+.subsection-title { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 6px; border-top: 1px solid rgba(206,182,126,.16); }
+.subsection-title strong { color: var(--gold-bright); font-size: 14px; font-weight: 500; }
+.subsection-title span { color: var(--paper-muted); font-size: 10px; }
+.technique-combination-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.combination-card { padding: 10px 11px; border: 1px solid var(--line); background: rgba(13,12,10,.28); display: grid; gap: 4px; opacity: .68; }
+.combination-card.active { opacity: 1; border-color: rgba(206,182,126,.48); background: linear-gradient(145deg,rgba(201,167,95,.1),rgba(13,12,10,.32)); }
+.combination-card > span { color: var(--paper-muted); font-size: 9px; }
+.combination-card.active > span { color: var(--gold-bright); }
+.combination-card strong { color: var(--paper); font-size: 13px; font-weight: 500; }
+.combination-card p { margin: 0; color: var(--paper-muted); font-size: 10px; line-height: 1.5; }
+.combination-card small { color: var(--gold-bright); font-size: 9px; }
+
+@media (max-width: 600px), (min-width: 1024px) {
+  .technique-v2-root { gap: 6px; }
+  .technique-slot-grid { gap: 5px; }
+  .technique-slot { min-height: 57px; padding: 6px; }
+  .technique-slot span, .technique-slot small { font-size: 7px; }
+  .technique-slot strong { font-size: 10px; }
+  .technique-rule-note { padding: 7px 8px; }
+  .technique-rule-note strong { font-size: 9px; }
+  .technique-rule-note span { font-size: 8px; line-height: 1.4; }
+  .technique-progress-copy, .technique-progress-hint { font-size: 8px; }
+  .technique-combination-grid { gap: 5px; }
+  .combination-card { padding: 7px; }
+  .combination-card > span, .combination-card small { font-size: 7px; }
+  .combination-card strong { font-size: 10px; }
+  .combination-card p { font-size: 8px; line-height: 1.4; }
+  .subsection-title strong { font-size: 11px; }
+  .subsection-title span { font-size: 8px; }
 }
