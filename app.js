@@ -1600,11 +1600,12 @@
 
     const apply = (tab = state.activeMobileTab || 'cultivation', shouldScroll = false) => {
       state.activeMobileTab = tab;
+      const mobileMode = window.matchMedia('(max-width: 760px)').matches;
       screens.forEach(screen => {
-        screen.classList.toggle('mobile-screen-hidden', screen.dataset.mobileScreen !== tab);
+        screen.classList.toggle('mobile-screen-hidden', mobileMode && screen.dataset.mobileScreen !== tab);
       });
       buttons.forEach(button => button.classList.toggle('active', button.dataset.mobileTab === tab));
-      if (shouldScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (mobileMode && shouldScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     buttons.forEach(button => {
@@ -1614,6 +1615,8 @@
     });
 
     apply(state.activeMobileTab || 'cultivation');
+    const media = window.matchMedia('(max-width: 760px)');
+    if (media.addEventListener) media.addEventListener('change', () => apply(state.activeMobileTab || 'cultivation'));
   }
 
   function updateLiveCultivationDisplay() {

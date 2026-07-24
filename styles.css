@@ -842,3 +842,147 @@ body {
   .aura-inner { width: 54px; height: 54px; font-size: 20px; }
   .hud-pill strong { font-size: 13px; }
 }
+
+/* Web Alpha 0.6.3 · 手机防溢出 + 桌面宽屏重构 */
+html, body { overflow-x: clip; }
+#app, .dashboard-reforge, .hero-hud, .panel, .hero-hud-top, .hero-id,
+.cultivation-focus-layout, .cultivation-focus-main, .double-panel-grid,
+.hud-strip, .rate-breakdown, .attribute-mini-grid, .breakthrough-heading {
+  min-width: 0;
+  max-width: 100%;
+}
+img, svg, canvas { max-width: 100%; }
+button, .badge, .hero-chip { max-width: 100%; }
+.progress-label > *, .attribute-row > *, .rate-breakdown > div > * { min-width: 0; }
+
+/* 手机：严格按视口宽度排版，任何信息不得撑出屏幕 */
+@media (max-width: 760px) {
+  .topbar, .app-shell, .footer { width: 100%; max-width: 100%; }
+  .app-shell { padding-left: 6px; padding-right: 6px; }
+  .dashboard-reforge { width: 100%; }
+  .hero-hud-top { display: grid; grid-template-columns: minmax(0,1fr) auto; }
+  .hero-side-actions { min-width: 0; }
+  .hero-sync-btn { min-width: 0; white-space: nowrap; }
+  .hero-meta-line { flex-wrap: wrap; overflow: visible; }
+  .hero-chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .hud-strip { width: 100%; grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .hud-pill { min-width: 0; overflow: hidden; }
+  .hud-pill strong, .hud-pill small { max-width: 100%; }
+  .cultivation-focus-layout { grid-template-columns: 82px minmax(0,1fr); width: 100%; }
+  .cultivation-visual { min-width: 0; padding-left: 3px; padding-right: 3px; }
+  .aura-ring { width: 70px; height: 70px; }
+  .aura-inner { width: 50px; height: 50px; font-size: 20px; }
+  .focus-caption { overflow-wrap: anywhere; }
+  .focus-stat strong { font-size: clamp(17px, 5.4vw, 21px); white-space: nowrap; }
+  .progress-label { gap: 8px; }
+  .progress-label strong { text-align: right; font-size: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rate-breakdown.mobile-tight { grid-template-columns: repeat(2, minmax(0,1fr)); width: 100%; }
+  .rate-breakdown.mobile-tight > div { overflow: hidden; gap: 5px; }
+  .rate-breakdown.mobile-tight span,
+  .rate-breakdown.mobile-tight strong { overflow: hidden; text-overflow: ellipsis; }
+  .attribute-mini-grid { width: 100%; }
+  .breakthrough-heading { grid-template-columns: minmax(0,1fr) auto; }
+  .chance-orb { flex-basis: 54px; width: 54px; height: 54px; }
+  .mobile-bottom-nav { width: 100%; left: 0; bottom: 0; transform: none; border-left: 0; border-right: 0; border-bottom: 0; }
+}
+
+/* 很窄的手机进一步压缩，不隐藏关键数据 */
+@media (max-width: 390px) {
+  .hero-avatar { width: 38px; height: 38px; }
+  .hero-copy h1 { font-size: 17px; }
+  .live-badge { font-size: 8px; padding-inline: 4px; }
+  .hero-sync-btn { font-size: 9px; padding-inline: 5px; }
+  .hud-pill { padding-inline: 3px; }
+  .hud-pill strong { font-size: 13px; }
+  .cultivation-focus-layout { grid-template-columns: 72px minmax(0,1fr); gap: 6px; }
+  .aura-ring { width: 62px; height: 62px; }
+  .aura-inner { width: 44px; height: 44px; font-size: 18px; }
+}
+
+/* 电脑和平板横屏：专用宽屏仪表盘，不再把手机界面缩成细柱 */
+@media (min-width: 761px) {
+  body { overflow-x: hidden; }
+  .topbar, .app-shell, .footer {
+    width: min(1280px, calc(100% - 48px));
+    max-width: none;
+  }
+  .topbar { position: relative; padding: 16px 0 12px; background: transparent; backdrop-filter: none; }
+  .brand-seal { width: 42px; height: 42px; font-size: 21px; }
+  .brand strong { font-size: 21px; }
+  .brand small { display: block; }
+  .account-area { font-size: 13px; }
+  .account-area > span { max-width: 240px; }
+  .account-area .ghost-btn { min-height: 36px; padding: 7px 13px; font-size: 13px; }
+  .app-shell { min-height: calc(100vh - 110px); padding: 22px 0 90px; }
+  .footer { display: flex; }
+
+  .dashboard-reforge {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(340px, .75fr);
+    gap: 18px;
+    align-items: start;
+    padding-bottom: 30px;
+  }
+  .dashboard-reforge > .hero-hud { grid-column: 1 / -1; }
+  #cultivationSection { grid-column: 1; grid-row: 2; }
+  #opportunitySection { grid-column: 2; grid-row: 2 / span 2; display: grid; grid-template-columns: 1fr; gap: 18px; }
+  #talentSection { grid-column: 1; grid-row: 3; }
+  #inventorySection { grid-column: 1; grid-row: 4; }
+  #historySection { grid-column: 2; grid-row: 4; }
+
+  .hero-hud, .panel { padding: 20px; box-shadow: 0 16px 50px rgba(0,0,0,.24); }
+  .hero-hud-top { gap: 20px; }
+  .hero-avatar { width: 68px; height: 68px; font-size: 29px; }
+  .hero-copy h1 { font-size: 30px; margin: 3px 0 8px; }
+  .eyebrow { font-size: 12px; }
+  .hero-meta-line { flex-wrap: wrap; overflow: visible; gap: 7px; }
+  .hero-chip { min-height: 26px; padding: 0 9px; font-size: 12px; }
+  .hero-side-actions { display: flex; align-items: center; gap: 10px; }
+  .live-badge { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+  .hero-sync-btn { min-width: 92px; min-height: 36px; font-size: 12px; }
+  .hud-strip { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-top: 16px; }
+  .hud-pill { min-height: 84px; padding: 14px; text-align: left; }
+  .hud-pill span { font-size: 12px; }
+  .hud-pill strong { font-size: 23px; }
+  .hud-pill small { font-size: 11px; }
+  .section-nav { display: flex; margin-top: 14px; gap: 8px; }
+  .section-nav a { padding: 7px 13px; font-size: 12px; }
+
+  .panel-title { margin-bottom: 15px; }
+  .panel-title h3 { font-size: 21px; }
+  .badge { min-height: 27px; padding: 4px 9px; font-size: 12px; }
+  .cultivation-focus-layout { grid-template-columns: 220px minmax(0,1fr); gap: 18px; }
+  .cultivation-visual { min-height: 330px; padding: 24px 15px; }
+  .aura-ring { width: 150px; height: 150px; }
+  .aura-inner { width: 104px; height: 104px; font-size: 38px; }
+  .focus-caption { max-width: 180px; font-size: 13px; line-height: 1.75; }
+  .cultivation-focus-main { gap: 13px; }
+  .focus-stat { padding: 18px; }
+  .focus-stat span { font-size: 12px; }
+  .focus-stat strong { font-size: 35px; }
+  .focus-stat small { font-size: 12px; }
+  .progress-label { font-size: 12px; }
+  .rate-breakdown.mobile-tight { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1px; }
+  .rate-breakdown.mobile-tight > div { padding: 12px 13px; }
+  .rate-breakdown.mobile-tight span { font-size: 11px; }
+  .rate-breakdown.mobile-tight strong { font-size: 12px; }
+  .attribute-mini-grid { gap: 9px; margin-top: 13px; }
+  .attribute-mini-grid > div { min-height: 66px; padding: 12px; }
+  .attribute-mini-grid span { font-size: 11px; }
+  .attribute-mini-grid strong { font-size: 17px; }
+  .progression-panel { min-height: 0; }
+  .breakthrough-heading { padding: 15px; }
+  .breakthrough-heading strong { font-size: 23px; }
+  .chance-orb { width: 82px; height: 82px; }
+  .mobile-bottom-nav { display: none !important; }
+  [data-mobile-screen],
+  [data-mobile-screen].mobile-screen-hidden,
+  .double-panel-grid [data-mobile-screen].mobile-screen-hidden { display: block !important; }
+}
+
+@media (min-width: 761px) and (max-width: 1020px) {
+  .topbar, .app-shell, .footer { width: min(900px, calc(100% - 28px)); }
+  .dashboard-reforge { grid-template-columns: minmax(0,1.2fr) minmax(300px,.8fr); gap: 12px; }
+  .cultivation-focus-layout { grid-template-columns: 170px minmax(0,1fr); }
+  .cultivation-visual { min-height: 290px; }
+}
