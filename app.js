@@ -554,8 +554,8 @@
           select: 'id,world_year,event_type,title,content,importance,created_at',
           scope_type: 'eq.character',
           scope_id: `eq.${character.id}`,
-          order: 'world_year.desc,created_at.desc',
-          limit: '30'
+          order: 'world_year.asc,created_at.asc',
+          limit: '100'
         }
       })
     ]);
@@ -1191,14 +1191,45 @@
     return definition.description || '暂未开放直接使用。';
   }
 
+  function stackTechniqueAcquisitions(techniques) {
+    const groups = new Map();
+    (techniques || []).forEach(row => {
+      const key = row?.technique_id || row?.definition?.code || row?.definition?.name || row?.id;
+      if (!key) return;
+      const current = groups.get(key) || [];
+      current.push(row);
+      groups.set(key, current);
+    });
+
+    return Array.from(groups.values()).map(group => {
+      const ranked = [...group].sort((a, b) => {
+        const equippedScore = Number(Boolean(b?.is_equipped)) - Number(Boolean(a?.is_equipped));
+        if (equippedScore) return equippedScore;
+        const levelScore = Number(b?.level || 1) - Number(a?.level || 1);
+        if (levelScore) return levelScore;
+        return Number(b?.proficiency || 0) - Number(a?.proficiency || 0);
+      });
+      const acquisitionCount = group.reduce((total, row) => {
+        const repeatedRewards = Math.floor(Math.max(0, Number(row?.proficiency || 0)) / 100);
+        return total + 1 + repeatedRewards;
+      }, 0);
+      return {
+        ...ranked[0],
+        acquisition_count: acquisitionCount,
+        acquisition_ids: group.map(row => row.id).filter(Boolean)
+      };
+    });
+  }
+
   function techniquePanelHtml(techniques, inventory) {
+    const stackedTechniques = stackTechniqueAcquisitions(techniques);
     const stone = (inventory || []).find(row => row.definition?.code === 'spirit_stone');
     const stones = Number(stone?.quantity || 0);
-    if (!techniques?.length) return '<div class="empty-state">尚未习得功法。</div>';
+    if (!stackedTechniques.length) return '<div class="empty-state">尚未习得功法。</div>';
     return `
       <div class="resource-inline"><span>可用灵石</span><strong>${formatNumber(stones)}</strong></div>
       <div class="technique-manage-list">
-        ${techniques.map(row => {
+        ${stackedTechniques.map(row => {
           const definition = row.definition || {};
           const level = Number(row.level || 1);
           const cost = level >= 20 ? null : 100 * level * level;
@@ -1212,7 +1243,7 @@
               <div class="manage-card-head">
                 <div>
                   <span>${escapeHtml(techniqueCategoryName(category))} · ${escapeHtml(definition.grade || 'mortal')}</span>
-                  <strong>${escapeHtml(definition.name || '未知功法')} <small>第 ${level} 层</small></strong>
+                  <strong>${escapeHtml(definition.name || '未知功法')} X${formatNumber(row.acquisition_count || 1)} <small>第 ${level} 层</small></strong>
                 </div>
                 <span class="badge">${row.is_equipped ? '运转中' : '未运转'}</span>
               </div>
@@ -1554,7 +1585,7 @@
         </section>
 
         <section id="historySection" class="panel" data-mobile-screen="history">
-          <div class="panel-title"><h3>命书</h3><span class="badge">人生记录</span></div>
+          <div class="panel-title"><h3>命书</h3><span class="badge">最早 100 条</span></div>
           ${historyHtml(bundle.history)}
         </section>
 
@@ -1600,12 +1631,12 @@
 
     const apply = (tab = state.activeMobileTab || 'cultivation', shouldScroll = false) => {
       state.activeMobileTab = tab;
-      const mobileMode = window.matchMedia('(max-width: 760px)').matches;
+      const tabbedMode = window.matchMedia('(max-width: 760px), (min-width: 1024px)').matches;
       screens.forEach(screen => {
-        screen.classList.toggle('mobile-screen-hidden', mobileMode && screen.dataset.mobileScreen !== tab);
+        screen.classList.toggle('mobile-screen-hidden', tabbedMode && screen.dataset.mobileScreen !== tab);
       });
       buttons.forEach(button => button.classList.toggle('active', button.dataset.mobileTab === tab));
-      if (mobileMode && shouldScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (tabbedMode && shouldScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     buttons.forEach(button => {
@@ -1615,7 +1646,7 @@
     });
 
     apply(state.activeMobileTab || 'cultivation');
-    const media = window.matchMedia('(max-width: 760px)');
+    const media = window.matchMedia('(max-width: 760px), (min-width: 1024px)');
     if (media.addEventListener) media.addEventListener('change', () => apply(state.activeMobileTab || 'cultivation'));
   }
 
@@ -1683,8 +1714,9 @@
   }
 
   function historyHtml(rows) {
-    if (!rows?.length) return '<div class="empty-state">命书尚为空白。</div>';
-    return `<div class="timeline">${rows.map(row => `
+    const earliestRows = (rows || []).slice(0, 100);
+    if (!earliestRows.length) return '<div class="empty-state">命书尚为空白。</div>';
+    return `<div class="timeline">${earliestRows.map(row => `
       <article class="timeline-item">
         <time>仙历 ${escapeHtml(row.world_year)} 年</time>
         <h4>${escapeHtml(row.title)}</h4>

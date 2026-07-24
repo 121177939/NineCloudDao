@@ -1,6 +1,8 @@
-# 九霄问道
+# 九霄问道 Web Alpha 0.6.4
 
-Web Alpha 0.6.2：统一移动布局、唯一角色名、单设备登录。
+GitHub Pages 正式发布文件。
 
-部署入口：`index.html`。
-数据库增量升级：`database/202607240012_unified_layout_unique_name_single_session.sql`。
+- 电脑端采用手机端同款单栏导航并等比例放大。
+- 命书显示最早 100 条记录。
+- 同名功法合并显示获得数量。
+- 不需要新的数据库 SQL。
