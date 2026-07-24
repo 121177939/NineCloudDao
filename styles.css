@@ -1166,3 +1166,38 @@ button, .badge, .hero-chip { max-width: 100%; }
   .mobile-tab-button b { width: 31px; height: 31px; font-size: 13px; }
   .mobile-tab-button span { font-size: 11px; }
 }
+
+
+/* Web Alpha 0.6.5 · 电脑随窗口等比例放大 + 同名持续加成合并 */
+:root {
+  --desktop-ui-scale: 1;
+  --desktop-stage-width: 760px;
+}
+.page-scale-stage,
+.page-scale-content {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  body {
+    overflow-x: hidden;
+  }
+  .page-scale-stage {
+    width: var(--desktop-stage-width);
+    margin: 0 auto;
+  }
+  .page-scale-content {
+    width: 760px;
+    zoom: var(--desktop-ui-scale);
+  }
+  .page-scale-content .topbar,
+  .page-scale-content .app-shell,
+  .page-scale-content .footer {
+    width: 100%;
+    max-width: none;
+  }
+  .effect-strip article strong {
+    display: block;
+    overflow-wrap: anywhere;
+  }
+}

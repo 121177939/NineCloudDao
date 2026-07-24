@@ -36,6 +36,24 @@
   const projectRefText = document.getElementById('projectRefText');
   if (projectRefText) projectRefText.textContent = PROJECT_REF;
 
+  let desktopScaleFrame = 0;
+  function updateDesktopUiScale() {
+    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const baseWidth = 760;
+    let scale = 1;
+    if (viewportWidth >= 1024) {
+      scale = Math.min(1.5, Math.max(1, 1 + ((viewportWidth - 1024) / 896) * 0.5));
+    }
+    document.documentElement.style.setProperty('--desktop-ui-scale', scale.toFixed(4));
+    document.documentElement.style.setProperty('--desktop-stage-width', `${Math.round(baseWidth * scale)}px`);
+  }
+  function scheduleDesktopUiScale() {
+    cancelAnimationFrame(desktopScaleFrame);
+    desktopScaleFrame = requestAnimationFrame(updateDesktopUiScale);
+  }
+  updateDesktopUiScale();
+  window.addEventListener('resize', scheduleDesktopUiScale, { passive: true });
+
   const state = {
     authMode: 'login',
     session: null,
@@ -1191,6 +1209,47 @@
     return definition.description || '暂未开放直接使用。';
   }
 
+  function normalizeStackLabel(value) {
+    return String(value || '')
+      .normalize('NFKC')
+      .replace(/\s+/g, '')
+      .toLocaleLowerCase('zh-CN');
+  }
+
+  function stackCultivationEffects(effects) {
+    const groups = new Map();
+    (effects || []).forEach(effect => {
+      const displayName = String(effect?.display_name || effect?.source_key || '未知加成').trim();
+      const durationType = effect?.expires_at ? 'timed' : 'permanent';
+      const key = `${normalizeStackLabel(displayName)}::${durationType}`;
+      const current = groups.get(key) || [];
+      current.push(effect);
+      groups.set(key, current);
+    });
+
+    return Array.from(groups.values()).map(group => {
+      const first = group[0] || {};
+      const timedExpirations = group
+        .map(row => row?.expires_at ? new Date(row.expires_at).getTime() : null)
+        .filter(value => Number.isFinite(value));
+      const expiresAt = timedExpirations.length
+        ? new Date(Math.min(...timedExpirations)).toISOString()
+        : null;
+      return {
+        ...first,
+        expires_at: expiresAt,
+        effect_count: group.length,
+        flat_rate_per_second: group.reduce((sum, row) => sum + Number(row?.flat_rate_per_second || 0), 0),
+        multiplier_bonus: group.reduce((sum, row) => sum + Number(row?.multiplier_bonus || 0), 0),
+        stacked_effect_ids: group.map(row => row?.id).filter(Boolean)
+      };
+    }).sort((a, b) => {
+      const permanentOrder = Number(Boolean(a.expires_at)) - Number(Boolean(b.expires_at));
+      if (permanentOrder) return permanentOrder;
+      return String(a.display_name || '').localeCompare(String(b.display_name || ''), 'zh-CN');
+    });
+  }
+
   function stackTechniqueAcquisitions(techniques) {
     const groups = new Map();
     (techniques || []).forEach(row => {
@@ -1439,6 +1498,7 @@
     const inventory = bundle.inventory || [];
     const supplyStatus = bundle.supplyStatus || state.supplyStatus || { can_claim: false, seconds_until_next: 0 };
     const activeEffects = (bundle.cultivationEffects || []).filter(row => !row.expires_at || new Date(row.expires_at).getTime() > Date.now());
+    const stackedActiveEffects = stackCultivationEffects(activeEffects);
     const offlineGain = Number(cultivation.gained || 0);
     const elapsed = Number(cultivation.elapsed_seconds || 0);
     const requiredForNext = Number(breakthrough?.cultivation_required || 0);
@@ -1557,13 +1617,13 @@
             </article>
           </div>
           ${techniquePanelHtml(techniques, inventory)}
-          ${activeEffects.length ? `
+          ${stackedActiveEffects.length ? `
             <div class="effect-strip">
-              ${activeEffects.map(effect => `
+              ${stackedActiveEffects.map(effect => `
                 <article>
                   <span>${escapeHtml(effectRemainingText(effect))}</span>
-                  <strong>${escapeHtml(effect.display_name)}</strong>
-                  <small>${Number(effect.flat_rate_per_second) ? `每秒修为 +${formatNumber(effect.flat_rate_per_second, 3)}` : ''}${Number(effect.multiplier_bonus) ? `修炼倍率 +${formatNumber(Number(effect.multiplier_bonus) * 100, 2)}%` : ''}</small>
+                  <strong>${escapeHtml(effect.display_name)} X${formatNumber(effect.effect_count || 1)}</strong>
+                  <small>${Number(effect.flat_rate_per_second) ? `每秒修为 +${formatNumber(effect.flat_rate_per_second, 3)}` : ''}${Number(effect.flat_rate_per_second) && Number(effect.multiplier_bonus) ? ' · ' : ''}${Number(effect.multiplier_bonus) ? `修炼倍率 +${formatNumber(Number(effect.multiplier_bonus) * 100, 2)}%` : ''}</small>
                 </article>
               `).join('')}
             </div>
