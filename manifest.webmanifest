@@ -1,0 +1,15 @@
+{
+  "name": "九霄问道",
+  "short_name": "九霄问道",
+  "description": "东方文字修仙人生模拟游戏",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#17130d",
+  "theme_color": "#17130d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {"src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
