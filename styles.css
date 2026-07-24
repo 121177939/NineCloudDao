@@ -1,4 +1,4 @@
-/* Current release: Web Alpha 0.9.0 */
+/* Current release: Web Alpha 0.9.1 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -1352,4 +1352,70 @@ button, .badge, .hero-chip { max-width: 100%; }
   .cave-resource-grid, .cave-building-grid, .cave-recipe-grid { grid-template-columns: 1fr; }
   .cave-headline, .alchemy-active-card { align-items: stretch; flex-direction: column; }
   .cave-headline .resource-inline, .alchemy-active-card button { width: 100%; }
+}
+
+/* Web Alpha 0.9.1 · 天命榜 */
+.destiny-ranking-root { display: grid; gap: 11px; }
+.destiny-ranking-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 13px; border: 1px solid rgba(206,182,126,.22); background: linear-gradient(145deg,rgba(86,73,122,.12),rgba(13,12,10,.34)); }
+.destiny-ranking-head > div { min-width: 0; display: grid; gap: 3px; }
+.destiny-ranking-head span, .destiny-ranking-head small { color: var(--paper-muted); font-size: 10px; }
+.destiny-ranking-head strong { color: var(--gold-bright); font-size: 15px; font-weight: 500; }
+.destiny-champion { display: grid; grid-template-columns: 54px minmax(0,1fr); align-items: center; gap: 12px; padding: 14px; border: 1px solid rgba(206,182,126,.48); background: radial-gradient(circle at 12% 50%,rgba(201,167,95,.18),transparent 32%),linear-gradient(145deg,rgba(201,167,95,.1),rgba(13,12,10,.36)); }
+.destiny-champion.self { box-shadow: inset 0 0 0 1px rgba(126,190,162,.26); }
+.destiny-champion-seal { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold-bright); font-family: var(--font-serif); font-size: 22px; background: rgba(201,167,95,.08); box-shadow: 0 0 20px rgba(201,167,95,.12); }
+.destiny-champion > div:last-child { min-width: 0; display: grid; gap: 3px; }
+.destiny-champion span { color: var(--gold); font-size: 10px; }
+.destiny-champion strong { color: var(--paper); font-size: 20px; font-weight: 500; overflow-wrap: anywhere; }
+.destiny-champion p { margin: 0; color: var(--paper-muted); font-size: 11px; line-height: 1.55; }
+.destiny-ranking-list { display: grid; gap: 6px; }
+.destiny-ranking-row { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; align-items: center; gap: 10px; min-height: 68px; padding: 10px 12px; border: 1px solid var(--line); background: rgba(13,12,10,.28); }
+.destiny-ranking-row.self { border-color: rgba(126,190,162,.52); background: linear-gradient(145deg,rgba(92,150,124,.11),rgba(13,12,10,.3)); }
+.destiny-rank-medal { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid rgba(206,182,126,.24); border-radius: 50%; color: var(--paper-muted); font-size: 11px; }
+.destiny-ranking-row.rank-1 .destiny-rank-medal { color: #f1d98a; border-color: #c9a75f; background: rgba(201,167,95,.12); }
+.destiny-ranking-row.rank-2 .destiny-rank-medal { color: #d2d7dd; border-color: rgba(210,215,221,.55); background: rgba(180,190,204,.08); }
+.destiny-ranking-row.rank-3 .destiny-rank-medal { color: #d1a17a; border-color: rgba(209,161,122,.55); background: rgba(183,124,84,.08); }
+.destiny-rank-main { min-width: 0; display: grid; gap: 4px; }
+.destiny-rank-main > div { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.destiny-rank-main strong { color: var(--paper); font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+.destiny-rank-main p { margin: 0; color: var(--paper-muted); font-size: 10px; line-height: 1.5; }
+.self-mark { flex: 0 0 auto; padding: 2px 5px; border: 1px solid rgba(126,190,162,.45); color: #a8d8c1; font-size: 8px; }
+.destiny-rank-side { display: grid; justify-items: end; gap: 4px; text-align: right; }
+.destiny-rank-side span { color: var(--paper-muted); font-size: 9px; }
+.destiny-rank-side strong { color: var(--gold-bright); font-size: 10px; font-weight: 500; white-space: nowrap; }
+.destiny-ranking-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 3px; }
+.destiny-ranking-footer span, .destiny-ranking-footer small { color: var(--paper-muted); font-size: 10px; }
+.ranking-notice { padding: 16px; border: 1px dashed rgba(206,182,126,.28); background: rgba(13,12,10,.24); display: grid; gap: 8px; justify-items: start; }
+.ranking-notice strong { color: var(--gold-bright); font-size: 14px; font-weight: 500; }
+.ranking-notice p { margin: 0; color: var(--paper-muted); font-size: 11px; line-height: 1.6; }
+
+/* 六项底部导航 */
+.mobile-bottom-nav { grid-template-columns: repeat(6, minmax(0,1fr)); }
+
+@media (max-width: 600px), (min-width: 1024px) {
+  .destiny-ranking-root { gap: 7px; }
+  .destiny-ranking-head { padding: 8px; }
+  .destiny-ranking-head span, .destiny-ranking-head small { font-size: 8px; }
+  .destiny-ranking-head strong { font-size: 11px; }
+  .destiny-champion { grid-template-columns: 42px minmax(0,1fr); gap: 8px; padding: 9px; }
+  .destiny-champion-seal { width: 38px; height: 38px; font-size: 17px; }
+  .destiny-champion span { font-size: 8px; }
+  .destiny-champion strong { font-size: 14px; }
+  .destiny-champion p { font-size: 8px; }
+  .destiny-ranking-list { gap: 4px; }
+  .destiny-ranking-row { grid-template-columns: 30px minmax(0,1fr) auto; min-height: 55px; gap: 7px; padding: 7px; }
+  .destiny-rank-medal { width: 27px; height: 27px; font-size: 9px; }
+  .destiny-rank-main strong { font-size: 10px; }
+  .destiny-rank-main p { font-size: 8px; }
+  .destiny-rank-side span { font-size: 7px; }
+  .destiny-rank-side strong { font-size: 8px; }
+  .destiny-ranking-footer span, .destiny-ranking-footer small { font-size: 8px; }
+  .mobile-bottom-nav { grid-template-columns: repeat(6, minmax(0,1fr)) !important; }
+}
+
+@media (max-width: 430px) {
+  .destiny-ranking-row { grid-template-columns: 28px minmax(0,1fr); }
+  .destiny-rank-side { grid-column: 2; grid-row: 2; display: flex; justify-content: space-between; justify-items: stretch; width: 100%; text-align: left; }
+  .mobile-tab-button { min-width: 0; }
+  .mobile-tab-button b { width: 21px; height: 21px; font-size: 9px; }
+  .mobile-tab-button span { font-size: 8px; }
 }

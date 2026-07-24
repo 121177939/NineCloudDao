@@ -80,6 +80,10 @@
     techniqueSystem: null,
     techniqueSyncTimer: null,
     techniqueSyncing: false,
+    destinyRanking: null,
+    destinyRankingSyncTimer: null,
+    destinyRankingSyncing: false,
+    destinyRankingFetchedAt: 0,
     timeStatus: null,
     timeStatusStartedAt: 0,
     timeSyncing: false,
@@ -181,6 +185,7 @@
     if (raw.includes('ALCHEMY_OUTPUT_ITEM_MISSING')) return '丹方对应的物品定义缺失，请检查聚气丹、聚灵香或悟道茶配置。';
     if (raw.includes('ALCHEMY_BATCH_NOT_FOUND')) return '当前没有可以领取的炼丹批次。';
     if (raw.includes('ALCHEMY_NOT_READY')) return '丹药尚未炼成，请等待倒计时结束。';
+    if (raw.includes('INVALID_RANKING_PAGE')) return '天命榜分页参数无效，请重新刷新。';
     if (lower.includes('could not find the function') || raw.includes('PGRST202')) return '数据库功能尚未升级到当前版本，请执行游戏包内最新 SQL。';
     if (raw.includes('Failed to fetch')) return '无法连接云端数据库，请检查网络或 Supabase 项目状态。';
     return raw;
@@ -232,6 +237,7 @@
     if (state.caveCountdownTimer) clearInterval(state.caveCountdownTimer);
     if (state.caveSyncTimer) clearInterval(state.caveSyncTimer);
     if (state.techniqueSyncTimer) clearInterval(state.techniqueSyncTimer);
+    if (state.destinyRankingSyncTimer) clearInterval(state.destinyRankingSyncTimer);
     if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.cultivationTicker = null;
     state.cultivationSyncTimer = null;
@@ -240,11 +246,13 @@
     state.caveCountdownTimer = null;
     state.caveSyncTimer = null;
     state.techniqueSyncTimer = null;
+    state.destinyRankingSyncTimer = null;
     state.gameSessionHeartbeatTimer = null;
     state.cultivationSyncing = false;
     state.opportunitySyncing = false;
     state.caveSyncing = false;
     state.techniqueSyncing = false;
+    state.destinyRankingSyncing = false;
   }
 
   function clearSession() {
@@ -263,6 +271,8 @@
     state.opportunitySyncing = false;
     state.caveSystem = null;
     state.techniqueSystem = null;
+    state.destinyRanking = null;
+    state.destinyRankingFetchedAt = 0;
     state.timeStatus = null;
     state.timeStatusStartedAt = 0;
     state.timeSyncing = false;
@@ -594,6 +604,17 @@
     const result = await restFetch('rpc/claim_alchemy_v1', {
       method: 'POST',
       body: {}
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetDestinyRankingV1(limit = 50, offset = 0) {
+    const result = await restFetch('rpc/get_destiny_ranking_v1', {
+      method: 'POST',
+      body: {
+        p_limit: Math.max(1, Math.min(100, Number(limit || 50))),
+        p_offset: Math.max(0, Number(offset || 0))
+      }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -2038,6 +2059,136 @@
   }
 
 
+  function destinyRankMedal(rank) {
+    if (rank === 1) return '天';
+    if (rank === 2) return '地';
+    if (rank === 3) return '人';
+    return String(rank);
+  }
+
+  function destinyRankingPanelHtml(ranking) {
+    const result = ranking || { status: 'loading', entries: [], total_count: 0 };
+    const entries = Array.isArray(result.entries) ? result.entries : [];
+    const total = Math.max(entries.length, Number(result.total_count || 0));
+    if (result.status === 'unavailable') {
+      return `
+        <div id="destinyRankingRoot" class="destiny-ranking-root">
+          <div class="ranking-notice">
+            <strong>天命榜尚未开启</strong>
+            <p>${escapeHtml(result.error || '请先执行 V0.9.1 天命榜数据库升级。')}</p>
+            <button class="ghost-btn" type="button" data-ranking-refresh>重新读取</button>
+          </div>
+        </div>
+      `;
+    }
+    if (result.status === 'loading') {
+      return '<div id="destinyRankingRoot" class="destiny-ranking-root"><div class="empty-state">天机推演中……</div></div>';
+    }
+    const champion = entries[0] || null;
+    return `
+      <div id="destinyRankingRoot" class="destiny-ranking-root">
+        <div class="destiny-ranking-head">
+          <div>
+            <span>九霄界在世修士</span>
+            <strong>${total ? `${formatNumber(total)} 人入榜` : '尚无人入榜'}</strong>
+            <small>${escapeHtml(result.ranking_rule || '境界优先，其次小境界与云端修为')}</small>
+          </div>
+          <button class="ghost-btn" type="button" data-ranking-refresh>刷新天命</button>
+        </div>
+        ${champion ? `
+          <article class="destiny-champion ${champion.is_self ? 'self' : ''}">
+            <div class="destiny-champion-seal">天</div>
+            <div>
+              <span>天命榜首${champion.is_self ? ' · 本尊' : ''}</span>
+              <strong>${escapeHtml(champion.name || '无名修士')}</strong>
+              <p>${escapeHtml(champion.realm || '未知境界')} · 命格「${escapeHtml(champion.fate || '未定命格')}」</p>
+            </div>
+          </article>
+        ` : ''}
+        <div class="destiny-ranking-list">
+          ${entries.map(row => {
+            const rank = Number(row.rank || 0);
+            return `
+              <article class="destiny-ranking-row rank-${Math.min(4, rank)} ${row.is_self ? 'self' : ''}">
+                <div class="destiny-rank-medal">${escapeHtml(destinyRankMedal(rank))}</div>
+                <div class="destiny-rank-main">
+                  <div><strong>${escapeHtml(row.name || '无名修士')}</strong>${row.is_self ? '<span class="self-mark">本尊</span>' : ''}</div>
+                  <p>${escapeHtml(row.realm || '未知境界')} · 命格「${escapeHtml(row.fate || '未定命格')}」</p>
+                </div>
+                <div class="destiny-rank-side">
+                  <span>第 ${formatNumber(row.generation || 1)} 世</span>
+                  <strong>${formatNumber(row.cultivation || 0)} 修为</strong>
+                </div>
+              </article>
+            `;
+          }).join('') || '<div class="empty-state">九霄界尚无在世修士。</div>'}
+        </div>
+        <div class="destiny-ranking-footer">
+          <span>已显示 ${formatNumber(entries.length)} / ${formatNumber(total)} 名</span>
+          ${result.has_more ? '<button class="primary-btn" type="button" data-ranking-load-more>继续观榜</button>' : '<small>榜单已全部展开</small>'}
+        </div>
+      </div>
+    `;
+  }
+
+  function updateDestinyRankingPanel() {
+    const root = document.getElementById('destinyRankingRoot');
+    if (!root) return;
+    root.outerHTML = destinyRankingPanelHtml(state.destinyRanking);
+    bindDestinyRankingActions();
+  }
+
+  async function refreshDestinyRanking(append = false, silent = true) {
+    if (state.destinyRankingSyncing || !state.character) return;
+    state.destinyRankingSyncing = true;
+    try {
+      const currentEntries = append && Array.isArray(state.destinyRanking?.entries) ? state.destinyRanking.entries : [];
+      const result = await rpcGetDestinyRankingV1(50, append ? currentEntries.length : 0);
+      if (append) {
+        const nextEntries = Array.isArray(result?.entries) ? result.entries : [];
+        state.destinyRanking = { ...result, entries: [...currentEntries, ...nextEntries], offset: 0 };
+      } else {
+        state.destinyRanking = result || { status: 'ok', entries: [], total_count: 0 };
+      }
+      state.destinyRankingFetchedAt = Date.now();
+      updateDestinyRankingPanel();
+      if (!silent) showToast(append ? '天命榜已继续展开。' : '天命榜已刷新。');
+    } catch (error) {
+      state.destinyRanking = {
+        status: 'unavailable',
+        entries: [],
+        total_count: 0,
+        error: translateError(error)
+      };
+      updateDestinyRankingPanel();
+      if (!silent) showToast(translateError(error), 'error');
+    } finally {
+      state.destinyRankingSyncing = false;
+    }
+  }
+
+  function bindDestinyRankingActions() {
+    document.querySelectorAll('[data-ranking-refresh]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '推演中……');
+        await refreshDestinyRanking(false, false);
+        setBusy(button, false);
+      });
+    });
+    document.querySelectorAll('[data-ranking-load-more]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '展开中……');
+        await refreshDestinyRanking(true, false);
+        setBusy(button, false);
+      });
+    });
+  }
+
+
   function renderDashboard(bundle) {
     renderAccount();
     const c = bundle.character;
@@ -2056,6 +2207,7 @@
     const techniques = Array.isArray(techniqueSystem.techniques) ? techniqueSystem.techniques : [];
     const inventory = bundle.inventory || [];
     const caveSystem = bundle.caveSystem || state.caveSystem || { resources: [], buildings: [], recipes: [], rules: {} };
+    const destinyRanking = bundle.destinyRanking || state.destinyRanking || { status: 'loading', entries: [], total_count: 0 };
     const activeEffects = (bundle.cultivationEffects || []).filter(row => {
       const isCurrent = !row.expires_at || new Date(row.expires_at).getTime() > Date.now();
       const isCombination = row?.metadata?.v2_kind === 'combination' || String(row?.source_key || '').startsWith('combo:');
@@ -2121,6 +2273,7 @@
             <a href="#talentSection">功法</a>
             <a href="#inventorySection">洞府</a>
             <a href="#opportunitySection">机缘</a>
+            <a href="#destinyRankingSection">天命榜</a>
             <a href="#historySection">命书</a>
           </nav>
         </section>
@@ -2208,6 +2361,11 @@
           </section>
         </section>
 
+        <section id="destinyRankingSection" class="panel" data-mobile-screen="ranking">
+          <div class="panel-title"><h3>天命榜</h3><span class="badge">全服境界排行</span></div>
+          ${destinyRankingPanelHtml(destinyRanking)}
+        </section>
+
         <section id="historySection" class="panel" data-mobile-screen="history">
           <div class="panel-title"><h3>命书</h3><span class="badge">最新 100 条</span></div>
           ${historyHtml(bundle.history)}
@@ -2218,6 +2376,7 @@
           <button class="mobile-tab-button ${state.activeMobileTab === 'techniques' ? 'active' : ''}" type="button" data-mobile-tab="techniques"><b>法</b><span>功法</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'cave' ? 'active' : ''}" type="button" data-mobile-tab="cave"><b>府</b><span>洞府</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'opportunity' ? 'active' : ''}" type="button" data-mobile-tab="opportunity"><b>缘</b><span>机缘</span></button>
+          <button class="mobile-tab-button ${state.activeMobileTab === 'ranking' ? 'active' : ''}" type="button" data-mobile-tab="ranking"><b>榜</b><span>天命榜</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'history' ? 'active' : ''}" type="button" data-mobile-tab="history"><b>书</b><span>命书</span></button>
         </nav>
       </section>
@@ -2227,6 +2386,7 @@
     state.liveCultivationStartedAt = Date.now();
     bindProgressionActions();
     bindInventoryTechniqueActions();
+    bindDestinyRankingActions();
     bindMobileDashboardNav();
     const manualSyncBtn = document.getElementById('manualSyncBtn');
     if (manualSyncBtn && manualSyncBtn.dataset.bound !== '1') {
@@ -2236,7 +2396,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshCaveSystem(true)]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshCaveSystem(true), refreshDestinyRanking(false, true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -2268,7 +2428,13 @@
     buttons.forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
-      button.addEventListener('click', () => apply(button.dataset.mobileTab || 'cultivation', true));
+      button.addEventListener('click', () => {
+        const target = button.dataset.mobileTab || 'cultivation';
+        apply(target, true);
+        if (target === 'ranking' && Date.now() - Number(state.destinyRankingFetchedAt || 0) > 30000) {
+          refreshDestinyRanking(false, true);
+        }
+      });
     });
 
     apply(state.activeMobileTab || 'cultivation');
@@ -2354,6 +2520,7 @@
     state.caveCountdownTimer = setInterval(updateCaveCountdown, 1000);
     state.caveSyncTimer = setInterval(() => refreshCaveSystem(true), 60000);
     state.techniqueSyncTimer = setInterval(() => refreshTechniqueSystem(false), 60000);
+    state.destinyRankingSyncTimer = setInterval(() => refreshDestinyRanking(false, true), 60000);
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
     updateCaveCountdown();
@@ -2412,21 +2579,27 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, opportunityStatus, techniqueSystem, caveSystem] = await Promise.all([
+      const [breakthroughStatus, opportunityStatus, techniqueSystem, caveSystem, destinyRanking] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetOpportunity(),
         rpcGetTechniqueSystemV2(),
-        rpcGetCaveSystemV1()
+        rpcGetCaveSystemV1(),
+        rpcGetDestinyRankingV1(50, 0).catch(error => ({
+          status: 'unavailable', entries: [], total_count: 0, error: translateError(error)
+        }))
       ]);
       bundle.breakthroughStatus = breakthroughStatus;
       bundle.opportunityStatus = opportunityStatus;
       bundle.techniqueSystem = techniqueSystem;
       bundle.caveSystem = caveSystem;
+      bundle.destinyRanking = destinyRanking;
       state.cultivationStatus = cultivationStatus;
       state.breakthroughStatus = breakthroughStatus;
       state.opportunityStatus = opportunityStatus;
       state.techniqueSystem = techniqueSystem;
       state.caveSystem = caveSystem;
+      state.destinyRanking = destinyRanking;
+      state.destinyRankingFetchedAt = Date.now();
       renderDashboard(bundle);
     } catch (error) {
       console.error(error);
@@ -2472,7 +2645,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshDestinyRanking(false, true)]);
         }
       }
     });
@@ -2488,7 +2661,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshDestinyRanking(false, true)]);
         }
       }
     });

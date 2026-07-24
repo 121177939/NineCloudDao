@@ -251,6 +251,19 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     else:
         report.fail("前端洞府经营流程不完整")
 
+    ranking_expectations = [
+        "rpc/get_destiny_ranking_v1",
+        "destinyRankingPanelHtml",
+        'data-mobile-tab="ranking"',
+        "天命榜",
+        "本尊",
+        "继续观榜",
+    ]
+    if all(item in app for item in ranking_expectations):
+        report.ok("前端包含天命榜、分页展开、手动刷新与本尊标记")
+    else:
+        report.fail("前端天命榜流程不完整")
+
     if mode == "source":
         time_migration_path = root / "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql"
         time_migration = read_text(time_migration_path, report)
@@ -342,6 +355,39 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
             report.ok("V0.9.0 提供只读检查SQL并覆盖配方物品绑定与总基线")
         else:
             report.fail("V0.9.0 检查SQL内容不完整")
+
+        ranking_migration = read_text(root / "database/V0.9.1/202607240016_destiny_ranking.sql", report)
+        ranking_expectations_sql = [
+            "create or replace function public.get_destiny_ranking_v1(",
+            "security definer",
+            "pc.status in ('active', 'secluded', 'missing')",
+            "coalesce(r.major_order, -1) desc",
+            "coalesce(rs.minor_level, -1) desc",
+            "coalesce(pc.cultivation, 0) desc",
+            "grant execute on function public.get_destiny_ranking_v1(integer, integer) to authenticated",
+            "revoke all on function public.get_destiny_ranking_v1(integer, integer) from public, anon",
+            "commit;",
+        ]
+        if all(item in ranking_migration.lower() for item in [item.lower() for item in ranking_expectations_sql]):
+            report.ok("V0.9.1 数据库迁移包含天命榜排序、认证权限和隐私裁剪RPC")
+        else:
+            report.fail("V0.9.1 天命榜数据库迁移内容不完整")
+        forbidden_ranking_output = ["'email'", "'user_id'", "'character_id'", "'lineage_id'", "'device'"]
+        json_section = ranking_migration[ranking_migration.find("'rank', rank_position"):]
+        if json_section and not any(item in json_section for item in forbidden_ranking_output):
+            report.ok("V0.9.1 天命榜返回对象未包含账号、角色、道统或设备标识")
+        else:
+            report.fail("V0.9.1 天命榜返回对象可能包含隐私标识")
+        if "create table" not in ranking_migration.lower() and "delete from" not in ranking_migration.lower() and "drop table" not in ranking_migration.lower():
+            report.ok("V0.9.1 迁移不新增表、不删除玩家数据")
+        else:
+            report.fail("V0.9.1 迁移包含非预期表或删除操作")
+
+        ranking_check = read_text(root / "database/V0.9.1/202607240016_check.sql", report)
+        if all(item in ranking_check for item in ("security_definer", "authenticated_can_execute", "anon_cannot_execute", "expected_function_count", "realm_label")):
+            report.ok("V0.9.1 提供只读检查SQL并覆盖权限、基线与榜单预览")
+        else:
+            report.fail("V0.9.1 检查SQL内容不完整")
 
     sw = read_text(root / "sw.js", report)
     if "url.hostname.endsWith('.supabase.co')" in sw and "return;" in sw:
@@ -436,6 +482,10 @@ def verify_archive(path: Path, config: dict, report: Report) -> None:
                 report.ok(f"{path.name} 包含 V0.9.0 洞府经营前端")
             else:
                 report.fail(f"{path.name} 未包含完整的 V0.9.0 洞府经营前端")
+            if all(item in app for item in ("rpc/get_destiny_ranking_v1", "destinyRankingPanelHtml", "天命榜", "继续观榜", "本尊")):
+                report.ok(f"{path.name} 包含 V0.9.1 天命榜前端")
+            else:
+                report.fail(f"{path.name} 未包含完整的 V0.9.1 天命榜前端")
             report.ok(f"{path.name} ZIP 完整性通过，SHA256={sha256(path)}")
     except Exception as exc:
         report.fail(f"无法检查 {path.name}：{exc}")
