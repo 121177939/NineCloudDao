@@ -1,66 +1,63 @@
-# GitHub Desktop 更新到 V0.8.0
+# GitHub Desktop 更新到 V0.9.0
 
-> 本版必须先升级 Supabase 数据库，再上传网页。不要先上传 V0.8.0 前端。
+> 必须先确认 V0.8.0 修正版已成功，再升级 V0.9.0 数据库，最后上传网页。不要颠倒顺序。
 
-## 一、先备份
+## 一、确认 V0.8.0 修正版
 
-1. 复制当前本地仓库，命名为 `NineCloudDao_V0.7.0_上线前备份`。
-2. 确认线上 V0.7.0 已经可以正常登录、修炼、死亡和转世。
-3. 建议备份 Supabase，或至少保存当前 43 表、26 函数的检查结果。
+若你曾看到：
 
-## 二、执行数据库升级
+`relation "v080_legacy_equipped" does not exist`
 
-1. 解压 `NineCloudDao_Game_V0.8.0.zip`。
-2. 打开 Supabase → SQL Editor → New query。
-3. 完整复制并执行：
-   `database/V0.8.0/202607240014_technique_system_v2.sql`
-4. 只执行一次，不要连续点击 Run。
-5. 成功后新建查询，执行：
-   `database/V0.8.0/202607240014_check.sql`
-6. 重点确认：
-   - 公共业务表为 47 张；
-   - 公共函数为 35 个；
-   - 品质规则 6 条、组合规则 4 条；
-   - 时间倍率仍为 12；
-   - 重复功法、重复槽位和异常熟练查询均为 0 行。
+说明原版 V0.8.0 没有成功。请先执行修正版 `202607240014_technique_system_v2.sql`，再执行 V0.8.0 检查 SQL。V0.9.0 迁移会主动检查此前置条件，不满足时返回 `V080_FIXED_REQUIRED`。
 
-若 SQL 报错，不要上传网页，也不要重复运行迁移。保存完整报错信息。
+## 二、备份
 
-## 三、覆盖 GitHub 仓库
+1. 复制当前本地仓库，命名为 `NineCloudDao_V0.8.0_升级前备份`。
+2. 备份或记录 Supabase 当前数据状态。
+3. 不要重新执行阶段 1 `all_in_one.sql`，也不要执行已经废弃的 V0.8.0 原始临时表脚本。
 
-1. 打开 GitHub Desktop，选择 `NineCloudDao`，确认分支为 `main`。
-2. 点击 `Fetch origin`；有 `Pull origin` 时先 Pull。
-3. 解压 `NineCloudDao_GitHub_Upload_V0.8.0.zip`。
-4. 进入能直接看到 `index.html`、`app.js`、`release_config.json` 的目录。
-5. 在 GitHub Desktop 选择 `Repository` → `Show in Explorer`。
-6. 把上传包内部全部文件复制到仓库根目录并替换。
-7. Summary 填写：`Update game to V0.8.0`。
-8. 点击 `Commit to main`，再点击 `Push origin`。
-9. 打开 GitHub Actions，确认自动验证和部署均为绿色。
+## 三、升级数据库
 
-## 四、线上验证
+在 Supabase → SQL Editor → New query 中：
 
-打开：
+1. 一次性完整执行 `database/V0.9.0/202607240015_cave_management.sql`。
+2. 成功后另开查询，执行 `database/V0.9.0/202607240015_check.sql`。
+3. 确认新增表为 8、新增函数为 7、设置/资源/建筑/配方为 1/3/5/3。
+4. 确认三种配方的 `output_item_exists` 全部为 `true`。
+5. 确认理论总基线为 55 张公共表、42 个公共函数，异常查询均返回 0 行。
 
-`https://121177939.github.io/NineCloudDao/?v=080`
+升级 SQL 报错时，不要反复点击 Run，也不要发布 V0.9.0 前端。
 
-确认页脚为 `Web Alpha 0.8.0`，并检查：
+## 四、覆盖 GitHub 仓库
 
-- 功法页显示主修槽、辅修一、辅修二；
-- 功法显示品质、第几层/最高层、熟练、传承点和获得次数；
-- 主修不能直接卸下，只能切换另一门主修；
-- 最多运转两门辅修；
-- 熟练与传承点合计不足 100 时不能精进；
-- 组合条件满足后显示“已激活”，并影响修炼速度；
-- 现实 1 天 = 仙历 12 年保持不变；
-- 命书仍显示最新 100 条。
+1. 打开 GitHub Desktop，选择 `NineCloudDao` 和 `main` 分支。
+2. 点击 `Fetch origin`；出现 `Pull origin` 时先 Pull。
+3. 解压 `NineCloudDao_GitHub_Upload_V0.9.0.zip`。
+4. 进入能直接看到 `index.html`、`app.js`、`release_config.json` 的内层目录。
+5. 点击 `Repository` → `Show in Explorer`，用上传包内部文件覆盖仓库根目录。
+6. Summary 填写 `Update game to V0.9.0`。
+7. 点击 `Commit to main`，再点击 `Push origin`。
+8. 在 GitHub Actions 中等待绿色对勾。
 
-## 五、严重异常处理
+## 五、线上验证
 
-不要删除功法表或手工改玩家数据。先执行：
+访问：
 
-`database/V0.8.0/202607240014_emergency_disable.sql`
+`https://121177939.github.io/NineCloudDao/?v=090`
 
-它只暂停熟练增长和组合效果，保留功法、层数、传承点和槽位。修复后执行：
+确认页脚显示 `Web Alpha 0.9.0`，然后检查：
 
-`database/V0.8.0/202607240014_resume.sql`
+- 手机底部导航出现“洞府”；
+- 洞府显示灵蕴、灵草、灵矿；
+- 五座建筑及升级费用正常；
+- 炼丹倒计时、取丹和储物数量正常；
+- 转世后仍读取同一道统洞府；
+- 功法、修炼、机缘、突破、时间寿元、命书和单设备会话无回归。
+
+## 六、严重问题处理
+
+不要删表。先执行：
+
+`database/V0.9.0/202607240015_emergency_disable.sql`
+
+它会暂停洞府资源生产和炼丹入口，但保留建筑、资源和炼丹记录。修复后执行 `202607240015_resume.sql` 恢复。

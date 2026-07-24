@@ -237,6 +237,20 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     else:
         report.fail("前端功法 V2 流程不完整")
 
+    cave_expectations = [
+        "rpc/get_cave_system_v1",
+        "rpc/upgrade_cave_building_v1",
+        "rpc/start_alchemy_v1",
+        "rpc/claim_alchemy_v1",
+        "caveSystemRoot",
+        "道统洞府",
+        "炼丹",
+    ]
+    if all(item in app for item in cave_expectations):
+        report.ok("前端包含道统洞府、建筑升级、挂机资源与炼丹流程")
+    else:
+        report.fail("前端洞府经营流程不完整")
+
     if mode == "source":
         time_migration_path = root / "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql"
         time_migration = read_text(time_migration_path, report)
@@ -271,10 +285,63 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
             report.ok("V0.8.0 数据库迁移包含功法品质、熟练、传承、槽位与组合")
         else:
             report.fail("V0.8.0 数据库迁移内容不完整")
-        if technique_migration.lower().lstrip().startswith("--") and "begin;" in technique_migration.lower() and "drop table" not in technique_migration.lower():
-            report.ok("V0.8.0 迁移使用事务且未包含删表操作")
+
+        fixed_expectations = [
+            "do $v080_slot_migration$",
+            "create temporary table v080_legacy_equipped on commit drop as",
+            "join v080_legacy_equipped le on le.id = ct.id",
+            "$v080_slot_migration$;",
+        ]
+        if all(item in technique_migration for item in fixed_expectations):
+            report.ok("V0.8.0 已采用 v080_legacy_equipped 作用域修正版")
+        else:
+            report.fail("V0.8.0 仍可能包含 v080_legacy_equipped 作用域缺陷")
+
+        lower_technique = technique_migration.lower()
+        dangerous_technique = lower_technique.replace("drop table if exists v080_legacy_equipped;", "")
+        if lower_technique.lstrip().startswith("--") and "begin;" in lower_technique and "commit;" in lower_technique and "drop table" not in dangerous_technique:
+            report.ok("V0.8.0 迁移使用事务，且仅清理本次临时表")
         else:
             report.fail("V0.8.0 迁移事务或数据安全检查失败")
+
+        cave_migration_path = root / "database/V0.9.0/202607240015_cave_management.sql"
+        cave_migration = read_text(cave_migration_path, report)
+        cave_sql_expectations = [
+            "raise exception 'V080_FIXED_REQUIRED'",
+            "create table if not exists public.cave_system_settings",
+            "create table if not exists public.cave_resource_definitions",
+            "create table if not exists public.cave_building_definitions",
+            "create table if not exists public.cave_recipe_definitions",
+            "create table if not exists public.lineage_caves",
+            "create table if not exists public.lineage_cave_resources",
+            "create table if not exists public.lineage_cave_buildings",
+            "create table if not exists public.lineage_alchemy_batches",
+            "create or replace function public.initialize_lineage_cave_v1()",
+            "create or replace function public.settle_cave_production_v1()",
+            "create or replace function public.cave_add_inventory_item_v1(",
+            "create or replace function public.get_cave_system_v1()",
+            "create or replace function public.upgrade_cave_building_v1(",
+            "create or replace function public.start_alchemy_v1(",
+            "create or replace function public.claim_alchemy_v1()",
+            "offline_cap_hours integer not null default 72",
+            "cave_persists_across_reincarnation",
+            "commit;",
+        ]
+        if all(item in cave_migration for item in cave_sql_expectations):
+            report.ok("V0.9.0 数据库迁移包含道统洞府、挂机资源、建筑与炼丹")
+        else:
+            report.fail("V0.9.0 数据库迁移内容不完整")
+        lower_cave = cave_migration.lower()
+        if lower_cave.lstrip().startswith("--") and "begin;" in lower_cave and "commit;" in lower_cave and "drop table" not in lower_cave and "delete from public.player_characters" not in lower_cave:
+            report.ok("V0.9.0 迁移使用事务且未包含删表或删除角色操作")
+        else:
+            report.fail("V0.9.0 迁移事务或数据安全检查失败")
+
+        cave_check = read_text(root / "database/V0.9.0/202607240015_check.sql", report)
+        if all(item in cave_check for item in ("v090_new_table_count", "v090_new_function_count", "output_item_exists", "public_table_count", "public_function_count")):
+            report.ok("V0.9.0 提供只读检查SQL并覆盖配方物品绑定与总基线")
+        else:
+            report.fail("V0.9.0 检查SQL内容不完整")
 
     sw = read_text(root / "sw.js", report)
     if "url.hostname.endsWith('.supabase.co')" in sw and "return;" in sw:
@@ -365,6 +432,10 @@ def verify_archive(path: Path, config: dict, report: Report) -> None:
                 report.ok(f"{path.name} 包含 V0.8.0 功法体系 V2 前端")
             else:
                 report.fail(f"{path.name} 未包含完整的 V0.8.0 功法体系 V2 前端")
+            if all(item in app for item in ("rpc/get_cave_system_v1", "rpc/upgrade_cave_building_v1", "rpc/start_alchemy_v1", "rpc/claim_alchemy_v1", "道统洞府")):
+                report.ok(f"{path.name} 包含 V0.9.0 洞府经营前端")
+            else:
+                report.fail(f"{path.name} 未包含完整的 V0.9.0 洞府经营前端")
             report.ok(f"{path.name} ZIP 完整性通过，SHA256={sha256(path)}")
     except Exception as exc:
         report.fail(f"无法检查 {path.name}：{exc}")

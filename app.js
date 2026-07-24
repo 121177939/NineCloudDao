@@ -73,8 +73,10 @@
     opportunityPollTimer: null,
     opportunityCountdownTimer: null,
     opportunitySyncing: false,
-    supplyStatus: null,
-    supplyCountdownTimer: null,
+    caveSystem: null,
+    caveCountdownTimer: null,
+    caveSyncTimer: null,
+    caveSyncing: false,
     techniqueSystem: null,
     techniqueSyncTimer: null,
     techniqueSyncing: false,
@@ -163,6 +165,22 @@
     if (raw.includes('MAIN_TECHNIQUE_SLOT_ONLY')) return '主修功法只能放入主修槽。';
     if (raw.includes('SUPPORT_TECHNIQUE_SLOT_ONLY')) return '这门功法只能放入辅修槽。';
     if (raw.includes('INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法提升功法。';
+    if (raw.includes('V080_FIXED_REQUIRED')) return 'V0.8.0 功法修正版尚未成功部署，请先执行修正版 SQL 并通过检查。';
+    if (raw.includes('CAVE_SETTINGS_MISSING')) return '洞府配置缺失，请重新执行 V0.9.0 数据库升级。';
+    if (raw.includes('CAVE_BUILDING_NOT_FOUND')) return '没有找到这座洞府建筑。';
+    if (raw.includes('CAVE_BUILDING_MAX_LEVEL')) return '这座洞府建筑已经达到当前最高等级。';
+    if (raw.includes('CAVE_INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法扩建洞府。';
+    if (raw.includes('CAVE_INSUFFICIENT_QI')) return '灵蕴不足，请等待灵脉继续凝聚。';
+    if (raw.includes('CAVE_INSUFFICIENT_HERB')) return '灵草不足，请等待灵田继续生长。';
+    if (raw.includes('CAVE_INSUFFICIENT_ORE')) return '灵矿不足，请等待矿室继续开采。';
+    if (raw.includes('ALCHEMY_DISABLED')) return '炼丹系统目前处于暂停状态。';
+    if (raw.includes('INVALID_ALCHEMY_BATCH_COUNT')) return '炼丹份数无效，请选择允许的份数。';
+    if (raw.includes('ALCHEMY_RECIPE_NOT_FOUND')) return '没有找到这张丹方。';
+    if (raw.includes('ALCHEMY_FURNACE_LEVEL_REQUIRED')) return '丹炉等级不足，尚未掌握这张丹方。';
+    if (raw.includes('ALCHEMY_BATCH_ALREADY_ACTIVE')) return '丹炉中已有一炉丹药，出炉并领取后才能再次开炉。';
+    if (raw.includes('ALCHEMY_OUTPUT_ITEM_MISSING')) return '丹方对应的物品定义缺失，请检查聚气丹、聚灵香或悟道茶配置。';
+    if (raw.includes('ALCHEMY_BATCH_NOT_FOUND')) return '当前没有可以领取的炼丹批次。';
+    if (raw.includes('ALCHEMY_NOT_READY')) return '丹药尚未炼成，请等待倒计时结束。';
     if (lower.includes('could not find the function') || raw.includes('PGRST202')) return '数据库功能尚未升级到当前版本，请执行游戏包内最新 SQL。';
     if (raw.includes('Failed to fetch')) return '无法连接云端数据库，请检查网络或 Supabase 项目状态。';
     return raw;
@@ -211,18 +229,21 @@
     if (state.cultivationSyncTimer) clearInterval(state.cultivationSyncTimer);
     if (state.opportunityPollTimer) clearInterval(state.opportunityPollTimer);
     if (state.opportunityCountdownTimer) clearInterval(state.opportunityCountdownTimer);
-    if (state.supplyCountdownTimer) clearInterval(state.supplyCountdownTimer);
+    if (state.caveCountdownTimer) clearInterval(state.caveCountdownTimer);
+    if (state.caveSyncTimer) clearInterval(state.caveSyncTimer);
     if (state.techniqueSyncTimer) clearInterval(state.techniqueSyncTimer);
     if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.cultivationTicker = null;
     state.cultivationSyncTimer = null;
     state.opportunityPollTimer = null;
     state.opportunityCountdownTimer = null;
-    state.supplyCountdownTimer = null;
+    state.caveCountdownTimer = null;
+    state.caveSyncTimer = null;
     state.techniqueSyncTimer = null;
     state.gameSessionHeartbeatTimer = null;
     state.cultivationSyncing = false;
     state.opportunitySyncing = false;
+    state.caveSyncing = false;
     state.techniqueSyncing = false;
   }
 
@@ -240,7 +261,7 @@
     state.breakthroughStatus = null;
     state.opportunityStatus = null;
     state.opportunitySyncing = false;
-    state.supplyStatus = null;
+    state.caveSystem = null;
     state.techniqueSystem = null;
     state.timeStatus = null;
     state.timeStatusStartedAt = 0;
@@ -537,26 +558,42 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcGetDailySupplyStatus() {
-    const result = await restFetch('rpc/get_daily_supply_status_v1', {
-      method: 'POST',
-      body: {}
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-  async function rpcClaimDailySupply() {
-    const result = await restFetch('rpc/claim_daily_supply_v1', {
-      method: 'POST',
-      body: {}
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
   async function rpcUseInventoryItem(inventoryId) {
     const result = await restFetch('rpc/use_inventory_item_v1', {
       method: 'POST',
       body: { p_inventory_id: inventoryId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetCaveSystemV1() {
+    const result = await restFetch('rpc/get_cave_system_v1', {
+      method: 'POST',
+      body: {}
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcUpgradeCaveBuildingV1(buildingCode) {
+    const result = await restFetch('rpc/upgrade_cave_building_v1', {
+      method: 'POST',
+      body: { p_building_code: buildingCode }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcStartAlchemyV1(recipeCode, batchCount = 1) {
+    const result = await restFetch('rpc/start_alchemy_v1', {
+      method: 'POST',
+      body: { p_recipe_code: recipeCode, p_batch_count: Number(batchCount || 1) }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcClaimAlchemyV1() {
+    const result = await restFetch('rpc/claim_alchemy_v1', {
+      method: 'POST',
+      body: {}
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -1441,18 +1478,25 @@
     }
   }
 
-  async function refreshSupplyStatus() {
-    if (!state.character) return;
+  async function refreshCaveSystem(rebind = true) {
+    if (!state.character || state.caveSyncing) return state.caveSystem;
+    state.caveSyncing = true;
     try {
-      state.supplyStatus = await rpcGetDailySupplyStatus();
-      const screen = document.querySelector('[data-mobile-screen="inventory"]');
-      if (screen && state.details) {
-        const card = screen.querySelector('.supply-card');
-        if (card) card.outerHTML = supplyPanelHtml(state.supplyStatus);
-        bindInventoryTechniqueActions();
+      const system = await rpcGetCaveSystemV1();
+      if (!system || system.status !== 'ok') return system;
+      state.caveSystem = system;
+      if (state.details) state.details.caveSystem = system;
+      const root = document.getElementById('caveSystemRoot');
+      if (root && state.details) {
+        root.outerHTML = cavePanelHtml(system, state.details.inventory || []);
+        if (rebind) bindInventoryTechniqueActions();
       }
+      return system;
     } catch (error) {
       console.error(error);
+      return null;
+    } finally {
+      state.caveSyncing = false;
     }
   }
 
@@ -1701,27 +1745,35 @@
     `;
   }
 
-  function supplyPanelHtml(status) {
-    const canClaim = Boolean(status?.can_claim);
-    const seconds = Number(status?.seconds_until_next || 0);
-    return `
-      <article class="supply-card">
-        <div>
-          <span>洞府灵脉每日产出</span>
-          <strong>${canClaim ? '补给已经成熟' : '灵脉正在凝聚'}</strong>
-          <p>固定获得灵石 200、聚气丹 1；另有概率获得聚灵香。</p>
-        </div>
-        <button id="claimSupplyBtn" class="${canClaim ? 'primary-btn' : 'ghost-btn'}" type="button" ${canClaim ? '' : 'disabled'}>
-          ${canClaim ? '领取补给' : `<span id="supplyCountdown">${formatDuration(seconds)}</span>`}
-        </button>
-      </article>
-    `;
+  function caveResourceName(code) {
+    const map = { cave_qi: '灵蕴', spirit_herb: '灵草', spirit_ore: '灵矿', spirit_stone: '灵石' };
+    return map[code] || code || '资源';
   }
 
-  function inventoryPanelHtml(inventory, supplyStatus) {
+  function caveCostText(costs) {
+    const order = ['spirit_stone', 'cave_qi', 'spirit_herb', 'spirit_ore'];
+    const parts = order
+      .map(code => [code, Number(costs?.[code] || 0)])
+      .filter(([, value]) => value > 0)
+      .map(([code, value]) => `${caveResourceName(code)} ${formatNumber(value)}`);
+    return parts.join(' · ') || '无需材料';
+  }
+
+  function caveResourceMap(system) {
+    return new Map((system?.resources || []).map(row => [row.code, Number(row.quantity || 0)]));
+  }
+
+  function caveCanAfford(system, costs) {
+    const resources = caveResourceMap(system);
+    if (Number(system?.spirit_stones || 0) < Number(costs?.spirit_stone || 0)) return false;
+    return ['cave_qi', 'spirit_herb', 'spirit_ore']
+      .every(code => Number(resources.get(code) || 0) >= Number(costs?.[code] || 0));
+  }
+
+  function inventoryGridHtml(inventory) {
     const items = inventory || [];
     return `
-      ${supplyPanelHtml(supplyStatus)}
+      <div class="subsection-title"><strong>储物袋</strong><span>${formatNumber(items.length)} 类物品</span></div>
       <div class="inventory-grid">
         ${items.length ? items.map(row => {
           const definition = row.definition || {};
@@ -1743,43 +1795,172 @@
     `;
   }
 
-  function updateSupplyCountdown() {
-    const status = state.supplyStatus;
-    if (!status || status.can_claim) return;
-    const target = status.next_claim_at ? new Date(status.next_claim_at).getTime() : 0;
-    const seconds = target ? Math.max(0, Math.ceil((target - Date.now()) / 1000)) : Math.max(0, Number(status.seconds_until_next || 0));
-    const label = document.getElementById('supplyCountdown');
-    if (label) label.textContent = seconds > 0 ? formatDuration(seconds) : '可以领取';
-    if (seconds <= 0) {
-      state.supplyStatus = { ...status, can_claim: true, seconds_until_next: 0 };
-      const inventoryScreen = document.querySelector('[data-mobile-screen="inventory"]');
-      if (inventoryScreen && state.details) {
-        inventoryScreen.querySelector('.supply-card')?.remove();
-        inventoryScreen.insertAdjacentHTML('afterbegin', supplyPanelHtml(state.supplyStatus));
-        bindInventoryTechniqueActions();
-      }
-    }
+  function cavePanelHtml(system, inventory) {
+    const resources = Array.isArray(system?.resources) ? system.resources : [];
+    const buildings = Array.isArray(system?.buildings) ? system.buildings : [];
+    const recipes = Array.isArray(system?.recipes) ? system.recipes : [];
+    const batch = system?.active_batch || null;
+    const maxBatch = Math.max(1, Number(system?.rules?.max_batch_count || 10));
+    const batchReady = batch?.status === 'ready' || Number(batch?.seconds_remaining || 0) <= 0;
+    return `
+      <div id="caveSystemRoot" class="cave-system-root">
+        <div class="cave-headline">
+          <div>
+            <span>道统洞府 · 跨世保留</span>
+            <strong>灵脉自行运转，离线最多结算 ${formatNumber(system?.rules?.offline_cap_hours || 72)} 小时</strong>
+          </div>
+          <div class="resource-inline"><span>可用灵石</span><strong>${formatNumber(system?.spirit_stones || 0)}</strong></div>
+        </div>
+
+        <div class="cave-resource-grid">
+          ${resources.map(row => {
+            const percent = Number(row.capacity || 0) > 0 ? Math.min(100, Number(row.quantity || 0) / Number(row.capacity) * 100) : 0;
+            return `<article class="cave-resource-card">
+              <span>${escapeHtml(row.name)}</span>
+              <strong>${formatNumber(row.quantity)} <small>/ ${formatNumber(row.capacity)}</small></strong>
+              <p>${escapeHtml(row.description || '')}</p>
+              <div class="progress-track cave-progress"><div class="progress-fill" style="width:${percent}%"></div></div>
+            </article>`;
+          }).join('')}
+        </div>
+
+        <div class="subsection-title"><strong>洞府建筑</strong><span>升级费用按当前等级²增长</span></div>
+        <div class="cave-building-grid">
+          ${buildings.map(row => {
+            const maxed = Number(row.level || 1) >= Number(row.max_level || 10);
+            const affordable = caveCanAfford(system, row.next_costs || {});
+            const output = row.output_resource_code
+              ? `产出 ${caveResourceName(row.output_resource_code)} ${formatNumber(row.rate_per_hour, 2)}/现实小时`
+              : row.code === 'warehouse'
+                ? `单项容量 ${formatNumber(row.capacity || 0)}`
+                : row.code === 'alchemy_furnace'
+                  ? `炼丹耗时缩短 ${formatNumber(Math.min(65, Math.max(0, (Number(row.level || 1) - 1) * 6)))}%`
+                  : '功能建筑';
+            return `<article class="cave-building-card">
+              <div class="manage-card-head">
+                <div><span>${escapeHtml(output)}</span><strong>${escapeHtml(row.name)} <small>Lv.${formatNumber(row.level)}/${formatNumber(row.max_level)}</small></strong></div>
+                <span class="badge">${maxed ? '已满级' : '可扩建'}</span>
+              </div>
+              <p>${escapeHtml(row.description || '')}</p>
+              <small class="cave-cost">${maxed ? '建筑已达到当前版本上限' : `下级消耗：${escapeHtml(caveCostText(row.next_costs || {}))}`}</small>
+              <button class="${affordable && !maxed ? 'primary-btn' : 'ghost-btn'}" type="button"
+                data-upgrade-cave="${escapeHtml(row.code)}" ${maxed || !affordable ? 'disabled' : ''}>${maxed ? '已满级' : affordable ? '扩建' : '资源不足'}</button>
+            </article>`;
+          }).join('')}
+        </div>
+
+        <div class="subsection-title"><strong>炼丹</strong><span>同一时间只能炼制一炉</span></div>
+        ${batch ? `<article class="alchemy-active-card ${batchReady ? 'ready' : ''}">
+          <div>
+            <span>${batchReady ? '丹成待取' : '炉火运转中'}</span>
+            <strong>${escapeHtml(batch.recipe_name || '未知丹方')} × ${formatNumber(batch.batch_count || 1)} 炉</strong>
+            <p>${batchReady ? '丹药已经炼成，可立即收入储物袋。' : `剩余 <b id="alchemyCountdown">${formatDuration(batch.seconds_remaining || 0)}</b>`}</p>
+          </div>
+          <button id="claimAlchemyBtn" class="${batchReady ? 'primary-btn' : 'ghost-btn'}" type="button" ${batchReady ? '' : 'disabled'}>${batchReady ? '开炉取丹' : '炼制中'}</button>
+        </article>` : `<div class="cave-recipe-grid">
+          ${recipes.map(row => {
+            const unlocked = Boolean(row.furnace_unlocked);
+            const available = Boolean(row.output_item_available);
+            const baseCosts = row.resource_costs || {};
+            return `<article class="alchemy-recipe-card ${unlocked && available ? '' : 'locked'}">
+              <div class="manage-card-head">
+                <div><span>丹炉 Lv.${formatNumber(row.required_furnace_level)} 解锁</span><strong>${escapeHtml(row.name)}</strong></div>
+                <span class="badge">${formatDuration(row.duration_seconds || 0)}/炉</span>
+              </div>
+              <p>${escapeHtml(row.description || '')}</p>
+              <small>单炉材料：${escapeHtml(caveCostText(baseCosts))} · 产出 ${escapeHtml(row.resolved_output_name || row.output_item_name)} × ${formatNumber(row.output_quantity)}</small>
+              <div class="alchemy-actions">
+                <select data-alchemy-count="${escapeHtml(row.code)}" ${unlocked && available ? '' : 'disabled'}>
+                  ${Array.from({ length: maxBatch }, (_, index) => index + 1).map(count => `<option value="${count}">${count} 炉</option>`).join('')}
+                </select>
+                <button class="primary-btn" type="button" data-start-alchemy="${escapeHtml(row.code)}" ${unlocked && available ? '' : 'disabled'}>${!available ? '物品配置缺失' : !unlocked ? '丹炉等级不足' : '开炉炼制'}</button>
+              </div>
+            </article>`;
+          }).join('')}
+        </div>`}
+
+        ${inventoryGridHtml(inventory)}
+      </div>
+    `;
+  }
+
+  function updateCaveCountdown() {
+    const batch = state.caveSystem?.active_batch;
+    if (!batch || batch.status === 'ready') return;
+    const target = batch.ready_at ? new Date(batch.ready_at).getTime() : 0;
+    const seconds = target ? Math.max(0, Math.ceil((target - Date.now()) / 1000)) : Math.max(0, Number(batch.seconds_remaining || 0));
+    const label = document.getElementById('alchemyCountdown');
+    if (label) label.textContent = formatDuration(seconds);
+    if (seconds <= 0) refreshCaveSystem(true);
   }
 
   function bindInventoryTechniqueActions() {
-    const claimSupplyButton = document.getElementById('claimSupplyBtn');
-    if (claimSupplyButton && claimSupplyButton.dataset.bound !== '1') {
-      claimSupplyButton.dataset.bound = '1';
-      claimSupplyButton.addEventListener('click', async () => {
-        setBusy(claimSupplyButton, true, '领取中……');
+    document.querySelectorAll('[data-upgrade-cave]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '扩建中……');
         try {
-          state.activeMobileTab = 'inventory';
-          const result = await rpcClaimDailySupply();
+          state.activeMobileTab = 'cave';
+          const result = await rpcUpgradeCaveBuildingV1(button.dataset.upgradeCave);
           showResultModal({
             seal: '府',
-            title: '洞府补给已入袋',
-            message: `灵石 +${formatNumber(result?.spirit_stone || 0)}，聚气丹 +${formatNumber(result?.qi_gathering_pill || 0)}。`,
-            detail: Number(result?.spirit_incense || 0) > 0 ? '灵脉额外凝成一支聚灵香。' : '今日未凝出额外珍物。',
+            title: `洞府扩建 · ${result?.building_name || '建筑'}`,
+            message: `${result?.building_name || '建筑'}已提升至 Lv.${formatNumber(result?.level || 0)}。`,
+            detail: `消耗：${caveCostText(result?.costs || {})}`,
             success: true
           });
         } catch (error) {
           showToast(translateError(error), 'error');
-          setBusy(claimSupplyButton, false);
+          setBusy(button, false);
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-start-alchemy]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        const recipeCode = button.dataset.startAlchemy;
+        const selector = Array.from(document.querySelectorAll('[data-alchemy-count]'))
+          .find(node => node.dataset.alchemyCount === recipeCode);
+        const count = Number(selector?.value || 1);
+        setBusy(button, true, '开炉中……');
+        try {
+          state.activeMobileTab = 'cave';
+          const result = await rpcStartAlchemyV1(recipeCode, count);
+          showResultModal({
+            seal: '丹',
+            title: `开炉 · ${result?.recipe_name || '炼丹'}`,
+            message: `已投入 ${formatNumber(result?.batch_count || count)} 炉材料。`,
+            detail: `预计 ${formatDuration(result?.duration_seconds || 0)} 后炼成 ${result?.output_item_name || '丹药'} × ${formatNumber(result?.output_quantity || 0)}。`,
+            success: true
+          });
+        } catch (error) {
+          showToast(translateError(error), 'error');
+          setBusy(button, false);
+        }
+      });
+    });
+
+    const claimAlchemyButton = document.getElementById('claimAlchemyBtn');
+    if (claimAlchemyButton && claimAlchemyButton.dataset.bound !== '1') {
+      claimAlchemyButton.dataset.bound = '1';
+      claimAlchemyButton.addEventListener('click', async () => {
+        setBusy(claimAlchemyButton, true, '开炉中……');
+        try {
+          state.activeMobileTab = 'cave';
+          const result = await rpcClaimAlchemyV1();
+          showResultModal({
+            seal: '丹',
+            title: '丹成出炉',
+            message: `${result?.item_name || '丹药'} × ${formatNumber(result?.quantity_added || 0)} 已收入储物袋。`,
+            detail: `当前共有 ${formatNumber(result?.quantity_total || 0)}。`,
+            success: true
+          });
+        } catch (error) {
+          showToast(translateError(error), 'error');
+          setBusy(claimAlchemyButton, false);
         }
       });
     }
@@ -1790,7 +1971,7 @@
       button.addEventListener('click', async () => {
         setBusy(button, true, '炼化中……');
         try {
-          state.activeMobileTab = 'inventory';
+          state.activeMobileTab = 'cave';
           const result = await rpcUseInventoryItem(button.dataset.useItem);
           showResultModal({
             seal: '物',
@@ -1874,7 +2055,7 @@
     const techniqueSystem = bundle.techniqueSystem || state.techniqueSystem || { techniques: [], combinations: [], slots: {} };
     const techniques = Array.isArray(techniqueSystem.techniques) ? techniqueSystem.techniques : [];
     const inventory = bundle.inventory || [];
-    const supplyStatus = bundle.supplyStatus || state.supplyStatus || { can_claim: false, seconds_until_next: 0 };
+    const caveSystem = bundle.caveSystem || state.caveSystem || { resources: [], buildings: [], recipes: [], rules: {} };
     const activeEffects = (bundle.cultivationEffects || []).filter(row => {
       const isCurrent = !row.expires_at || new Date(row.expires_at).getTime() > Date.now();
       const isCombination = row?.metadata?.v2_kind === 'combination' || String(row?.source_key || '').startsWith('combo:');
@@ -1938,7 +2119,7 @@
           <nav class="section-nav" aria-label="游戏内容导航">
             <a href="#cultivationSection">修炼</a>
             <a href="#talentSection">功法</a>
-            <a href="#inventorySection">储物</a>
+            <a href="#inventorySection">洞府</a>
             <a href="#opportunitySection">机缘</a>
             <a href="#historySection">命书</a>
           </nav>
@@ -2013,9 +2194,9 @@
           ` : ''}
         </section>
 
-        <section id="inventorySection" class="panel info-section" data-mobile-screen="inventory">
-          <div class="panel-title"><h3>储物</h3><span class="badge">洞府资源</span></div>
-          ${inventoryPanelHtml(inventory, supplyStatus)}
+        <section id="inventorySection" class="panel info-section" data-mobile-screen="cave">
+          <div class="panel-title"><h3>洞府</h3><span class="badge">建筑 · 产出 · 炼丹</span></div>
+          ${cavePanelHtml(caveSystem, inventory)}
         </section>
 
         <section id="opportunitySection" class="double-panel-grid">
@@ -2035,7 +2216,7 @@
         <nav class="mobile-bottom-nav" aria-label="底部导航">
           <button class="mobile-tab-button ${state.activeMobileTab === 'cultivation' ? 'active' : ''}" type="button" data-mobile-tab="cultivation"><b>修</b><span>修炼</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'techniques' ? 'active' : ''}" type="button" data-mobile-tab="techniques"><b>法</b><span>功法</span></button>
-          <button class="mobile-tab-button ${state.activeMobileTab === 'inventory' ? 'active' : ''}" type="button" data-mobile-tab="inventory"><b>物</b><span>储物</span></button>
+          <button class="mobile-tab-button ${state.activeMobileTab === 'cave' ? 'active' : ''}" type="button" data-mobile-tab="cave"><b>府</b><span>洞府</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'opportunity' ? 'active' : ''}" type="button" data-mobile-tab="opportunity"><b>缘</b><span>机缘</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'history' ? 'active' : ''}" type="button" data-mobile-tab="history"><b>书</b><span>命书</span></button>
         </nav>
@@ -2055,7 +2236,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity()]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshCaveSystem(true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -2170,11 +2351,12 @@
     state.cultivationSyncTimer = setInterval(() => syncCultivation(true), 15000);
     state.opportunityPollTimer = setInterval(refreshOpportunity, 10000);
     state.opportunityCountdownTimer = setInterval(updateOpportunityCountdown, 1000);
-    state.supplyCountdownTimer = setInterval(updateSupplyCountdown, 1000);
+    state.caveCountdownTimer = setInterval(updateCaveCountdown, 1000);
+    state.caveSyncTimer = setInterval(() => refreshCaveSystem(true), 60000);
     state.techniqueSyncTimer = setInterval(() => refreshTechniqueSystem(false), 60000);
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
-    updateSupplyCountdown();
+    updateCaveCountdown();
   }
 
   function historyHtml(rows) {
@@ -2230,21 +2412,21 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, opportunityStatus, supplyStatus, techniqueSystem] = await Promise.all([
+      const [breakthroughStatus, opportunityStatus, techniqueSystem, caveSystem] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetOpportunity(),
-        rpcGetDailySupplyStatus(),
-        rpcGetTechniqueSystemV2()
+        rpcGetTechniqueSystemV2(),
+        rpcGetCaveSystemV1()
       ]);
       bundle.breakthroughStatus = breakthroughStatus;
       bundle.opportunityStatus = opportunityStatus;
-      bundle.supplyStatus = supplyStatus;
       bundle.techniqueSystem = techniqueSystem;
+      bundle.caveSystem = caveSystem;
       state.cultivationStatus = cultivationStatus;
       state.breakthroughStatus = breakthroughStatus;
       state.opportunityStatus = opportunityStatus;
-      state.supplyStatus = supplyStatus;
       state.techniqueSystem = techniqueSystem;
+      state.caveSystem = caveSystem;
       renderDashboard(bundle);
     } catch (error) {
       console.error(error);
@@ -2290,7 +2472,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshSupplyStatus(), refreshTechniqueSystem(false)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false)]);
         }
       }
     });
@@ -2306,7 +2488,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshSupplyStatus(), refreshTechniqueSystem(false)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false)]);
         }
       }
     });

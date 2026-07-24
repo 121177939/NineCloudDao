@@ -1,4 +1,4 @@
-/* Current release: Web Alpha 0.8.0 */
+/* Current release: Web Alpha 0.9.0 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -1295,4 +1295,61 @@ button, .badge, .hero-chip { max-width: 100%; }
   .combination-card p { font-size: 8px; line-height: 1.4; }
   .subsection-title strong { font-size: 11px; }
   .subsection-title span { font-size: 8px; }
+}
+
+/* Web Alpha 0.9.0 · 洞府经营 */
+.cave-system-root { display: grid; gap: 12px; }
+.cave-headline { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px; border: 1px solid rgba(206,182,126,.24); background: linear-gradient(145deg,rgba(111,155,131,.11),rgba(13,12,10,.34)); }
+.cave-headline > div:first-child { display: grid; gap: 4px; }
+.cave-headline span { color: var(--paper-muted); font-size: 10px; }
+.cave-headline strong { color: var(--gold-bright); font-size: 13px; font-weight: 500; }
+.cave-resource-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.cave-resource-card { padding: 11px; border: 1px solid var(--line); background: rgba(13,12,10,.3); display: grid; gap: 5px; }
+.cave-resource-card > span { color: var(--paper-muted); font-size: 10px; }
+.cave-resource-card > strong { color: var(--gold-bright); font-size: 18px; font-weight: 500; }
+.cave-resource-card > strong small { color: var(--paper-muted); font-size: 10px; font-weight: 400; }
+.cave-resource-card p { min-height: 31px; margin: 0; color: var(--paper-muted); font-size: 9px; line-height: 1.55; }
+.cave-progress { height: 6px; }
+.cave-building-grid, .cave-recipe-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.cave-building-card, .alchemy-recipe-card { padding: 12px; border: 1px solid var(--line); background: rgba(13,12,10,.28); display: grid; gap: 8px; }
+.cave-building-card p, .alchemy-recipe-card p { margin: 0; color: var(--paper-muted); font-size: 10px; line-height: 1.55; }
+.cave-building-card > button { justify-self: end; min-width: 86px; }
+.cave-cost, .alchemy-recipe-card > small { color: var(--paper-muted); font-size: 9px; line-height: 1.5; }
+.alchemy-recipe-card.locked { opacity: .58; }
+.alchemy-actions { display: grid; grid-template-columns: minmax(88px,.45fr) minmax(0,1fr); gap: 7px; }
+.alchemy-actions select { min-width: 0; border: 1px solid rgba(206,182,126,.28); background: rgba(8,8,7,.42); color: var(--paper); padding: 8px; }
+.alchemy-active-card { padding: 14px; border: 1px solid rgba(196,87,72,.35); background: linear-gradient(145deg,rgba(158,61,53,.1),rgba(13,12,10,.34)); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.alchemy-active-card.ready { border-color: rgba(206,182,126,.52); background: linear-gradient(145deg,rgba(201,167,95,.12),rgba(13,12,10,.34)); }
+.alchemy-active-card > div { display: grid; gap: 4px; }
+.alchemy-active-card span { color: var(--paper-muted); font-size: 10px; }
+.alchemy-active-card strong { color: var(--gold-bright); font-size: 14px; font-weight: 500; }
+.alchemy-active-card p { margin: 0; color: var(--paper-muted); font-size: 10px; }
+.alchemy-active-card p b { color: var(--paper); font-weight: 500; }
+
+@media (max-width: 600px), (min-width: 1024px) {
+  .cave-system-root { gap: 7px; }
+  .cave-headline { padding: 8px; }
+  .cave-headline span { font-size: 8px; }
+  .cave-headline strong { font-size: 10px; }
+  .cave-resource-grid { gap: 5px; }
+  .cave-resource-card { padding: 7px; gap: 3px; }
+  .cave-resource-card > span { font-size: 8px; }
+  .cave-resource-card > strong { font-size: 13px; }
+  .cave-resource-card > strong small { font-size: 7px; }
+  .cave-resource-card p { min-height: 0; font-size: 7px; line-height: 1.4; }
+  .cave-building-grid, .cave-recipe-grid { gap: 5px; }
+  .cave-building-card, .alchemy-recipe-card { padding: 7px; gap: 5px; }
+  .cave-building-card p, .alchemy-recipe-card p { font-size: 8px; }
+  .cave-cost, .alchemy-recipe-card > small { font-size: 7px; }
+  .alchemy-actions { grid-template-columns: 72px minmax(0,1fr); gap: 4px; }
+  .alchemy-actions select { padding: 5px; font-size: 8px; }
+  .alchemy-active-card { padding: 8px; }
+  .alchemy-active-card span, .alchemy-active-card p { font-size: 8px; }
+  .alchemy-active-card strong { font-size: 10px; }
+}
+
+@media (max-width: 430px) {
+  .cave-resource-grid, .cave-building-grid, .cave-recipe-grid { grid-template-columns: 1fr; }
+  .cave-headline, .alchemy-active-card { align-items: stretch; flex-direction: column; }
+  .cave-headline .resource-inline, .alchemy-active-card button { width: 100%; }
 }
