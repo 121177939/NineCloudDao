@@ -1,3 +1,4 @@
+/* Current release: Web Alpha 0.7.0 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -628,7 +629,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 }
 
 
-/* Web Alpha 0.6.6 · 所有设备统一采用紧凑手机布局 */
+/* Web Alpha 0.6.2 · 所有设备统一采用紧凑手机布局 */
 html {
   width: 100%;
   max-width: 100%;
@@ -1168,7 +1169,7 @@ button, .badge, .hero-chip { max-width: 100%; }
 }
 
 
-/* Web Alpha 0.6.6 · 电脑随窗口等比例放大 + 同名持续加成合并 */
+/* Web Alpha 0.6.5 · 电脑随窗口等比例放大 + 同名持续加成合并 */
 :root {
   --desktop-ui-scale: 1;
   --desktop-stage-width: 760px;
@@ -1200,4 +1201,47 @@ button, .badge, .hero-chip { max-width: 100%; }
     display: block;
     overflow-wrap: anywhere;
   }
+}
+
+/* V0.7.0 · 仙历、寿元与轮回 */
+.hero-copy .eyebrow b { color: var(--gold-bright); font-weight: 500; }
+.hero-chip b { color: inherit; font-weight: 500; }
+#timeCountdownText { white-space: normal; line-height: 1.35; }
+.death-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 22px; align-items: start; }
+.death-scroll, .reincarnation-panel { padding: 28px; }
+.death-scroll { text-align: center; background: linear-gradient(180deg, rgba(113,37,31,.13), rgba(13,12,10,.46)); }
+.death-seal { width: 78px; height: 78px; margin: 0 auto 16px; display: grid; place-items: center; border: 1px solid var(--red-bright); color: #e1b7a7; font-size: 34px; box-shadow: inset 0 0 28px rgba(139,45,38,.15); }
+.death-scroll h1 { margin: 10px 0 12px; color: var(--paper); font-weight: 500; }
+.death-scroll > p { margin: 0; color: var(--paper-muted); line-height: 1.85; }
+.death-stats { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 22px; }
+.death-stats > div { min-height: 78px; padding: 13px; border: 1px solid var(--line); background: rgba(13,12,10,.34); display: grid; align-content: center; gap: 5px; }
+.death-stats span { color: var(--paper-muted); font-size: 11px; }
+.death-stats strong { color: var(--gold-bright); font-size: 17px; font-weight: 500; }
+.time-law-note { margin-top: 16px; padding: 13px; border-left: 2px solid var(--gold); background: rgba(201,167,95,.07); display: grid; gap: 5px; text-align: left; }
+.time-law-note strong { color: var(--gold-bright); font-weight: 500; }
+.time-law-note span, .reincarnation-intro { color: var(--paper-muted); font-size: 12px; line-height: 1.7; }
+.reincarnation-intro { margin: 0 0 16px; }
+.legacy-choice-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 9px; }
+.legacy-choice { position: relative; cursor: pointer; }
+.legacy-choice input { position: absolute; opacity: 0; pointer-events: none; }
+.legacy-choice span { min-height: 88px; padding: 12px 8px; border: 1px solid var(--line); background: rgba(13,12,10,.3); display: grid; place-items: center; align-content: center; gap: 5px; text-align: center; transition: border-color .18s ease, background .18s ease, transform .18s ease; }
+.legacy-choice b { color: var(--paper); font-size: 13px; font-weight: 500; }
+.legacy-choice small { color: var(--paper-muted); font-size: 10px; }
+.legacy-choice input:checked + span { border-color: var(--gold); background: rgba(201,167,95,.11); transform: translateY(-1px); }
+.legacy-choice input:checked + span b { color: var(--gold-bright); }
+
+@media (max-width: 900px) {
+  .death-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .death-scroll, .reincarnation-panel { padding: 17px 12px; }
+  .death-seal { width: 58px; height: 58px; font-size: 25px; }
+  .death-stats { gap: 6px; }
+  .death-stats > div { min-height: 63px; padding: 8px 5px; }
+  .death-stats strong { font-size: 13px; }
+  .legacy-choice-grid { gap: 5px; }
+  .legacy-choice span { min-height: 75px; padding: 8px 4px; }
+  .legacy-choice b { font-size: 10px; }
+  .legacy-choice small { font-size: 8px; }
 }

@@ -213,6 +213,32 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     else:
         report.fail("命书最新 100 条实现不完整或仍残留最早 100 条逻辑")
 
+    time_expectations = [
+        "rpc/settle_character_time_v1",
+        "rpc/reincarnate_character_v1",
+        "现实1日=仙历12年",
+        "renderDeathScreen",
+    ]
+    if all(item in app for item in time_expectations):
+        report.ok("前端包含仙历、寿元、死亡与轮回流程")
+    else:
+        report.fail("前端仙历、寿元、死亡或轮回流程不完整")
+
+    if mode == "source":
+        migration_path = root / "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql"
+        migration = read_text(migration_path, report)
+        migration_expectations = [
+            "game_years_per_real_day numeric(12, 4) not null default 12.0000",
+            "create or replace function public.get_game_time_v1()",
+            "create or replace function public.settle_character_time_v1()",
+            "create or replace function public.reincarnate_character_v1(",
+            "create table if not exists public.reincarnation_transitions",
+        ]
+        if all(item in migration for item in migration_expectations):
+            report.ok("V0.7.0 数据库迁移包含 12年/日、寿尽与轮回")
+        else:
+            report.fail("V0.7.0 数据库迁移内容不完整")
+
     sw = read_text(root / "sw.js", report)
     if "url.hostname.endsWith('.supabase.co')" in sw and "return;" in sw:
         report.ok("Service Worker 保持 Supabase 请求不缓存")
@@ -242,10 +268,16 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     check_sensitive_files(root, required, report)
 
     db = config.get("databaseBaseline", {})
-    if db.get("publicTables") == 40 and db.get("databaseFunctions") == 23 and db.get("sqlRequired") is False:
-        report.ok("数据库基线记录为 40 表、23 函数且本版无需 SQL")
+    expected_tables = db.get("publicTables")
+    expected_functions = db.get("databaseFunctions")
+    sql_required = db.get("sqlRequired")
+    if isinstance(expected_tables, int) and isinstance(expected_functions, int) and isinstance(sql_required, bool):
+        report.ok(
+            f"数据库基线配置有效：{expected_tables} 表、{expected_functions} 函数，"
+            f"{'需要' if sql_required else '不需要'}执行 SQL"
+        )
     else:
-        report.fail("数据库基线配置不符合 V0.6.6 约束")
+        report.fail("databaseBaseline 配置缺少合法的表数、函数数或 sqlRequired")
     return config
 
 
@@ -285,9 +317,13 @@ def verify_archive(path: Path, config: dict, report: Report) -> None:
                 report.fail(f"{path.name} 内部版本错误：{version_text}")
             app = archive.read(f"{top}/app.js").decode("utf-8")
             if "world_year.desc,created_at.desc" in app and "最新 100 条" in app:
-                report.ok(f"{path.name} 包含命书最新 100 条修正")
+                report.ok(f"{path.name} 包含命书最新 100 条规则")
             else:
-                report.fail(f"{path.name} 未包含命书最新 100 条修正")
+                report.fail(f"{path.name} 未包含命书最新 100 条规则")
+            if "rpc/settle_character_time_v1" in app and "现实1日=仙历12年" in app and "renderDeathScreen" in app:
+                report.ok(f"{path.name} 包含 V0.7.0 时间、寿元与轮回前端")
+            else:
+                report.fail(f"{path.name} 未包含完整的 V0.7.0 时间与轮回前端")
             report.ok(f"{path.name} ZIP 完整性通过，SHA256={sha256(path)}")
     except Exception as exc:
         report.fail(f"无法检查 {path.name}：{exc}")

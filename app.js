@@ -75,6 +75,10 @@
     opportunitySyncing: false,
     supplyStatus: null,
     supplyCountdownTimer: null,
+    timeStatus: null,
+    timeStatusStartedAt: 0,
+    timeSyncing: false,
+    deathHandled: false,
     gameSessionActive: false,
     gameSessionHeartbeatTimer: null,
     sessionReplacementHandled: false,
@@ -137,6 +141,12 @@
     if (raw.includes('INVALID_OPPORTUNITY_CHOICE')) return '机缘选择无效，请重新读取。';
     if (raw.includes('OPPORTUNITY_CONTENT_MISSING')) return '机缘内容尚未部署，请执行 V0.4 数据库升级。';
     if (raw.includes('SUPPLY_NOT_READY')) return '洞府补给尚未成熟，请等待倒计时结束。';
+    if (raw.includes('INVALID_LEGACY_CHOICE')) return '道统继承选择无效，请重新选择。';
+    if (raw.includes('NO_DEAD_CHARACTER_FOR_REINCARNATION')) return '没有可转世的陨落角色。';
+    if (raw.includes('CHARACTER_ALREADY_REINCARNATED')) return '这位角色的道统已经续接，不能重复转世。';
+    if (raw.includes('REINCARNATION_CHARACTER_CREATION_FAILED')) return '转世角色创建失败，请不要重复提交并联系维护。';
+    if (raw.includes('WORLD_TIME_NOT_INITIALIZED')) return '仙历时间尚未初始化，请先执行 V0.7.0 数据库升级。';
+    if (raw.includes('WORLD_NOT_FOUND')) return '九霄界配置缺失，请检查数据库世界数据。';
     if (raw.includes('INVENTORY_ITEM_NOT_FOUND')) return '储物不存在或不属于当前角色。';
     if (raw.includes('ITEM_QUANTITY_EMPTY')) return '该物品数量不足。';
     if (raw.includes('ITEM_NOT_USABLE')) return '该物品当前不能直接使用。';
@@ -221,6 +231,10 @@
     state.opportunityStatus = null;
     state.opportunitySyncing = false;
     state.supplyStatus = null;
+    state.timeStatus = null;
+    state.timeStatusStartedAt = 0;
+    state.timeSyncing = false;
+    state.deathHandled = false;
     state.gameSessionActive = false;
     state.activeMobileTab = 'cultivation';
     localStorage.removeItem(SESSION_KEY);
@@ -452,6 +466,34 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+  async function rpcGetGameTime() {
+    const result = await restFetch('rpc/get_game_time_v1', {
+      method: 'POST',
+      body: {}
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcSettleCharacterTime() {
+    const result = await restFetch('rpc/settle_character_time_v1', {
+      method: 'POST',
+      body: {}
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcReincarnateCharacter(name, gender, legacyChoice) {
+    const result = await restFetch('rpc/reincarnate_character_v1', {
+      method: 'POST',
+      body: {
+        p_name: name,
+        p_gender: gender,
+        p_legacy_choice: legacyChoice
+      }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function rpcGetOpportunity() {
     const result = await restFetch('rpc/get_opportunity_v1', {
       method: 'POST',
@@ -542,7 +584,7 @@
   async function loadCharacterBundle() {
     const character = await getOne('player_characters', {
       select: 'id,user_id,world_id,lineage_id,generation_number,name,gender,birth_year,age,realm_stage_id,cultivation,lifespan_total,lifespan_used,comprehension,luck,mindset,karma,adversity,health_status,status,created_at',
-      status: 'in.(active,secluded,missing)',
+      status: 'in.(active,secluded,missing,dead)',
       order: 'created_at.desc'
     });
     if (!character) return null;
@@ -692,7 +734,7 @@
           <p>从一介凡人开始，在灵根、命格、机缘与因果中走出自己的仙途。你的每一次选择，都会被九霄界记入史书。</p>
           <div class="world-note">
             <div><span>世界</span><strong>九霄界</strong></div>
-            <div><span>纪元</span><strong>仙历 1024 年</strong></div>
+            <div><span>时序</span><strong>现实1日 · 仙历12年</strong></div>
             <div><span>存档</span><strong>云端账号</strong></div>
           </div>
         </article>
@@ -832,10 +874,11 @@
 
   function renderCreateCharacter() {
     renderAccount();
+    const currentWorldYear = Number(state.timeStatus?.current_world_year || 1024);
     app.innerHTML = `
       <section class="create-layout">
         <article class="lore-panel">
-          <span class="eyebrow">仙历一〇二四年</span>
+          <span class="eyebrow">仙历 ${escapeHtml(currentWorldYear)} 年 · 现实1日=仙历12年</span>
           <h2>凡尘初生</h2>
           <p>九霄界灵潮渐起，山野之间异象频现。你生于凡尘，尚不知自己的灵根与命格。今日，仙门测灵石第一次为你亮起。</p>
           <div class="lore-list">
@@ -909,6 +952,119 @@
     });
   }
 
+  function renderDeathScreen(bundle, timeStatus) {
+    stopCultivationLoop();
+    state.deathHandled = true;
+    renderAccount();
+    const c = bundle?.character || {};
+    const world = bundle?.world || {};
+    const realm = bundle?.realm || {};
+    const stage = bundle?.stage || {};
+    const deathYear = timeStatus?.death_world_year || timeStatus?.current_world_year || world.current_year || '—';
+    const generation = Number(c.generation_number || timeStatus?.generation_number || 1);
+    const realmLabel = realm.code === 'mortal'
+      ? (stage.stage_name || realm.name || '凡人')
+      : `${realm.name || ''}${stage.stage_name ? ` · ${stage.stage_name}` : ''}`;
+
+    app.innerHTML = `
+      <section class="death-layout">
+        <article class="death-scroll panel">
+          <div class="death-seal">终</div>
+          <span class="eyebrow">仙历 ${escapeHtml(deathYear)} 年 · 道统第 ${escapeHtml(generation)} 世</span>
+          <h1>${escapeHtml(c.name || '此世修士')}，此生已尽</h1>
+          <p>${escapeHtml(c.name || '此世修士')}寿元耗尽，于${escapeHtml(realmLabel)}之境归于天地。旧角色已停止修炼、机缘与突破，但命书和道统仍被保留。</p>
+          <div class="death-stats">
+            <div><span>享年</span><strong>${escapeHtml(c.age || timeStatus?.character_age || '—')} 岁</strong></div>
+            <div><span>最终境界</span><strong>${escapeHtml(realmLabel)}</strong></div>
+            <div><span>陨落仙历</span><strong>${escapeHtml(deathYear)} 年</strong></div>
+            <div><span>下一世</span><strong>第 ${escapeHtml(generation + 1)} 世</strong></div>
+          </div>
+          <div class="time-law-note">
+            <strong>九霄时序</strong>
+            <span>现实 1 天推进仙历 12 年；现实 2 小时推进 1 个游戏年。</span>
+          </div>
+        </article>
+
+        <section class="reincarnation-panel panel">
+          <div class="panel-title"><h3>续接道统</h3><span class="badge">三择其一</span></div>
+          <p class="reincarnation-intro">转世会生成新的灵根与命格，并继承同一道统和世代编号。请选择一项前世遗泽。</p>
+          <form id="reincarnationForm" class="form-stack">
+            <div class="legacy-choice-grid">
+              <label class="legacy-choice">
+                <input type="radio" name="legacyChoice" value="wisdom" checked>
+                <span><b>前尘悟道</b><small>下一世悟性 +2</small></span>
+              </label>
+              <label class="legacy-choice">
+                <input type="radio" name="legacyChoice" value="fortune">
+                <span><b>气运相随</b><small>下一世气运 +2</small></span>
+              </label>
+              <label class="legacy-choice">
+                <input type="radio" name="legacyChoice" value="steadfast">
+                <span><b>道心不灭</b><small>下一世心境 +2</small></span>
+              </label>
+            </div>
+            <div class="field">
+              <label for="reincarnationName">下一世姓名</label>
+              <input id="reincarnationName" type="text" minlength="2" maxlength="12" required placeholder="2—12 个字符">
+            </div>
+            <div class="field">
+              <label>下一世性别</label>
+              <div class="gender-grid">
+                <div class="gender-option"><input id="reincarnationMale" name="reincarnationGender" type="radio" value="male"><label for="reincarnationMale">男</label></div>
+                <div class="gender-option"><input id="reincarnationFemale" name="reincarnationGender" type="radio" value="female"><label for="reincarnationFemale">女</label></div>
+                <div class="gender-option"><input id="reincarnationUnknown" name="reincarnationGender" type="radio" value="unspecified" checked><label for="reincarnationUnknown">不详</label></div>
+              </div>
+            </div>
+            <div id="reincarnationError" class="form-error"></div>
+            <button id="reincarnationSubmit" class="primary-btn full" type="submit">转世重修 · 续接第 ${escapeHtml(generation + 1)} 世</button>
+          </form>
+        </section>
+      </section>
+    `;
+
+    document.getElementById('reincarnationForm')?.addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = document.getElementById('reincarnationSubmit');
+      const errorBox = document.getElementById('reincarnationError');
+      setBusy(button, true, '轮回盘正在转动……');
+      try {
+        const name = document.getElementById('reincarnationName').value.trim();
+        const gender = document.querySelector('input[name="reincarnationGender"]:checked')?.value || 'unspecified';
+        const legacyChoice = document.querySelector('input[name="legacyChoice"]:checked')?.value || 'wisdom';
+        const result = await rpcReincarnateCharacter(name, gender, legacyChoice);
+        const choiceName = {
+          wisdom: '前尘悟道 · 悟性 +2',
+          fortune: '气运相随 · 气运 +2',
+          steadfast: '道心不灭 · 心境 +2'
+        }[legacyChoice] || '前世遗泽';
+        modalRoot.innerHTML = `
+          <div class="modal-backdrop">
+            <section class="modal" role="dialog" aria-modal="true">
+              <div class="modal-seal">轮</div>
+              <h2>${escapeHtml(name)}，第 ${escapeHtml(result?.generation_number || generation + 1)} 世已开</h2>
+              <p>前世命书归卷，新生灵光落入九霄。道统保留，灵根与命格将由天道重新判定。</p>
+              <div class="birth-result">
+                <div><span>道统世代</span><strong>第 ${escapeHtml(result?.generation_number || generation + 1)} 世</strong></div>
+                <div><span>继承遗泽</span><strong>${escapeHtml(choiceName)}</strong></div>
+              </div>
+              <button id="enterReincarnationBtn" class="primary-btn full" type="button">进入新一世</button>
+            </section>
+          </div>
+        `;
+        document.getElementById('enterReincarnationBtn')?.addEventListener('click', async () => {
+          modalRoot.innerHTML = '';
+          state.deathHandled = false;
+          await enterGame();
+        });
+      } catch (error) {
+        errorBox.textContent = translateError(error);
+        errorBox.classList.add('show');
+      } finally {
+        setBusy(button, false);
+      }
+    });
+  }
+
   function genderName(value) {
     return value === 'male' ? '男' : value === 'female' ? '女' : '不详';
   }
@@ -940,6 +1096,83 @@
     if (total < 3600) return `${Math.floor(total / 60)} 分 ${total % 60} 秒`;
     if (total < 86400) return `${Math.floor(total / 3600)} 小时 ${Math.floor((total % 3600) / 60)} 分`;
     return `${Math.floor(total / 86400)} 天 ${Math.floor((total % 86400) / 3600)} 小时`;
+  }
+
+  function formatClock(seconds) {
+    const total = Math.max(0, Math.floor(Number(seconds || 0)));
+    const hours = Math.floor(total / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    const secs = total % 60;
+    return [hours, minutes, secs].map(value => String(value).padStart(2, '0')).join(':');
+  }
+
+  function applyTimeStatus(status) {
+    if (!status) return;
+    state.timeStatus = status;
+    state.timeStatusStartedAt = Date.now();
+    if (state.character && status.character_id === state.character.id) {
+      if (status.character_age !== undefined) state.character.age = status.character_age;
+      if (status.lifespan_total !== undefined) state.character.lifespan_total = status.lifespan_total;
+      if (status.lifespan_used !== undefined) state.character.lifespan_used = status.lifespan_used;
+      if (status.character_status) state.character.status = status.character_status;
+    }
+    if (state.details?.world && status.current_world_year !== undefined) {
+      state.details.world.current_year = status.current_world_year;
+    }
+  }
+
+  function currentTimeSnapshot() {
+    const status = state.timeStatus || {};
+    const ratio = Number(status.game_years_per_real_day || 12);
+    const elapsedRealSeconds = Math.max(0, (Date.now() - Number(state.timeStatusStartedAt || Date.now())) / 1000);
+    const elapsedGameYears = elapsedRealSeconds / 86400 * ratio;
+    const exactYear = Number(status.current_world_year_exact ?? status.current_world_year ?? 0) + elapsedGameYears;
+    const baseFraction = Number(status.fractional_years || 0);
+    const characterProgress = baseFraction + elapsedGameYears;
+    const gainedWholeYears = Math.floor(characterProgress);
+    const characterAge = Number(status.character_age ?? state.character?.age ?? 0) + gainedWholeYears;
+    const lifespanUsed = Number(status.lifespan_used ?? state.character?.lifespan_used ?? 0) + gainedWholeYears;
+    const lifespanTotal = Number(status.lifespan_total ?? state.character?.lifespan_total ?? 0);
+    const secondsPerYear = Number(status.seconds_per_game_year || (86400 / Math.max(ratio, 0.0001)));
+    const yearFraction = exactYear - Math.floor(exactYear);
+    const secondsUntilNextYear = status.is_enabled === false ? null : Math.max(0, (1 - yearFraction) * secondsPerYear);
+    return {
+      exactYear,
+      currentWorldYear: Math.floor(exactYear),
+      characterAge,
+      lifespanUsed,
+      lifespanTotal,
+      lifespanRemaining: Math.max(0, lifespanTotal - lifespanUsed),
+      secondsUntilNextYear,
+      ratio
+    };
+  }
+
+  function updateGameTimeDisplay() {
+    if (!state.timeStatus) return;
+    const snapshot = currentTimeSnapshot();
+    const worldYear = document.getElementById('worldYearValue');
+    const ageValue = document.getElementById('characterAgeValue');
+    const lifespanValue = document.getElementById('lifespanRemainingValue');
+    const timeCountdown = document.getElementById('timeCountdownText');
+    if (worldYear) worldYear.textContent = snapshot.currentWorldYear;
+    if (ageValue) ageValue.textContent = snapshot.characterAge;
+    if (lifespanValue) lifespanValue.textContent = `${snapshot.lifespanRemaining} 年`;
+    if (timeCountdown) {
+      timeCountdown.textContent = state.timeStatus.is_enabled === false
+        ? '仙历已暂停'
+        : `距下一岁 ${formatClock(snapshot.secondsUntilNextYear)} · 现实1日=仙历${formatNumber(snapshot.ratio)}年`;
+    }
+    if (snapshot.lifespanRemaining <= 0 && !state.timeSyncing && state.character?.status !== 'dead') {
+      state.timeSyncing = true;
+      setTimeout(async () => {
+        try {
+          await syncCultivation(true);
+        } finally {
+          state.timeSyncing = false;
+        }
+      }, 0);
+    }
   }
 
   function effectRemainingText(effect) {
@@ -1513,11 +1746,12 @@
             <div class="hero-id">
               <div class="hero-avatar">${escapeHtml(c.name.slice(0, 1))}</div>
               <div class="hero-copy">
-                <span class="eyebrow">${escapeHtml(world.era_name || '仙历')} ${escapeHtml(world.current_year || '—')} 年 · ${escapeHtml(world.name || '九霄界')}</span>
+                <span class="eyebrow">${escapeHtml(world.era_name || '仙历')} <b id="worldYearValue">${escapeHtml(world.current_year || '—')}</b> 年 · ${escapeHtml(world.name || '九霄界')}</span>
                 <h1>${escapeHtml(c.name)}</h1>
                 <div class="hero-meta-line">
                   <span class="hero-chip realm">${escapeHtml(realmLabel)}</span>
-                  <span class="hero-chip">${escapeHtml(genderName(c.gender))} · ${escapeHtml(c.age)} 岁</span>
+                  <span class="hero-chip">${escapeHtml(genderName(c.gender))} · <b id="characterAgeValue">${escapeHtml(c.age)}</b> 岁</span>
+                  <span class="hero-chip">道统第 ${escapeHtml(c.generation_number || 1)} 世</span>
                   <span class="hero-chip">${escapeHtml(root.name || '未测灵根')}</span>
                   <span class="hero-chip">${escapeHtml(fate.name || '未定命格')}</span>
                 </div>
@@ -1537,8 +1771,8 @@
             </article>
             <article class="hud-pill">
               <span>寿元</span>
-              <strong>${escapeHtml(lifespanRemaining)} 年</strong>
-              <small>总寿元 ${escapeHtml(c.lifespan_total)}</small>
+              <strong id="lifespanRemainingValue">${escapeHtml(lifespanRemaining)} 年</strong>
+              <small id="timeCountdownText">现实1日=仙历12年</small>
             </article>
             <article class="hud-pill">
               <span>悟性</span>
@@ -1568,7 +1802,7 @@
               <div class="aura-ring">
                 <div class="aura-inner">道</div>
               </div>
-              <div class="focus-caption">洞府吐纳自行运转，在线与离线都会持续增长。</div>
+              <div class="focus-caption">洞府吐纳自行运转；仙历、年龄与寿元均由云端时间结算。</div>
             </div>
             <div class="cultivation-focus-main">
               <div class="focus-stat">
@@ -1670,9 +1904,11 @@
       manualSyncBtn.addEventListener('click', async () => {
         setBusy(manualSyncBtn, true, '同步中…');
         try {
-          await syncCultivation(false);
-          await Promise.all([refreshBreakthroughStatus(), refreshOpportunity()]);
-          showToast('已向云端同步当前修炼结果。');
+          const alive = await syncCultivation(false);
+          if (alive !== false && state.character?.status !== 'dead') {
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity()]);
+            showToast('仙历、寿元与修炼结果均已同步到云端。');
+          }
         } catch (error) {
           showToast(translateError(error), 'error');
         } finally {
@@ -1711,6 +1947,7 @@
   }
 
   function updateLiveCultivationDisplay() {
+    updateGameTimeDisplay();
     const value = document.getElementById('cultivationValue');
     if (!value || !state.cultivationStatus) return;
     const rate = Number(state.cultivationStatus.current_rate_per_second || 0);
@@ -1734,8 +1971,22 @@
     const badge = document.getElementById('cloudSaveBadge');
     if (badge) badge.textContent = '正在同步';
     try {
+      const timeStatus = await rpcSettleCharacterTime();
+      applyTimeStatus(timeStatus);
+      if (timeStatus?.status === 'dead' || timeStatus?.status === 'awaiting_reincarnation') {
+        const bundle = await loadCharacterBundle();
+        if (bundle) {
+          state.character = bundle.character;
+          state.details = bundle;
+          state.history = bundle.history;
+          applyTimeStatus(timeStatus);
+          renderDeathScreen(bundle, timeStatus);
+        }
+        return false;
+      }
+
       const result = await rpcClaimCultivation();
-      if (!result) return;
+      if (!result) return true;
       state.cultivationStatus = result;
       state.liveCultivationBase = Number(result.cultivation_total || 0);
       state.liveCultivationStartedAt = Date.now();
@@ -1753,9 +2004,12 @@
         showToast(`自动修炼获得 ${formatNumber(result.gained)} 点修为。`);
       }
       if (badge) badge.textContent = '云端已保存';
+      return true;
     } catch (error) {
       console.error(error);
       if (badge) badge.textContent = '同步稍后重试';
+      if (!silent) throw error;
+      return undefined;
     } finally {
       state.cultivationSyncing = false;
     }
@@ -1786,7 +2040,7 @@
   }
 
   async function enterGame() {
-    app.innerHTML = '<section class="loading-screen"><div class="loader-ring"></div><p>正在读取云端命书……</p></section>';
+    app.innerHTML = '<section class="loading-screen"><div class="loader-ring"></div><p>正在校准仙历与云端命书……</p></section>';
     try {
       state.user = await getCurrentUser();
       if (!state.user) {
@@ -1796,11 +2050,31 @@
       await activateGameSession(false);
       state.profile = await loadProfile();
       renderAccount();
+
+      let timeStatus = await rpcSettleCharacterTime();
+      if (timeStatus?.status === 'no_character') {
+        timeStatus = await rpcGetGameTime();
+      }
+      applyTimeStatus(timeStatus);
+
       const bundle = await loadCharacterBundle();
       if (!bundle) {
+        state.character = null;
+        state.details = null;
         renderCreateCharacter();
         return;
       }
+
+      state.character = bundle.character;
+      state.details = bundle;
+      state.history = bundle.history;
+      applyTimeStatus(timeStatus);
+
+      if (bundle.character.status === 'dead' || timeStatus?.status === 'dead' || timeStatus?.status === 'awaiting_reincarnation') {
+        renderDeathScreen(bundle, timeStatus);
+        return;
+      }
+
       const cultivationStatus = await rpcClaimCultivation();
       if (cultivationStatus) {
         bundle.cultivationStatus = cultivationStatus;
@@ -1814,9 +2088,6 @@
       bundle.breakthroughStatus = breakthroughStatus;
       bundle.opportunityStatus = opportunityStatus;
       bundle.supplyStatus = supplyStatus;
-      state.character = bundle.character;
-      state.details = bundle;
-      state.history = bundle.history;
       state.cultivationStatus = cultivationStatus;
       state.breakthroughStatus = breakthroughStatus;
       state.opportunityStatus = opportunityStatus;
@@ -1863,7 +2134,12 @@
           if (String(error?.message || '').includes('GAME_SESSION')) return handleGameSessionReplaced();
         }
       }
-      if (state.character) { syncCultivation(true); refreshOpportunity(); refreshBreakthroughStatus(); refreshSupplyStatus(); }
+      if (state.character) {
+        const alive = await syncCultivation(true);
+        if (alive !== false && state.character?.status !== 'dead') {
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshSupplyStatus()]);
+        }
+      }
     });
     window.addEventListener('focus', async () => {
       if (state.gameSessionActive) {
@@ -1874,7 +2150,12 @@
           if (String(error?.message || '').includes('GAME_SESSION')) return handleGameSessionReplaced();
         }
       }
-      if (state.character) { syncCultivation(true); refreshOpportunity(); refreshBreakthroughStatus(); refreshSupplyStatus(); }
+      if (state.character) {
+        const alive = await syncCultivation(true);
+        if (alive !== false && state.character?.status !== 'dead') {
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshSupplyStatus()]);
+        }
+      }
     });
     if (state.session?.access_token) await enterGame();
     else renderAuth();

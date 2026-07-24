@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nine-cloud-dao-v0.6.6';
+const CACHE_NAME = 'nine-cloud-dao-v0.7.0';
 const APP_SHELL = [
   './',
   './index.html',
