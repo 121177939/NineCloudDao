@@ -6,6 +6,26 @@
   const API_KEY = String(config.supabasePublishableKey || '');
   const PROJECT_REF = (() => { try { return new URL(SUPABASE_URL).hostname.split('.')[0]; } catch { return 'unknown'; } })();
   const SESSION_KEY = `nine_cloud_dao_session_${PROJECT_REF}_v1`;
+  const DEVICE_KEY = `nine_cloud_dao_device_${PROJECT_REF}_v1`;
+
+  function createUuid() {
+    if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
+      const value = Math.random() * 16 | 0;
+      const result = char === 'x' ? value : (value & 0x3 | 0x8);
+      return result.toString(16);
+    });
+  }
+
+  function getOrCreateDeviceSessionId() {
+    const existing = localStorage.getItem(DEVICE_KEY);
+    if (existing && /^[0-9a-f-]{36}$/i.test(existing)) return existing;
+    const created = createUuid();
+    localStorage.setItem(DEVICE_KEY, created);
+    return created;
+  }
+
+  const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
   const app = document.getElementById('app');
   const accountArea = document.getElementById('accountArea');
@@ -37,6 +57,9 @@
     opportunitySyncing: false,
     supplyStatus: null,
     supplyCountdownTimer: null,
+    gameSessionActive: false,
+    gameSessionHeartbeatTimer: null,
+    sessionReplacementHandled: false,
     activeMobileTab: 'cultivation'
   };
 
@@ -81,7 +104,11 @@
     if (lower.includes('email rate limit exceeded')) return '注册邮件发送过于频繁，请稍后再试。';
     if (lower.includes('signups not allowed')) return `当前云端项目（${PROJECT_REF}）禁止注册。请确认游戏连接的是你刚开启注册的 Supabase 项目。`;
     if (raw.includes('ACTIVE_CHARACTER_ALREADY_EXISTS')) return '这个账号已经拥有一位在世角色。';
+    if (raw.includes('DUPLICATE_CHARACTER_NAME')) return '这个角色姓名已经被其他修士使用，请换一个名字。';
+    if (raw.includes('EXISTING_DUPLICATE_CHARACTER_NAMES')) return '数据库中已经存在重名角色，请先处理旧数据再启用唯一姓名。';
     if (raw.includes('INVALID_CHARACTER_NAME')) return '角色姓名需要 2—12 个字符。';
+    if (raw.includes('GAME_SESSION_REPLACED')) return '该账号已在另一台设备登录，本设备已退出。';
+    if (raw.includes('GAME_SESSION_REQUIRED')) return '游戏会话尚未建立，请重新登录。';
     if (raw.includes('INVALID_GENDER')) return '性别参数无效。';
     if (raw.includes('AUTH_REQUIRED')) return '登录状态已失效，请重新登录。';
     if (raw.includes('SEED_DATA_INCOMPLETE')) return '数据库初始数据不完整，请检查阶段1部署。';
@@ -150,11 +177,13 @@
     if (state.opportunityPollTimer) clearInterval(state.opportunityPollTimer);
     if (state.opportunityCountdownTimer) clearInterval(state.opportunityCountdownTimer);
     if (state.supplyCountdownTimer) clearInterval(state.supplyCountdownTimer);
+    if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.cultivationTicker = null;
     state.cultivationSyncTimer = null;
     state.opportunityPollTimer = null;
     state.opportunityCountdownTimer = null;
     state.supplyCountdownTimer = null;
+    state.gameSessionHeartbeatTimer = null;
     state.cultivationSyncing = false;
     state.opportunitySyncing = false;
   }
@@ -174,6 +203,7 @@
     state.opportunityStatus = null;
     state.opportunitySyncing = false;
     state.supplyStatus = null;
+    state.gameSessionActive = false;
     state.activeMobileTab = 'cultivation';
     localStorage.removeItem(SESSION_KEY);
   }
@@ -241,6 +271,7 @@
       apikey: API_KEY,
       Authorization: `Bearer ${session.access_token}`,
       Accept: 'application/json',
+      'X-Game-Session-Id': GAME_SESSION_ID,
       ...(options.headers || {})
     };
     if (options.body !== undefined) headers['Content-Type'] = 'application/json';
@@ -254,7 +285,15 @@
       await ensureSession();
       return restFetch(tableOrPath, { ...options, _retried: true });
     }
-    return parseResponse(response);
+    try {
+      return await parseResponse(response);
+    } catch (error) {
+      const raw = String(error?.message || '');
+      if (raw.includes('GAME_SESSION_REPLACED') || raw.includes('GAME_SESSION_REQUIRED')) {
+        setTimeout(() => handleGameSessionReplaced(), 0);
+      }
+      throw error;
+    }
   }
 
   async function signUp(email, password, displayName) {
@@ -277,6 +316,13 @@
 
   async function signOut() {
     try {
+      if (state.session?.access_token && state.gameSessionActive) {
+        await rpcReleaseGameSession();
+      }
+    } catch {
+      // 会话释放失败不阻止本地退出。
+    }
+    try {
       if (state.session?.access_token) {
         await authFetch('/logout', { method: 'POST', accessToken: state.session.access_token });
       }
@@ -284,7 +330,93 @@
       // 即使远程退出失败，也清理本地会话。
     }
     clearSession();
+    state.sessionReplacementHandled = false;
     renderAuth();
+  }
+
+  function deviceLabel() {
+    const platform = navigator.userAgentData?.platform || navigator.platform || '未知设备';
+    const viewport = `${Math.max(0, window.screen?.width || 0)}×${Math.max(0, window.screen?.height || 0)}`;
+    return `${platform} · ${viewport}`.slice(0, 120);
+  }
+
+  async function rpcClaimGameSession() {
+    const result = await restFetch('rpc/claim_game_session_v1', {
+      method: 'POST',
+      body: { p_session_id: GAME_SESSION_ID, p_device_label: deviceLabel() }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcHeartbeatGameSession() {
+    const result = await restFetch('rpc/heartbeat_game_session_v1', {
+      method: 'POST',
+      body: { p_session_id: GAME_SESSION_ID }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcReleaseGameSession() {
+    const result = await restFetch('rpc/release_game_session_v1', {
+      method: 'POST',
+      body: { p_session_id: GAME_SESSION_ID }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  function handleGameSessionReplaced() {
+    if (state.sessionReplacementHandled) return;
+    state.sessionReplacementHandled = true;
+    clearSession();
+    accountArea.innerHTML = '<span>会话已退出</span>';
+    app.innerHTML = `
+      <section class="notice-card">
+        <div class="notice-icon">!</div>
+        <h2>账号已在其他设备登录</h2>
+        <p>为了保护云端角色，同一个账号只允许一台设备在线。若要在本设备继续，请重新登录；重新登录后会自动退出另一台设备。</p>
+        <button id="sessionReloginBtn" class="primary-btn" type="button">重新登录</button>
+      </section>
+    `;
+    document.getElementById('sessionReloginBtn')?.addEventListener('click', () => {
+      state.sessionReplacementHandled = false;
+      state.authMode = 'login';
+      renderAuth();
+    });
+  }
+
+  async function activateGameSession(takeover = false) {
+    if (state.gameSessionActive) return true;
+    let status = null;
+    if (takeover) {
+      status = await rpcClaimGameSession();
+    } else {
+      status = await rpcHeartbeatGameSession();
+      if (status?.status === 'missing') status = await rpcClaimGameSession();
+    }
+    if (status?.status === 'replaced') {
+      handleGameSessionReplaced();
+      throw new Error('GAME_SESSION_REPLACED');
+    }
+    state.gameSessionActive = true;
+    state.sessionReplacementHandled = false;
+    startGameSessionHeartbeat();
+    return true;
+  }
+
+  function startGameSessionHeartbeat() {
+    if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
+    state.gameSessionHeartbeatTimer = setInterval(async () => {
+      if (!state.session?.access_token || !state.gameSessionActive) return;
+      try {
+        const status = await rpcHeartbeatGameSession();
+        if (status?.status !== 'active') handleGameSessionReplaced();
+      } catch (error) {
+        const raw = String(error?.message || '');
+        if (raw.includes('GAME_SESSION_REPLACED') || raw.includes('GAME_SESSION_REQUIRED')) {
+          handleGameSessionReplaced();
+        }
+      }
+    }, 5000);
   }
 
   async function rpcCreateCharacter(name, gender) {
@@ -623,6 +755,7 @@
           document.getElementById('loginPassword').value
         );
         saveSession(result);
+        await activateGameSession(true);
         showToast('登录成功，正在读取云端命书。');
         await enterGame();
       } catch (error) {
@@ -649,6 +782,7 @@
         const result = await signUp(email, password, document.getElementById('registerName').value.trim());
         if (result?.access_token) {
           saveSession(result);
+          await activateGameSession(true);
           showToast('注册成功，仙籍已经建立。');
           await enterGame();
         } else {
@@ -1463,15 +1597,9 @@
     if (!nav) return;
     const buttons = Array.from(nav.querySelectorAll('[data-mobile-tab]'));
     const screens = Array.from(document.querySelectorAll('[data-mobile-screen]'));
-    const media = window.matchMedia('(max-width: 600px)');
 
     const apply = (tab = state.activeMobileTab || 'cultivation', shouldScroll = false) => {
       state.activeMobileTab = tab;
-      if (!media.matches) {
-        screens.forEach(screen => screen.classList.remove('mobile-screen-hidden'));
-        buttons.forEach(button => button.classList.toggle('active', button.dataset.mobileTab === tab));
-        return;
-      }
       screens.forEach(screen => {
         screen.classList.toggle('mobile-screen-hidden', screen.dataset.mobileScreen !== tab);
       });
@@ -1486,9 +1614,6 @@
     });
 
     apply(state.activeMobileTab || 'cultivation');
-    if (typeof media.addEventListener === 'function') {
-      media.addEventListener('change', () => apply(state.activeMobileTab || 'cultivation'));
-    }
   }
 
   function updateLiveCultivationDisplay() {
@@ -1573,6 +1698,7 @@
         renderAuth();
         return;
       }
+      await activateGameSession(false);
       state.profile = await loadProfile();
       renderAccount();
       const bundle = await loadCharacterBundle();
@@ -1603,6 +1729,10 @@
       renderDashboard(bundle);
     } catch (error) {
       console.error(error);
+      if (String(error?.message || '').includes('GAME_SESSION_REPLACED') || String(error?.message || '').includes('GAME_SESSION_REQUIRED')) {
+        handleGameSessionReplaced();
+        return;
+      }
       if (error?.status === 401 || String(error?.message).includes('AUTH_REQUIRED')) {
         clearSession();
         renderAuth();
@@ -1628,10 +1758,27 @@
     }
     importSessionFromHash();
     loadStoredSession();
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && state.character) { syncCultivation(true); refreshOpportunity(); refreshBreakthroughStatus(); refreshSupplyStatus(); }
+    document.addEventListener('visibilitychange', async () => {
+      if (document.visibilityState !== 'visible') return;
+      if (state.gameSessionActive) {
+        try {
+          const status = await rpcHeartbeatGameSession();
+          if (status?.status !== 'active') return handleGameSessionReplaced();
+        } catch (error) {
+          if (String(error?.message || '').includes('GAME_SESSION')) return handleGameSessionReplaced();
+        }
+      }
+      if (state.character) { syncCultivation(true); refreshOpportunity(); refreshBreakthroughStatus(); refreshSupplyStatus(); }
     });
-    window.addEventListener('focus', () => {
+    window.addEventListener('focus', async () => {
+      if (state.gameSessionActive) {
+        try {
+          const status = await rpcHeartbeatGameSession();
+          if (status?.status !== 'active') return handleGameSessionReplaced();
+        } catch (error) {
+          if (String(error?.message || '').includes('GAME_SESSION')) return handleGameSessionReplaced();
+        }
+      }
       if (state.character) { syncCultivation(true); refreshOpportunity(); refreshBreakthroughStatus(); refreshSupplyStatus(); }
     });
     if (state.session?.access_token) await enterGame();
