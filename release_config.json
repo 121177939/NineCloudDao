@@ -1,20 +1,20 @@
 {
   "projectName": "九霄问道",
-  "version": "0.11.6",
-  "releaseLabel": "Web Alpha 0.11.6",
-  "releaseType": "规则升级：机缘趋吉/涉险正负互斥，基准50/50，机缘深厚趋吉+5个百分点",
+  "version": "0.11.7",
+  "releaseLabel": "Web Alpha 0.11.7",
+  "releaseType": "规则升级：天道动态均衡，低境界灵气福泽、主流境界大道均衡、高境界天道阻滞",
   "repository": "121177939/NineCloudDao",
   "productionUrl": "https://121177939.github.io/NineCloudDao/",
   "worldCode": "jiuxiao_world_1",
   "localPort": 8787,
-  "serviceWorkerCache": "nine-cloud-dao-v0.11.6",
+  "serviceWorkerCache": "nine-cloud-dao-v0.11.7",
   "databaseBaseline": {
     "publicTables": 75,
-    "databaseFunctions": 73,
+    "databaseFunctions": 75,
     "sqlRequired": true,
-    "migration": "database/V0.11.6/202607252300_v0116_opportunity_polarity.sql",
-    "check": "database/V0.11.6/202607252300_v0116_check.sql",
-    "prerequisite": "V0.11.5 FINAL 已部署并通过检查；V0.11.6只执行本版本新增迁移SQL"
+    "migration": "database/V0.11.7/202607260030_v0117_heaven_balance.sql",
+    "check": "database/V0.11.7/202607260030_v0117_check.sql",
+    "prerequisite": "V0.11.6 FINAL 已部署并通过8项PASS检查；V0.11.7只执行本版本新增迁移SQL"
   },
   "gameTime": {
     "gameYearsPerRealDay": 12,
@@ -107,7 +107,23 @@
     "docs/V0.11.6_RUNTIME_MOCK_TECHNIQUES.png",
     "docs/V0.11.6_UI_CONTRACT_TEST.md",
     "docs/V0.11.6_BUILD_VERIFY_REPORT.md",
-    "docs/V0.11.6_SQL_STATIC_CHECK.md"
+    "docs/V0.11.6_SQL_STATIC_CHECK.md",
+    "database/V0.11.7/202607260030_v0117_heaven_balance.sql",
+    "database/V0.11.7/202607260030_v0117_check.sql",
+    "database/V0.11.7/202607260030_v0117_emergency_disable.sql",
+    "database/V0.11.7/202607260030_v0117_resume.sql",
+    "database/V0.11.7/202607260030_v0117_rollback.sql",
+    "docs/V0.11.7_FINAL_RULES.md",
+    "docs/V0.11.7_DEPLOYMENT_GUIDE.md",
+    "docs/V0.11.7_REAL_DEVICE_TEST_CHECKLIST.md",
+    "docs/V0.11.7_BUILD_VERIFY_REPORT.md",
+    "docs/V0.11.7_SQL_STATIC_CHECK.md",
+    "docs/V0.11.7_RUNTIME_MOCK_TEST.md",
+    "tools/audit_v0111_v0117.py",
+    "docs/V0.11.1-V0.11.7_FUNCTION_AUDIT.md",
+    "docs/V0.11.7_RUNTIME_MOCK_HEAVEN_BALANCE.png",
+    "docs/V0.11.7_RUNTIME_MOCK_RESULT.json",
+    "tools/sql_static_check_v0117.py"
   ],
   "caveSystem": {
     "persistsAcrossReincarnation": true,
@@ -248,5 +264,34 @@
     "initialPoolWeightEach": 20,
     "ownFateWeightAfterMismatch": 22,
     "persistentPity": true
+  },
+  "heavenBalance": {
+    "title": "天道动态均衡机制",
+    "mainstreamMetric": "同一世界在世修士大境界序号算术平均值四舍五入",
+    "livingStatuses": [
+      "active",
+      "secluded",
+      "missing"
+    ],
+    "realmGapDefinition": "玩家大境界序号 - 全服主流大境界序号",
+    "coefficients": {
+      "<=-5": 5.0,
+      "-4": 4.0,
+      "-3": 3.0,
+      "-2": 2.0,
+      "-1": 1.2,
+      "0": 1.0,
+      "1": 0.8,
+      "2": 0.6,
+      ">=3": 0.5
+    },
+    "states": {
+      "negativeGap": "天道福泽",
+      "zeroGap": "大道均衡",
+      "positiveGap": "天道阻滞"
+    },
+    "calculation": "固定修炼收益按原规则计算 + 灵气环境基础值 × 天道系数",
+    "appliesOnlyTo": "灵气环境收益",
+    "rpc": "get_heaven_balance_v1"
   }
 }

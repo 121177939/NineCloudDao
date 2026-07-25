@@ -80,6 +80,9 @@
     caveSyncing: false,
     techniqueSystem: null,
     exclusiveTechniqueSystem: null,
+    heavenBalance: null,
+    heavenBalanceSyncTimer: null,
+    heavenBalanceSyncing: false,
     techniqueSyncTimer: null,
     techniqueSyncing: false,
     destinyRanking: null,
@@ -291,6 +294,7 @@
     if (state.caveCountdownTimer) clearInterval(state.caveCountdownTimer);
     if (state.caveSyncTimer) clearInterval(state.caveSyncTimer);
     if (state.techniqueSyncTimer) clearInterval(state.techniqueSyncTimer);
+    if (state.heavenBalanceSyncTimer) clearInterval(state.heavenBalanceSyncTimer);
     if (state.destinyRankingSyncTimer) clearInterval(state.destinyRankingSyncTimer);
     if (state.npcSocialSyncTimer) clearInterval(state.npcSocialSyncTimer);
     if (state.sectSystemSyncTimer) clearInterval(state.sectSystemSyncTimer);
@@ -302,6 +306,7 @@
     state.caveCountdownTimer = null;
     state.caveSyncTimer = null;
     state.techniqueSyncTimer = null;
+    state.heavenBalanceSyncTimer = null;
     state.destinyRankingSyncTimer = null;
     state.npcSocialSyncTimer = null;
     state.sectSystemSyncTimer = null;
@@ -310,6 +315,7 @@
     state.opportunitySyncing = false;
     state.caveSyncing = false;
     state.techniqueSyncing = false;
+    state.heavenBalanceSyncing = false;
     state.destinyRankingSyncing = false;
     state.npcSocialSyncing = false;
     state.sectSystemSyncing = false;
@@ -333,6 +339,7 @@
     state.caveSystem = null;
     state.techniqueSystem = null;
     state.exclusiveTechniqueSystem = null;
+    state.heavenBalance = null;
     state.destinyRanking = null;
     state.destinyRankingFetchedAt = 0;
     state.npcSocial = null;
@@ -568,6 +575,14 @@
 
   async function rpcClaimCultivation() {
     const result = await restFetch('rpc/claim_cultivation_v1', {
+      method: 'POST',
+      body: {}
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetHeavenBalanceV1() {
+    const result = await restFetch('rpc/get_heaven_balance_v1', {
       method: 'POST',
       body: {}
     });
@@ -1467,6 +1482,156 @@
   function latestOpportunityResult(opportunity) {
     if (!opportunity || !opportunity.last_result || typeof opportunity.last_result !== 'object') return null;
     return opportunity.last_result;
+  }
+
+  function normalizeHeavenBalance(balance, cultivation = state.cultivationStatus || {}) {
+    if (balance && balance.status && balance.status !== 'unavailable') return balance;
+    const coefficient = Number(cultivation.qi_multiplier || 1);
+    const statusCode = coefficient > 1 ? 'heavenly_blessing' : coefficient < 1 ? 'heaven_obstruction' : 'dao_balance';
+    const statusName = statusCode === 'heavenly_blessing' ? '天道福泽' : statusCode === 'heaven_obstruction' ? '天道阻滞' : '大道均衡';
+    return {
+      status: 'fallback',
+      status_code: statusCode,
+      status_name: statusName,
+      reason_label: statusCode === 'heavenly_blessing'
+        ? '低修为，拥有灵气加成'
+        : statusCode === 'heaven_obstruction'
+          ? '高修为，灵气收益衰减'
+          : '修为贴近全服平均，无加成无压制',
+      coefficient,
+      world_qi_base: 1,
+      qi_gain_per_second: coefficient,
+      player_realm_name: state.details?.realm?.name || '当前境界',
+      mainstream_realm_name: '全服主流境界',
+      realm_gap: 0,
+      active_population: 0
+    };
+  }
+
+  function heavenBalanceCopy(balance) {
+    const code = balance?.status_code || 'dao_balance';
+    if (code === 'heavenly_blessing') {
+      return {
+        title: '天道福泽触发',
+        paragraphs: [
+          '冥冥天道有感世间修士修为失衡，大道运转趋于不均。',
+          '汝境界尚低于天下主流修士，天地灵气流露眷顾，降下天道福泽。',
+          '吸纳灵气之时感悟倍增，修行速度获得增幅。'
+        ]
+      };
+    }
+    if (code === 'heaven_obstruction') {
+      return {
+        title: '天道阻滞触发',
+        paragraphs: [
+          '大道有序，不允修士无限凌驾众生。',
+          '汝境界远超世间主流修士，引动天地制衡，受天道阻滞。',
+          '感悟大道愈发艰难，吸纳灵气效率受到限制。'
+        ]
+      };
+    }
+    return {
+      title: '大道均衡',
+      paragraphs: [
+        '天道循环，大道均衡。',
+        '汝修为与世间主流修士相近，不受福泽加持，亦无天道桎梏。',
+        '吸纳灵气遵循常道，修行平稳有序。'
+      ]
+    };
+  }
+
+  function heavenBalanceModalHtml(rawBalance) {
+    const balance = normalizeHeavenBalance(rawBalance);
+    const copy = heavenBalanceCopy(balance);
+    const coefficient = Number(balance.coefficient || 1);
+    const qiBase = Number(balance.world_qi_base || 1);
+    const qiGain = Number(balance.qi_gain_per_second ?? qiBase * coefficient);
+    const code = escapeHtml(balance.status_code || 'dao_balance');
+    return `
+      <div class="heaven-balance-dialog state-${code}">
+        <div class="heaven-balance-seal">道</div>
+        <span class="eyebrow">九霄天道 · 动态均衡</span>
+        <h2 id="heavenBalanceModalTitle">${escapeHtml(copy.title)}</h2>
+        <strong class="heaven-balance-reason">${escapeHtml(balance.reason_label || '')}</strong>
+        <div class="heaven-balance-lore">
+          ${copy.paragraphs.map(text => `<p>${escapeHtml(text)}</p>`).join('')}
+        </div>
+        <div class="heaven-balance-current">
+          <span>当前灵气效率</span>
+          <strong>×${formatNumber(coefficient, 1)}</strong>
+          <small>灵气环境 ${formatNumber(qiBase, 2)} × 天道系数 ${formatNumber(coefficient, 1)} = 每秒灵气收益 +${formatNumber(qiGain, 2)}</small>
+        </div>
+        <div class="heaven-balance-meta">
+          <div><span>你的境界</span><strong>${escapeHtml(balance.player_realm_name || '未知')}</strong></div>
+          <div><span>全服主流境界</span><strong>${escapeHtml(balance.mainstream_realm_name || '未知')}</strong></div>
+          <div><span>境界差</span><strong>${Number(balance.realm_gap || 0) > 0 ? '+' : ''}${formatNumber(balance.realm_gap || 0, 0)}</strong></div>
+          <div><span>统计修士</span><strong>${formatNumber(balance.active_population || 0, 0)} 人</strong></div>
+        </div>
+        <div class="heaven-balance-rule-table" aria-label="天道动态均衡系数规则">
+          <div><span>低于主流5境及以上</span><strong>×5.0</strong></div>
+          <div><span>低4境</span><strong>×4.0</strong></div>
+          <div><span>低3境</span><strong>×3.0</strong></div>
+          <div><span>低2境</span><strong>×2.0</strong></div>
+          <div><span>低1境</span><strong>×1.2</strong></div>
+          <div><span>贴近主流</span><strong>×1.0</strong></div>
+          <div><span>高1境</span><strong>×0.8</strong></div>
+          <div><span>高2境</span><strong>×0.6</strong></div>
+          <div><span>高3境及以上</span><strong>×0.5</strong></div>
+        </div>
+        <p class="heaven-balance-note">天道系数只调整“灵气环境”收益，不会把功法、机缘及其他固定修为整体重复乘算。</p>
+      </div>
+    `;
+  }
+
+  function openHeavenBalanceModal() {
+    modalRoot.innerHTML = `
+      <div id="heavenBalanceModalBackdrop" class="modal-backdrop heaven-balance-modal-backdrop">
+        <section class="modal heaven-balance-modal" role="dialog" aria-modal="true" aria-labelledby="heavenBalanceModalTitle">
+          <button id="closeHeavenBalanceModalBtn" class="modal-close-button" type="button" aria-label="关闭天道规则窗口">×</button>
+          <div id="heavenBalanceModalBody">${heavenBalanceModalHtml(state.heavenBalance)}</div>
+        </section>
+      </div>
+    `;
+    const close = () => { modalRoot.innerHTML = ''; };
+    document.getElementById('closeHeavenBalanceModalBtn')?.addEventListener('click', close);
+    document.getElementById('heavenBalanceModalBackdrop')?.addEventListener('click', event => {
+      if (event.target?.id === 'heavenBalanceModalBackdrop') close();
+    });
+  }
+
+  function bindHeavenBalanceActions() {
+    const entry = document.getElementById('heavenBalanceBtn');
+    if (!entry || entry.dataset.bound === '1') return;
+    entry.dataset.bound = '1';
+    entry.addEventListener('click', openHeavenBalanceModal);
+  }
+
+  function updateHeavenBalanceEntry() {
+    const entry = document.getElementById('heavenBalanceBtn');
+    if (!entry) return;
+    const balance = normalizeHeavenBalance(state.heavenBalance);
+    const coefficient = Number(balance.coefficient || 1);
+    entry.className = `heaven-balance-entry state-${balance.status_code || 'dao_balance'}`;
+    entry.innerHTML = `<span>灵气环境（${escapeHtml(balance.status_name || '大道均衡')}）</span><strong>×${formatNumber(coefficient, 1)}</strong>`;
+    entry.setAttribute('aria-label', `查看${balance.status_name || '大道均衡'}规则，当前灵气效率${formatNumber(coefficient, 1)}倍`);
+  }
+
+  async function refreshHeavenBalance(silent = true) {
+    if (!state.character || state.heavenBalanceSyncing) return state.heavenBalance;
+    state.heavenBalanceSyncing = true;
+    try {
+      state.heavenBalance = await rpcGetHeavenBalanceV1();
+      updateHeavenBalanceEntry();
+      const modalBody = document.getElementById('heavenBalanceModalBody');
+      if (modalBody) modalBody.innerHTML = heavenBalanceModalHtml(state.heavenBalance);
+      return state.heavenBalance;
+    } catch (error) {
+      console.error(error);
+      if (!silent) showToast(translateError(error), 'error');
+      return state.heavenBalance;
+    } finally {
+      state.heavenBalanceSyncing = false;
+    }
   }
 
   function opportunityWheelHtml() {
@@ -2937,6 +3102,7 @@
     const root = bundle.spiritRoot || {};
     const fate = bundle.fate || {};
     const cultivation = bundle.cultivationStatus || state.cultivationStatus || {};
+    const heavenBalance = normalizeHeavenBalance(bundle.heavenBalance || state.heavenBalance, cultivation);
     const breakthrough = bundle.breakthroughStatus || state.breakthroughStatus || { status: 'loading' };
     const opportunity = bundle.opportunityStatus || state.opportunityStatus || { status: 'loading' };
     const rate = Number(cultivation.current_rate_per_second || 0);
@@ -3044,7 +3210,7 @@
                 <div><span>基础吐纳</span><strong>+${formatNumber(cultivation.base_rate_per_second, 3)}/秒</strong></div>
                 <div><span>功法加成</span><strong>+${formatNumber(cultivation.technique_flat_rate, 3)}/秒</strong></div>
                 <div><span>灵根倍率</span><strong>×${formatNumber(cultivation.root_multiplier || 1, 3)}</strong></div>
-                <div><span>灵气环境</span><strong>×${formatNumber(cultivation.qi_multiplier || 1, 3)}</strong></div>
+                <button id="heavenBalanceBtn" class="heaven-balance-entry state-${escapeHtml(heavenBalance.status_code || 'dao_balance')}" type="button" aria-label="查看${escapeHtml(heavenBalance.status_name || '大道均衡')}规则"><span>灵气环境（${escapeHtml(heavenBalance.status_name || '大道均衡')}）</span><strong>×${formatNumber(heavenBalance.coefficient || 1, 1)}</strong></button>
                 <div><span>命格修正</span><strong>${Number(cultivation.fate_bonus || 0) >= 0 ? '+' : ''}${formatNumber(Number(cultivation.fate_bonus || 0) * 100, 2)}%</strong></div>
                 <div><span>持续机缘</span><strong>+${formatNumber(cultivation.effect_flat_rate, 3)}/秒</strong></div>
               </div>
@@ -3054,7 +3220,7 @@
             <div><span>心境</span><strong>${escapeHtml(c.mindset)}</strong></div>
             <div><span>因果</span><strong>${escapeHtml(c.karma)}</strong></div>
             <div><span>逆境</span><strong>${escapeHtml(c.adversity)}</strong></div>
-            <div><span>天道</span><strong>${escapeHtml(world.heaven_state || 'stable')}</strong></div>
+            <div><span>天道</span><strong>${escapeHtml(heavenBalance.status_name || '大道均衡')}</strong></div>
           </div>
         </section>
 
@@ -3142,6 +3308,7 @@
     }
     bindProgressionActions();
     bindOpportunityEntryActions();
+    bindHeavenBalanceActions();
     bindInventoryTechniqueActions();
     bindExclusiveTechniqueActions();
     bindNpcSocialActions();
@@ -3156,7 +3323,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshCaveSystem(true), refreshNpcSocial(true), refreshSectSystem(true), refreshDestinyRanking(false, true)]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshSectSystem(true), refreshDestinyRanking(false, true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -3287,6 +3454,7 @@
     state.caveCountdownTimer = setInterval(updateCaveCountdown, 1000);
     state.caveSyncTimer = setInterval(() => refreshCaveSystem(true), 60000);
     state.techniqueSyncTimer = setInterval(() => refreshTechniqueSystem(false), 60000);
+    state.heavenBalanceSyncTimer = setInterval(() => refreshHeavenBalance(true), 60000);
     state.destinyRankingSyncTimer = setInterval(() => refreshDestinyRanking(false, true), 60000);
     state.npcSocialSyncTimer = setInterval(() => refreshNpcSocial(true), 60000);
     state.sectSystemSyncTimer = setInterval(() => refreshSectSystem(true), 60000);
@@ -3348,12 +3516,15 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, opportunityStatus, techniqueSystem, exclusiveTechniqueSystem, caveSystem, destinyRanking, npcSocial, sectSystem] = await Promise.all([
+      const [breakthroughStatus, opportunityStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, destinyRanking, npcSocial, sectSystem] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetOpportunity(),
         rpcGetTechniqueSystemV2(),
         rpcGetExclusiveTechniqueSystemV1().catch(error => ({
           status: 'unavailable', techniques: [], equipped_name: null, error: translateError(error)
+        })),
+        rpcGetHeavenBalanceV1().catch(error => ({
+          status: 'unavailable', error: translateError(error)
         })),
         rpcGetCaveSystemV1(),
         rpcGetDestinyRankingV1(50, 0).catch(error => ({
@@ -3370,6 +3541,7 @@
       bundle.opportunityStatus = opportunityStatus;
       bundle.techniqueSystem = techniqueSystem;
       bundle.exclusiveTechniqueSystem = exclusiveTechniqueSystem;
+      bundle.heavenBalance = heavenBalance;
       bundle.caveSystem = caveSystem;
       bundle.destinyRanking = destinyRanking;
       bundle.npcSocial = npcSocial;
@@ -3379,6 +3551,7 @@
       state.opportunityStatus = opportunityStatus;
       state.techniqueSystem = techniqueSystem;
       state.exclusiveTechniqueSystem = exclusiveTechniqueSystem;
+      state.heavenBalance = heavenBalance;
       state.caveSystem = caveSystem;
       state.destinyRanking = destinyRanking;
       state.destinyRankingFetchedAt = Date.now();
