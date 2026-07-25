@@ -299,7 +299,7 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
         'id="opportunityEntryBtn"',
         'opportunityEntryContentHtml',
         'openOpportunityModal',
-        '新机缘已自动获取',
+        '新机缘已自动结算',
         '<div class="aura-inner">机</div>',
     ]
     if all(item in app for item in opportunity_ui_expectations) and 'data-mobile-tab="opportunity"' not in app:
