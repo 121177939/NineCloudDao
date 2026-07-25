@@ -88,6 +88,10 @@
     npcSocialSyncTimer: null,
     npcSocialSyncing: false,
     npcSocialFetchedAt: 0,
+    sectSystem: null,
+    sectSystemSyncTimer: null,
+    sectSystemSyncing: false,
+    sectSystemFetchedAt: 0,
     timeStatus: null,
     timeStatusStartedAt: 0,
     timeSyncing: false,
@@ -207,6 +211,28 @@
     if (raw.includes('NPC_PARTNER_REQUIREMENTS')) return '结为道侣需要好感75、信任60。';
     if (raw.includes('NPC_PARTNER_ALREADY_EXISTS')) return '你当前已经有一位道侣。';
     if (raw.includes('NPC_SWORN_FRIEND_REQUIREMENTS')) return '义结金兰需要好感60、信任50。';
+    if (raw.includes('V010_REQUIRED')) return 'V0.10.0红尘录尚未成功部署，请先完成数据库升级。';
+    if (raw.includes('SECT_SETTINGS_MISSING')) return '宗门配置缺失，请执行V0.11.0数据库升级。';
+    if (raw.includes('SECT_JOINING_DISABLED')) return '宗门收徒目前处于暂停状态。';
+    if (raw.includes('SECT_CREATION_DISABLED')) return '开山立派目前处于暂停状态。';
+    if (raw.includes('SECT_TASKS_DISABLED')) return '宗门事务目前处于暂停状态。';
+    if (raw.includes('SECT_STIPEND_DISABLED')) return '宗门俸禄目前处于暂停状态。';
+    if (raw.includes('SECT_BUILDINGS_DISABLED')) return '宗门建筑目前处于暂停状态。';
+    if (raw.includes('INVALID_SECT_CODE')) return '宗门编号无效，请重新选择。';
+    if (raw.includes('SECT_MEMBERSHIP_ALREADY_EXISTS')) return '你当前已经加入一个宗门。';
+    if (raw.includes('SECT_NOT_FOUND')) return '没有找到这个宗门，请刷新宗门录。';
+    if (raw.includes('INVALID_SECT_NAME')) return '宗门名称需要2—16个字符。';
+    if (raw.includes('DUPLICATE_SECT_NAME')) return '这个宗门名称已经存在，请换一个名字。';
+    if (raw.includes('SECT_CREATION_INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法开山立派。';
+    if (raw.includes('SECT_MEMBERSHIP_REQUIRED')) return '你尚未加入宗门。';
+    if (raw.includes('SECT_TASK_NOT_FOUND')) return '没有找到这项宗门事务。';
+    if (raw.includes('SECT_TASK_ALREADY_COMPLETED')) return '这项宗门事务今日已经完成。';
+    if (raw.includes('SECT_TASK_INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法完成捐献事务。';
+    if (raw.includes('SECT_STIPEND_ALREADY_CLAIMED')) return '今日宗门俸禄已经领取。';
+    if (raw.includes('SECT_TREASURY_INSUFFICIENT')) return '宗门库藏不足，暂时无法完成此操作。';
+    if (raw.includes('SECT_BUILDING_PERMISSION_REQUIRED')) return '至少成为核心弟子，才能主持扩建宗门建筑。';
+    if (raw.includes('SECT_BUILDING_NOT_FOUND')) return '没有找到这座宗门建筑。';
+    if (raw.includes('SECT_BUILDING_MAX_LEVEL')) return '这座宗门建筑已经达到当前上限。';
     if (lower.includes('could not find the function') || raw.includes('PGRST202')) return '数据库功能尚未升级到当前版本，请执行游戏包内最新 SQL。';
     if (raw.includes('Failed to fetch')) return '无法连接云端数据库，请检查网络或 Supabase 项目状态。';
     return raw;
@@ -260,6 +286,7 @@
     if (state.techniqueSyncTimer) clearInterval(state.techniqueSyncTimer);
     if (state.destinyRankingSyncTimer) clearInterval(state.destinyRankingSyncTimer);
     if (state.npcSocialSyncTimer) clearInterval(state.npcSocialSyncTimer);
+    if (state.sectSystemSyncTimer) clearInterval(state.sectSystemSyncTimer);
     if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.cultivationTicker = null;
     state.cultivationSyncTimer = null;
@@ -270,6 +297,7 @@
     state.techniqueSyncTimer = null;
     state.destinyRankingSyncTimer = null;
     state.npcSocialSyncTimer = null;
+    state.sectSystemSyncTimer = null;
     state.gameSessionHeartbeatTimer = null;
     state.cultivationSyncing = false;
     state.opportunitySyncing = false;
@@ -277,6 +305,7 @@
     state.techniqueSyncing = false;
     state.destinyRankingSyncing = false;
     state.npcSocialSyncing = false;
+    state.sectSystemSyncing = false;
   }
 
   function clearSession() {
@@ -299,6 +328,8 @@
     state.destinyRankingFetchedAt = 0;
     state.npcSocial = null;
     state.npcSocialFetchedAt = 0;
+    state.sectSystem = null;
+    state.sectSystemFetchedAt = 0;
     state.timeStatus = null;
     state.timeStatusStartedAt = 0;
     state.timeSyncing = false;
@@ -666,6 +697,36 @@
       method: 'POST',
       body: { p_npc_id: npcId, p_relationship_type: relationshipType }
     });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetSectSystemV1() {
+    const result = await restFetch('rpc/get_sect_system_v1', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcJoinSectV1(sectCode) {
+    const result = await restFetch('rpc/join_sect_v1', { method: 'POST', body: { p_sect_code: sectCode } });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcCreateSectV1(name, motto, element) {
+    const result = await restFetch('rpc/create_sect_v1', { method: 'POST', body: { p_name: name, p_motto: motto, p_element: element } });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcCompleteSectTaskV1(taskCode) {
+    const result = await restFetch('rpc/complete_sect_task_v1', { method: 'POST', body: { p_task_code: taskCode } });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcClaimSectStipendV1() {
+    const result = await restFetch('rpc/claim_sect_stipend_v1', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcUpgradeSectBuildingV1(buildingCode) {
+    const result = await restFetch('rpc/upgrade_sect_building_v1', { method: 'POST', body: { p_building_code: buildingCode } });
     return Array.isArray(result) ? result[0] || null : result;
   }
 
@@ -2381,6 +2442,228 @@
     });
   }
 
+
+  function sectPositionClass(code) {
+    return ['master', 'elder', 'true', 'core'].includes(code) ? `position-${code}` : '';
+  }
+
+  function sectSystemPanelHtml(system) {
+    const data = system || { status: 'loading', sects: [], buildings: [], tasks: [], recent_events: [], settings: {} };
+    if (data.status === 'unavailable') {
+      return `<div id="sectSystemRoot" class="sect-system-root"><div class="empty-state"><h4>宗门录尚未开启</h4><p>${escapeHtml(data.error || '请先执行V0.11.0数据库升级。')}</p><button class="primary-btn" type="button" data-sect-refresh>重新读取</button></div></div>`;
+    }
+    if (data.status === 'loading') return '<div id="sectSystemRoot" class="sect-system-root"><div class="empty-state">正在查阅九霄宗门录……</div></div>';
+
+    const membership = data.membership || null;
+    const sects = Array.isArray(data.sects) ? data.sects : [];
+    const buildings = Array.isArray(data.buildings) ? data.buildings : [];
+    const tasks = Array.isArray(data.tasks) ? data.tasks : [];
+    const events = Array.isArray(data.recent_events) ? data.recent_events : [];
+    const creationCost = Number(data.settings?.player_sect_creation_cost || 5000);
+
+    if (!membership) {
+      return `
+        <div id="sectSystemRoot" class="sect-system-root">
+          <div class="sect-system-head">
+            <div><strong>九霄宗门录</strong><small>择一山门拜入，或自备灵石开山立派</small></div>
+            <button class="secondary-btn" type="button" data-sect-refresh>刷新宗门</button>
+          </div>
+          <div class="sect-choice-grid">
+            ${sects.map(row => `<article class="sect-choice-card">
+              <div class="sect-choice-head"><div><span>${escapeHtml(row.element || '无')}属传承</span><strong>${escapeHtml(row.name)}</strong></div><em>${row.is_player_created ? '玩家宗门' : '古老山门'}</em></div>
+              <p class="sect-motto">“${escapeHtml(row.motto || '大道无名')}”</p>
+              <p>${escapeHtml(row.doctrine || '')}</p>
+              <div class="sect-choice-meta"><span>门人 ${formatNumber(row.member_count || 0)}</span><span>库藏 ${formatNumber(row.treasury || 0)}</span></div>
+              ${row.guide_name ? `<small>引路人：${escapeHtml(row.guide_name)}</small>` : row.founder_name ? `<small>开山祖师：${escapeHtml(row.founder_name)}</small>` : ''}
+              <button class="primary-btn" type="button" data-sect-join="${escapeHtml(row.code)}" ${row.can_join ? '' : 'disabled'}>拜入宗门</button>
+            </article>`).join('') || '<div class="empty-state">九霄界尚无可加入的宗门。</div>'}
+          </div>
+          <form id="createSectForm" class="sect-create-card">
+            <div><strong>开山立派</strong><small>消耗 ${formatNumber(creationCost)} 灵石；创立后你将成为掌门</small></div>
+            <div class="sect-create-fields">
+              <label><span>宗门名称</span><input name="sectName" minlength="2" maxlength="16" placeholder="如：青云道宗" required></label>
+              <label><span>宗门箴言</span><input name="sectMotto" maxlength="60" placeholder="如：云海问道，守正持心"></label>
+              <label><span>宗门属性</span><select name="sectElement"><option>无</option><option>金</option><option>木</option><option>水</option><option>火</option><option>土</option></select></label>
+            </div>
+            <button class="primary-btn" type="submit">创立宗门</button>
+          </form>
+        </div>
+      `;
+    }
+
+    return `
+      <div id="sectSystemRoot" class="sect-system-root">
+        <div class="sect-system-head ${sectPositionClass(membership.position_code)}">
+          <div><span>${escapeHtml(membership.element || '无')}属宗门 · ${escapeHtml(membership.position_name || '门人')}</span><strong>${escapeHtml(membership.sect_name)}</strong><small>“${escapeHtml(membership.motto || '')}”</small></div>
+          <button class="secondary-btn" type="button" data-sect-refresh>刷新宗门</button>
+        </div>
+        <div class="sect-summary-grid">
+          <div><span>个人贡献</span><strong>${formatNumber(membership.contribution || 0)}</strong><small>${escapeHtml(membership.position_name || '')}</small></div>
+          <div><span>宗门库藏</span><strong>${formatNumber(membership.treasury || 0)}</strong><small>全体门人共享</small></div>
+          <div><span>宗门总贡献</span><strong>${formatNumber(membership.total_contribution || 0)}</strong><small>仙历${escapeHtml(membership.joined_world_year)}年入门</small></div>
+          <div><span>今日俸禄</span><strong>${formatNumber(membership.stipend_reward || 0)}灵石</strong><button type="button" data-sect-stipend ${membership.stipend_ready ? '' : 'disabled'}>${membership.stipend_ready ? '领取俸禄' : '今日已领'}</button></div>
+        </div>
+        <div class="sect-doctrine-card"><strong>宗门道统</strong><p>${escapeHtml(membership.doctrine || '')}</p>${membership.guide_name ? `<small>宗门引路人：${escapeHtml(membership.guide_name)}</small>` : membership.founder_name ? `<small>开山祖师：${escapeHtml(membership.founder_name)}</small>` : ''}</div>
+
+        <div class="subsection-title"><strong>每日宗门事务</strong><span>按UTC自然日重置</span></div>
+        <div class="sect-task-grid">
+          ${tasks.map(row => `<article class="sect-task-card ${row.completed_today ? 'completed' : ''}">
+            <div><span>${row.completed_today ? '今日已完成' : '今日可完成'}</span><strong>${escapeHtml(row.name)}</strong></div>
+            <p>${escapeHtml(row.description || '')}</p>
+            <small>贡献 +${formatNumber(row.contribution_gain || 0)} · 修为 +${formatNumber(row.cultivation_gain || 0)}${Number(row.karma_delta || 0) ? ` · 因果 ${Number(row.karma_delta) > 0 ? '+' : ''}${formatNumber(row.karma_delta)}` : ''}${Number(row.spirit_stone_cost || 0) ? ` · 消耗 ${formatNumber(row.spirit_stone_cost)}灵石` : ''}</small>
+            <button type="button" data-sect-task="${escapeHtml(row.code)}" ${row.completed_today ? 'disabled' : ''}>${row.completed_today ? '已经完成' : '执行事务'}</button>
+          </article>`).join('') || '<div class="empty-state">当前没有可执行的宗门事务。</div>'}
+        </div>
+
+        <div class="subsection-title"><strong>宗门建筑</strong><span>核心弟子及以上可主持扩建</span></div>
+        <div class="sect-building-grid">
+          ${buildings.map(row => `<article class="sect-building-card">
+            <div><span>第${formatNumber(row.level)}级 / ${formatNumber(row.max_level)}级</span><strong>${escapeHtml(row.name)}</strong></div>
+            <p>${escapeHtml(row.description || '')}</p>
+            <small>${Number(row.flat_rate_per_second || 0) ? `每秒修为 +${formatNumber(row.flat_rate_per_second, 3)}` : ''}${Number(row.multiplier_bonus || 0) ? ` 修炼倍率 +${formatNumber(Number(row.multiplier_bonus) * 100, 2)}%` : ''}${Number(row.contribution_bonus || 0) ? ` 事务贡献 +${formatNumber(Number(row.contribution_bonus) * 100, 0)}%` : ''}${Number(row.stipend_bonus || 0) ? ` 俸禄 +${formatNumber(row.stipend_bonus)}灵石` : ''}</small>
+            <button type="button" data-sect-building="${escapeHtml(row.code)}" ${row.can_upgrade ? '' : 'disabled'}>${row.level >= row.max_level ? '已满级' : `扩建·${formatNumber(row.next_cost)}库藏`}</button>
+          </article>`).join('') || '<div class="empty-state">宗门建筑尚未初始化。</div>'}
+        </div>
+
+        <div class="subsection-title"><strong>宗门史</strong><span>全体门人共享</span></div>
+        <div class="sect-event-list">
+          ${events.map(row => `<article><time>仙历${escapeHtml(row.world_year)}年</time><strong>${escapeHtml(row.title)}</strong><p>${escapeHtml(row.content)}</p></article>`).join('') || '<div class="empty-state">宗门史尚无记载。</div>'}
+        </div>
+      </div>
+    `;
+  }
+
+  function updateSectSystemPanel() {
+    const root = document.getElementById('sectSystemRoot');
+    if (!root) return;
+    root.outerHTML = sectSystemPanelHtml(state.sectSystem);
+    bindSectSystemActions();
+  }
+
+  async function refreshSectSystem(silent = true) {
+    if (state.sectSystemSyncing || !state.character) return;
+    state.sectSystemSyncing = true;
+    try {
+      state.sectSystem = await rpcGetSectSystemV1();
+      state.sectSystemFetchedAt = Date.now();
+      updateSectSystemPanel();
+      if (!silent) showToast('宗门录已刷新。');
+    } catch (error) {
+      state.sectSystem = { status: 'unavailable', sects: [], buildings: [], tasks: [], recent_events: [], error: translateError(error) };
+      updateSectSystemPanel();
+      if (!silent) showToast(translateError(error), 'error');
+    } finally {
+      state.sectSystemSyncing = false;
+    }
+  }
+
+  function bindSectSystemActions() {
+    document.querySelectorAll('[data-sect-refresh]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '查阅中……');
+        await refreshSectSystem(false);
+        setBusy(button, false);
+      });
+    });
+
+    document.querySelectorAll('[data-sect-join]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '拜山中……');
+        try {
+          const result = await rpcJoinSectV1(button.dataset.sectJoin);
+          showToast(result?.content || `已拜入${result?.sect_name || '宗门'}。`);
+          await refreshSectSystem(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+        } finally {
+          setBusy(button, false);
+        }
+      });
+    });
+
+    const createForm = document.getElementById('createSectForm');
+    if (createForm && createForm.dataset.bound !== '1') {
+      createForm.dataset.bound = '1';
+      createForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        const button = createForm.querySelector('button[type="submit"]');
+        const data = new FormData(createForm);
+        setBusy(button, true, '立派中……');
+        try {
+          const result = await rpcCreateSectV1(data.get('sectName'), data.get('sectMotto'), data.get('sectElement'));
+          showToast(result?.content || '宗门已经创立。');
+          await refreshSectSystem(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+        } finally {
+          setBusy(button, false);
+        }
+      });
+    }
+
+    document.querySelectorAll('[data-sect-task]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '执行中……');
+        try {
+          const result = await rpcCompleteSectTaskV1(button.dataset.sectTask);
+          const gain = Number(result?.cultivation_gain || 0);
+          if (gain > 0) {
+            state.liveCultivationBase += gain;
+            if (state.character) state.character.cultivation = Number(state.character.cultivation || 0) + gain;
+          }
+          const karmaDelta = Number(result?.karma_delta || 0);
+          if (karmaDelta && state.character) state.character.karma = Math.max(-100, Math.min(100, Number(state.character.karma || 0) + karmaDelta));
+          showToast(result?.content || '宗门事务已经完成。');
+          await refreshSectSystem(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+        } finally {
+          setBusy(button, false);
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-sect-stipend]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '领取中……');
+        try {
+          const result = await rpcClaimSectStipendV1();
+          showToast(result?.content || `获得${formatNumber(result?.spirit_stones || 0)}灵石。`);
+          await refreshSectSystem(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+        } finally {
+          setBusy(button, false);
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-sect-building]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '扩建中……');
+        try {
+          const result = await rpcUpgradeSectBuildingV1(button.dataset.sectBuilding);
+          showToast(result?.content || '宗门建筑已经升级。');
+          await refreshSectSystem(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+        } finally {
+          setBusy(button, false);
+        }
+      });
+    });
+  }
+
   function renderDashboard(bundle) {
     renderAccount();
     const c = bundle.character;
@@ -2401,6 +2684,7 @@
     const caveSystem = bundle.caveSystem || state.caveSystem || { resources: [], buildings: [], recipes: [], rules: {} };
     const destinyRanking = bundle.destinyRanking || state.destinyRanking || { status: 'loading', entries: [], total_count: 0 };
     const npcSocial = bundle.npcSocial || state.npcSocial || { status: 'loading', contacts: [], recent_events: [], settings: {} };
+    const sectSystem = bundle.sectSystem || state.sectSystem || { status: 'loading', sects: [], buildings: [], tasks: [], recent_events: [], settings: {} };
     const activeEffects = (bundle.cultivationEffects || []).filter(row => {
       const isCurrent = !row.expires_at || new Date(row.expires_at).getTime() > Date.now();
       const isCombination = row?.metadata?.v2_kind === 'combination' || String(row?.source_key || '').startsWith('combo:');
@@ -2467,6 +2751,7 @@
             <a href="#inventorySection">洞府</a>
             <a href="#opportunitySection">机缘</a>
             <a href="#npcSocialSection">红尘录</a>
+            <a href="#sectSystemSection">宗门</a>
             <a href="#destinyRankingSection">天命榜</a>
             <a href="#historySection">命书</a>
           </nav>
@@ -2560,6 +2845,11 @@
           ${npcSocialPanelHtml(npcSocial)}
         </section>
 
+        <section id="sectSystemSection" class="panel" data-mobile-screen="sect">
+          <div class="panel-title"><h3>宗门</h3><span class="badge">山门 · 贡献 · 事务</span></div>
+          ${sectSystemPanelHtml(sectSystem)}
+        </section>
+
         <section id="destinyRankingSection" class="panel" data-mobile-screen="ranking">
           <div class="panel-title"><h3>天命榜</h3><span class="badge">全服境界排行</span></div>
           ${destinyRankingPanelHtml(destinyRanking)}
@@ -2576,6 +2866,7 @@
           <button class="mobile-tab-button ${state.activeMobileTab === 'cave' ? 'active' : ''}" type="button" data-mobile-tab="cave"><b>府</b><span>洞府</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'opportunity' ? 'active' : ''}" type="button" data-mobile-tab="opportunity"><b>缘</b><span>机缘</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'social' ? 'active' : ''}" type="button" data-mobile-tab="social"><b>人</b><span>红尘</span></button>
+          <button class="mobile-tab-button ${state.activeMobileTab === 'sect' ? 'active' : ''}" type="button" data-mobile-tab="sect"><b>宗</b><span>宗门</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'ranking' ? 'active' : ''}" type="button" data-mobile-tab="ranking"><b>榜</b><span>天命榜</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'history' ? 'active' : ''}" type="button" data-mobile-tab="history"><b>书</b><span>命书</span></button>
         </nav>
@@ -2587,6 +2878,7 @@
     bindProgressionActions();
     bindInventoryTechniqueActions();
     bindNpcSocialActions();
+    bindSectSystemActions();
     bindDestinyRankingActions();
     bindMobileDashboardNav();
     const manualSyncBtn = document.getElementById('manualSyncBtn');
@@ -2597,7 +2889,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshCaveSystem(true), refreshNpcSocial(true), refreshDestinyRanking(false, true)]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshCaveSystem(true), refreshNpcSocial(true), refreshSectSystem(true), refreshDestinyRanking(false, true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -2637,6 +2929,9 @@
         }
         if (target === 'social' && Date.now() - Number(state.npcSocialFetchedAt || 0) > 30000) {
           refreshNpcSocial(true);
+        }
+        if (target === 'sect' && Date.now() - Number(state.sectSystemFetchedAt || 0) > 30000) {
+          refreshSectSystem(true);
         }
       });
     });
@@ -2727,6 +3022,7 @@
     state.techniqueSyncTimer = setInterval(() => refreshTechniqueSystem(false), 60000);
     state.destinyRankingSyncTimer = setInterval(() => refreshDestinyRanking(false, true), 60000);
     state.npcSocialSyncTimer = setInterval(() => refreshNpcSocial(true), 60000);
+    state.sectSystemSyncTimer = setInterval(() => refreshSectSystem(true), 60000);
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
     updateCaveCountdown();
@@ -2785,7 +3081,7 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, opportunityStatus, techniqueSystem, caveSystem, destinyRanking, npcSocial] = await Promise.all([
+      const [breakthroughStatus, opportunityStatus, techniqueSystem, caveSystem, destinyRanking, npcSocial, sectSystem] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetOpportunity(),
         rpcGetTechniqueSystemV2(),
@@ -2795,6 +3091,9 @@
         })),
         rpcGetNpcSocialV1().catch(error => ({
           status: 'unavailable', contacts: [], recent_events: [], error: translateError(error)
+        })),
+        rpcGetSectSystemV1().catch(error => ({
+          status: 'unavailable', sects: [], buildings: [], tasks: [], recent_events: [], error: translateError(error)
         }))
       ]);
       bundle.breakthroughStatus = breakthroughStatus;
@@ -2803,6 +3102,7 @@
       bundle.caveSystem = caveSystem;
       bundle.destinyRanking = destinyRanking;
       bundle.npcSocial = npcSocial;
+      bundle.sectSystem = sectSystem;
       state.cultivationStatus = cultivationStatus;
       state.breakthroughStatus = breakthroughStatus;
       state.opportunityStatus = opportunityStatus;
@@ -2812,6 +3112,8 @@
       state.destinyRankingFetchedAt = Date.now();
       state.npcSocial = npcSocial;
       state.npcSocialFetchedAt = Date.now();
+      state.sectSystem = sectSystem;
+      state.sectSystemFetchedAt = Date.now();
       renderDashboard(bundle);
     } catch (error) {
       console.error(error);
@@ -2857,7 +3159,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshDestinyRanking(false, true)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshDestinyRanking(false, true)]);
         }
       }
     });
@@ -2873,7 +3175,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshDestinyRanking(false, true)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshDestinyRanking(false, true)]);
         }
       }
     });

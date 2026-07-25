@@ -1,19 +1,19 @@
 {
   "projectName": "九霄问道",
-  "version": "0.10.0",
-  "releaseLabel": "Web Alpha 0.10.0",
-  "releaseType": "NPC关系：红尘录、交游、师徒、道侣、金兰与仇敌",
+  "version": "0.11.0",
+  "releaseLabel": "Web Alpha 0.11.0",
+  "releaseType": "宗门体系：加入/创建宗门、职位贡献、每日事务、俸禄与共享建筑",
   "repository": "121177939/NineCloudDao",
   "productionUrl": "https://121177939.github.io/NineCloudDao/",
   "worldCode": "jiuxiao_world_1",
   "localPort": 8787,
-  "serviceWorkerCache": "nine-cloud-dao-v0.10.0",
+  "serviceWorkerCache": "nine-cloud-dao-v0.11.0",
   "databaseBaseline": {
-    "publicTables": 60,
-    "databaseFunctions": 49,
+    "publicTables": 68,
+    "databaseFunctions": 57,
     "sqlRequired": true,
-    "migration": "database/V0.10.0/202607240017_npc_relationships.sql",
-    "check": "database/V0.10.0/202607240017_check.sql"
+    "migration": "database/V0.11.0/202607240018_sect_system.sql",
+    "check": "database/V0.11.0/202607240018_check.sql"
   },
   "gameTime": {
     "gameYearsPerRealDay": 12,
@@ -107,7 +107,15 @@
     "docs/V0.10.0_CHANGE_SCOPE.md",
     "docs/V0.10.0_DEPLOYMENT_GUIDE.md",
     "docs/V0.10.0_NPC_RELATIONSHIP_RULES.md",
-    "docs/V0.10.0_REAL_DEVICE_TEST_CHECKLIST.md"
+    "docs/V0.10.0_REAL_DEVICE_TEST_CHECKLIST.md",
+    "database/V0.11.0/202607240018_sect_system.sql",
+    "database/V0.11.0/202607240018_check.sql",
+    "database/V0.11.0/202607240018_emergency_disable.sql",
+    "database/V0.11.0/202607240018_resume.sql",
+    "docs/V0.11.0_CHANGE_SCOPE.md",
+    "docs/V0.11.0_DEPLOYMENT_GUIDE.md",
+    "docs/V0.11.0_SECT_RULES.md",
+    "docs/V0.11.0_REAL_DEVICE_TEST_CHECKLIST.md"
   ],
   "caveSystem": {
     "persistsAcrossReincarnation": true,
@@ -184,6 +192,34 @@
       "get_npc_social_v1",
       "interact_with_npc_v1",
       "form_npc_relationship_v1"
+    ]
+  },
+  "sectSystem": {
+    "title": "宗门",
+    "defaultSectCount": 4,
+    "playerCreationEnabled": true,
+    "creationSpiritStoneCost": 5000,
+    "positions": [
+      "outer",
+      "inner",
+      "core",
+      "true",
+      "elder",
+      "master"
+    ],
+    "dailyTaskCount": 3,
+    "buildingCount": 4,
+    "maxBuildingLevel": 10,
+    "sharedTreasury": true,
+    "dailyReset": "UTC",
+    "serverAuthoritative": true,
+    "rpc": [
+      "get_sect_system_v1",
+      "join_sect_v1",
+      "create_sect_v1",
+      "complete_sect_task_v1",
+      "claim_sect_stipend_v1",
+      "upgrade_sect_building_v1"
     ]
   }
 }

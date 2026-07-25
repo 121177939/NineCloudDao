@@ -278,6 +278,23 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     else:
         report.fail("前端NPC关系流程不完整")
 
+    sect_expectations = [
+        "rpc/get_sect_system_v1",
+        "rpc/join_sect_v1",
+        "rpc/create_sect_v1",
+        "rpc/complete_sect_task_v1",
+        "rpc/claim_sect_stipend_v1",
+        "rpc/upgrade_sect_building_v1",
+        "sectSystemPanelHtml",
+        'data-mobile-tab="sect"',
+        "宗门",
+        "开山立派",
+    ]
+    if all(item in app for item in sect_expectations):
+        report.ok("前端包含宗门列表、建宗入门、事务、俸禄与共享建筑流程")
+    else:
+        report.fail("前端宗门体系流程不完整")
+
     if mode == "source":
         time_migration_path = root / "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql"
         time_migration = read_text(time_migration_path, report)
@@ -440,6 +457,46 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
         else:
             report.fail("V0.10.0 检查SQL内容不完整")
 
+        sect_migration = read_text(root / "database/V0.11.0/202607240018_sect_system.sql", report)
+        sect_sql_expectations = [
+            "raise exception 'V010_REQUIRED'",
+            "create table if not exists public.sect_system_settings_v1",
+            "create table if not exists public.sect_definitions_v1",
+            "create table if not exists public.sect_building_definitions_v1",
+            "create table if not exists public.sect_task_definitions_v1",
+            "create table if not exists public.character_sect_memberships_v1",
+            "create table if not exists public.sect_building_states_v1",
+            "create table if not exists public.character_sect_daily_tasks_v1",
+            "create table if not exists public.sect_events_v1",
+            "create or replace function public.get_sect_system_v1()",
+            "create or replace function public.join_sect_v1(",
+            "create or replace function public.create_sect_v1(",
+            "create or replace function public.complete_sect_task_v1(",
+            "create or replace function public.claim_sect_stipend_v1()",
+            "create or replace function public.upgrade_sect_building_v1(",
+            "player_sect_creation_cost integer not null default 5000",
+            "commit;",
+        ]
+        if all(item.lower() in sect_migration.lower() for item in sect_sql_expectations):
+            report.ok("V0.11.0 数据库迁移包含宗门、建宗入门、职位贡献、事务、俸禄与建筑")
+        else:
+            report.fail("V0.11.0 宗门数据库迁移内容不完整")
+        lower_sect = sect_migration.lower()
+        if lower_sect.lstrip().startswith("--") and "begin;" in lower_sect and "commit;" in lower_sect and "drop table" not in lower_sect and "delete from public.player_characters" not in lower_sect:
+            report.ok("V0.11.0 迁移使用事务且未包含删表或删除角色操作")
+        else:
+            report.fail("V0.11.0 迁移事务或数据安全检查失败")
+        if "revoke all on function public.refresh_sect_effects_v1(uuid) from public, anon, authenticated" in lower_sect:
+            report.ok("V0.11.0 内部宗门修炼效果函数未向玩家直接开放")
+        else:
+            report.fail("V0.11.0 内部宗门效果函数权限可能过宽")
+
+        sect_check = read_text(root / "database/V0.11.0/202607240018_check.sql", report)
+        if all(item in sect_check for item in ("v011_new_table_count", "v011_new_function_count", "authenticated_can_execute", "duplicate_character_membership", "expected_table_count", "expected_function_count")):
+            report.ok("V0.11.0 提供只读检查SQL并覆盖结构、权限、异常与最终基线")
+        else:
+            report.fail("V0.11.0 检查SQL内容不完整")
+
     sw = read_text(root / "sw.js", report)
     if "url.hostname.endsWith('.supabase.co')" in sw and "return;" in sw:
         report.ok("Service Worker 保持 Supabase 请求不缓存")
@@ -541,6 +598,10 @@ def verify_archive(path: Path, config: dict, report: Report) -> None:
                 report.ok(f"{path.name} 包含 V0.10.0 NPC关系前端")
             else:
                 report.fail(f"{path.name} 未包含完整的 V0.10.0 NPC关系前端")
+            if all(item in app for item in ("rpc/get_sect_system_v1", "rpc/create_sect_v1", "rpc/complete_sect_task_v1", "sectSystemPanelHtml", "开山立派", "领取俸禄")):
+                report.ok(f"{path.name} 包含 V0.11.0 宗门体系前端")
+            else:
+                report.fail(f"{path.name} 未包含完整的 V0.11.0 宗门体系前端")
             report.ok(f"{path.name} ZIP 完整性通过，SHA256={sha256(path)}")
     except Exception as exc:
         report.fail(f"无法检查 {path.name}：{exc}")
