@@ -73,6 +73,7 @@
     opportunityPollTimer: null,
     opportunityCountdownTimer: null,
     opportunitySyncing: false,
+    lastOpportunityNoticeId: null,
     caveSystem: null,
     caveCountdownTimer: null,
     caveSyncTimer: null,
@@ -322,6 +323,7 @@
     state.breakthroughStatus = null;
     state.opportunityStatus = null;
     state.opportunitySyncing = false;
+    state.lastOpportunityNoticeId = null;
     state.caveSystem = null;
     state.techniqueSystem = null;
     state.destinyRanking = null;
@@ -594,7 +596,7 @@
   }
 
   async function rpcGetOpportunity() {
-    const result = await restFetch('rpc/get_opportunity_v1', {
+    const result = await restFetch('rpc/get_auto_opportunity_v3', {
       method: 'POST',
       body: {}
     });
@@ -1434,11 +1436,81 @@
     `;
   }
 
+  function opportunityEntryContentHtml(opportunity) {
+    if (!opportunity || opportunity.status === 'loading') {
+      return `
+        <span class="opportunity-auto-mark">自动获取</span>
+        <div class="aura-ring"><div class="aura-inner">机</div></div>
+        <div class="focus-caption opportunity-entry-copy">
+          <strong>正在观测天机</strong>
+          <span>无需手动寻觅</span>
+          <small>点击查看</small>
+        </div>
+      `;
+    }
+    if (Boolean(opportunity.last_result)) {
+      return `
+        <span class="opportunity-auto-mark ready">机缘已至</span>
+        <div class="aura-ring"><div class="aura-inner">机</div></div>
+        <div class="focus-caption opportunity-entry-copy">
+          <strong>${escapeHtml(opportunity.title || '无名机缘')}</strong>
+          <span>${escapeHtml(rarityName(opportunity.rarity))}</span>
+          <small>点击查看结果</small>
+        </div>
+      `;
+    }
+    const nextAt = opportunity.next_available_at ? new Date(opportunity.next_available_at) : null;
+    const seconds = nextAt ? Math.max(0, Math.ceil((nextAt.getTime() - Date.now()) / 1000)) : Number(opportunity.seconds_until_next || 0);
+    return `
+      <span class="opportunity-auto-mark">自动推演</span>
+      <div class="aura-ring"><div class="aura-inner">机</div></div>
+      <div class="focus-caption opportunity-entry-copy">
+        <strong>下一次机缘</strong>
+        <span id="opportunityEntryCountdown">${formatDuration(seconds)}</span>
+        <small>到时自动获取</small>
+      </div>
+    `;
+  }
+
+  function updateOpportunityEntry() {
+    const entry = document.getElementById('opportunityEntryBtn');
+    if (!entry) return;
+    const pending = state.opportunityStatus?.status === 'pending';
+    entry.classList.toggle('has-opportunity', pending);
+    entry.setAttribute('aria-label', pending ? '机缘已至，点击查看并选择' : '查看自动机缘状态');
+    entry.innerHTML = opportunityEntryContentHtml(state.opportunityStatus);
+  }
+
+  function openOpportunityModal() {
+    modalRoot.innerHTML = `
+      <div id="opportunityModalBackdrop" class="modal-backdrop opportunity-modal-backdrop">
+        <section class="modal opportunity-modal" role="dialog" aria-modal="true" aria-labelledby="opportunityModalTitle">
+          <button id="closeOpportunityModalBtn" class="modal-close-button" type="button" aria-label="关闭机缘窗口">×</button>
+          <div id="opportunityModalBody">${opportunityPanelHtml(state.opportunityStatus || { status: 'loading' })}</div>
+        </section>
+      </div>
+    `;
+    const close = () => { modalRoot.innerHTML = ''; };
+    document.getElementById('closeOpportunityModalBtn')?.addEventListener('click', close);
+    document.getElementById('opportunityModalBackdrop')?.addEventListener('click', event => {
+      if (event.target?.id === 'opportunityModalBackdrop') close();
+    });
+    bindProgressionActions();
+    updateOpportunityCountdown();
+  }
+
+  function bindOpportunityEntryActions() {
+    const entry = document.getElementById('opportunityEntryBtn');
+    if (!entry || entry.dataset.bound === '1') return;
+    entry.dataset.bound = '1';
+    entry.addEventListener('click', openOpportunityModal);
+  }
+
   function opportunityPanelHtml(opportunity) {
     if (!opportunity || opportunity.status === 'loading') {
       return '<div class="empty-state">天机未显，正在观测灵气变化……</div>';
     }
-    if (opportunity.status === 'pending') {
+    if (Boolean(opportunity.last_result)) {
       const choices = Array.isArray(opportunity.choices) ? opportunity.choices : [];
       return `
         <div class="panel-title"><h3>天降机缘</h3><span class="badge rarity-${escapeHtml(opportunity.rarity || 'common')}">${escapeHtml(rarityName(opportunity.rarity))}</span></div>
@@ -1513,47 +1585,6 @@
       });
     }
 
-    document.querySelectorAll('.opportunity-choice').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        document.querySelectorAll('.opportunity-choice').forEach(item => { item.disabled = true; });
-        setBusy(button, true, '天道结算中……');
-        try {
-          const result = await rpcResolveOpportunity(button.dataset.opportunityId, button.dataset.choiceKey);
-          showResultModal({
-            seal: '缘',
-            title: result?.title || '机缘已定',
-            message: result?.reward_text || '你从机缘中有所收获。',
-            detail: result?.technique_name ? `新功法：${result.technique_name}` : (Number(result?.flat_rate_per_second || 0) ? `自动修炼永久增加 ${formatRate(result.flat_rate_per_second)}` : ''),
-            success: true
-          });
-        } catch (error) {
-          showToast(translateError(error), 'error');
-          document.querySelectorAll('.opportunity-choice').forEach(item => { item.disabled = false; });
-          setBusy(button, false);
-          await refreshOpportunity();
-        }
-      });
-    });
-  }
-
-  function updateProgressionDisplay() {
-    const status = state.breakthroughStatus;
-    if (!status || status.status !== 'available') return;
-    const current = currentDisplayedCultivation();
-    const required = Number(status.cultivation_required || 0);
-    const percent = required > 0 ? Math.max(0, Math.min(100, current / required * 100)) : 100;
-    const text = document.getElementById('breakthroughProgressText');
-    const fill = document.getElementById('breakthroughProgressFill');
-    const button = document.getElementById('attemptBreakthroughBtn');
-    if (text) text.textContent = `${formatNumber(current)} / ${formatNumber(required)}`;
-    if (fill) fill.style.width = `${percent}%`;
-    if (button && !button.dataset.oldText) {
-      const ready = current >= required;
-      button.disabled = !ready;
-      button.textContent = ready ? `冲击${status.next_stage_name || '下一境界'}` : `尚缺 ${formatNumber(Math.max(0, required - current))} 修为`;
-    }
   }
 
   async function refreshOpportunity() {
@@ -1561,10 +1592,18 @@
     state.opportunitySyncing = true;
     try {
       state.opportunityStatus = await rpcGetOpportunity();
-      const panel = document.getElementById('opportunityPanel');
-      if (panel) {
-        panel.innerHTML = opportunityPanelHtml(state.opportunityStatus);
+      updateOpportunityEntry();
+      const modalBody = document.getElementById('opportunityModalBody');
+      if (modalBody) {
+        modalBody.innerHTML = opportunityPanelHtml(state.opportunityStatus);
         bindProgressionActions();
+      }
+      const opportunityId = state.opportunityStatus?.status === 'pending'
+        ? String(state.opportunityStatus.opportunity_id || '')
+        : '';
+      if (opportunityId && opportunityId !== state.lastOpportunityNoticeId) {
+        state.lastOpportunityNoticeId = opportunityId;
+        showToast('新机缘已自动结算，点击“机”查看。');
       }
     } catch (error) {
       console.error(error);
@@ -1637,8 +1676,11 @@
     if (!opportunity || opportunity.status !== 'waiting') return;
     const target = opportunity.next_available_at ? new Date(opportunity.next_available_at).getTime() : 0;
     const seconds = target ? Math.max(0, Math.ceil((target - Date.now()) / 1000)) : Math.max(0, Number(opportunity.seconds_until_next || 0));
+    const value = seconds > 0 ? formatDuration(seconds) : '天机将显';
     const label = document.getElementById('opportunityCountdown');
-    if (label) label.textContent = seconds > 0 ? formatDuration(seconds) : '天机将显';
+    const entryLabel = document.getElementById('opportunityEntryCountdown');
+    if (label) label.textContent = value;
+    if (entryLabel) entryLabel.textContent = value;
     if (seconds <= 0) refreshOpportunity();
   }
 
@@ -2749,7 +2791,6 @@
             <a href="#cultivationSection">修炼</a>
             <a href="#talentSection">功法</a>
             <a href="#inventorySection">洞府</a>
-            <a href="#opportunitySection">机缘</a>
             <a href="#npcSocialSection">红尘录</a>
             <a href="#sectSystemSection">宗门</a>
             <a href="#destinyRankingSection">天命榜</a>
@@ -2760,12 +2801,9 @@
         <section id="cultivationSection" class="panel cultivation-focus-panel" data-mobile-screen="cultivation">
           <div class="panel-title"><h3>修炼</h3><span id="cloudSaveBadge" class="badge">云端同步</span></div>
           <div class="cultivation-focus-layout">
-            <div class="cultivation-visual">
-              <div class="aura-ring">
-                <div class="aura-inner">道</div>
-              </div>
-              <div class="focus-caption">洞府吐纳自行运转；仙历、年龄与寿元均由云端时间结算。</div>
-            </div>
+            <button id="opportunityEntryBtn" class="cultivation-visual opportunity-entry ${opportunity?.status === 'pending' ? 'has-opportunity' : ''}" type="button" aria-label="查看自动机缘状态">
+              ${opportunityEntryContentHtml(opportunity)}
+            </button>
             <div class="cultivation-focus-main">
               <div class="focus-stat">
                 <span>当前自动修炼速度</span>
@@ -2831,12 +2869,9 @@
           ${cavePanelHtml(caveSystem, inventory)}
         </section>
 
-        <section id="opportunitySection" class="double-panel-grid">
+        <section id="opportunitySection" class="double-panel-grid breakthrough-only-grid">
           <section id="breakthroughPanel" class="panel progression-panel mobile-panel-card" data-mobile-screen="cultivation">
             ${breakthroughPanelHtml(breakthrough, c.cultivation)}
-          </section>
-          <section id="opportunityPanel" class="panel progression-panel mobile-panel-card" data-mobile-screen="opportunity">
-            ${opportunityPanelHtml(opportunity)}
           </section>
         </section>
 
@@ -2864,7 +2899,6 @@
           <button class="mobile-tab-button ${state.activeMobileTab === 'cultivation' ? 'active' : ''}" type="button" data-mobile-tab="cultivation"><b>修</b><span>修炼</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'techniques' ? 'active' : ''}" type="button" data-mobile-tab="techniques"><b>法</b><span>功法</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'cave' ? 'active' : ''}" type="button" data-mobile-tab="cave"><b>府</b><span>洞府</span></button>
-          <button class="mobile-tab-button ${state.activeMobileTab === 'opportunity' ? 'active' : ''}" type="button" data-mobile-tab="opportunity"><b>缘</b><span>机缘</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'social' ? 'active' : ''}" type="button" data-mobile-tab="social"><b>人</b><span>红尘</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'sect' ? 'active' : ''}" type="button" data-mobile-tab="sect"><b>宗</b><span>宗门</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'ranking' ? 'active' : ''}" type="button" data-mobile-tab="ranking"><b>榜</b><span>天命榜</span></button>
@@ -2875,7 +2909,15 @@
 
     state.liveCultivationBase = Number(c.cultivation || 0);
     state.liveCultivationStartedAt = Date.now();
+    if (opportunity?.status === 'pending') {
+      const opportunityId = String(opportunity.opportunity_id || '');
+      if (opportunityId && opportunityId !== state.lastOpportunityNoticeId) {
+        state.lastOpportunityNoticeId = opportunityId;
+        setTimeout(() => showToast('机缘已自动获取，点击“机”查看。'), 120);
+      }
+    }
     bindProgressionActions();
+    bindOpportunityEntryActions();
     bindInventoryTechniqueActions();
     bindNpcSocialActions();
     bindSectSystemActions();

@@ -295,6 +295,18 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     else:
         report.fail("前端宗门体系流程不完整")
 
+    opportunity_ui_expectations = [
+        'id="opportunityEntryBtn"',
+        'opportunityEntryContentHtml',
+        'openOpportunityModal',
+        '新机缘已自动获取',
+        '<div class="aura-inner">机</div>',
+    ]
+    if all(item in app for item in opportunity_ui_expectations) and 'data-mobile-tab="opportunity"' not in app:
+        report.ok("V0.11.2 已将机缘并入修炼页并取消独立底部入口")
+    else:
+        report.fail("V0.11.2 机缘入口调整不完整")
+
     if mode == "source":
         time_migration_path = root / "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql"
         time_migration = read_text(time_migration_path, report)
@@ -602,6 +614,10 @@ def verify_archive(path: Path, config: dict, report: Report) -> None:
                 report.ok(f"{path.name} 包含 V0.11.0 宗门体系前端")
             else:
                 report.fail(f"{path.name} 未包含完整的 V0.11.0 宗门体系前端")
+            if all(item in app for item in ('id="opportunityEntryBtn"', 'openOpportunityModal', '<div class="aura-inner">机</div>')) and 'data-mobile-tab="opportunity"' not in app:
+                report.ok(f"{path.name} 包含 V0.11.2 机缘入口调整")
+            else:
+                report.fail(f"{path.name} 未包含完整的 V0.11.2 机缘入口调整")
             report.ok(f"{path.name} ZIP 完整性通过，SHA256={sha256(path)}")
     except Exception as exc:
         report.fail(f"无法检查 {path.name}：{exc}")

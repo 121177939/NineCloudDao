@@ -1,0 +1,7 @@
+{
+  "version": "0.11.2",
+  "sourceBaseline": "0.11.1",
+  "databaseBaselineBefore": "68 tables / 57 functions",
+  "migration": "202607250020_auto_opportunity_v3.sql",
+  "oldV2Forbidden": true
+}
