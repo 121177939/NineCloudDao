@@ -1,20 +1,20 @@
 {
   "projectName": "九霄问道",
-  "version": "0.11.7-fix1",
-  "releaseLabel": "Web Alpha 0.11.7 FIX1",
-  "releaseType": "V0.11.7修复：天道系数作用于全部自动修炼收益，灵气环境入口恢复原UI",
+  "version": "0.11.9",
+  "releaseLabel": "Web Alpha 0.11.9",
+  "releaseType": "天道动态均衡正式整合：原UI文字入口、点击弹窗、完整自动修炼倍率",
   "repository": "121177939/NineCloudDao",
   "productionUrl": "https://121177939.github.io/NineCloudDao/",
   "worldCode": "jiuxiao_world_1",
   "localPort": 8787,
-  "serviceWorkerCache": "nine-cloud-dao-v0.11.7-fix1",
+  "serviceWorkerCache": "nine-cloud-dao-v0.11.9",
   "databaseBaseline": {
     "publicTables": 75,
     "databaseFunctions": 75,
     "sqlRequired": true,
-    "migration": "database/V0.11.7/202607260200_v0117_fix1_full_heaven_multiplier.sql",
-    "check": "database/V0.11.7/202607260200_v0117_fix1_check.sql",
-    "prerequisite": "V0.11.7主迁移已执行；随后只执行FIX1修复SQL和检查SQL"
+    "migration": "database/V0.11.9/202607260300_v0119_heaven_balance_full_multiplier.sql",
+    "check": "database/V0.11.9/202607260300_v0119_check.sql",
+    "prerequisite": "V0.11.6及以上；V0.11.7或FIX1已经执行时也可安全重复执行V0.11.9整合迁移"
   },
   "gameTime": {
     "gameYearsPerRealDay": 12,
@@ -131,7 +131,22 @@
     "database/V0.11.7/202607260200_v0117_fix1_rollback.sql",
     "docs/V0.11.7_FIX1_HOTFIX_NOTES.md",
     "docs/V0.11.7_FIX1_DEPLOYMENT_GUIDE.md",
-    "docs/V0.11.7_FIX1_REAL_DEVICE_TEST_CHECKLIST.md"
+    "docs/V0.11.7_FIX1_REAL_DEVICE_TEST_CHECKLIST.md",
+    "database/V0.11.9/202607260300_v0119_heaven_balance_full_multiplier.sql",
+    "database/V0.11.9/202607260300_v0119_check.sql",
+    "database/V0.11.9/202607260300_v0119_emergency_disable.sql",
+    "database/V0.11.9/202607260300_v0119_resume.sql",
+    "database/V0.11.9/202607260300_v0119_rollback.sql",
+    "docs/V0.11.9_FINAL_RULES.md",
+    "docs/V0.11.9_DEPLOYMENT_GUIDE.md",
+    "docs/V0.11.9_REAL_DEVICE_TEST_CHECKLIST.md",
+    "tools/audit_v0119.py",
+    "docs/V0.11.9_FUNCTION_AUDIT.md",
+    "docs/V0.11.9_BUILD_VERIFY_REPORT.md",
+    "docs/V0.11.9_RUNTIME_MOCK_TEST.md",
+    "docs/V0.11.9_RUNTIME_MOCK_DASHBOARD.png",
+    "docs/V0.11.9_RUNTIME_MOCK_HEAVEN_BALANCE.png",
+    "docs/V0.11.9_RUNTIME_MOCK_RESULT.json"
   ],
   "caveSystem": {
     "persistsAcrossReincarnation": true,
