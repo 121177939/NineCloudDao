@@ -264,6 +264,20 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     else:
         report.fail("前端天命榜流程不完整")
 
+    npc_expectations = [
+        "rpc/get_npc_social_v1",
+        "rpc/interact_with_npc_v1",
+        "rpc/form_npc_relationship_v1",
+        "npcSocialPanelHtml",
+        'data-mobile-tab="social"',
+        "红尘录",
+        "义结金兰",
+    ]
+    if all(item in app for item in npc_expectations):
+        report.ok("前端包含红尘录、NPC交游与特殊关系流程")
+    else:
+        report.fail("前端NPC关系流程不完整")
+
     if mode == "source":
         time_migration_path = root / "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql"
         time_migration = read_text(time_migration_path, report)
@@ -389,6 +403,43 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
         else:
             report.fail("V0.9.1 检查SQL内容不完整")
 
+        npc_migration = read_text(root / "database/V0.10.0/202607240017_npc_relationships.sql", report)
+        npc_sql_expectations = [
+            "raise exception 'V091_REQUIRED'",
+            "create table if not exists public.npc_social_settings",
+            "create table if not exists public.npc_social_archetypes",
+            "create table if not exists public.npc_social_characters",
+            "create table if not exists public.character_npc_bonds_v1",
+            "create table if not exists public.npc_social_events",
+            "create or replace function public.initialize_npc_social_v1()",
+            "create or replace function public.get_npc_social_v1()",
+            "create or replace function public.interact_with_npc_v1(",
+            "create or replace function public.form_npc_relationship_v1(",
+            "relationship_type = 'master'",
+            "relationship_type = 'partner'",
+            "gift_spirit_stone_cost",
+            "commit;",
+        ]
+        if all(item.lower() in npc_migration.lower() for item in npc_sql_expectations):
+            report.ok("V0.10.0 数据库迁移包含NPC名录、交游、特殊关系与事件")
+        else:
+            report.fail("V0.10.0 NPC关系数据库迁移内容不完整")
+        lower_npc = npc_migration.lower()
+        if lower_npc.lstrip().startswith("--") and "begin;" in lower_npc and "commit;" in lower_npc and "drop table" not in lower_npc and "delete from public.player_characters" not in lower_npc:
+            report.ok("V0.10.0 迁移使用事务且未包含删表或删除角色操作")
+        else:
+            report.fail("V0.10.0 迁移事务或数据安全检查失败")
+        if "revoke all on function public.refresh_npc_social_effects_v1(uuid) from public, anon, authenticated" in lower_npc:
+            report.ok("V0.10.0 内部修炼效果函数未向玩家直接开放")
+        else:
+            report.fail("V0.10.0 内部NPC效果函数权限可能过宽")
+
+        npc_check = read_text(root / "database/V0.10.0/202607240017_check.sql", report)
+        if all(item in npc_check for item in ("v010_new_table_count", "v010_new_function_count", "authenticated_can_execute", "invalid_score_range", "expected_table_count", "expected_function_count")):
+            report.ok("V0.10.0 提供只读检查SQL并覆盖结构、权限、异常与最终基线")
+        else:
+            report.fail("V0.10.0 检查SQL内容不完整")
+
     sw = read_text(root / "sw.js", report)
     if "url.hostname.endsWith('.supabase.co')" in sw and "return;" in sw:
         report.ok("Service Worker 保持 Supabase 请求不缓存")
@@ -486,6 +537,10 @@ def verify_archive(path: Path, config: dict, report: Report) -> None:
                 report.ok(f"{path.name} 包含 V0.9.1 天命榜前端")
             else:
                 report.fail(f"{path.name} 未包含完整的 V0.9.1 天命榜前端")
+            if all(item in app for item in ("rpc/get_npc_social_v1", "rpc/interact_with_npc_v1", "rpc/form_npc_relationship_v1", "npcSocialPanelHtml", "红尘录", "义结金兰")):
+                report.ok(f"{path.name} 包含 V0.10.0 NPC关系前端")
+            else:
+                report.fail(f"{path.name} 未包含完整的 V0.10.0 NPC关系前端")
             report.ok(f"{path.name} ZIP 完整性通过，SHA256={sha256(path)}")
     except Exception as exc:
         report.fail(f"无法检查 {path.name}：{exc}")

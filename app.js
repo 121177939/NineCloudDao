@@ -84,6 +84,10 @@
     destinyRankingSyncTimer: null,
     destinyRankingSyncing: false,
     destinyRankingFetchedAt: 0,
+    npcSocial: null,
+    npcSocialSyncTimer: null,
+    npcSocialSyncing: false,
+    npcSocialFetchedAt: 0,
     timeStatus: null,
     timeStatusStartedAt: 0,
     timeSyncing: false,
@@ -186,6 +190,23 @@
     if (raw.includes('ALCHEMY_BATCH_NOT_FOUND')) return '当前没有可以领取的炼丹批次。';
     if (raw.includes('ALCHEMY_NOT_READY')) return '丹药尚未炼成，请等待倒计时结束。';
     if (raw.includes('INVALID_RANKING_PAGE')) return '天命榜分页参数无效，请重新刷新。';
+    if (raw.includes('V091_REQUIRED')) return 'V0.9.1天命榜热修复尚未完成，请先部署并检查。';
+    if (raw.includes('NPC_SOCIAL_SETTINGS_MISSING')) return '红尘录配置缺失，请执行V0.10.0数据库升级。';
+    if (raw.includes('NPC_INTERACTIONS_DISABLED')) return '红尘交游目前处于暂停状态。';
+    if (raw.includes('NPC_RELATIONSHIPS_DISABLED')) return '关系缔结目前处于暂停状态。';
+    if (raw.includes('NPC_CONTACT_NOT_FOUND')) return '没有找到这位红尘故人，请重新读取。';
+    if (raw.includes('INVALID_NPC_ACTION')) return '交游方式无效，请重新选择。';
+    if (raw.includes('NPC_INTERACTION_COOLDOWN')) return '刚刚交谈过，请等待片刻再来往。';
+    if (raw.includes('NPC_GIFT_INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法准备这份赠礼。';
+    if (raw.includes('NPC_GUIDANCE_RELATION_REQUIRED')) return '双方交情与信任尚不足以开口请教。';
+    if (raw.includes('NPC_GUIDANCE_COOLDOWN')) return '今日指点尚需消化，请稍后再来。';
+    if (raw.includes('INVALID_NPC_RELATIONSHIP')) return '关系类型无效。';
+    if (raw.includes('NPC_RELATIONSHIP_HOSTILE')) return '双方已成仇敌，无法缔结正向关系。';
+    if (raw.includes('NPC_MASTER_REQUIREMENTS')) return '拜师需要对方修为足够，并达到好感45、信任40。';
+    if (raw.includes('NPC_MASTER_ALREADY_EXISTS')) return '你当前已经有一位师尊。';
+    if (raw.includes('NPC_PARTNER_REQUIREMENTS')) return '结为道侣需要好感75、信任60。';
+    if (raw.includes('NPC_PARTNER_ALREADY_EXISTS')) return '你当前已经有一位道侣。';
+    if (raw.includes('NPC_SWORN_FRIEND_REQUIREMENTS')) return '义结金兰需要好感60、信任50。';
     if (lower.includes('could not find the function') || raw.includes('PGRST202')) return '数据库功能尚未升级到当前版本，请执行游戏包内最新 SQL。';
     if (raw.includes('Failed to fetch')) return '无法连接云端数据库，请检查网络或 Supabase 项目状态。';
     return raw;
@@ -238,6 +259,7 @@
     if (state.caveSyncTimer) clearInterval(state.caveSyncTimer);
     if (state.techniqueSyncTimer) clearInterval(state.techniqueSyncTimer);
     if (state.destinyRankingSyncTimer) clearInterval(state.destinyRankingSyncTimer);
+    if (state.npcSocialSyncTimer) clearInterval(state.npcSocialSyncTimer);
     if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.cultivationTicker = null;
     state.cultivationSyncTimer = null;
@@ -247,12 +269,14 @@
     state.caveSyncTimer = null;
     state.techniqueSyncTimer = null;
     state.destinyRankingSyncTimer = null;
+    state.npcSocialSyncTimer = null;
     state.gameSessionHeartbeatTimer = null;
     state.cultivationSyncing = false;
     state.opportunitySyncing = false;
     state.caveSyncing = false;
     state.techniqueSyncing = false;
     state.destinyRankingSyncing = false;
+    state.npcSocialSyncing = false;
   }
 
   function clearSession() {
@@ -273,6 +297,8 @@
     state.techniqueSystem = null;
     state.destinyRanking = null;
     state.destinyRankingFetchedAt = 0;
+    state.npcSocial = null;
+    state.npcSocialFetchedAt = 0;
     state.timeStatus = null;
     state.timeStatusStartedAt = 0;
     state.timeSyncing = false;
@@ -615,6 +641,30 @@
         p_limit: Math.max(1, Math.min(100, Number(limit || 50))),
         p_offset: Math.max(0, Number(offset || 0))
       }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetNpcSocialV1() {
+    const result = await restFetch('rpc/get_npc_social_v1', {
+      method: 'POST',
+      body: {}
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcInteractWithNpcV1(npcId, action) {
+    const result = await restFetch('rpc/interact_with_npc_v1', {
+      method: 'POST',
+      body: { p_npc_id: npcId, p_action: action }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcFormNpcRelationshipV1(npcId, relationshipType) {
+    const result = await restFetch('rpc/form_npc_relationship_v1', {
+      method: 'POST',
+      body: { p_npc_id: npcId, p_relationship_type: relationshipType }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -2189,6 +2239,148 @@
   }
 
 
+  function npcRelationClass(type) {
+    return ['master', 'partner', 'sworn_friend', 'enemy'].includes(type) ? `relation-${type}` : '';
+  }
+
+  function npcSocialPanelHtml(system) {
+    const data = system || { status: 'loading', contacts: [], recent_events: [], settings: {} };
+    if (data.status === 'unavailable') {
+      return `<div id="npcSocialRoot" class="npc-social-root"><div class="empty-state"><h4>红尘录尚未开启</h4><p>${escapeHtml(data.error || '请先执行V0.10.0数据库升级。')}</p><button class="primary-btn" type="button" data-npc-refresh>重新读取</button></div></div>`;
+    }
+    if (data.status === 'loading') return '<div id="npcSocialRoot" class="npc-social-root"><div class="empty-state">正在推演红尘因缘……</div></div>';
+    const contacts = Array.isArray(data.contacts) ? data.contacts : [];
+    const events = Array.isArray(data.recent_events) ? data.recent_events : [];
+    const giftCost = Number(data.settings?.gift_spirit_stone_cost || 100);
+    return `
+      <div id="npcSocialRoot" class="npc-social-root">
+        <div class="npc-social-head">
+          <div><strong>红尘故人 ${formatNumber(contacts.length)} 位</strong><small>论道、赠礼、请教或结下师徒与道侣因缘</small></div>
+          <button class="secondary-btn" type="button" data-npc-refresh>刷新红尘</button>
+        </div>
+        <div class="npc-contact-grid">
+          ${contacts.map(row => {
+            const ready = Boolean(row.interaction_ready);
+            const guidanceReady = Boolean(row.guidance_ready) && Boolean(row.can_ask_guidance);
+            return `<article class="npc-contact-card ${npcRelationClass(row.relationship_type)}">
+              <div class="npc-card-head">
+                <div><span>${escapeHtml(row.title || row.archetype || '九霄修士')}</span><strong>${escapeHtml(row.name)}</strong></div>
+                <em>${escapeHtml(row.relationship_name || '陌路')}</em>
+              </div>
+              <p class="npc-realm-line">${escapeHtml(row.realm_label)} · ${escapeHtml(row.element)}属 · ${escapeHtml(row.personality)}</p>
+              <p>${escapeHtml(row.description || '')}</p>
+              <div class="npc-score-grid">
+                <div><span>好感</span><strong>${formatNumber(row.affinity)}</strong></div>
+                <div><span>信任</span><strong>${formatNumber(row.trust)}</strong></div>
+                <div><span>恩怨</span><strong>${formatNumber(row.grudge)}</strong></div>
+              </div>
+              <div class="npc-action-grid">
+                <button type="button" data-npc-action="talk" data-npc-id="${escapeHtml(row.npc_id)}" ${ready ? '' : 'disabled'}>论道</button>
+                <button type="button" data-npc-action="gift" data-npc-id="${escapeHtml(row.npc_id)}" ${ready ? '' : 'disabled'}>赠礼·${formatNumber(giftCost)}灵石</button>
+                <button type="button" data-npc-action="guidance" data-npc-id="${escapeHtml(row.npc_id)}" ${ready && guidanceReady ? '' : 'disabled'}>请教</button>
+                <button type="button" data-npc-action="provoke" data-npc-id="${escapeHtml(row.npc_id)}" ${ready ? '' : 'disabled'}>挑衅</button>
+              </div>
+              ${!ready && row.next_interaction_at ? `<small class="npc-cooldown" data-npc-ready-at="${escapeHtml(row.next_interaction_at)}">交游冷却中</small>` : ''}
+              <div class="npc-bond-actions">
+                ${row.can_form_master ? `<button type="button" data-npc-bond="master" data-npc-id="${escapeHtml(row.npc_id)}">拜师</button>` : ''}
+                ${row.can_form_partner ? `<button type="button" data-npc-bond="partner" data-npc-id="${escapeHtml(row.npc_id)}">结为道侣</button>` : ''}
+                ${row.can_form_sworn_friend ? `<button type="button" data-npc-bond="sworn_friend" data-npc-id="${escapeHtml(row.npc_id)}">义结金兰</button>` : ''}
+              </div>
+            </article>`;
+          }).join('') || '<div class="empty-state">红尘尚无人来。</div>'}
+        </div>
+        <div class="subsection-title"><strong>近日因缘</strong><span>同步写入命书</span></div>
+        <div class="npc-event-list">
+          ${events.map(row => `<article><time>仙历${escapeHtml(row.world_year)}年</time><strong>${escapeHtml(row.title)}</strong><p>${escapeHtml(row.content)}</p></article>`).join('') || '<div class="empty-state">尚无交游记录。</div>'}
+        </div>
+      </div>
+    `;
+  }
+
+  function updateNpcSocialPanel() {
+    const root = document.getElementById('npcSocialRoot');
+    if (!root) return;
+    root.outerHTML = npcSocialPanelHtml(state.npcSocial);
+    bindNpcSocialActions();
+    updateNpcCountdowns();
+  }
+
+  async function refreshNpcSocial(silent = true) {
+    if (state.npcSocialSyncing || !state.character) return;
+    state.npcSocialSyncing = true;
+    try {
+      state.npcSocial = await rpcGetNpcSocialV1();
+      state.npcSocialFetchedAt = Date.now();
+      updateNpcSocialPanel();
+      if (!silent) showToast('红尘因缘已刷新。');
+    } catch (error) {
+      state.npcSocial = { status: 'unavailable', contacts: [], recent_events: [], error: translateError(error) };
+      updateNpcSocialPanel();
+      if (!silent) showToast(translateError(error), 'error');
+    } finally {
+      state.npcSocialSyncing = false;
+    }
+  }
+
+  function updateNpcCountdowns() {
+    document.querySelectorAll('[data-npc-ready-at]').forEach(node => {
+      const remaining = Math.max(0, Math.ceil((new Date(node.dataset.npcReadyAt).getTime() - Date.now()) / 1000));
+      node.textContent = remaining > 0 ? `交游冷却 ${formatDuration(remaining)}` : '可以再次交游';
+      if (remaining <= 0) node.removeAttribute('data-npc-ready-at');
+    });
+  }
+
+  function bindNpcSocialActions() {
+    document.querySelectorAll('[data-npc-refresh]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '推演中……');
+        await refreshNpcSocial(false);
+        setBusy(button, false);
+      });
+    });
+    document.querySelectorAll('[data-npc-action]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '交游中……');
+        try {
+          const result = await rpcInteractWithNpcV1(button.dataset.npcId, button.dataset.npcAction);
+          const gain = Number(result?.cultivation_gain || 0);
+          if (gain > 0) {
+            state.liveCultivationBase += gain;
+            if (state.character) state.character.cultivation = Number(state.character.cultivation || 0) + gain;
+          }
+          const karmaDelta = Number(result?.karma_delta || 0);
+          if (karmaDelta && state.character) state.character.karma = Math.max(-100, Math.min(100, Number(state.character.karma || 0) + karmaDelta));
+          showToast(result?.content || '红尘因缘已有变化。');
+          await refreshNpcSocial(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+        } finally {
+          setBusy(button, false);
+        }
+      });
+    });
+    document.querySelectorAll('[data-npc-bond]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '立誓中……');
+        try {
+          const result = await rpcFormNpcRelationshipV1(button.dataset.npcId, button.dataset.npcBond);
+          showToast(result?.content || '红尘关系已经缔结。');
+          await refreshNpcSocial(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+        } finally {
+          setBusy(button, false);
+        }
+      });
+    });
+  }
+
   function renderDashboard(bundle) {
     renderAccount();
     const c = bundle.character;
@@ -2208,6 +2400,7 @@
     const inventory = bundle.inventory || [];
     const caveSystem = bundle.caveSystem || state.caveSystem || { resources: [], buildings: [], recipes: [], rules: {} };
     const destinyRanking = bundle.destinyRanking || state.destinyRanking || { status: 'loading', entries: [], total_count: 0 };
+    const npcSocial = bundle.npcSocial || state.npcSocial || { status: 'loading', contacts: [], recent_events: [], settings: {} };
     const activeEffects = (bundle.cultivationEffects || []).filter(row => {
       const isCurrent = !row.expires_at || new Date(row.expires_at).getTime() > Date.now();
       const isCombination = row?.metadata?.v2_kind === 'combination' || String(row?.source_key || '').startsWith('combo:');
@@ -2273,6 +2466,7 @@
             <a href="#talentSection">功法</a>
             <a href="#inventorySection">洞府</a>
             <a href="#opportunitySection">机缘</a>
+            <a href="#npcSocialSection">红尘录</a>
             <a href="#destinyRankingSection">天命榜</a>
             <a href="#historySection">命书</a>
           </nav>
@@ -2361,6 +2555,11 @@
           </section>
         </section>
 
+        <section id="npcSocialSection" class="panel" data-mobile-screen="social">
+          <div class="panel-title"><h3>红尘录</h3><span class="badge">故人 · 师徒 · 道侣</span></div>
+          ${npcSocialPanelHtml(npcSocial)}
+        </section>
+
         <section id="destinyRankingSection" class="panel" data-mobile-screen="ranking">
           <div class="panel-title"><h3>天命榜</h3><span class="badge">全服境界排行</span></div>
           ${destinyRankingPanelHtml(destinyRanking)}
@@ -2376,6 +2575,7 @@
           <button class="mobile-tab-button ${state.activeMobileTab === 'techniques' ? 'active' : ''}" type="button" data-mobile-tab="techniques"><b>法</b><span>功法</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'cave' ? 'active' : ''}" type="button" data-mobile-tab="cave"><b>府</b><span>洞府</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'opportunity' ? 'active' : ''}" type="button" data-mobile-tab="opportunity"><b>缘</b><span>机缘</span></button>
+          <button class="mobile-tab-button ${state.activeMobileTab === 'social' ? 'active' : ''}" type="button" data-mobile-tab="social"><b>人</b><span>红尘</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'ranking' ? 'active' : ''}" type="button" data-mobile-tab="ranking"><b>榜</b><span>天命榜</span></button>
           <button class="mobile-tab-button ${state.activeMobileTab === 'history' ? 'active' : ''}" type="button" data-mobile-tab="history"><b>书</b><span>命书</span></button>
         </nav>
@@ -2386,6 +2586,7 @@
     state.liveCultivationStartedAt = Date.now();
     bindProgressionActions();
     bindInventoryTechniqueActions();
+    bindNpcSocialActions();
     bindDestinyRankingActions();
     bindMobileDashboardNav();
     const manualSyncBtn = document.getElementById('manualSyncBtn');
@@ -2396,7 +2597,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshCaveSystem(true), refreshDestinyRanking(false, true)]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshCaveSystem(true), refreshNpcSocial(true), refreshDestinyRanking(false, true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -2434,6 +2635,9 @@
         if (target === 'ranking' && Date.now() - Number(state.destinyRankingFetchedAt || 0) > 30000) {
           refreshDestinyRanking(false, true);
         }
+        if (target === 'social' && Date.now() - Number(state.npcSocialFetchedAt || 0) > 30000) {
+          refreshNpcSocial(true);
+        }
       });
     });
 
@@ -2444,6 +2648,7 @@
 
   function updateLiveCultivationDisplay() {
     updateGameTimeDisplay();
+    updateNpcCountdowns();
     const value = document.getElementById('cultivationValue');
     if (!value || !state.cultivationStatus) return;
     const rate = Number(state.cultivationStatus.current_rate_per_second || 0);
@@ -2521,6 +2726,7 @@
     state.caveSyncTimer = setInterval(() => refreshCaveSystem(true), 60000);
     state.techniqueSyncTimer = setInterval(() => refreshTechniqueSystem(false), 60000);
     state.destinyRankingSyncTimer = setInterval(() => refreshDestinyRanking(false, true), 60000);
+    state.npcSocialSyncTimer = setInterval(() => refreshNpcSocial(true), 60000);
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
     updateCaveCountdown();
@@ -2579,13 +2785,16 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, opportunityStatus, techniqueSystem, caveSystem, destinyRanking] = await Promise.all([
+      const [breakthroughStatus, opportunityStatus, techniqueSystem, caveSystem, destinyRanking, npcSocial] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetOpportunity(),
         rpcGetTechniqueSystemV2(),
         rpcGetCaveSystemV1(),
         rpcGetDestinyRankingV1(50, 0).catch(error => ({
           status: 'unavailable', entries: [], total_count: 0, error: translateError(error)
+        })),
+        rpcGetNpcSocialV1().catch(error => ({
+          status: 'unavailable', contacts: [], recent_events: [], error: translateError(error)
         }))
       ]);
       bundle.breakthroughStatus = breakthroughStatus;
@@ -2593,6 +2802,7 @@
       bundle.techniqueSystem = techniqueSystem;
       bundle.caveSystem = caveSystem;
       bundle.destinyRanking = destinyRanking;
+      bundle.npcSocial = npcSocial;
       state.cultivationStatus = cultivationStatus;
       state.breakthroughStatus = breakthroughStatus;
       state.opportunityStatus = opportunityStatus;
@@ -2600,6 +2810,8 @@
       state.caveSystem = caveSystem;
       state.destinyRanking = destinyRanking;
       state.destinyRankingFetchedAt = Date.now();
+      state.npcSocial = npcSocial;
+      state.npcSocialFetchedAt = Date.now();
       renderDashboard(bundle);
     } catch (error) {
       console.error(error);

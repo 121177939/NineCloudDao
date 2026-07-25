@@ -1,4 +1,4 @@
-/* Current release: Web Alpha 0.9.1 */
+/* Current release: Web Alpha 0.10.0 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -1418,4 +1418,57 @@ button, .badge, .hero-chip { max-width: 100%; }
   .mobile-tab-button { min-width: 0; }
   .mobile-tab-button b { width: 21px; height: 21px; font-size: 9px; }
   .mobile-tab-button span { font-size: 8px; }
+}
+
+/* V0.10.0 NPC关系与红尘录 */
+.npc-social-root { display: grid; gap: 11px; }
+.npc-social-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 13px; border: 1px solid rgba(206,182,126,.22); background: linear-gradient(145deg,rgba(120,66,72,.12),rgba(13,12,10,.34)); }
+.npc-social-head > div { display: grid; gap: 3px; min-width: 0; }
+.npc-social-head strong { color: var(--gold-bright); font-size: 15px; font-weight: 500; }
+.npc-social-head small { color: var(--paper-muted); font-size: 10px; }
+.npc-contact-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.npc-contact-card { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--line); background: rgba(13,12,10,.3); }
+.npc-contact-card.relation-master { border-color: rgba(107,144,202,.52); background: linear-gradient(145deg,rgba(74,103,154,.12),rgba(13,12,10,.32)); }
+.npc-contact-card.relation-partner { border-color: rgba(201,112,135,.55); background: linear-gradient(145deg,rgba(156,69,96,.12),rgba(13,12,10,.32)); }
+.npc-contact-card.relation-sworn_friend { border-color: rgba(126,190,162,.48); background: linear-gradient(145deg,rgba(80,135,111,.1),rgba(13,12,10,.32)); }
+.npc-contact-card.relation-enemy { border-color: rgba(180,78,64,.55); background: linear-gradient(145deg,rgba(133,48,38,.13),rgba(13,12,10,.34)); }
+.npc-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.npc-card-head > div { display: grid; gap: 2px; min-width: 0; }
+.npc-card-head span { color: var(--paper-muted); font-size: 9px; }
+.npc-card-head strong { color: var(--paper); font-size: 17px; font-weight: 500; }
+.npc-card-head em { flex: 0 0 auto; padding: 3px 7px; border: 1px solid rgba(206,182,126,.28); color: var(--gold-bright); font-size: 9px; font-style: normal; }
+.npc-contact-card p { margin: 0; color: var(--paper-muted); font-size: 10px; line-height: 1.65; }
+.npc-contact-card .npc-realm-line { color: var(--paper); }
+.npc-score-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; }
+.npc-score-grid div { display: grid; gap: 2px; padding: 6px; border: 1px solid rgba(206,182,126,.13); text-align: center; }
+.npc-score-grid span { color: var(--paper-muted); font-size: 8px; }
+.npc-score-grid strong { color: var(--gold-bright); font-size: 12px; font-weight: 500; }
+.npc-action-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 5px; }
+.npc-action-grid button, .npc-bond-actions button { min-height: 34px; padding: 5px 7px; border: 1px solid rgba(206,182,126,.24); background: rgba(206,182,126,.06); color: var(--paper); font: inherit; font-size: 9px; cursor: pointer; }
+.npc-action-grid button:hover, .npc-bond-actions button:hover { border-color: rgba(206,182,126,.5); color: var(--gold-bright); }
+.npc-action-grid button:disabled { cursor: not-allowed; opacity: .42; }
+.npc-bond-actions { display: flex; flex-wrap: wrap; gap: 5px; }
+.npc-bond-actions:empty { display: none; }
+.npc-bond-actions button { color: var(--gold-bright); }
+.npc-cooldown { color: var(--paper-muted); font-size: 9px; }
+.npc-event-list { display: grid; gap: 6px; }
+.npc-event-list article { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 3px 9px; padding: 9px 10px; border-left: 2px solid rgba(206,182,126,.35); background: rgba(13,12,10,.24); }
+.npc-event-list time { grid-row: 1 / span 2; color: var(--paper-muted); font-size: 8px; }
+.npc-event-list strong { color: var(--paper); font-size: 11px; font-weight: 500; }
+.npc-event-list p { grid-column: 2; margin: 0; color: var(--paper-muted); font-size: 9px; line-height: 1.5; }
+.mobile-bottom-nav { grid-template-columns: repeat(7,minmax(0,1fr)); }
+
+@media (max-width: 760px) {
+  .npc-social-root { gap: 7px; }
+  .npc-social-head { padding: 8px; }
+  .npc-social-head strong { font-size: 11px; }
+  .npc-social-head small { font-size: 8px; }
+  .npc-contact-grid { grid-template-columns: 1fr; gap: 5px; }
+  .npc-contact-card { gap: 6px; padding: 8px; }
+  .npc-card-head strong { font-size: 14px; }
+  .npc-contact-card p { font-size: 9px; }
+  .npc-action-grid button, .npc-bond-actions button { min-height: 31px; font-size: 8px; }
+  .mobile-bottom-nav { grid-template-columns: repeat(7,minmax(0,1fr)) !important; gap: 1px; }
+  .mobile-tab-button { min-width: 0; padding-left: 1px; padding-right: 1px; }
+  .mobile-tab-button span { font-size: 7px; }
 }
