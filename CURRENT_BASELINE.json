@@ -1,7 +1,11 @@
 {
-  "version": "0.11.2",
-  "sourceBaseline": "0.11.1",
-  "databaseBaselineBefore": "68 tables / 57 functions",
-  "migration": "202607250020_auto_opportunity_v3.sql",
+  "version": "0.11.3",
+  "sourceBaseline": "0.11.2 FINAL FIX1",
+  "databaseBaselineBefore": "75 tables / 61 functions",
+  "databaseBaselineAfter": "75 tables / 61 functions",
+  "migration": null,
+  "sqlRequired": false,
+  "hotfix": "恢复V0.11.2误删的updateProgressionDisplay函数",
+  "inheritsOpportunityMigration": "202607250020_auto_opportunity_v3.sql",
   "oldV2Forbidden": true
 }

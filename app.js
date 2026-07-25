@@ -1587,6 +1587,27 @@
 
   }
 
+
+  function updateProgressionDisplay() {
+    const status = state.breakthroughStatus;
+    if (!status || status.status !== 'available') return;
+    const current = currentDisplayedCultivation();
+    const required = Number(status.cultivation_required || 0);
+    const percent = required > 0 ? Math.max(0, Math.min(100, current / required * 100)) : 100;
+    const text = document.getElementById('breakthroughProgressText');
+    const fill = document.getElementById('breakthroughProgressFill');
+    const button = document.getElementById('attemptBreakthroughBtn');
+    if (text) text.textContent = `${formatNumber(current)} / ${formatNumber(required)}`;
+    if (fill) fill.style.width = `${percent}%`;
+    if (button && !button.dataset.oldText) {
+      const ready = current >= required;
+      button.disabled = !ready;
+      button.textContent = ready
+        ? `冲击${status.next_stage_name || '下一境界'}`
+        : `尚缺 ${formatNumber(Math.max(0, required - current))} 修为`;
+    }
+  }
+
   async function refreshOpportunity() {
     if (state.opportunitySyncing || !state.character) return;
     state.opportunitySyncing = true;

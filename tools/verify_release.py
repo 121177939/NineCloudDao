@@ -303,9 +303,22 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
         '<div class="aura-inner">机</div>',
     ]
     if all(item in app for item in opportunity_ui_expectations) and 'data-mobile-tab="opportunity"' not in app:
-        report.ok("V0.11.2 已将机缘并入修炼页并取消独立底部入口")
+        report.ok(f"V{version} 保留机缘并入修炼页且无独立底部入口")
     else:
-        report.fail("V0.11.2 机缘入口调整不完整")
+        report.fail(f"V{version} 机缘入口调整不完整")
+
+    runtime_contract = [
+        "function updateProgressionDisplay()",
+        "function updateLiveCultivationDisplay()",
+        "updateProgressionDisplay();",
+        "breakthroughProgressText",
+        "breakthroughProgressFill",
+        "attemptBreakthroughBtn",
+    ]
+    if all(item in app for item in runtime_contract) and app.count("function updateProgressionDisplay()") == 1:
+        report.ok("境界突破实时进度函数定义、调用与DOM契约完整")
+    else:
+        report.fail("境界突破实时进度运行时契约不完整，可能触发updateProgressionDisplay ReferenceError")
 
     if mode == "source":
         time_migration_path = root / "database/V0.7.0/202607240013_time_lifespan_reincarnation.sql"
@@ -615,9 +628,13 @@ def verify_archive(path: Path, config: dict, report: Report) -> None:
             else:
                 report.fail(f"{path.name} 未包含完整的 V0.11.0 宗门体系前端")
             if all(item in app for item in ('id="opportunityEntryBtn"', 'openOpportunityModal', '<div class="aura-inner">机</div>')) and 'data-mobile-tab="opportunity"' not in app:
-                report.ok(f"{path.name} 包含 V0.11.2 机缘入口调整")
+                report.ok(f"{path.name} 包含机缘入口整合")
             else:
-                report.fail(f"{path.name} 未包含完整的 V0.11.2 机缘入口调整")
+                report.fail(f"{path.name} 未包含完整的机缘入口整合")
+            if "function updateProgressionDisplay()" in app and "updateProgressionDisplay();" in app and app.count("function updateProgressionDisplay()") == 1:
+                report.ok(f"{path.name} 包含境界突破实时进度函数")
+            else:
+                report.fail(f"{path.name} 缺少境界突破实时进度函数或定义重复")
             report.ok(f"{path.name} ZIP 完整性通过，SHA256={sha256(path)}")
     except Exception as exc:
         report.fail(f"无法检查 {path.name}：{exc}")
