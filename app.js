@@ -1484,6 +1484,11 @@
     return opportunity.last_result;
   }
 
+  function formatHeavenCoefficient(value) {
+    const n = Number(value || 1);
+    return Number.isInteger(n) ? String(n) : formatNumber(n, 1);
+  }
+
   function normalizeHeavenBalance(balance, cultivation = state.cultivationStatus || {}) {
     if (balance && balance.status && balance.status !== 'unavailable') return balance;
     const coefficient = Number(cultivation.qi_multiplier || 1);
@@ -1545,7 +1550,7 @@
     const copy = heavenBalanceCopy(balance);
     const coefficient = Number(balance.coefficient || 1);
     const qiBase = Number(balance.world_qi_base || 1);
-    const qiGain = Number(balance.qi_gain_per_second ?? qiBase * coefficient);
+    const effectiveMultiplier = Number(balance.qi_gain_per_second ?? qiBase * coefficient);
     const code = escapeHtml(balance.status_code || 'dao_balance');
     return `
       <div class="heaven-balance-dialog state-${code}">
@@ -1558,8 +1563,8 @@
         </div>
         <div class="heaven-balance-current">
           <span>当前灵气效率</span>
-          <strong>×${formatNumber(coefficient, 1)}</strong>
-          <small>灵气环境 ${formatNumber(qiBase, 2)} × 天道系数 ${formatNumber(coefficient, 1)} = 每秒灵气收益 +${formatNumber(qiGain, 2)}</small>
+          <strong>×${formatHeavenCoefficient(coefficient)}</strong>
+          <small>世界灵气 ${formatNumber(qiBase, 2)} × 天道系数 ${formatHeavenCoefficient(coefficient)} = 当前自动修炼总倍率 ×${formatHeavenCoefficient(effectiveMultiplier)}</small>
         </div>
         <div class="heaven-balance-meta">
           <div><span>你的境界</span><strong>${escapeHtml(balance.player_realm_name || '未知')}</strong></div>
@@ -1578,7 +1583,7 @@
           <div><span>高2境</span><strong>×0.6</strong></div>
           <div><span>高3境及以上</span><strong>×0.5</strong></div>
         </div>
-        <p class="heaven-balance-note">天道系数只调整“灵气环境”收益，不会把功法、机缘及其他固定修为整体重复乘算。</p>
+        <p class="heaven-balance-note">天道福泽、均衡或阻滞会作用于当前全部自动修炼收益。×0.5表示最终速度约为原速度的一半，×5表示最终速度约为原速度的五倍。</p>
       </div>
     `;
   }
@@ -1611,8 +1616,8 @@
     if (!entry) return;
     const balance = normalizeHeavenBalance(state.heavenBalance);
     const coefficient = Number(balance.coefficient || 1);
-    entry.className = `heaven-balance-entry state-${balance.status_code || 'dao_balance'}`;
-    entry.innerHTML = `<span>灵气环境（${escapeHtml(balance.status_name || '大道均衡')}）</span><strong>×${formatNumber(coefficient, 1)}</strong>`;
+    entry.className = 'heaven-balance-entry';
+    entry.innerHTML = `<span>灵气环境（${escapeHtml(balance.status_name || '大道均衡')}）</span><strong>×${formatHeavenCoefficient(coefficient)}</strong>`;
     entry.setAttribute('aria-label', `查看${balance.status_name || '大道均衡'}规则，当前灵气效率${formatNumber(coefficient, 1)}倍`);
   }
 
@@ -3210,7 +3215,7 @@
                 <div><span>基础吐纳</span><strong>+${formatNumber(cultivation.base_rate_per_second, 3)}/秒</strong></div>
                 <div><span>功法加成</span><strong>+${formatNumber(cultivation.technique_flat_rate, 3)}/秒</strong></div>
                 <div><span>灵根倍率</span><strong>×${formatNumber(cultivation.root_multiplier || 1, 3)}</strong></div>
-                <button id="heavenBalanceBtn" class="heaven-balance-entry state-${escapeHtml(heavenBalance.status_code || 'dao_balance')}" type="button" aria-label="查看${escapeHtml(heavenBalance.status_name || '大道均衡')}规则"><span>灵气环境（${escapeHtml(heavenBalance.status_name || '大道均衡')}）</span><strong>×${formatNumber(heavenBalance.coefficient || 1, 1)}</strong></button>
+                <button id="heavenBalanceBtn" class="heaven-balance-entry" type="button" aria-label="查看${escapeHtml(heavenBalance.status_name || '大道均衡')}规则"><span>灵气环境（${escapeHtml(heavenBalance.status_name || '大道均衡')}）</span><strong>×${formatHeavenCoefficient(heavenBalance.coefficient || 1)}</strong></button>
                 <div><span>命格修正</span><strong>${Number(cultivation.fate_bonus || 0) >= 0 ? '+' : ''}${formatNumber(Number(cultivation.fate_bonus || 0) * 100, 2)}%</strong></div>
                 <div><span>持续机缘</span><strong>+${formatNumber(cultivation.effect_flat_rate, 3)}/秒</strong></div>
               </div>

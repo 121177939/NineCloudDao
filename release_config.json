@@ -1,20 +1,20 @@
 {
   "projectName": "九霄问道",
-  "version": "0.11.7",
-  "releaseLabel": "Web Alpha 0.11.7",
-  "releaseType": "规则升级：天道动态均衡，低境界灵气福泽、主流境界大道均衡、高境界天道阻滞",
+  "version": "0.11.7-fix1",
+  "releaseLabel": "Web Alpha 0.11.7 FIX1",
+  "releaseType": "V0.11.7修复：天道系数作用于全部自动修炼收益，灵气环境入口恢复原UI",
   "repository": "121177939/NineCloudDao",
   "productionUrl": "https://121177939.github.io/NineCloudDao/",
   "worldCode": "jiuxiao_world_1",
   "localPort": 8787,
-  "serviceWorkerCache": "nine-cloud-dao-v0.11.7",
+  "serviceWorkerCache": "nine-cloud-dao-v0.11.7-fix1",
   "databaseBaseline": {
     "publicTables": 75,
     "databaseFunctions": 75,
     "sqlRequired": true,
-    "migration": "database/V0.11.7/202607260030_v0117_heaven_balance.sql",
-    "check": "database/V0.11.7/202607260030_v0117_check.sql",
-    "prerequisite": "V0.11.6 FINAL 已部署并通过8项PASS检查；V0.11.7只执行本版本新增迁移SQL"
+    "migration": "database/V0.11.7/202607260200_v0117_fix1_full_heaven_multiplier.sql",
+    "check": "database/V0.11.7/202607260200_v0117_fix1_check.sql",
+    "prerequisite": "V0.11.7主迁移已执行；随后只执行FIX1修复SQL和检查SQL"
   },
   "gameTime": {
     "gameYearsPerRealDay": 12,
@@ -123,7 +123,15 @@
     "docs/V0.11.1-V0.11.7_FUNCTION_AUDIT.md",
     "docs/V0.11.7_RUNTIME_MOCK_HEAVEN_BALANCE.png",
     "docs/V0.11.7_RUNTIME_MOCK_RESULT.json",
-    "tools/sql_static_check_v0117.py"
+    "tools/sql_static_check_v0117.py",
+    "database/V0.11.7/202607260200_v0117_fix1_full_heaven_multiplier.sql",
+    "database/V0.11.7/202607260200_v0117_fix1_check.sql",
+    "database/V0.11.7/202607260200_v0117_fix1_emergency_disable.sql",
+    "database/V0.11.7/202607260200_v0117_fix1_resume.sql",
+    "database/V0.11.7/202607260200_v0117_fix1_rollback.sql",
+    "docs/V0.11.7_FIX1_HOTFIX_NOTES.md",
+    "docs/V0.11.7_FIX1_DEPLOYMENT_GUIDE.md",
+    "docs/V0.11.7_FIX1_REAL_DEVICE_TEST_CHECKLIST.md"
   ],
   "caveSystem": {
     "persistsAcrossReincarnation": true,
@@ -290,8 +298,8 @@
       "zeroGap": "大道均衡",
       "positiveGap": "天道阻滞"
     },
-    "calculation": "固定修炼收益按原规则计算 + 灵气环境基础值 × 天道系数",
-    "appliesOnlyTo": "灵气环境收益",
+    "calculation": "原有完整自动修炼速度 × 世界灵气环境基础值 × 天道动态系数",
+    "appliesOnlyTo": "当前全部自动修炼收益",
     "rpc": "get_heaven_balance_v1"
   }
 }
