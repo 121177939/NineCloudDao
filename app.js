@@ -1436,38 +1436,36 @@
     `;
   }
 
-  function opportunityEntryContentHtml(opportunity) {
-    if (!opportunity || opportunity.status === 'loading') {
-      return `
-        <span class="opportunity-auto-mark">自动获取</span>
-        <div class="aura-ring"><div class="aura-inner">机</div></div>
-        <div class="focus-caption opportunity-entry-copy">
-          <strong>正在观测天机</strong>
-          <span>无需手动寻觅</span>
-          <small>点击查看</small>
-        </div>
-      `;
-    }
-    if (Boolean(opportunity.last_result)) {
-      return `
-        <span class="opportunity-auto-mark ready">机缘已至</span>
-        <div class="aura-ring"><div class="aura-inner">机</div></div>
-        <div class="focus-caption opportunity-entry-copy">
-          <strong>${escapeHtml(opportunity.title || '无名机缘')}</strong>
-          <span>${escapeHtml(rarityName(opportunity.rarity))}</span>
-          <small>点击查看结果</small>
-        </div>
-      `;
-    }
-    const nextAt = opportunity.next_available_at ? new Date(opportunity.next_available_at) : null;
-    const seconds = nextAt ? Math.max(0, Math.ceil((nextAt.getTime() - Date.now()) / 1000)) : Number(opportunity.seconds_until_next || 0);
+  function latestOpportunityResult(opportunity) {
+    if (!opportunity || !opportunity.last_result || typeof opportunity.last_result !== 'object') return null;
+    return opportunity.last_result;
+  }
+
+  function opportunityWheelHtml() {
     return `
-      <span class="opportunity-auto-mark">自动推演</span>
-      <div class="aura-ring"><div class="aura-inner">机</div></div>
+      <div class="opportunity-wheel" aria-hidden="true">
+        <div class="opportunity-wheel-outer">
+          <i class="opportunity-wheel-dot dot-1"></i>
+          <i class="opportunity-wheel-dot dot-2"></i>
+          <i class="opportunity-wheel-dot dot-3"></i>
+        </div>
+        <div class="opportunity-wheel-inner"></div>
+        <div class="opportunity-wheel-core">机</div>
+      </div>
+    `;
+  }
+
+  function opportunityEntryContentHtml(opportunity) {
+    const result = latestOpportunityResult(opportunity);
+    const nextAt = opportunity?.next_available_at ? new Date(opportunity.next_available_at) : null;
+    const seconds = nextAt ? Math.max(0, Math.ceil((nextAt.getTime() - Date.now()) / 1000)) : Math.max(0, Number(opportunity?.seconds_until_next || 0));
+    return `
+      <span class="opportunity-auto-mark">自主推演天机</span>
+      ${opportunityWheelHtml()}
       <div class="focus-caption opportunity-entry-copy">
         <strong>下一次机缘</strong>
         <span id="opportunityEntryCountdown">${formatDuration(seconds)}</span>
-        <small>到时自动获取</small>
+        <small>角色正在自主推演天机${result ? ` · 最近：${escapeHtml(result.title || '无名机缘')}` : ''}</small>
       </div>
     `;
   }
@@ -1475,9 +1473,8 @@
   function updateOpportunityEntry() {
     const entry = document.getElementById('opportunityEntryBtn');
     if (!entry) return;
-    const pending = state.opportunityStatus?.status === 'pending';
-    entry.classList.toggle('has-opportunity', pending);
-    entry.setAttribute('aria-label', pending ? '机缘已至，点击查看并选择' : '查看自动机缘状态');
+    entry.classList.toggle('has-opportunity', Boolean(latestOpportunityResult(state.opportunityStatus)));
+    entry.setAttribute('aria-label', '查看最近一次机缘结果摘要');
     entry.innerHTML = opportunityEntryContentHtml(state.opportunityStatus);
   }
 
@@ -1510,35 +1507,33 @@
     if (!opportunity || opportunity.status === 'loading') {
       return '<div class="empty-state">天机未显，正在观测灵气变化……</div>';
     }
-    if (Boolean(opportunity.last_result)) {
-      const choices = Array.isArray(opportunity.choices) ? opportunity.choices : [];
-      return `
-        <div class="panel-title"><h3>天降机缘</h3><span class="badge rarity-${escapeHtml(opportunity.rarity || 'common')}">${escapeHtml(rarityName(opportunity.rarity))}</span></div>
-        <article class="opportunity-scene">
-          <span class="eyebrow">机缘已至</span>
-          <h4>${escapeHtml(opportunity.title || '无名机缘')}</h4>
-          <p>${escapeHtml(opportunity.content || '')}</p>
-          <div class="opportunity-choices">
-            ${choices.map(choice => `
-              <button class="opportunity-choice" type="button" data-opportunity-id="${escapeHtml(opportunity.opportunity_id)}" data-choice-key="${escapeHtml(choice.choice_key)}">
-                <strong>${escapeHtml(choice.choice_text)}</strong>
-                <small>${escapeHtml(choice.reward_text || '所得由天道决定')}</small>
-              </button>
-            `).join('')}
-          </div>
-          <small class="opportunity-expire">此机缘将在 ${escapeHtml(new Date(opportunity.expires_at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }))} 前消散。</small>
-        </article>
-      `;
-    }
+    const result = latestOpportunityResult(opportunity);
     const nextAt = opportunity.next_available_at ? new Date(opportunity.next_available_at) : null;
-    const seconds = nextAt ? Math.max(0, Math.ceil((nextAt.getTime() - Date.now()) / 1000)) : Number(opportunity.seconds_until_next || 0);
+    const seconds = nextAt ? Math.max(0, Math.ceil((nextAt.getTime() - Date.now()) / 1000)) : Math.max(0, Number(opportunity.seconds_until_next || 0));
+    const rarity = result?.rarity || result?.rarity_name || 'common';
+    const rarityLabel = result?.rarity_name || rarityName(rarity);
     return `
-      <div class="panel-title"><h3>天降机缘</h3><span class="badge">天机流转</span></div>
-      <div class="opportunity-waiting">
-        <div class="dao-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
-        <strong>下一次机缘推演中</strong>
-        <p>气运越高，越容易在稀有机缘中获得上乘功法与修炼加成。</p>
-        <span id="opportunityCountdown">${formatDuration(seconds)}</span>
+      <div class="panel-title"><h3>天机推演</h3><span class="badge ${result ? `rarity-${escapeHtml(rarity)}` : ''}">${escapeHtml(result ? rarityLabel : '天机流转')}</span></div>
+      <div class="opportunity-waiting opportunity-summary-panel">
+        ${opportunityWheelHtml()}
+        <strong>角色正在自主推演天机</strong>
+        <p>下一次机缘将在 <span id="opportunityCountdown" class="inline-countdown">${formatDuration(seconds)}</span> 后自动结算，无需手动抽取、选择或领取。</p>
+        ${result ? `
+          <article class="opportunity-result-summary">
+            <span class="eyebrow">最近一次机缘结果</span>
+            <h4>${escapeHtml(result.title || '无名机缘')}</h4>
+            <p>${escapeHtml(result.content || '天机流转，道痕已留。')}</p>
+            <div class="result-summary-grid">
+              <div><span>品级</span><strong>${escapeHtml(rarityLabel)}</strong></div>
+              <div><span>路径</span><strong>${escapeHtml(result.path_name || '天机自决')}</strong></div>
+              <div><span>正面效果</span><strong>${escapeHtml(result.reward_text || '已自动结算')}</strong></div>
+              <div><span>负面效果</span><strong>${escapeHtml(result.penalty_text || '无')}</strong></div>
+            </div>
+            <small>最近一次机缘已自动写入命书，修士无需手动操作。</small>
+          </article>
+        ` : `
+          <small>暂无最近机缘结果，系统会在倒计时结束后自动推演并结算。</small>
+        `}
       </div>
     `;
   }
@@ -1624,7 +1619,7 @@
         : '';
       if (opportunityId && opportunityId !== state.lastOpportunityNoticeId) {
         state.lastOpportunityNoticeId = opportunityId;
-        showToast('新机缘已自动结算，点击“机”查看。');
+        showToast('角色已自主推演天机，点击“机”查看结果摘要。');
       }
     } catch (error) {
       console.error(error);
@@ -2930,11 +2925,12 @@
 
     state.liveCultivationBase = Number(c.cultivation || 0);
     state.liveCultivationStartedAt = Date.now();
-    if (opportunity?.status === 'pending') {
-      const opportunityId = String(opportunity.opportunity_id || '');
-      if (opportunityId && opportunityId !== state.lastOpportunityNoticeId) {
-        state.lastOpportunityNoticeId = opportunityId;
-        setTimeout(() => showToast('机缘已自动获取，点击“机”查看。'), 120);
+    const latestOpportunity = latestOpportunityResult(opportunity);
+    if (latestOpportunity?.result_id) {
+      const resultId = String(latestOpportunity.result_id || '');
+      if (resultId && resultId !== state.lastOpportunityNoticeId) {
+        state.lastOpportunityNoticeId = resultId;
+        setTimeout(() => showToast('角色已自主推演天机，点击“机”查看结果摘要。'), 120);
       }
     }
     bindProgressionActions();

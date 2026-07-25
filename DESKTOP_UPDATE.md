@@ -1,12 +1,12 @@
-# GitHub Desktop 更新到 V0.11.3
+# GitHub Desktop 更新到 V0.11.4
 
 1. 备份当前本地仓库与线上V0.11.2文件。
-2. V0.11.3不执行新Supabase SQL。
+2. V0.11.4不执行新Supabase SQL。
 3. 打开GitHub Desktop并选择NineCloudDao仓库。
 4. 点击Fetch origin；出现Pull origin时先Pull。
-5. 解压 `NineCloudDao_GitHub_Upload_V0.11.3.zip`。
+5. 解压 `NineCloudDao_GitHub_Upload_V0.11.4.zip`。
 6. 进入内层目录，将全部文件覆盖到仓库根目录；不要多套一层文件夹。
-7. Summary填写：`Fix runtime error and update to V0.11.3`。
+7. Summary填写：`Fix runtime error and update to V0.11.4`。
 8. 点击Commit to main，再点击Push origin。
 9. 等待GitHub Actions显示绿色对勾。
 10. 访问正式站点并使用 `?v=0113` 强制读取新版本。
@@ -14,7 +14,7 @@
 
 ## 重点验证
 
-- 页面版本显示Web Alpha 0.11.3；
+- 页面版本显示Web Alpha 0.11.4；
 - 登录角色后不再出现 `updateProgressionDisplay is not defined`；
 - 修为持续增长；
 - 突破进度条实时变化；

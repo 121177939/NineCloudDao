@@ -299,13 +299,13 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
         'id="opportunityEntryBtn"',
         'opportunityEntryContentHtml',
         'openOpportunityModal',
-        '新机缘已自动结算',
-        '<div class="aura-inner">机</div>',
+        '自主推演天机',
+        'opportunityWheelHtml()',
     ]
-    if all(item in app for item in opportunity_ui_expectations) and 'data-mobile-tab="opportunity"' not in app:
-        report.ok(f"V{version} 保留机缘并入修炼页且无独立底部入口")
+    if all(item in app for item in opportunity_ui_expectations) and 'data-mobile-tab="opportunity"' not in app and 'opportunity-choice' not in app and '点击查看并选择' not in app:
+        report.ok(f"V{version} 机缘并入修炼页，且采用自主推演与结果摘要模式")
     else:
-        report.fail(f"V{version} 机缘入口调整不完整")
+        report.fail(f"V{version} 机缘自主推演界面调整不完整")
 
     runtime_contract = [
         "function updateProgressionDisplay()",
