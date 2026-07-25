@@ -1631,7 +1631,7 @@ button, .badge, .hero-chip { max-width: 100%; }
 /* V0.11.3 · 恢复境界突破实时进度显示函数，无视觉规则变更 */
 
 
-/* V0.11.4 · 机缘轮视觉修正与结果摘要模式 */
+/* V0.11.5 · 机缘轮视觉修正与结果摘要模式 */
 .opportunity-wheel { position: relative; width: 164px; height: 164px; display: grid; place-items: center; }
 .opportunity-wheel-outer { position: absolute; inset: 0; border: 1px solid rgba(206,182,126,.38); border-radius: 50%; box-shadow: 0 0 0 12px rgba(201,167,95,.04), inset 0 0 42px rgba(201,167,95,.08); animation: opportunityOuterSpin 12s linear infinite; }
 .opportunity-wheel-inner { position: absolute; inset: 22px; border: 1px solid rgba(206,182,126,.26); border-radius: 50%; box-shadow: inset 0 0 20px rgba(201,167,95,.06); }
@@ -1666,4 +1666,47 @@ button, .badge, .hero-chip { max-width: 100%; }
   .result-summary-grid > div { padding: 7px 8px; }
   .result-summary-grid span { font-size: 8px; }
   .result-summary-grid strong { font-size: 10px; }
+}
+
+/* V0.11.5 · 机缘轮溢出修正 + 专属功法界面 */
+.cultivation-visual.opportunity-entry { overflow: hidden; }
+.opportunity-entry { justify-items: center; }
+.opportunity-wheel { max-width: 100%; overflow: hidden; }
+.opportunity-wheel-outer { box-sizing: border-box; }
+.exclusive-technique-root { display: grid; gap: 16px; margin-bottom: 18px; }
+.exclusive-overview-card { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 16px; border: 1px solid rgba(206,182,126,.22); background: rgba(255,255,255,.02); }
+.exclusive-overview-card > div { display: grid; gap: 4px; }
+.exclusive-overview-card span { color: var(--paper-muted); font-size: 13px; }
+.exclusive-overview-card strong { color: var(--gold-bright); font-size: 20px; font-weight: 500; }
+.exclusive-overview-card small { color: var(--paper); line-height: 1.6; }
+.exclusive-technique-card .technique-grade { letter-spacing: .08em; }
+.exclusive-technique-list .manage-card-head .badge { border-color: rgba(206,182,126,.25); }
+@media (max-width: 760px) {
+  .opportunity-entry { padding-inline: 8px; }
+  .cultivation-visual.opportunity-entry { min-width: 0; }
+  .opportunity-wheel { width: 72px; height: 72px; }
+  .opportunity-wheel-outer { box-shadow: 0 0 0 4px rgba(201,167,95,.04), inset 0 0 16px rgba(201,167,95,.06); }
+  .opportunity-wheel-inner { inset: 10px; }
+  .opportunity-wheel-core { inset: 20px; font-size: 21px; }
+  .opportunity-wheel-dot { width: 4px; height: 4px; }
+  .opportunity-wheel-dot.dot-2 { right: 4px; bottom: 10px; }
+  .opportunity-wheel-dot.dot-3 { left: 4px; bottom: 10px; }
+  .exclusive-technique-root { gap: 10px; margin-bottom: 12px; }
+  .exclusive-overview-card { padding: 10px; gap: 10px; align-items: flex-start; flex-direction: column; }
+  .exclusive-overview-card strong { font-size: 16px; }
+}
+
+/* V0.11.5 FINAL · 超窄手机列宽安全尺寸 */
+@media (max-width: 760px) {
+  .opportunity-entry { box-sizing: border-box; padding-left: 7px; padding-right: 7px; }
+  .opportunity-wheel { width: min(56px, 100%); height: min(56px, calc(100vw - 28px)); flex: 0 0 auto; }
+  .opportunity-wheel-inner { inset: 8px; }
+  .opportunity-wheel-core { inset: 16px; font-size: 18px; }
+  .opportunity-wheel-dot { width: 4px; height: 4px; }
+  .opportunity-wheel-dot.dot-2 { right: 3px; bottom: 8px; }
+  .opportunity-wheel-dot.dot-3 { left: 3px; bottom: 8px; }
+  .opportunity-entry-copy { min-width: 0; width: 100%; overflow: hidden; }
+  .opportunity-entry-copy strong,
+  .opportunity-entry-copy span,
+  .opportunity-entry-copy small { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
 }

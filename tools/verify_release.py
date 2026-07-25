@@ -307,6 +307,31 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     else:
         report.fail(f"V{version} 机缘自主推演界面调整不完整")
 
+    styles = read_text(root / 'styles.css', report)
+    opportunity_layout_expectations = [
+        '.cultivation-visual.opportunity-entry { overflow: hidden;',
+        '.opportunity-wheel { width: min(56px, 100%);',
+        '.opportunity-entry-copy { min-width: 0;',
+        '@keyframes opportunityOuterSpin',
+    ]
+    if all(item in styles for item in opportunity_layout_expectations):
+        report.ok(f"V{version} 移动端机缘轮边界、文字换行和外圈动画契约完整")
+    else:
+        report.fail(f"V{version} 移动端机缘轮仍可能越界")
+
+    exclusive_expectations = [
+        'get_exclusive_technique_system_v1',
+        'set_exclusive_technique_slot_v1',
+        '专属功法',
+        'exclusiveTechniqueRoot',
+        'const [breakthroughStatus, opportunityStatus, techniqueSystem, exclusiveTechniqueSystem',
+        'rpcGetExclusiveTechniqueSystemV1().catch',
+    ]
+    if all(item in app for item in exclusive_expectations):
+        report.ok(f"V{version} 专属功法界面与 RPC 已接入")
+    else:
+        report.fail(f"V{version} 专属功法界面或 RPC 接入不完整")
+
     runtime_contract = [
         "function updateProgressionDisplay()",
         "function updateLiveCultivationDisplay()",

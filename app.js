@@ -79,6 +79,7 @@
     caveSyncTimer: null,
     caveSyncing: false,
     techniqueSystem: null,
+    exclusiveTechniqueSystem: null,
     techniqueSyncTimer: null,
     techniqueSyncing: false,
     destinyRanking: null,
@@ -178,6 +179,11 @@
     if (raw.includes('MAIN_TECHNIQUE_SLOT_ONLY')) return '主修功法只能放入主修槽。';
     if (raw.includes('SUPPORT_TECHNIQUE_SLOT_ONLY')) return '这门功法只能放入辅修槽。';
     if (raw.includes('INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法提升功法。';
+    if (raw.includes('EXCLUSIVE_TECHNIQUE_NOT_FOUND')) return '没有找到这门专属功法。';
+    if (raw.includes('EXCLUSIVE_TECHNIQUE_ALREADY_OWNED')) return '这门专属功法已经拥有，无需重复获取。';
+    if (raw.includes('EXCLUSIVE_TECHNIQUE_FATE_MISMATCH')) return '此专属功法与当前命格不符，天道已收回并补偿100灵石。';
+    if (raw.includes('EXCLUSIVE_SLOT_INVALID')) return '专属槽调整无效，请重新选择。';
+    if (raw.includes('EXCLUSIVE_TECHNIQUE_MAX_LEVEL')) return '这门专属功法已经达到最高36级。';
     if (raw.includes('V080_FIXED_REQUIRED')) return 'V0.8.0 功法修正版尚未成功部署，请先执行修正版 SQL 并通过检查。';
     if (raw.includes('CAVE_SETTINGS_MISSING')) return '洞府配置缺失，请重新执行 V0.9.0 数据库升级。';
     if (raw.includes('CAVE_BUILDING_NOT_FOUND')) return '没有找到这座洞府建筑。';
@@ -326,6 +332,7 @@
     state.lastOpportunityNoticeId = null;
     state.caveSystem = null;
     state.techniqueSystem = null;
+    state.exclusiveTechniqueSystem = null;
     state.destinyRanking = null;
     state.destinyRankingFetchedAt = 0;
     state.npcSocial = null;
@@ -774,6 +781,27 @@
     const result = await restFetch('rpc/upgrade_technique_v2', {
       method: 'POST',
       body: { p_character_technique_id: characterTechniqueId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetExclusiveTechniqueSystemV1() {
+    const result = await restFetch('rpc/get_exclusive_technique_system_v1', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcSetExclusiveTechniqueSlotV1(characterExclusiveId) {
+    const result = await restFetch('rpc/set_exclusive_technique_slot_v1', {
+      method: 'POST',
+      body: { p_character_exclusive_id: characterExclusiveId || null }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcUpgradeExclusiveTechniqueV1(characterExclusiveId) {
+    const result = await restFetch('rpc/upgrade_exclusive_technique_v1', {
+      method: 'POST',
+      body: { p_character_exclusive_id: characterExclusiveId }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -1665,6 +1693,27 @@
     }
   }
 
+
+  async function refreshExclusiveTechniqueSystem(rebind = false) {
+    if (!state.character) return state.exclusiveTechniqueSystem;
+    try {
+      const system = await rpcGetExclusiveTechniqueSystemV1();
+      if (!system || system.status !== 'ok') return system;
+      state.exclusiveTechniqueSystem = system;
+      if (state.details) state.details.exclusiveTechniqueSystem = system;
+      const root = document.getElementById('exclusiveTechniqueRoot');
+      if (root && state.details) {
+        root.outerHTML = exclusiveTechniquePanelHtml(system, state.details.inventory || []);
+        if (rebind) bindExclusiveTechniqueActions();
+        else bindExclusiveTechniqueActions();
+      }
+      return system;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
   async function refreshCaveSystem(rebind = true) {
     if (!state.character || state.caveSyncing) return state.caveSystem;
     state.caveSyncing = true;
@@ -1821,14 +1870,43 @@
     return `grade-${String(value || 'mortal').replace(/[^a-z0-9_-]/gi, '')}`;
   }
 
+  function techniqueV2EffectValues(row, targetLevel = null) {
+    const fixed = row?.fixed_effects || row?.definition?.fixed_effects || {};
+    const level = Math.max(1, Number(targetLevel ?? row?.level ?? 1));
+    const growth = Math.max(0, Number(fixed.linear_growth_per_level || 0));
+    const factor = 1 + growth * (level - 1);
+    const isOpportunityTechnique = Object.prototype.hasOwnProperty.call(fixed, 'v3_base_cultivation_per_second') || Object.prototype.hasOwnProperty.call(fixed, 'v3_base_cultivation_multiplier');
+    const flatBase = Number(isOpportunityTechnique ? fixed.v3_base_cultivation_per_second : fixed.cultivation_per_second || 0);
+    const multiplierBase = Number(isOpportunityTechnique
+      ? fixed.v3_base_cultivation_multiplier || 0
+      : Math.max(0, Number(fixed.cultivation_multiplier || 1) - 1));
+    return {
+      flat: flatBase * (isOpportunityTechnique ? factor : level),
+      multiplier: multiplierBase * (isOpportunityTechnique ? factor : 1),
+      factor,
+      growth,
+      isOpportunityTechnique
+    };
+  }
+
   function techniqueV2EffectText(row) {
     const fixed = row?.fixed_effects || row?.definition?.fixed_effects || {};
-    const level = Number(row?.level || 1);
-    const flat = Number(fixed.cultivation_per_second || 0) * level;
-    const multiplier = Math.max(0, Number(fixed.cultivation_multiplier || 1) - 1);
+    const level = Math.max(1, Number(row?.level || 1));
+    const maxLevel = Math.max(level, Number(row?.max_level || level));
+    const current = techniqueV2EffectValues(row, level);
+    const next = techniqueV2EffectValues(row, Math.min(maxLevel, level + 1));
+    const maximum = techniqueV2EffectValues(row, maxLevel);
     const parts = [];
-    if (flat) parts.push(`每秒修为 +${formatNumber(flat, 3)}`);
-    if (multiplier) parts.push(`修炼倍率 +${formatNumber(multiplier * 100, 2)}%`);
+    if (current.flat) parts.push(`当前每秒修为 +${formatNumber(current.flat, 3)}`);
+    if (current.multiplier) parts.push(`当前修炼速度 +${formatNumber(current.multiplier * 100, 2)}%`);
+    if (current.isOpportunityTechnique && level < maxLevel) {
+      if (next.flat) parts.push(`下一级 +${formatNumber(next.flat, 3)}/秒`);
+      if (next.multiplier) parts.push(`下一级 +${formatNumber(next.multiplier * 100, 2)}%`);
+    }
+    if (current.isOpportunityTechnique) {
+      if (maximum.flat) parts.push(`满级 +${formatNumber(maximum.flat, 3)}/秒`);
+      if (maximum.multiplier) parts.push(`满级 +${formatNumber(maximum.multiplier * 100, 2)}%`);
+    }
     if (Number(fixed.lifespan_bonus || 0)) parts.push(`寿元潜力 +${formatNumber(Number(fixed.lifespan_bonus) * 100, 1)}%`);
     if (Number(fixed.recovery || 0)) parts.push(`恢复效率 +${formatNumber(Number(fixed.recovery) * 100, 1)}%`);
     return parts.join(' · ') || '当前没有直接修炼数值加成';
@@ -1840,6 +1918,75 @@
     if (Number(effects.flat_rate_per_second || 0)) parts.push(`每秒修为 +${formatNumber(effects.flat_rate_per_second, 3)}`);
     if (Number(effects.multiplier_bonus || 0)) parts.push(`修炼倍率 +${formatNumber(Number(effects.multiplier_bonus) * 100, 2)}%`);
     return parts.join(' · ') || '组合效果待配置';
+  }
+
+
+  function exclusiveResourceName(code) {
+    const map = { cave_qi: '灵蕴', spirit_herb: '灵草', spirit_ore: '灵矿' };
+    return map[code] || '洞府机缘';
+  }
+
+  function exclusiveTechniqueEffectText(row) {
+    const bonus = Number(row?.effect_multiplier_bonus || 0);
+    const parts = [];
+    if (bonus > 0) parts.push(`当前修炼速度 +${formatNumber(bonus * 100, 2)}%`);
+    if (row?.fate_name) parts.push(`本命命格：${row.fate_name}`);
+    if (row?.cave_resource_code) parts.push(`洞府偏向：${exclusiveResourceName(row.cave_resource_code)}`);
+    return parts.join(' · ');
+  }
+
+  function exclusiveTechniquePanelHtml(system, inventory) {
+    const result = system || { status: 'loading', techniques: [], equipped_id: null };
+    const rows = Array.isArray(result.techniques) ? result.techniques : [];
+    const stone = (inventory || []).find(row => row.definition?.code === 'spirit_stone');
+    const stones = Number(stone?.quantity || 0);
+    if (result.status === 'loading') return '<div id="exclusiveTechniqueRoot" class="exclusive-technique-root"><div class="empty-state">正在读取专属功法……</div></div>';
+    return `
+      <div id="exclusiveTechniqueRoot" class="exclusive-technique-root">
+        <div class="subsection-title"><strong>专属功法</strong><span>${rows.length} / 5 已得</span></div>
+        <div class="exclusive-overview-card ${rows.some(row => row.equipped) ? 'equipped' : ''}">
+          <div>
+            <span>独立专属槽</span>
+            <strong>${escapeHtml(result.equipped_name || '未运转')}</strong>
+            <small>${result.equipped_name ? '专属功法效果已计入自动修炼速度。' : '获得并运转专属功法后，将在此处生效。'}</small>
+          </div>
+          <div class="resource-inline"><span>可用灵石</span><strong>${formatNumber(stones)}</strong></div>
+        </div>
+        ${rows.length ? `
+          <div class="technique-manage-list exclusive-technique-list">
+            ${rows.map(row => {
+              const level = Number(row.level || 1);
+              const maxLevel = Number(row.max_level || 36);
+              const canUpgrade = level < maxLevel;
+              const equipLabel = row.equipped ? '专属运转中' : '设为专属';
+              const levelUpText = canUpgrade ? `精进 · ${formatNumber(row.next_upgrade_cost || 0)} 灵石` : '已满层';
+              return `
+                <article class="manage-card technique-v2-card exclusive-technique-card ${row.equipped ? 'equipped' : ''}">
+                  <div class="manage-card-head">
+                    <div>
+                      <span class="technique-grade grade-heaven">专属</span>
+                      <strong>${escapeHtml(row.name || '未知专属功法')} <small>第 ${formatNumber(level)}/${formatNumber(maxLevel)} 层</small></strong>
+                    </div>
+                    <span class="badge">${escapeHtml(row.equipped ? '专属槽' : (row.is_matching_fate ? '本命功法' : '异命功法'))}</span>
+                  </div>
+                  <p>${escapeHtml(exclusiveTechniqueEffectText(row))}</p>
+                  <small class="manage-description">${escapeHtml(row.description || '一级修炼速度+30%，每级线性增加一级基础效果的10%。')}</small>
+                  <div class="technique-progress-copy">
+                    <span>${escapeHtml(row.is_matching_fate ? '命格契合' : '命格不符')}</span>
+                    <span>洞府偏向 ${escapeHtml(exclusiveResourceName(row.cave_resource_code))}</span>
+                    <span>当前加成 +${formatNumber(Number(row.effect_multiplier_bonus || 0) * 100, 2)}%</span>
+                  </div>
+                  <div class="manage-actions">
+                    <button class="ghost-btn" type="button" data-exclusive-slot="${escapeHtml(row.id)}" ${row.equipped ? 'disabled' : ''}>${escapeHtml(equipLabel)}</button>
+                    <button class="primary-btn" type="button" data-upgrade-exclusive-technique="${escapeHtml(row.id)}" ${canUpgrade ? '' : 'disabled'}>${escapeHtml(levelUpText)}</button>
+                  </div>
+                </article>
+              `;
+            }).join('')}
+          </div>
+        ` : '<div class="empty-state">尚未通过机缘获得专属功法。</div>'}
+      </div>
+    `;
   }
 
   function techniquePanelHtml(system, inventory) {
@@ -2216,6 +2363,55 @@
             title: `功法精进 · 第 ${formatNumber(result?.level || 0)} 层`,
             message: `${result?.technique_name || '功法'}已突破本层桎梏。`,
             detail: `消耗灵石 ${formatNumber(result?.cost || 0)}，熟练消耗 ${formatNumber(result?.proficiency_spent || 0)}，传承点消耗 ${formatNumber(result?.mastery_spent || 0)}。`,
+            success: true
+          });
+          await syncCultivation(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+          setBusy(button, false);
+        }
+      });
+    });
+  }
+
+
+  function bindExclusiveTechniqueActions() {
+    document.querySelectorAll('[data-exclusive-slot]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '运转中……');
+        try {
+          state.activeMobileTab = 'techniques';
+          const result = await rpcSetExclusiveTechniqueSlotV1(button.dataset.exclusiveSlot);
+          showToast(`${result?.technique_name || '专属功法'}已纳入专属槽。`);
+          await refreshExclusiveTechniqueSystem(true);
+          await syncCultivation(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+          setBusy(button, false);
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-upgrade-exclusive-technique]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '参悟中……');
+        try {
+          state.activeMobileTab = 'techniques';
+          const result = await rpcUpgradeExclusiveTechniqueV1(button.dataset.upgradeExclusiveTechnique);
+          const spiritStone = state.details?.inventory?.find(row => row.definition?.code === 'spirit_stone');
+          if (spiritStone && Number.isFinite(Number(result?.spirit_stones_remaining))) {
+            spiritStone.quantity = Number(result.spirit_stones_remaining);
+          }
+          await refreshExclusiveTechniqueSystem(true);
+          showResultModal({
+            seal: '专',
+            title: `专属精进 · 第 ${formatNumber(result?.level || 0)} 层`,
+            message: `${result?.technique_name || '专属功法'}已完成本层淬炼。`,
+            detail: `消耗灵石 ${formatNumber(result?.cost || 0)}，当前加成 +${formatNumber(Number(result?.effect_multiplier_bonus || 0) * 100, 2)}%。`,
             success: true
           });
           await syncCultivation(true);
@@ -2866,6 +3062,7 @@
               <p>${escapeHtml(fate.description || '命格信息尚未读取。')}</p>
             </article>
           </div>
+          ${exclusiveTechniquePanelHtml(bundle.exclusiveTechniqueSystem || state.exclusiveTechniqueSystem || { status: 'loading', techniques: [] }, inventory)}
           ${techniquePanelHtml(techniqueSystem, inventory)}
           ${stackedActiveEffects.length ? `
             <div class="effect-strip">
@@ -2936,6 +3133,7 @@
     bindProgressionActions();
     bindOpportunityEntryActions();
     bindInventoryTechniqueActions();
+    bindExclusiveTechniqueActions();
     bindNpcSocialActions();
     bindSectSystemActions();
     bindDestinyRankingActions();
@@ -3140,10 +3338,13 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, opportunityStatus, techniqueSystem, caveSystem, destinyRanking, npcSocial, sectSystem] = await Promise.all([
+      const [breakthroughStatus, opportunityStatus, techniqueSystem, exclusiveTechniqueSystem, caveSystem, destinyRanking, npcSocial, sectSystem] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetOpportunity(),
         rpcGetTechniqueSystemV2(),
+        rpcGetExclusiveTechniqueSystemV1().catch(error => ({
+          status: 'unavailable', techniques: [], equipped_name: null, error: translateError(error)
+        })),
         rpcGetCaveSystemV1(),
         rpcGetDestinyRankingV1(50, 0).catch(error => ({
           status: 'unavailable', entries: [], total_count: 0, error: translateError(error)
@@ -3158,6 +3359,7 @@
       bundle.breakthroughStatus = breakthroughStatus;
       bundle.opportunityStatus = opportunityStatus;
       bundle.techniqueSystem = techniqueSystem;
+      bundle.exclusiveTechniqueSystem = exclusiveTechniqueSystem;
       bundle.caveSystem = caveSystem;
       bundle.destinyRanking = destinyRanking;
       bundle.npcSocial = npcSocial;
@@ -3166,6 +3368,7 @@
       state.breakthroughStatus = breakthroughStatus;
       state.opportunityStatus = opportunityStatus;
       state.techniqueSystem = techniqueSystem;
+      state.exclusiveTechniqueSystem = exclusiveTechniqueSystem;
       state.caveSystem = caveSystem;
       state.destinyRanking = destinyRanking;
       state.destinyRankingFetchedAt = Date.now();
