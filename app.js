@@ -1540,24 +1540,34 @@
     const seconds = nextAt ? Math.max(0, Math.ceil((nextAt.getTime() - Date.now()) / 1000)) : Math.max(0, Number(opportunity.seconds_until_next || 0));
     const rarity = result?.rarity || result?.rarity_name || 'common';
     const rarityLabel = result?.rarity_name || rarityName(rarity);
+    const currentAuspiciousProbability = Math.max(0, Math.min(100, Number(opportunity?.auspicious_probability ?? result?.auspicious_probability ?? 50)));
+    const currentRiskProbability = Math.max(0, Math.min(100, Number(opportunity?.risk_probability ?? result?.risk_probability ?? (100 - currentAuspiciousProbability))));
+    const luckyBonus = Number(opportunity?.lucky_auspicious_bonus ?? result?.lucky_auspicious_bonus ?? 0);
+    const isRisk = result?.path_name === '涉险';
+    const outcomeLabel = isRisk ? '涉险代价' : '趋吉所得';
+    const outcomeText = isRisk ? (result?.penalty_text || '本次涉险未记录具体代价') : (result?.reward_text || '本次趋吉结果已自动结算');
     return `
       <div class="panel-title"><h3>天机推演</h3><span class="badge ${result ? `rarity-${escapeHtml(rarity)}` : ''}">${escapeHtml(result ? rarityLabel : '天机流转')}</span></div>
       <div class="opportunity-waiting opportunity-summary-panel">
         ${opportunityWheelHtml()}
         <strong>角色正在自主推演天机</strong>
         <p>下一次机缘将在 <span id="opportunityCountdown" class="inline-countdown">${formatDuration(seconds)}</span> 后自动结算，无需手动抽取、选择或领取。</p>
+        <div class="opportunity-probability-line">
+          <span>趋吉 ${formatNumber(currentAuspiciousProbability, 1)}%</span>
+          <span>涉险 ${formatNumber(currentRiskProbability, 1)}%</span>
+          ${luckyBonus > 0 ? `<small>机缘深厚：趋吉额外 +${formatNumber(luckyBonus, 0)} 个百分点</small>` : ''}
+        </div>
         ${result ? `
-          <article class="opportunity-result-summary">
+          <article class="opportunity-result-summary ${isRisk ? 'risk-result' : 'auspicious-result'}">
             <span class="eyebrow">最近一次机缘结果</span>
             <h4>${escapeHtml(result.title || '无名机缘')}</h4>
             <p>${escapeHtml(result.content || '天机流转，道痕已留。')}</p>
-            <div class="result-summary-grid">
+            <div class="result-summary-grid polarity-grid">
               <div><span>品级</span><strong>${escapeHtml(rarityLabel)}</strong></div>
               <div><span>路径</span><strong>${escapeHtml(result.path_name || '天机自决')}</strong></div>
-              <div><span>正面效果</span><strong>${escapeHtml(result.reward_text || '已自动结算')}</strong></div>
-              <div><span>负面效果</span><strong>${escapeHtml(result.penalty_text || '无')}</strong></div>
+              <div class="polarity-outcome"><span>${escapeHtml(outcomeLabel)}</span><strong>${escapeHtml(outcomeText)}</strong></div>
             </div>
-            <small>最近一次机缘已自动写入命书，修士无需手动操作。</small>
+            <small>每次机缘只会结算一种方向：趋吉只有奖励，涉险只有代价。</small>
           </article>
         ` : `
           <small>暂无最近机缘结果，系统会在倒计时结束后自动推演并结算。</small>

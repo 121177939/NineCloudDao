@@ -1710,3 +1710,27 @@ button, .badge, .hero-chip { max-width: 100%; }
   .opportunity-entry-copy span,
   .opportunity-entry-copy small { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
 }
+
+/* V0.11.6 · 机缘正负互斥与概率展示 */
+.opportunity-probability-line {
+  width: min(100%, 560px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(206,182,126,.18);
+  background: rgba(255,255,255,.02);
+  color: var(--paper);
+}
+.opportunity-probability-line span { color: var(--gold-bright); font-variant-numeric: tabular-nums; }
+.opportunity-probability-line small { width: 100%; color: var(--paper-muted); text-align: center; }
+.polarity-grid .polarity-outcome { grid-column: 1 / -1; }
+.opportunity-result-summary.auspicious-result { border-color: rgba(201,167,95,.34); }
+.opportunity-result-summary.risk-result { border-color: rgba(192,72,72,.36); }
+.opportunity-result-summary.risk-result .polarity-outcome strong { color: #e7a9a9; }
+@media (max-width:760px) {
+  .opportunity-probability-line { padding: 7px 8px; gap: 4px 10px; font-size: 10px; }
+  .opportunity-probability-line small { font-size: 8px; }
+}

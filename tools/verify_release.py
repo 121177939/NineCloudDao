@@ -307,6 +307,18 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
     else:
         report.fail(f"V{version} 机缘自主推演界面调整不完整")
 
+    polarity_expectations = [
+        '趋吉所得',
+        '涉险代价',
+        'auspicious_probability',
+        '机缘深厚：趋吉额外',
+        '每次机缘只会结算一种方向',
+    ]
+    if all(item in app for item in polarity_expectations) and '<span>正面效果</span>' not in app and '<span>负面效果</span>' not in app:
+        report.ok(f"V{version} 前端已采用趋吉/涉险正负互斥展示")
+    else:
+        report.fail(f"V{version} 前端仍可能同时展示正面和负面效果")
+
     styles = read_text(root / 'styles.css', report)
     opportunity_layout_expectations = [
         '.cultivation-visual.opportunity-entry { overflow: hidden;',
@@ -547,6 +559,29 @@ def verify_root(root: Path, mode: str, require_node: bool, report: Report) -> di
         else:
             report.fail("V0.11.0 检查SQL内容不完整")
 
+        v0116_migration = read_text(root / "database/V0.11.6/202607252300_v0116_opportunity_polarity.sql", report)
+        v0116_expectations = [
+            "opportunity_v3_auspicious_probability_v1",
+            "50::numeric",
+            "* 0.5",
+            "then 5 else 0",
+            "random()*100<v_auspicious_probability",
+            "v_effect_positive",
+            "v_effect_negative",
+            "opportunity_v3_results_v0116_polarity_check",
+            "涉险·",
+        ]
+        if all(item in v0116_migration for item in v0116_expectations) and "天机迟滞·" not in v0116_migration:
+            report.ok("V0.11.6 数据库迁移包含50/50基准、机缘深厚+5与正负互斥")
+        else:
+            report.fail("V0.11.6 数据库迁移规则不完整")
+
+        v0116_check = read_text(root / "database/V0.11.6/202607252300_v0116_check.sql", report)
+        if all(item in v0116_check for item in ("probability_base_50_50", "lucky_encounter_plus_5", "new_results_are_mutually_exclusive")):
+            report.ok("V0.11.6 提供概率与正负互斥检查SQL")
+        else:
+            report.fail("V0.11.6 检查SQL内容不完整")
+
     sw = read_text(root / "sw.js", report)
     if "url.hostname.endsWith('.supabase.co')" in sw and "return;" in sw:
         report.ok("Service Worker 保持 Supabase 请求不缓存")
@@ -652,10 +687,10 @@ def verify_archive(path: Path, config: dict, report: Report) -> None:
                 report.ok(f"{path.name} 包含 V0.11.0 宗门体系前端")
             else:
                 report.fail(f"{path.name} 未包含完整的 V0.11.0 宗门体系前端")
-            if all(item in app for item in ('id="opportunityEntryBtn"', 'openOpportunityModal', '<div class="aura-inner">机</div>')) and 'data-mobile-tab="opportunity"' not in app:
-                report.ok(f"{path.name} 包含机缘入口整合")
+            if all(item in app for item in ('id="opportunityEntryBtn"', 'openOpportunityModal', 'opportunityWheelHtml()', '趋吉所得', '涉险代价')) and 'data-mobile-tab="opportunity"' not in app:
+                report.ok(f"{path.name} 包含机缘入口整合与正负互斥展示")
             else:
-                report.fail(f"{path.name} 未包含完整的机缘入口整合")
+                report.fail(f"{path.name} 未包含完整的机缘入口或正负互斥展示")
             if "function updateProgressionDisplay()" in app and "updateProgressionDisplay();" in app and app.count("function updateProgressionDisplay()") == 1:
                 report.ok(f"{path.name} 包含境界突破实时进度函数")
             else:
