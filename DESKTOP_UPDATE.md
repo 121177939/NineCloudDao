@@ -1,11 +1,9 @@
-# GitHub Desktop 更新到 V0.11.10-fix3
+# GitHub Desktop 更新到 V0.12.0 FIX1
 
-本次只更新前端底部导航，不需要执行新的SQL，也不要重复执行FIX1或FIX2数据库脚本。
-
-1. 解压GitHub上传包。
-2. 用解压后的全部文件覆盖仓库根目录。
-3. 在GitHub Desktop中提交：`Fix six-item paged bottom navigation`。
-4. Push到`main`，等待GitHub Actions变绿。
-5. 彻底关闭旧PWA或浏览器标签，再访问`?v=01110fix3`。
-
-底部导航第一页固定显示6项，多出的“命书”在第二页，手指左右滑动即可切换。
+1. 先在Supabase执行FIX1预检查、主SQL和检查SQL，确认27项全部PASS。
+2. 解压 `NineCloudDao_GitHub_Upload_V0.12.0_FIX1.zip`。
+3. 将解压后的全部文件覆盖到本地GitHub仓库根目录。
+4. 在GitHub Desktop中确认旧的V0.12.0初稿SQL已被删除，新的 `202607260830_v0120_fix1_*` 文件已经出现。
+5. Commit summary填写：`Upgrade market casino to V0.12.0 FIX1`。
+6. Push origin，等待GitHub Actions成功。
+7. 关闭旧PWA，重新访问 `?v=0120fix1`。

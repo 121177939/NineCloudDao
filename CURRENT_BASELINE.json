@@ -1,11 +1,12 @@
 {
-  "version": "0.11.3",
-  "sourceBaseline": "0.11.2 FINAL FIX1",
-  "databaseBaselineBefore": "75 tables / 61 functions",
-  "databaseBaselineAfter": "75 tables / 61 functions",
-  "migration": null,
-  "sqlRequired": false,
-  "hotfix": "恢复V0.11.2误删的updateProgressionDisplay函数",
-  "inheritsOpportunityMigration": "202607250020_auto_opportunity_v3.sql",
-  "oldV2Forbidden": true
+  "version": "0.12.0-fix1",
+  "sourceBaseline": "V0.11.10 FIX3",
+  "databaseBaseline": "V0.11.10 FIX1 + FIX2",
+  "migration": "database/V0.12.0/202607260830_v0120_fix1_market_casino.sql",
+  "precheck": "database/V0.12.0/202607260830_v0120_fix1_precheck.sql",
+  "check": "database/V0.12.0/202607260830_v0120_fix1_check.sql",
+  "emergencyDisable": "database/V0.12.0/202607260830_v0120_fix1_emergency_disable.sql",
+  "resume": "database/V0.12.0/202607260830_v0120_fix1_resume.sql",
+  "rollback": "database/V0.12.0/202607260830_v0120_fix1_rollback.sql",
+  "notes": "修复V0.12.0初稿的辅助函数公开执行风险、修为输钱不跌小境界、赌桌超时不返还、结果不揭示招式、造化池无开奖、检查SQL过弱及版本元数据未更新等问题。"
 }

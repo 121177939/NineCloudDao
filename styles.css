@@ -1,4 +1,4 @@
-/* Current release: Web Alpha 0.11.3 */
+/* Current release: Web Alpha 0.12.0-fix1 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -1920,3 +1920,8 @@ button, .badge, .hero-chip { max-width: 100%; }
 .mobile-bottom-nav-pager i.active { width: 11px; border-radius: 999px; background: var(--gold); }
 @media (max-width: 760px), (min-width: 1024px) { .mobile-bottom-nav { padding-top: 9px; } }
 
+
+.market-lore{padding:14px 16px;margin:14px 0;border-left:3px solid var(--gold,#b69052);background:rgba(166,125,65,.08)}.market-form{display:grid;gap:10px}.market-form label{display:grid;gap:5px;font-size:.9rem}.market-form input,.market-form select{width:100%;padding:10px 12px;border:1px solid rgba(120,100,70,.28);border-radius:10px;background:var(--panel-bg,#fff);color:inherit}.market-summary{margin-bottom:12px}
+
+/* V0.12.0 FIX1 市坊控件 */
+.path-card label{display:grid;gap:5px;margin-top:8px;font-size:.88rem}.path-card select{width:100%;padding:9px 10px;border:1px solid rgba(120,100,70,.28);border-radius:9px;background:var(--panel-bg,#fff);color:inherit}.market-summary .path-card p{margin:4px 0}.market-form button:disabled{opacity:.48;cursor:not-allowed}

@@ -1,8 +1,82 @@
 # 数据库迁移登记
 
-- V0.11.0：202607240018_sect_system.sql（线上既有，禁止重跑）
+- V0.11.0：`202607240018_sect_system.sql`（线上既有，禁止重跑）
 - V0.11.1：无数据库迁移
-- **废弃：202607240019_auto_opportunity_v2.sql，永久禁止部署**
-- V0.11.2 FINAL：202607250020_auto_opportunity_v3.sql（待用户真实Supabase执行一次）
+- **永久废弃：`202607240019_auto_opportunity_v2.sql`，严禁部署**
+- V0.11.2 FINAL：`database/V0.11.2/202607250020_auto_opportunity_v3.sql`（只执行一次）
+- V0.11.3：前端运行时修复，无数据库迁移
+- V0.11.4：机缘轮界面修复，无数据库迁移
+- V0.11.5 FINAL：`database/V0.11.5/202607252030_v0115_full_activation.sql`（在V0.11.2迁移成功后执行一次）
 
-- V0.11.3：前端运行时热修复，无数据库迁移；继续使用V0.11.2迁移后的75表/61函数基线。
+## V0.11.5 配套文件
+
+- 检查：`202607252030_v0115_full_check.sql`
+- 紧急停用：`202607252030_v0115_emergency_disable.sql`
+- 恢复：`202607252030_v0115_resume.sql`
+- 结构回滚：`202607252030_v0115_rollback.sql`
+
+早期草稿 `202607251900_v0115_exclusive_fix.sql` 已由最终主SQL取代，不得混用。
+
+## V0.11.6
+
+- `database/V0.11.6/202607252300_v0116_opportunity_polarity.sql`：趋吉/涉险正负互斥、50/50基准、机缘深厚趋吉+5个百分点。
+- `database/V0.11.6/202607252300_v0116_check.sql`：升级后概率与互斥规则检查。
+- `database/V0.11.6/202607252300_v0116_emergency_disable.sql`：紧急停用自动机缘。
+- `database/V0.11.6/202607252300_v0116_resume.sql`：恢复自动机缘。
+- `database/V0.11.6/202607252300_v0116_rollback.sql`：恢复V0.11.5机缘函数，不删除历史数据。
+
+## V0.11.7
+
+- `database/V0.11.7/202607260030_v0117_heaven_balance.sql`：天道福泽、大道均衡、天道阻滞；按全服主流大境界动态计算灵气环境系数。
+- `database/V0.11.7/202607260030_v0117_check.sql`：9档系数、RPC、自动修炼加法结算和数据库基线检查。
+- `database/V0.11.7/202607260030_v0117_emergency_disable.sql`：临时将全部天道系数固定为×1，不删除数据。
+- `database/V0.11.7/202607260030_v0117_resume.sql`：恢复V0.11.7九档天道系数。
+- `database/V0.11.7/202607260030_v0117_rollback.sql`：恢复V0.11.6之前的灵气环境整体乘算规则，并删除V0.11.7新增RPC。
+
+
+## V0.11.7 FIX1
+
+- `database/V0.11.7/202607260200_v0117_fix1_full_heaven_multiplier.sql`：修复天道系数仅影响微小灵气基础值的问题，改为作用于完整自动修炼速度。
+- `database/V0.11.7/202607260200_v0117_fix1_check.sql`：检查×5、×1、×0.5及完整乘算公式。
+- `database/V0.11.7/202607260200_v0117_fix1_emergency_disable.sql`：临时固定为大道均衡×1。
+- `database/V0.11.7/202607260200_v0117_fix1_resume.sql`：恢复九档动态系数。
+- `database/V0.11.7/202607260200_v0117_fix1_rollback.sql`：仅在紧急情况下恢复V0.11.7主版本的加法算法。
+
+执行顺序：先完成V0.11.7主迁移，再执行FIX1；不要重复执行V0.11.7主迁移。
+
+## V0.11.9
+
+- `database/V0.11.9/202607260300_v0119_heaven_balance_full_multiplier.sql`：天道动态均衡正式整合，完整自动修炼倍率。
+- `database/V0.11.9/202607260300_v0119_check.sql`：12项核心检查。
+- `database/V0.11.9/202607260300_v0119_emergency_disable.sql`：紧急固定大道均衡x1。
+- `database/V0.11.9/202607260300_v0119_resume.sql`：恢复九档动态系数。
+- `database/V0.11.9/202607260300_v0119_rollback.sql`：回滚到V0.11.7初版加法结算。
+
+## V0.11.10
+
+- `database/V0.11.10/202607260500_v01110_roots_realms_breakthrough.sql`：灵根修炼/战斗双系数、境界基础吐纳、渡劫失败结果、名字旁状态与目标绑定失败补偿。
+- `database/V0.11.10/202607260500_v01110_check.sql`：16项部署检查。
+- `database/V0.11.10/202607260500_v01110_emergency_safe_breakthrough.sql`：紧急将境界基础突破率临时设为100%。
+- `database/V0.11.10/202607260500_v01110_resume.sql`：从备份恢复境界基础突破率；之后需重跑主SQL恢复正式函数。
+- `database/V0.11.10/202607260500_v01110_rollback.sql`：从非public备份架构恢复升级前灵根值与三个关键RPC，并删除V0.11.10新增结构。
+
+执行顺序：V0.11.9已完成 → V0.11.10主SQL → V0.11.10检查SQL → 上传前端。
+
+## V0.11.10 FIX1
+
+- `database/V0.11.10_FIX1/202607260530_v01110_fix1_precheck.sql`：只读类型预检查。
+- `database/V0.11.10_FIX1/202607260530_v01110_fix1_roots_realms_breakthrough.sql`：smallint类型修复、元婴保护、单次大跌境锁。
+- `database/V0.11.10_FIX1/202607260530_v01110_fix1_check.sql`：22项检查。
+
+旧V0.11.10主SQL存在UUID/smallint类型错误，已从本修复包移除，不得执行。
+
+## V0.12.0 FIX1
+
+- `database/V0.12.0/202607260830_v0120_fix1_precheck.sql`：只读检查V0.11.10 FIX1/FIX2基础结构。
+- `database/V0.12.0/202607260830_v0120_fix1_market_casino.sql`：万运博弈楼完整安全修正版。
+- `database/V0.12.0/202607260830_v0120_fix1_check.sql`：27项结构、权限、赔率结算和修为保护检查。
+- `database/V0.12.0/202607260830_v0120_fix1_emergency_disable.sql`：暂停创建新对局，保留已有结算与返还。
+- `database/V0.12.0/202607260830_v0120_fix1_resume.sql`：恢复创建新对局。
+- `database/V0.12.0/202607260830_v0120_fix1_rollback.sql`：先返还未结算赌注，再移除赌场结构。
+
+V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则缺口，标记为废弃，严禁部署。若已部署，直接执行FIX1主SQL覆盖修复，不要重复执行初稿。
