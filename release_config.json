@@ -1,11 +1,22 @@
 {
-  "version": "V0.13.1",
-  "release": "github-actions-pages-pipeline-hotfix",
-  "base": "V0.13.0 FINAL",
-  "databaseBaseline": "V0.13.0（本版无数据库变化）",
-  "databaseMigration": null,
+  "version": "V0.14.0",
+  "release": "bazaar-hub-world-events",
+  "base": "V0.13.1 FINAL",
+  "databaseBaseline": "V0.13.0 + V0.14.0市坊与九霄界闻迁移",
+  "databaseMigration": "database/V0.14.0/202607261430_v0140_bazaar_world_events.sql",
+  "databasePrecheck": "database/V0.14.0/202607261430_v0140_precheck.sql",
+  "databaseCheck": "database/V0.14.0/202607261430_v0140_check.sql",
+  "databaseAudit": "database/V0.14.0/202607261430_v0140_data_audit.sql",
   "pagesStagingDirectory": ".pages-site",
   "pythonVersion": "3.13.5",
   "nodeVersion": "24",
-  "incident": "GitHub Actions #28 verify failure caused by stale tracked legacy tool after overlay update"
+  "features": [
+    "市坊总入口",
+    "天命榜/赌坊/珍宝阁子页",
+    "九霄界闻",
+    "突破播报",
+    "高品机缘播报",
+    "所有已结算赌坊胜负播报",
+    "后台天道裁决预留接口"
+  ]
 }

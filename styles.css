@@ -1,4 +1,4 @@
-/* Current release: Web Alpha 0.13.1 */
+/* Current release: Web Alpha 0.14.0 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -1934,3 +1934,171 @@ button, .badge, .hero-chip { max-width: 100%; }
 .cultivation-full-market{border-left-color:var(--gold-bright,#d4ad62)}
 .breakthrough-card.cultivation-full .progress-fill{box-shadow:0 0 14px rgba(212,173,98,.45)}
 @media(max-width:640px){.cultivation-full-notice,.cultivation-full-inline{padding:9px 10px;font-size:.82rem}.breakthrough-meta span{line-height:1.5}}
+
+
+/* V0.14.0 · 市坊总入口与九霄界闻 */
+.bazaar-root { display: grid; gap: 18px; }
+.bazaar-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.bazaar-entry-button {
+  min-width: 0;
+  min-height: 112px;
+  padding: 14px 10px 12px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 6px;
+  border: 1px solid rgba(206, 182, 126, .28);
+  border-radius: 2px;
+  color: var(--paper);
+  background:
+    linear-gradient(145deg, rgba(201, 167, 95, .055), transparent 54%),
+    rgba(24, 21, 16, .78);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.018);
+  transition: border-color .18s ease, background .18s ease, color .18s ease;
+}
+.bazaar-entry-button:hover,
+.bazaar-entry-button:focus-visible {
+  color: var(--gold-bright);
+  border-color: rgba(230, 200, 121, .62);
+  background:
+    linear-gradient(145deg, rgba(201, 167, 95, .11), transparent 58%),
+    rgba(28, 24, 18, .9);
+}
+.bazaar-entry-button > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(206, 182, 126, .38);
+  color: var(--gold-bright);
+  font-size: 16px;
+  line-height: 1;
+}
+.bazaar-entry-button strong { font-size: 18px; font-weight: 500; letter-spacing: .14em; }
+.bazaar-entry-button small { color: var(--paper-muted); font-size: 11px; letter-spacing: .06em; }
+
+.bazaar-world-section {
+  border: 1px solid rgba(206, 182, 126, .22);
+  background: rgba(19, 17, 13, .54);
+}
+.bazaar-world-heading {
+  padding: 13px 15px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(206, 182, 126, .2);
+  background: rgba(201, 167, 95, .035);
+}
+.bazaar-world-heading > div { display: flex; align-items: baseline; gap: 10px; }
+.bazaar-world-heading span,
+.bazaar-world-heading small { color: var(--paper-muted); font-size: 11px; }
+.bazaar-world-heading h4 { margin: 0; color: var(--gold-bright); font-size: 18px; font-weight: 500; letter-spacing: .12em; }
+
+.world-event-list { display: grid; }
+.world-event-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 11px;
+  padding: 13px 15px;
+  border-bottom: 1px solid rgba(206, 182, 126, .13);
+}
+.world-event-row:last-child { border-bottom: 0; }
+.world-event-row.is-pinned { background: rgba(201, 167, 95, .045); }
+.world-event-row.level-3 { border-left: 2px solid rgba(201, 167, 95, .5); }
+.world-event-row.level-4 { border-left: 2px solid rgba(158, 61, 53, .78); }
+.world-event-seal {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(206, 182, 126, .35);
+  color: var(--gold);
+  font-size: 13px;
+  line-height: 1;
+}
+.world-event-copy { min-width: 0; }
+.world-event-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.world-event-meta strong { min-width: 0; color: var(--gold-bright); font-size: 13px; font-weight: 500; }
+.world-event-meta time { flex: 0 0 auto; color: var(--paper-muted); font-size: 10px; }
+.world-event-copy p { margin: 5px 0 0; color: var(--paper); font-size: 13px; line-height: 1.72; overflow-wrap: anywhere; }
+.world-event-footer {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid rgba(206, 182, 126, .14);
+}
+.world-event-footer span { color: var(--paper-muted); font-size: 10px; }
+.world-event-footer .ghost-btn { min-height: 32px; padding: 5px 10px; font-size: 11px; }
+.world-events-root > .empty-state { margin: 0; border: 0; border-radius: 0; background: transparent; }
+
+.bazaar-subpage-head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgba(206, 182, 126, .18);
+}
+.bazaar-subpage-head > div { display: grid; gap: 3px; }
+.bazaar-subpage-head strong { color: var(--gold-bright); font-size: 17px; font-weight: 500; }
+.bazaar-subpage-head small { color: var(--paper-muted); font-size: 11px; }
+.bazaar-subpage .ranking-panel,
+.bazaar-subpage #marketPanelHost { min-width: 0; }
+.treasure-placeholder {
+  min-height: 220px;
+  padding: 34px 24px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  text-align: center;
+  border: 1px solid rgba(206, 182, 126, .2);
+  background: rgba(201, 167, 95, .025);
+}
+.treasure-seal {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(206, 182, 126, .42);
+  color: var(--gold-bright);
+  font-size: 23px;
+}
+.treasure-placeholder strong { color: var(--gold-bright); font-size: 18px; font-weight: 500; }
+.treasure-placeholder p { max-width: 560px; margin: 0; color: var(--paper-muted); line-height: 1.75; }
+
+@media (max-width: 760px) {
+  .bazaar-root { gap: 12px; }
+  .bazaar-entry-grid { gap: 7px; }
+  .bazaar-entry-button { min-height: 91px; padding: 9px 4px 8px; gap: 4px; }
+  .bazaar-entry-button > span { width: 28px; height: 28px; font-size: 13px; }
+  .bazaar-entry-button strong { font-size: 14px; letter-spacing: .08em; }
+  .bazaar-entry-button small { font-size: 9px; letter-spacing: 0; }
+  .bazaar-world-heading { padding: 10px; align-items: center; }
+  .bazaar-world-heading > div { display: grid; gap: 1px; }
+  .bazaar-world-heading h4 { font-size: 16px; }
+  .bazaar-world-heading > small { max-width: 124px; text-align: right; line-height: 1.45; }
+  .world-event-row { grid-template-columns: 28px minmax(0,1fr); gap: 8px; padding: 11px 10px; }
+  .world-event-seal { width: 26px; height: 26px; font-size: 11px; }
+  .world-event-meta { align-items: start; }
+  .world-event-meta strong { font-size: 12px; }
+  .world-event-meta time { font-size: 9px; }
+  .world-event-copy p { font-size: 12px; line-height: 1.65; }
+  .world-event-footer { padding: 8px 10px; }
+  .bazaar-subpage-head { align-items: start; }
+  .bazaar-subpage-head .ghost-btn { flex: 0 0 auto; min-height: 34px; padding: 6px 9px; }
+  .treasure-placeholder { min-height: 190px; padding: 26px 16px; }
+}
+
+@media (max-width: 370px) {
+  .bazaar-entry-button small { display: none; }
+  .bazaar-entry-button { min-height: 76px; }
+  .bazaar-world-heading > small { display: none; }
+}

@@ -102,3 +102,16 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 - SQL：无。
 - 禁止将V0.13.1理解为需要重跑V0.13.0迁移。
 - GitHub Actions #28失败事故已记录于 `docs/V0.13.1_DEPLOYMENT_HOTFIX.md`。
+
+## V0.14.0
+
+- 基线：V0.13.1前端 + 已部署V0.13.0数据库。
+- `database/V0.14.0/202607261430_v0140_precheck.sql`：只读前置检查。
+- `database/V0.14.0/202607261430_v0140_bazaar_world_events.sql`：市坊总入口配套的九霄界闻表、RPC与触发器。
+- `database/V0.14.0/202607261430_v0140_check.sql`：权限、触发器、RLS与启用公告检查。
+- `database/V0.14.0/202607261430_v0140_data_audit.sql`：重复来源、空文案和事件分布审计。
+- `database/V0.14.0/202607261430_v0140_emergency_disable.sql`：停止新播报，不影响核心玩法。
+- `database/V0.14.0/202607261430_v0140_resume.sql`：恢复播报。
+- `database/V0.14.0/202607261430_v0140_rollback.sql`：删除触发器与RPC，保留历史表供审计。
+- 正式规则：赌坊大堂每一局已结算胜负均播报；退款、取消、等待和失败事务不播报。
+- 执行顺序：备份 → precheck → 主迁移 → check → data audit。主迁移成功后不要重跑。

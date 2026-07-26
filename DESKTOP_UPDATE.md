@@ -1,37 +1,31 @@
-# GitHub Desktop更新到V0.13.1
+# GitHub Desktop更新到V0.14.0
 
-## 重要说明
+## 更新前
 
-V0.13.0失败的根因是：复制新包只会覆盖同名文件，不会删除仓库中已存在的旧文件。旧的 `tools/audit_v0120_fix1.py` 因此仍保留，而V0.13.0验证器把它的存在直接判为失败。
+1. 备份Supabase数据库。
+2. 确认当前线上源码基线为V0.13.1 FINAL。
+3. 先在Supabase依次执行V0.14.0的precheck、主迁移、check与data audit。
+4. 所有检查通过后再上传前端。
 
-V0.13.1已经从设计上兼容这种覆盖升级方式。
+## 覆盖仓库
 
-## 操作步骤
+1. 解压 `NineCloudDao_GitHub_Upload_V0.14.0_FINAL.zip`。
+2. 将包内全部文件覆盖到GitHub仓库根目录。
+3. GitHub Desktop提交说明建议填写：`Add bazaar hub and world events V0.14.0`。
+4. Commit to main并Push origin。
 
-1. 备份当前仓库。
-2. 解压 `NineCloudDao_GitHub_Upload_V0.13.1_FINAL.zip`。
-3. 将包内全部文件覆盖到GitHub仓库根目录。
-4. 不需要执行任何V0.13.1 SQL。
-5. GitHub Desktop提交说明填写：`Fix Pages pipeline and update to V0.13.1`。
-6. Commit to main，然后Push origin。
-7. 打开Actions，检查以下步骤均为绿色：
-   - Verify V0.13.1 release metadata
-   - JavaScript syntax checks
-   - V0.13.0 SQL static audit
-   - Market render simulation
-   - Build clean Pages staging directory
-   - Verify Pages staging directory
-   - Upload Pages artifact
-   - Deploy to GitHub Pages
-8. 部署成功后访问 `https://121177939.github.io/NineCloudDao/?v=0131`。
-9. 完全关闭旧PWA并清理站点缓存后，确认页面显示Web Alpha 0.13.1。
+## Actions检查
 
-## 可选清理
+以下步骤应全部为绿色：
 
-旧的根目录工具文件可以稍后删除，但不再是本次部署成功的前置条件。建议删除：
+- Verify V0.14.0 release metadata
+- JavaScript syntax checks
+- V0.14.0 SQL static audit
+- Bazaar render simulation
+- Build clean Pages staging directory
+- Verify Pages staging directory
+- Deploy to GitHub Pages
 
-- `tools/audit_v0120_fix1.py`
-- `tools/test_market_render_v0120_fix1.js`
-- `tools/__pycache__/`
+部署后访问站点并清理旧PWA缓存，页脚应显示Web Alpha 0.14.0。进入“市坊”确认三个入口与九霄界闻均正常；完成一局赌坊后应出现对应胜负播报。
 
-不要删除 `tools/legacy/` 中的历史审计材料。
+不要重跑V0.13.0迁移，也不要执行任何已标记废弃的V0.12.0 FIX3脚本。

@@ -98,8 +98,13 @@
     sectSystemSyncing: false,
     sectSystemFetchedAt: 0,
     marketSystem: null,
+    marketView: 'home',
     marketSyncing: false,
     marketSyncTimer: null,
+    worldEvents: null,
+    worldEventsSyncing: false,
+    worldEventsSyncTimer: null,
+    worldEventsFetchedAt: 0,
     timeStatus: null,
     timeStatusStartedAt: 0,
     timeSyncing: false,
@@ -322,6 +327,7 @@
     if (state.npcSocialSyncTimer) clearInterval(state.npcSocialSyncTimer);
     if (state.sectSystemSyncTimer) clearInterval(state.sectSystemSyncTimer);
     if (state.marketSyncTimer) clearInterval(state.marketSyncTimer);
+    if (state.worldEventsSyncTimer) clearInterval(state.worldEventsSyncTimer);
     if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.cultivationTicker = null;
     state.cultivationSyncTimer = null;
@@ -335,6 +341,7 @@
     state.npcSocialSyncTimer = null;
     state.sectSystemSyncTimer = null;
     state.marketSyncTimer = null;
+    state.worldEventsSyncTimer = null;
     state.gameSessionHeartbeatTimer = null;
     state.cultivationSyncing = false;
     state.opportunitySyncing = false;
@@ -345,6 +352,7 @@
     state.npcSocialSyncing = false;
     state.sectSystemSyncing = false;
     state.marketSyncing = false;
+    state.worldEventsSyncing = false;
   }
 
   function clearSession() {
@@ -379,7 +387,11 @@
     state.gameSessionActive = false;
     state.activeMobileTab = 'cultivation';
     state.marketSystem = null;
+    state.marketView = 'home';
     state.marketSyncing = false;
+    state.worldEvents = null;
+    state.worldEventsSyncing = false;
+    state.worldEventsFetchedAt = 0;
     localStorage.removeItem(SESSION_KEY);
   }
 
@@ -599,6 +611,14 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+  async function rpcGetWorldEventsV1(limit = 20) {
+    const result = await restFetch('rpc/get_world_events_v1', {
+      method: 'POST',
+      body: { p_limit: Number(limit) }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function rpcPlayHouseGameV1(gameCode, stakeType, stakeAmount, choice) {
     const result = await restFetch('rpc/play_house_game_v1', { method: 'POST', body: {
       p_game_code: gameCode, p_stake_type: stakeType, p_stake_amount: Number(stakeAmount), p_choice: choice
@@ -635,6 +655,28 @@
       if (!silent) showToast(translateError(error), 'error');
       return state.marketSystem;
     } finally { state.marketSyncing = false; }
+  }
+
+  async function refreshWorldEvents(silent = false) {
+    if (state.worldEventsSyncing || !state.character || document.hidden) return state.worldEvents;
+    state.worldEventsSyncing = true;
+    try {
+      state.worldEvents = await rpcGetWorldEventsV1(20);
+      state.worldEventsFetchedAt = Date.now();
+      updateWorldEventsPanel();
+      return state.worldEvents;
+    } catch (error) {
+      state.worldEvents = {
+        status: 'unavailable',
+        entries: [],
+        error: translateError(error)
+      };
+      updateWorldEventsPanel();
+      if (!silent) showToast(translateError(error), 'error');
+      return state.worldEvents;
+    } finally {
+      state.worldEventsSyncing = false;
+    }
   }
 
   async function rpcCreateCharacter(name, gender) {
@@ -3177,6 +3219,175 @@
     });
   }
 
+  function worldEventSeal(eventType = '') {
+    const type = String(eventType || '');
+    if (type.startsWith('breakthrough')) return '劫';
+    if (type.startsWith('opportunity')) return '缘';
+    if (type.startsWith('casino')) return '赌';
+    if (type.startsWith('admin')) return '罚';
+    return '闻';
+  }
+
+  function worldEventTimeText(entry = {}) {
+    const supplied = Number(entry.seconds_ago);
+    const createdAt = new Date(entry.created_at || 0).getTime();
+    const seconds = Number.isFinite(supplied) ? Math.max(0, supplied) : Math.max(0, Math.floor((Date.now() - createdAt) / 1000));
+    if (seconds < 60) return '刚刚';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}分钟前`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}小时前`;
+    if (seconds < 172800) return '昨日';
+    if (Number(entry.world_year) > 0) return `仙历${formatNumber(entry.world_year)}年`;
+    return Number.isFinite(createdAt) && createdAt > 0 ? new Date(createdAt).toLocaleDateString('zh-CN') : '天机未明';
+  }
+
+  function worldEventsPanelHtml(data = {}) {
+    const entries = Array.isArray(data.entries) ? data.entries : [];
+    if (data.status === 'unavailable') {
+      return `<div id="worldEventsRoot" class="world-events-root"><div class="empty-state"><h4>九霄界闻尚未开启</h4><p>${escapeHtml(data.error || '请先执行 V0.14.0 数据库升级。')}</p><button class="ghost-btn" type="button" data-world-events-refresh>重新聆听</button></div></div>`;
+    }
+    if (data.status === 'loading') {
+      return '<div id="worldEventsRoot" class="world-events-root"><div class="empty-state">天道正在汇聚诸域消息……</div></div>';
+    }
+    if (data.status === 'disabled') {
+      return '<div id="worldEventsRoot" class="world-events-root"><div class="empty-state">天道传音暂时沉寂，既有界闻仍由天机封存。</div></div>';
+    }
+    return `
+      <div id="worldEventsRoot" class="world-events-root">
+        ${entries.length ? `<div class="world-event-list">${entries.map(entry => `
+          <article class="world-event-row level-${Math.max(1, Math.min(4, Number(entry.event_level || 1)))} ${entry.is_pinned ? 'is-pinned' : ''}">
+            <div class="world-event-seal" aria-hidden="true">${escapeHtml(worldEventSeal(entry.event_type))}</div>
+            <div class="world-event-copy">
+              <div class="world-event-meta">
+                <strong>【${escapeHtml(entry.title || '九霄界闻')}】</strong>
+                <time datetime="${escapeHtml(entry.created_at || '')}">${escapeHtml(worldEventTimeText(entry))}</time>
+              </div>
+              <p>${escapeHtml(entry.content || '')}</p>
+            </div>
+          </article>
+        `).join('')}</div>` : '<div class="empty-state">天地寂静，近日暂无足以惊动九霄之事。</div>'}
+        <div class="world-event-footer"><span>仅收录足以传遍诸域之事</span><button class="ghost-btn" type="button" data-world-events-refresh>刷新界闻</button></div>
+      </div>
+    `;
+  }
+
+  function updateWorldEventsPanel() {
+    const root = document.getElementById('worldEventsRoot');
+    if (!root) return;
+    root.outerHTML = worldEventsPanelHtml(state.worldEvents || { status: 'loading', entries: [] });
+    bindBazaarActions();
+  }
+
+  function bazaarPanelHtml(view = 'home', marketSystem = {}, ranking = {}, worldEvents = {}) {
+    const safeView = ['home', 'ranking', 'casino', 'treasure'].includes(view) ? view : 'home';
+    if (safeView === 'home') {
+      return `
+        <div class="bazaar-root" data-bazaar-view="home">
+          <div class="bazaar-entry-grid" aria-label="市坊功能入口">
+            <button class="bazaar-entry-button" type="button" data-bazaar-target="ranking">
+              <span aria-hidden="true">榜</span><strong>天命榜</strong><small>观众生浮沉</small>
+            </button>
+            <button class="bazaar-entry-button" type="button" data-bazaar-target="casino">
+              <span aria-hidden="true">赌</span><strong>赌坊</strong><small>一筹问造化</small>
+            </button>
+            <button class="bazaar-entry-button" type="button" data-bazaar-target="treasure">
+              <span aria-hidden="true">珍</span><strong>珍宝阁</strong><small>候天地奇珍</small>
+            </button>
+          </div>
+          <section class="bazaar-world-section" aria-labelledby="worldEventsHeading">
+            <div class="bazaar-world-heading">
+              <div><span>天道传音</span><h4 id="worldEventsHeading">九霄界闻</h4></div>
+              <small>突破 · 机缘 · 赌坊 · 天道裁决</small>
+            </div>
+            ${worldEventsPanelHtml(worldEvents || { status: 'loading', entries: [] })}
+          </section>
+        </div>
+      `;
+    }
+
+    const pageMeta = {
+      ranking: ['天命榜', '窥天机，观众生浮沉'],
+      casino: ['赌坊 · 万运博弈楼', '灵石 · 修为 · 造化彩池'],
+      treasure: ['珍宝阁', '奇珍万象，静候机缘']
+    }[safeView];
+    let body = '';
+    if (safeView === 'ranking') body = destinyRankingPanelHtml(ranking || { status: 'loading', entries: [] });
+    if (safeView === 'casino') body = `<div id="marketPanelHost">${marketPanelHtml(marketSystem || {})}</div>`;
+    if (safeView === 'treasure') body = `
+      <div class="treasure-placeholder">
+        <div class="treasure-seal" aria-hidden="true">珍</div>
+        <strong>珍宝阁尚在筹备</strong>
+        <p>掌柜正在清点各域奇珍、灵材与丹药。待交易规则与物品体系完备后，此阁再正式开门迎客。</p>
+      </div>
+    `;
+    return `
+      <div class="bazaar-root bazaar-subpage" data-bazaar-view="${safeView}">
+        <div class="bazaar-subpage-head">
+          <button class="ghost-btn" type="button" data-bazaar-back>返回市坊</button>
+          <div><strong>${escapeHtml(pageMeta[0])}</strong><small>${escapeHtml(pageMeta[1])}</small></div>
+        </div>
+        ${body}
+      </div>
+    `;
+  }
+
+  function updateBazaarPanel() {
+    const host = document.getElementById('bazaarPanelHost');
+    if (!host) return;
+    host.innerHTML = bazaarPanelHtml(
+      state.marketView || 'home',
+      state.marketSystem || {},
+      state.destinyRanking || {},
+      state.worldEvents || { status: 'loading', entries: [] }
+    );
+    bindBazaarActions();
+  }
+
+  function setBazaarView(view = 'home', pushHistory = false) {
+    const safeView = ['home', 'ranking', 'casino', 'treasure'].includes(view) ? view : 'home';
+    state.marketView = safeView;
+    updateBazaarPanel();
+    if (pushHistory && safeView !== 'home') {
+      window.history.pushState({ nineCloudBazaarView: safeView }, '', '#marketSection');
+    }
+    if (safeView === 'ranking' && Date.now() - Number(state.destinyRankingFetchedAt || 0) > 30000) refreshDestinyRanking(false, true);
+    if (safeView === 'casino') refreshMarketSystem(true);
+    if (safeView === 'home' && Date.now() - Number(state.worldEventsFetchedAt || 0) > 15000) refreshWorldEvents(true);
+  }
+
+  function bindBazaarActions() {
+    document.querySelectorAll('[data-bazaar-target]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => setBazaarView(button.dataset.bazaarTarget || 'home', true));
+    });
+    document.querySelectorAll('[data-bazaar-back]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        if (window.history.state?.nineCloudBazaarView) window.history.back();
+        else setBazaarView('home', false);
+      });
+    });
+    document.querySelectorAll('[data-world-events-refresh]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, '聆听中……');
+        await refreshWorldEvents(false);
+        setBusy(button, false);
+      });
+    });
+    bindMarketActions();
+    bindDestinyRankingActions();
+
+    if (!bindBazaarActions.historyBound) {
+      bindBazaarActions.historyBound = true;
+      window.addEventListener('popstate', () => {
+        if (state.marketView !== 'home') setBazaarView('home', false);
+      });
+    }
+  }
+
   function marketPoolCard(title, pool = {}, ticketCount = 0, unit = '灵石') {
     const seconds = Number(pool.seconds_remaining || 0);
     const lastWinner = pool.last_winner_name ? `<p>上期：${escapeHtml(pool.last_winner_name)} · ${formatNumber(pool.last_prize || 0)}${unit}</p>` : '<p>尚无开奖记录。</p>';
@@ -3245,13 +3456,13 @@
     if (gameSelect && gameSelect.dataset.bound !== '1') { gameSelect.dataset.bound='1'; gameSelect.addEventListener('change', fillChoices); }
     if (houseType && houseType.dataset.bound !== '1') { houseType.dataset.bound='1'; houseType.addEventListener('change',()=>syncStakeInput(houseType,houseAmount,20)); }
     if (duelType && duelType.dataset.bound !== '1') { duelType.dataset.bound='1'; duelType.addEventListener('change',()=>syncStakeInput(duelType,duelAmount,10)); }
-    document.querySelectorAll('[data-house-game]').forEach(btn => { if(btn.dataset.bound==='1')return; btn.dataset.bound='1'; btn.addEventListener('click', async()=>{ setBusy(btn,true,'推演中……'); try { const game=btn.dataset.houseGame; const result=await rpcPlayHouseGameV1(game,houseType.value,houseAmount.value, game==='spirit_dice'?document.getElementById('diceChoice').value:document.getElementById('turtleChoice').value); showToast(result?.result_text || '赌契已结算。', result?.won?'success':'error'); await refreshMarketSystem(true); } catch(e){showToast(translateError(e),'error')} finally{setBusy(btn,false)} }); });
+    document.querySelectorAll('[data-house-game]').forEach(btn => { if(btn.dataset.bound==='1')return; btn.dataset.bound='1'; btn.addEventListener('click', async()=>{ setBusy(btn,true,'推演中……'); try { const game=btn.dataset.houseGame; const result=await rpcPlayHouseGameV1(game,houseType.value,houseAmount.value, game==='spirit_dice'?document.getElementById('diceChoice').value:document.getElementById('turtleChoice').value); showToast(result?.result_text || '赌契已结算。', result?.won?'success':'error'); await Promise.all([refreshMarketSystem(true), refreshWorldEvents(true)]); } catch(e){showToast(translateError(e),'error')} finally{setBusy(btn,false)} }); });
     const create=document.getElementById('createDuelBtn'); if(create&&create.dataset.bound!=='1'){create.dataset.bound='1';create.addEventListener('click',async()=>{setBusy(create,true,'封存中……');try{const r=await rpcCreateDuelV1(gameSelect.value,duelType.value,duelAmount.value,choiceSelect.value);showToast(r?.content||'招式已封入无相阵盘。');await refreshMarketSystem(true)}catch(e){showToast(translateError(e),'error')}finally{setBusy(create,false)}})}
     document.querySelectorAll('[data-duel-join]').forEach(btn=>{if(btn.dataset.bound==='1')return;btn.dataset.bound='1';btn.addEventListener('click',async()=>{const select=document.querySelector(`[data-duel-choice-for="${CSS.escape(btn.dataset.duelJoin)}"]`);if(!select)return;setBusy(btn,true,'应局中……');try{const r=await rpcJoinDuelV1(btn.dataset.duelJoin,select.value);showToast(r?.content||'双方招式已封存，五分钟后开契。');await refreshMarketSystem(true)}catch(e){showToast(translateError(e),'error')}finally{setBusy(btn,false)}})});
     document.querySelectorAll('[data-duel-cancel]').forEach(btn=>{if(btn.dataset.bound==='1')return;btn.dataset.bound='1';btn.addEventListener('click',async()=>{setBusy(btn,true,'散契中……');try{const r=await rpcCancelDuelV1(btn.dataset.duelCancel);showToast(r?.content||'赌契已散，赌注原数返还。');await refreshMarketSystem(true)}catch(e){showToast(translateError(e),'error')}finally{setBusy(btn,false)}})});
   }
 
-  // Release verifier navigation contracts: data-mobile-tab="ranking" data-mobile-tab="social" data-mobile-tab="sect"
+  // Release verifier navigation contracts: data-mobile-tab="market" data-mobile-tab="social" data-mobile-tab="sect"
   function mobileBottomNavHtml(activeTab = 'cultivation') {
     const items = [
       ['cultivation', '修', '修炼'],
@@ -3260,7 +3471,6 @@
       ['market', '市', '市坊'],
       ['social', '人', '红尘'],
       ['sect', '宗', '宗门'],
-      ['ranking', '榜', '天命榜'],
       ['history', '书', '命书']
     ];
     const pageSize = 6;
@@ -3309,6 +3519,7 @@
     const npcSocial = bundle.npcSocial || state.npcSocial || { status: 'loading', contacts: [], recent_events: [], settings: {} };
     const sectSystem = bundle.sectSystem || state.sectSystem || { status: 'loading', sects: [], buildings: [], tasks: [], recent_events: [], settings: {} };
     const marketSystem = bundle.marketSystem || state.marketSystem || { status: 'loading', pools: {}, open_duels: [], my_duels: [] };
+    const worldEvents = bundle.worldEvents || state.worldEvents || { status: 'loading', entries: [] };
     const activeEffects = (bundle.cultivationEffects || []).filter(row => {
       const isCurrent = !row.expires_at || new Date(row.expires_at).getTime() > Date.now();
       const isCombination = row?.metadata?.v2_kind === 'combination' || String(row?.source_key || '').startsWith('combo:');
@@ -3378,7 +3589,6 @@
             <a href="#marketSection">市坊</a>
             <a href="#npcSocialSection">红尘录</a>
             <a href="#sectSystemSection">宗门</a>
-            <a href="#destinyRankingSection">天命榜</a>
             <a href="#historySection">命书</a>
           </nav>
         </section>
@@ -3463,8 +3673,8 @@
         </section>
 
         <section id="marketSection" class="panel" data-mobile-screen="market">
-          <div class="panel-title"><h3>市坊 · 万运博弈楼</h3><span class="badge">灵石 · 修为 · 造化彩池</span></div>
-          <div id="marketPanelHost">${marketPanelHtml(marketSystem)}</div>
+          <div class="panel-title"><h3>市坊</h3><span class="badge">天命 · 赌坊 · 珍宝 · 界闻</span></div>
+          <div id="bazaarPanelHost">${bazaarPanelHtml(state.marketView || 'home', marketSystem, destinyRanking, worldEvents)}</div>
         </section>
 
         <section id="npcSocialSection" class="panel" data-mobile-screen="social">
@@ -3475,11 +3685,6 @@
         <section id="sectSystemSection" class="panel" data-mobile-screen="sect">
           <div class="panel-title"><h3>宗门</h3><span class="badge">山门 · 贡献 · 事务</span></div>
           ${sectSystemPanelHtml(sectSystem)}
-        </section>
-
-        <section id="destinyRankingSection" class="panel" data-mobile-screen="ranking">
-          <div class="panel-title"><h3>天命榜</h3><span class="badge">全服境界排行</span></div>
-          ${destinyRankingPanelHtml(destinyRanking)}
         </section>
 
         <section id="historySection" class="panel" data-mobile-screen="history">
@@ -3508,8 +3713,7 @@
     bindExclusiveTechniqueActions();
     bindNpcSocialActions();
     bindSectSystemActions();
-    bindMarketActions();
-    bindDestinyRankingActions();
+    bindBazaarActions();
     bindMobileDashboardNav();
     const manualSyncBtn = document.getElementById('manualSyncBtn');
     if (manualSyncBtn && manualSyncBtn.dataset.bound !== '1') {
@@ -3519,7 +3723,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true)]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshWorldEvents(true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -3577,8 +3781,10 @@
       button.dataset.bound = '1';
       button.addEventListener('click', () => {
         const target = button.dataset.mobileTab || 'cultivation';
+        const repeatedMarketTap = target === 'market' && state.activeMobileTab === 'market';
+        if (repeatedMarketTap && state.marketView !== 'home') setBazaarView('home', false);
         apply(target, true);
-        if (target === 'ranking' && Date.now() - Number(state.destinyRankingFetchedAt || 0) > 30000) refreshDestinyRanking(false, true);
+        if (target === 'market' && Date.now() - Number(state.worldEventsFetchedAt || 0) > 15000) refreshWorldEvents(true);
         if (target === 'social' && Date.now() - Number(state.npcSocialFetchedAt || 0) > 30000) refreshNpcSocial(true);
         if (target === 'sect' && Date.now() - Number(state.sectSystemFetchedAt || 0) > 30000) refreshSectSystem(true);
       });
@@ -3687,7 +3893,8 @@
     state.destinyRankingSyncTimer = setInterval(() => refreshDestinyRanking(false, true), 60000);
     state.npcSocialSyncTimer = setInterval(() => refreshNpcSocial(true), 60000);
     state.sectSystemSyncTimer = setInterval(() => refreshSectSystem(true), 60000);
-    state.marketSyncTimer = setInterval(() => refreshMarketSystem(true), 10000);
+    state.marketSyncTimer = setInterval(() => { if (!document.hidden && state.marketView === 'casino') refreshMarketSystem(true); }, 10000);
+    state.worldEventsSyncTimer = setInterval(() => { if (!document.hidden) refreshWorldEvents(true); }, 20000);
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
     updateCaveCountdown();
@@ -3746,7 +3953,7 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, opportunityStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, destinyRanking, npcSocial, sectSystem, marketSystem] = await Promise.all([
+      const [breakthroughStatus, opportunityStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetOpportunity(),
         rpcGetTechniqueSystemV2(),
@@ -3768,6 +3975,9 @@
         })),
         rpcGetMarketV1().catch(error => ({
           status: 'unavailable', pools: {}, tickets: {}, open_duels: [], my_duels: [], latest_draws: [], error: translateError(error)
+        })),
+        rpcGetWorldEventsV1(20).catch(error => ({
+          status: 'unavailable', entries: [], error: translateError(error)
         }))
       ]);
       bundle.breakthroughStatus = breakthroughStatus;
@@ -3780,6 +3990,7 @@
       bundle.npcSocial = npcSocial;
       bundle.sectSystem = sectSystem;
       bundle.marketSystem = marketSystem;
+      bundle.worldEvents = worldEvents;
       state.cultivationStatus = cultivationStatus;
       state.breakthroughStatus = breakthroughStatus;
       state.opportunityStatus = opportunityStatus;
@@ -3794,6 +4005,8 @@
       state.sectSystem = sectSystem;
       state.sectSystemFetchedAt = Date.now();
       state.marketSystem = marketSystem;
+      state.worldEvents = worldEvents;
+      state.worldEventsFetchedAt = Date.now();
       renderDashboard(bundle);
     } catch (error) {
       console.error(error);
@@ -3839,7 +4052,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshWorldEvents(true)]);
         }
       }
     });
@@ -3855,7 +4068,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshWorldEvents(true)]);
         }
       }
     });

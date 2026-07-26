@@ -1,12 +1,14 @@
 {
-  "version": "0.13.1",
-  "releaseLabel": "Web Alpha V0.13.1",
-  "sourceBaseline": "V0.13.0 FINAL",
-  "databaseBaseline": "V0.13.0突破天劫与修为硬上限迁移（部署状态须以检查SQL为准）",
-  "databaseChange": "NONE",
-  "databaseMigration": null,
+  "version": "0.14.0",
+  "releaseLabel": "Web Alpha V0.14.0",
+  "sourceBaseline": "V0.13.1 FINAL",
+  "databaseBaseline": "V0.13.0天劫感悟与修为硬上限 + V0.14.0九霄界闻",
+  "databaseChange": "WORLD_EVENTS",
+  "databaseMigration": "database/V0.14.0/202607261430_v0140_bazaar_world_events.sql",
+  "databasePrecheck": "database/V0.14.0/202607261430_v0140_precheck.sql",
+  "databaseCheck": "database/V0.14.0/202607261430_v0140_check.sql",
+  "databaseAudit": "database/V0.14.0/202607261430_v0140_data_audit.sql",
   "inheritedMigration": "database/V0.13.0/202607261300_v0130_breakthrough_cultivation_cap.sql",
-  "inheritedCheck": "database/V0.13.0/202607261300_v0130_check.sql",
   "deploymentPipeline": {
     "python": "3.13.5",
     "node": "24",
@@ -14,14 +16,16 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.13.1_FINAL.zip",
-    "game": "NineCloudDao_Game_V0.13.1_FINAL.zip"
+    "github": "NineCloudDao_GitHub_Upload_V0.14.0_FINAL.zip",
+    "game": "NineCloudDao_Game_V0.14.0_FINAL.zip",
+    "takeover": "九霄问道_APP项目接管资料包_V0.14.0_FINAL_完整接管版.zip"
   },
-  "criticalIncident": "V0.13.0 GitHub Actions #28在Verify步骤失败：覆盖式升级未删除旧tools/audit_v0120_fix1.py，而验证器把旧文件存在误判为发布失败。",
   "notes": [
-    "V0.13.1是发布流水线热修复，不新增数据库表、字段、RPC或玩家规则。",
-    "工作流只部署新建的最小.pages-site目录，旧工具、数据库SQL和文档不会进入Pages制品。",
-    "验证器不再因无害旧文件残留误杀，但会检查旧工具未被工作流引用。",
-    "旧V0.12.0 FIX3永久废弃，不得部署。"
+    "游戏内正式名称统一为市坊，不使用市场作为页面名称。",
+    "市坊首页上方为天命榜、赌坊、珍宝阁三个入口，下方为九霄界闻。",
+    "赌坊大堂每一局真实胜负均由数据库触发器播报；退款、取消和未结算对局不播报。",
+    "九霄界闻由受保护函数和触发器写入，客户端只读。",
+    "珍宝阁本版为正式占位入口，尚未开放交易。",
+    "V0.14.0 SQL尚未在目标Supabase执行时，前端会显示九霄界闻尚未开启，不影响其余V0.13.1功能。"
   ]
 }
