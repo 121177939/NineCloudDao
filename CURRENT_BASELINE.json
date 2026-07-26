@@ -1,14 +1,11 @@
 {
-  "version": "0.14.0",
-  "releaseLabel": "Web Alpha V0.14.0",
-  "sourceBaseline": "V0.13.1 FINAL",
-  "databaseBaseline": "V0.13.0天劫感悟与修为硬上限 + V0.14.0九霄界闻",
-  "databaseChange": "WORLD_EVENTS",
-  "databaseMigration": "database/V0.14.0/202607261430_v0140_bazaar_world_events.sql",
-  "databasePrecheck": "database/V0.14.0/202607261430_v0140_precheck.sql",
-  "databaseCheck": "database/V0.14.0/202607261430_v0140_check.sql",
-  "databaseAudit": "database/V0.14.0/202607261430_v0140_data_audit.sql",
-  "inheritedMigration": "database/V0.13.0/202607261300_v0130_breakthrough_cultivation_cap.sql",
+  "version": "0.14.1",
+  "releaseLabel": "Web Alpha V0.14.1 FIX1",
+  "sourceBaseline": "V0.14.0 FIX2/FIX3",
+  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.0 FIX2九霄界闻 + V0.14.1统一灵石与赌坊重构",
+  "databaseChange": "UNIFIED_SPIRIT_STONE_AND_CASINO_V2",
+  "databaseMigration": "database/V0.14.1/202607261700_v0141_spirit_stone_casino.sql",
+  "inheritedMigration": "database/V0.14.0_FIX2/九霄问道_V0.14.0_FIX2_主迁移.sql",
   "deploymentPipeline": {
     "python": "3.13.5",
     "node": "24",
@@ -16,16 +13,18 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.0_FINAL.zip",
-    "game": "NineCloudDao_Game_V0.14.0_FINAL.zip",
-    "takeover": "九霄问道_APP项目接管资料包_V0.14.0_FINAL_完整接管版.zip"
+    "github": "NineCloudDao_GitHub_Upload_V0.14.1_FIX1.zip",
+    "database": "九霄问道_V0.14.1_升级SQL.sql"
   },
   "notes": [
-    "游戏内正式名称统一为市坊，不使用市场作为页面名称。",
-    "市坊首页上方为天命榜、赌坊、珍宝阁三个入口，下方为九霄界闻。",
-    "赌坊大堂每一局真实胜负均由数据库触发器播报；退款、取消和未结算对局不播报。",
-    "九霄界闻由受保护函数和触发器写入，客户端只读。",
-    "珍宝阁本版为正式占位入口，尚未开放交易。",
-    "V0.14.0 SQL尚未在目标Supabase执行时，前端会显示九霄界闻尚未开启，不影响其余V0.13.1功能。"
+    "游戏内正式名称保持为市坊。",
+    "item_definitions.code=spirit_stone为唯一灵石定义，历史绑定/非绑定余额在迁移时合并为单一非绑定账户。",
+    "机缘、洞府兼容奖励、赌坊、宗门及功法系统统一读写同一灵石账户。",
+    "赌坊进入后先选择大堂、贵宾雅间或全服造化池，再选择灵石/修为、快捷倍数或自定义数量。",
+    "大堂、雅间和修为玩法取消每日次数及冷却限制；仍保留修为准入、20%上限和修为圆满保护。",
+    "每笔有效赌注全额进入对应全服共享造化池；流局、取消和超时返还不入池。",
+    "同一角色每期每种资源池只有一份等权候选资格；重复游玩只增加池额，不增加个人权重。",
+    "开奖先等概率抽取一名参与者，再以40%判定命中；未中时全池滚存。",
+    "FIX1修复赌坊自动刷新导致资源类型、赌注、倍数、玩法和招式重置；本热修复无SQL。"
   ]
 }
