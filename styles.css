@@ -1859,3 +1859,32 @@ button, .badge, .hero-chip { max-width: 100%; }
   .heaven-balance-rule-table { grid-template-columns: 1fr; }
   .heaven-balance-current > strong { font-size: 26px; }
 }
+
+/* V0.11.10：渡劫状态显示在角色名字旁，不改变主布局。 */
+.hero-copy h1 .hero-name-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 2px 7px;
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--ink-soft);
+  font-size: 0.42em;
+  font-weight: 700;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.hero-copy h1 .status-severe_injury { color: #a23b32; }
+.hero-copy h1 .status-light_injury { color: #a66d22; }
+.hero-copy h1 .status-quick_escape,
+.hero-copy h1 .status-lucky_escape { color: var(--accent); }
+
+@media (max-width: 560px) {
+  .hero-copy h1 .hero-name-status {
+    margin-left: 5px;
+    padding: 1px 6px;
+    font-size: 0.46em;
+  }
+}

@@ -878,7 +878,7 @@
         id: `eq.${stage.realm_id}`
       }) : null,
       rootLink ? getOne('spirit_roots', {
-        select: 'id,code,name,rarity,cultivation_multiplier,event_luck_bonus,description',
+        select: 'id,code,name,rarity,cultivation_multiplier,combat_multiplier,event_luck_bonus,description',
         id: `eq.${rootLink.spirit_root_id}`
       }) : null,
       fateLink ? getOne('fates', {
@@ -1470,7 +1470,12 @@
         <div class="progress-track"><div id="breakthroughProgressFill" class="progress-fill" style="width:${percent}%"></div></div>
         <div class="breakthrough-meta">
           <span>突破成功：寿元 +${escapeHtml(status.lifespan_bonus || 0)} 年</span>
-          <span>逆境 ${escapeHtml(status.adversity || 0)}：失败会提高下次成功率</span>
+          <span>境界吐纳：${formatNumber(status.current_base_rate_per_second || 0, 2)} → ${formatNumber(status.next_base_rate_per_second || 0, 2)}/秒</span>
+          ${Number(status.failure_count || 0) > 0 ? `<span>失败补偿：已失败 ${escapeHtml(status.failure_count)} 次，累计 +${formatNumber(Number(status.compensation_bonus || 0) * 100, 0)} 个百分点</span>` : '<span>失败补偿：尚未触发</span>'}
+          ${status.original_target_stage_name ? `<span>原始目标：${escapeHtml(status.original_target_stage_name)}；达到后清除补偿</span>` : '<span>补偿生效后，最终突破成功率最高80%</span>'}
+          ${status.penalty_enabled === false ? '<span>元婴以下保护：失败不死亡、不跌境、不清修为、不附加伤势</span>' : '<span>元婴期及以上：突破失败结果机制生效</span>'}
+          ${status.major_fall_used ? `<span>大跌境锁：已跌落一次；回到${escapeHtml(status.major_fall_origin_stage_name || '原始大境界')}后解除</span>` : '<span>大跌境规则：同一恢复周期最多触发一次</span>'}
+          <span>境界下限：任何失败结果均不得使角色跌到元婴期以下</span>
         </div>
         <button id="attemptBreakthroughBtn" class="primary-btn full" type="button" ${canBreakthrough ? '' : 'disabled'}>
           ${canBreakthrough ? `冲击${escapeHtml(status.next_stage_name || '境界')}` : `尚缺 ${formatNumber(Math.max(0, required - current))} 修为`}
@@ -1777,8 +1782,8 @@
             title: result?.success ? `突破成功 · ${result.target_stage_name}` : '冲关未成',
             message: result?.message || (result?.success ? '道关已开。' : '灵机散乱。'),
             detail: result?.success
-              ? `寿元增加 ${formatNumber(result.lifespan_bonus)} 年。`
-              : `逆境累积至 ${formatNumber(result.adversity_after)}，下一次成功率将有所提高。`,
+              ? `${Number(result.lifespan_bonus || 0) > 0 ? `寿元增加 ${formatNumber(result.lifespan_bonus)} 年。` : ''}${result.affliction_name ? ` 当前状态：${result.affliction_name}。` : ''}${Number(result.compensation_bonus || 0) > 0 ? ` 失败补偿仍保留 +${formatNumber(Number(result.compensation_bonus) * 100, 0)} 个百分点，直到抵达原始目标。` : ' 已抵达原始目标时，失败补偿会自动清除。'}`
+              : `${result.affliction_name ? `状态：${result.affliction_name}。` : ''}累计失败 ${formatNumber(result.failure_count || 0)} 次，补偿 +${formatNumber(Number(result.compensation_bonus || 0) * 100, 0)} 个百分点；补偿介入后的最终成功率最高80%。`,
             success: Boolean(result?.success)
           });
         } catch (error) {
@@ -3132,6 +3137,8 @@
     const currentCultivation = Number(c.cultivation || 0);
     const toNext = Math.max(0, requiredForNext - currentCultivation);
     const nextPercent = requiredForNext > 0 ? Math.max(0, Math.min(100, currentCultivation / requiredForNext * 100)) : 0;
+    const afflictionName = String(breakthrough?.affliction_name || '').trim();
+    const afflictionCode = String(breakthrough?.affliction_code || '').trim();
 
     app.innerHTML = `
       <section class="dashboard dashboard-reforge">
@@ -3141,7 +3148,7 @@
               <div class="hero-avatar">${escapeHtml(c.name.slice(0, 1))}</div>
               <div class="hero-copy">
                 <span class="eyebrow">${escapeHtml(world.era_name || '仙历')} <b id="worldYearValue">${escapeHtml(world.current_year || '—')}</b> 年 · ${escapeHtml(world.name || '九霄界')}</span>
-                <h1>${escapeHtml(c.name)}</h1>
+                <h1>${escapeHtml(c.name)}${afflictionName ? ` <span class="hero-name-status status-${escapeHtml(afflictionCode || 'special')}">${escapeHtml(afflictionName)}</span>` : ''}</h1>
                 <div class="hero-meta-line">
                   <span class="hero-chip realm">${escapeHtml(realmLabel)}</span>
                   <span class="hero-chip">${escapeHtml(genderName(c.gender))} · <b id="characterAgeValue">${escapeHtml(c.age)}</b> 岁</span>
@@ -3214,7 +3221,7 @@
               <div class="rate-breakdown mobile-tight">
                 <div><span>基础吐纳</span><strong>+${formatNumber(cultivation.base_rate_per_second, 3)}/秒</strong></div>
                 <div><span>功法加成</span><strong>+${formatNumber(cultivation.technique_flat_rate, 3)}/秒</strong></div>
-                <div><span>灵根倍率</span><strong>×${formatNumber(cultivation.root_multiplier || 1, 3)}</strong></div>
+                <div><span>灵根修炼</span><strong>×${formatNumber(cultivation.root_multiplier || 1, 2)}</strong></div>
                 <button id="heavenBalanceBtn" class="heaven-balance-entry" type="button" aria-label="查看${escapeHtml(heavenBalance.status_name || '大道均衡')}规则"><span class="heaven-balance-entry-text">灵气环境（${escapeHtml(heavenBalance.status_name || '大道均衡')}）x${formatHeavenCoefficient(heavenBalance.coefficient || 1)}</span></button>
                 <div><span>命格修正</span><strong>${Number(cultivation.fate_bonus || 0) >= 0 ? '+' : ''}${formatNumber(Number(cultivation.fate_bonus || 0) * 100, 2)}%</strong></div>
                 <div><span>持续机缘</span><strong>+${formatNumber(cultivation.effect_flat_rate, 3)}/秒</strong></div>
@@ -3235,7 +3242,7 @@
             <article class="path-card">
               <span>先天灵根 · ${escapeHtml(root.rarity || '未知')}</span>
               <strong>${escapeHtml(root.name || '未测')}</strong>
-              <p>修炼速度倍率 ×${formatNumber(root.cultivation_multiplier || 1, 3)}。${escapeHtml(root.description || '')}</p>
+              <p>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)} · 全部战斗属性系数 ×${formatNumber(root.combat_multiplier || 1, 2)}。灵根不影响资源收益。${escapeHtml(root.description || '')}</p>
             </article>
             <article class="path-card">
               <span>降生命格 · ${escapeHtml(fate.rarity || '未知')}</span>

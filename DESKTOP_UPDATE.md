@@ -1,9 +1,8 @@
-# GitHub Desktop 更新到 V0.11.9
+# GitHub Desktop 更新到 V0.11.10-fix1
 
-1. 备份当前仓库。
-2. 在Supabase执行 `database/V0.11.9/202607260300_v0119_heaven_balance_full_multiplier.sql`。
-3. 执行 `database/V0.11.9/202607260300_v0119_check.sql`，确认全部PASS。
-4. 用V0.11.9 GitHub上传包覆盖仓库根目录。
-5. 提交：`Upgrade to V0.11.9 heaven balance`。
-6. Push origin并等待Actions变绿。
-7. 手机清理PWA缓存后访问 `?v=0119`。
+1. 暂时不要执行旧V0.11.10 SQL，也不要先上传前端。
+2. 运行只读预检查`database/V0.11.10_FIX1/202607260530_v01110_fix1_precheck.sql`。
+3. 确认核心ID均为`smallint`后，执行FIX1主SQL。
+4. 执行FIX1检查SQL，确认22项全部`PASS`。
+5. 用GitHub上传包覆盖仓库根目录并提交：`Fix V0.11.10 breakthrough migration`。
+6. Push后清除PWA缓存，访问`?v=01110fix1`。
