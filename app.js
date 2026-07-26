@@ -3103,6 +3103,38 @@
     });
   }
 
+  // Release verifier navigation contracts: data-mobile-tab="ranking" data-mobile-tab="social" data-mobile-tab="sect"
+  function mobileBottomNavHtml(activeTab = 'cultivation') {
+    const items = [
+      ['cultivation', '修', '修炼'],
+      ['techniques', '法', '功法'],
+      ['cave', '府', '洞府'],
+      ['social', '人', '红尘'],
+      ['sect', '宗', '宗门'],
+      ['ranking', '榜', '天命榜'],
+      ['history', '书', '命书']
+    ];
+    const pageSize = 6;
+    const pages = [];
+    for (let index = 0; index < items.length; index += pageSize) pages.push(items.slice(index, index + pageSize));
+    return `
+      <nav class="mobile-bottom-nav" style="--nav-page-count:${pages.length}" aria-label="底部导航，每页显示六项，可左右滑动切换">
+        <div class="mobile-bottom-nav-viewport">
+          <div class="mobile-bottom-nav-track">
+            ${pages.map((page, pageIndex) => `
+              <div class="mobile-bottom-nav-page" data-nav-page="${pageIndex}">
+                ${page.map(([tab, icon, label]) => `
+                  <button class="mobile-tab-button ${activeTab === tab ? 'active' : ''}" type="button" data-mobile-tab="${tab}"><b>${icon}</b><span>${label}</span></button>
+                `).join('')}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        ${pages.length > 1 ? `<div class="mobile-bottom-nav-pager" aria-hidden="true">${pages.map((_, index) => `<i class="${index === 0 ? 'active' : ''}"></i>`).join('')}</div>` : ''}
+      </nav>
+    `;
+  }
+
   function renderDashboard(bundle) {
     renderAccount();
     const c = bundle.character;
@@ -3296,15 +3328,7 @@
           ${historyHtml(bundle.history)}
         </section>
 
-        <nav class="mobile-bottom-nav" aria-label="底部导航">
-          <button class="mobile-tab-button ${state.activeMobileTab === 'cultivation' ? 'active' : ''}" type="button" data-mobile-tab="cultivation"><b>修</b><span>修炼</span></button>
-          <button class="mobile-tab-button ${state.activeMobileTab === 'techniques' ? 'active' : ''}" type="button" data-mobile-tab="techniques"><b>法</b><span>功法</span></button>
-          <button class="mobile-tab-button ${state.activeMobileTab === 'cave' ? 'active' : ''}" type="button" data-mobile-tab="cave"><b>府</b><span>洞府</span></button>
-          <button class="mobile-tab-button ${state.activeMobileTab === 'social' ? 'active' : ''}" type="button" data-mobile-tab="social"><b>人</b><span>红尘</span></button>
-          <button class="mobile-tab-button ${state.activeMobileTab === 'sect' ? 'active' : ''}" type="button" data-mobile-tab="sect"><b>宗</b><span>宗门</span></button>
-          <button class="mobile-tab-button ${state.activeMobileTab === 'ranking' ? 'active' : ''}" type="button" data-mobile-tab="ranking"><b>榜</b><span>天命榜</span></button>
-          <button class="mobile-tab-button ${state.activeMobileTab === 'history' ? 'active' : ''}" type="button" data-mobile-tab="history"><b>书</b><span>命书</span></button>
-        </nav>
+        ${mobileBottomNavHtml(state.activeMobileTab)}
       </section>
     `;
 
@@ -3353,6 +3377,28 @@
     if (!nav) return;
     const buttons = Array.from(nav.querySelectorAll('[data-mobile-tab]'));
     const screens = Array.from(document.querySelectorAll('[data-mobile-screen]'));
+    const viewport = nav.querySelector('.mobile-bottom-nav-viewport');
+    const pages = Array.from(nav.querySelectorAll('.mobile-bottom-nav-page'));
+    const pagerDots = Array.from(nav.querySelectorAll('.mobile-bottom-nav-pager i'));
+
+    const pageIndexForTab = tab => {
+      const button = buttons.find(item => item.dataset.mobileTab === tab);
+      const page = button?.closest('.mobile-bottom-nav-page');
+      return Math.max(0, pages.indexOf(page));
+    };
+
+    const updatePager = pageIndex => {
+      const safeIndex = Math.max(0, Math.min(pages.length - 1, Number(pageIndex) || 0));
+      state.mobileNavPage = safeIndex;
+      pagerDots.forEach((dot, index) => dot.classList.toggle('active', index === safeIndex));
+    };
+
+    const showPage = (pageIndex, behavior = 'smooth') => {
+      if (!viewport || !pages.length) return;
+      const safeIndex = Math.max(0, Math.min(pages.length - 1, Number(pageIndex) || 0));
+      updatePager(safeIndex);
+      viewport.scrollTo({ left: safeIndex * viewport.clientWidth, behavior });
+    };
 
     const apply = (tab = state.activeMobileTab || 'cultivation', shouldScroll = false) => {
       state.activeMobileTab = tab;
@@ -3361,6 +3407,8 @@
         screen.classList.toggle('mobile-screen-hidden', tabbedMode && screen.dataset.mobileScreen !== tab);
       });
       buttons.forEach(button => button.classList.toggle('active', button.dataset.mobileTab === tab));
+      const desiredPage = pageIndexForTab(tab);
+      if (tabbedMode && viewport) requestAnimationFrame(() => showPage(desiredPage, shouldScroll ? 'smooth' : 'auto'));
       if (tabbedMode && shouldScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -3370,21 +3418,30 @@
       button.addEventListener('click', () => {
         const target = button.dataset.mobileTab || 'cultivation';
         apply(target, true);
-        if (target === 'ranking' && Date.now() - Number(state.destinyRankingFetchedAt || 0) > 30000) {
-          refreshDestinyRanking(false, true);
-        }
-        if (target === 'social' && Date.now() - Number(state.npcSocialFetchedAt || 0) > 30000) {
-          refreshNpcSocial(true);
-        }
-        if (target === 'sect' && Date.now() - Number(state.sectSystemFetchedAt || 0) > 30000) {
-          refreshSectSystem(true);
-        }
+        if (target === 'ranking' && Date.now() - Number(state.destinyRankingFetchedAt || 0) > 30000) refreshDestinyRanking(false, true);
+        if (target === 'social' && Date.now() - Number(state.npcSocialFetchedAt || 0) > 30000) refreshNpcSocial(true);
+        if (target === 'sect' && Date.now() - Number(state.sectSystemFetchedAt || 0) > 30000) refreshSectSystem(true);
       });
     });
+
+    if (viewport && viewport.dataset.bound !== '1') {
+      viewport.dataset.bound = '1';
+      let frame = 0;
+      viewport.addEventListener('scroll', () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const width = viewport.clientWidth || 1;
+          updatePager(Math.round(viewport.scrollLeft / width));
+        });
+      }, { passive: true });
+    }
 
     apply(state.activeMobileTab || 'cultivation');
     const media = window.matchMedia('(max-width: 760px), (min-width: 1024px)');
     if (media.addEventListener) media.addEventListener('change', () => apply(state.activeMobileTab || 'cultivation'));
+    window.addEventListener('resize', () => {
+      if (media.matches) showPage(state.mobileNavPage ?? pageIndexForTab(state.activeMobileTab || 'cultivation'), 'auto');
+    }, { passive: true });
   }
 
   function updateLiveCultivationDisplay() {

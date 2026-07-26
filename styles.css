@@ -1888,3 +1888,35 @@ button, .badge, .hero-chip { max-width: 100%; }
     font-size: 0.46em;
   }
 }
+
+/* V0.11.10 FIX3 · 底部导航每页六项，超出项目左右滑动分页 */
+.mobile-bottom-nav { grid-template-columns: none !important; overflow: hidden; }
+.mobile-bottom-nav-viewport {
+  width: 100%; min-width: 0; overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; scroll-behavior: auto; overscroll-behavior-x: contain;
+  touch-action: pan-x; scrollbar-width: none;
+}
+.mobile-bottom-nav-viewport::-webkit-scrollbar { display: none; }
+.mobile-bottom-nav-track {
+  display: flex;
+  width: calc(var(--nav-page-count, 1) * 100%);
+  min-width: calc(var(--nav-page-count, 1) * 100%);
+}
+.mobile-bottom-nav-page {
+  flex: 0 0 calc(100% / var(--nav-page-count, 1));
+  min-width: calc(100% / var(--nav-page-count, 1));
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0;
+  scroll-snap-align: start; scroll-snap-stop: always;
+}
+.mobile-bottom-nav-page .mobile-tab-button { min-width: 0; }
+.mobile-bottom-nav-pager {
+  position: absolute; left: 50%; top: 3px; z-index: 2; display: flex; gap: 4px;
+  transform: translateX(-50%); pointer-events: none;
+}
+.mobile-bottom-nav-pager i {
+  width: 4px; height: 4px; border-radius: 50%; background: rgba(206,182,126,.28);
+  transition: width .18s ease, background .18s ease;
+}
+.mobile-bottom-nav-pager i.active { width: 11px; border-radius: 999px; background: var(--gold); }
+@media (max-width: 760px), (min-width: 1024px) { .mobile-bottom-nav { padding-top: 9px; } }
+

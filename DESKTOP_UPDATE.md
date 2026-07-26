@@ -1,8 +1,11 @@
-# GitHub Desktop 更新到 V0.11.10-fix1
+# GitHub Desktop 更新到 V0.11.10-fix3
 
-1. 暂时不要执行旧V0.11.10 SQL，也不要先上传前端。
-2. 运行只读预检查`database/V0.11.10_FIX1/202607260530_v01110_fix1_precheck.sql`。
-3. 确认核心ID均为`smallint`后，执行FIX1主SQL。
-4. 执行FIX1检查SQL，确认22项全部`PASS`。
-5. 用GitHub上传包覆盖仓库根目录并提交：`Fix V0.11.10 breakthrough migration`。
-6. Push后清除PWA缓存，访问`?v=01110fix1`。
+本次只更新前端底部导航，不需要执行新的SQL，也不要重复执行FIX1或FIX2数据库脚本。
+
+1. 解压GitHub上传包。
+2. 用解压后的全部文件覆盖仓库根目录。
+3. 在GitHub Desktop中提交：`Fix six-item paged bottom navigation`。
+4. Push到`main`，等待GitHub Actions变绿。
+5. 彻底关闭旧PWA或浏览器标签，再访问`?v=01110fix3`。
+
+底部导航第一页固定显示6项，多出的“命书”在第二页，手指左右滑动即可切换。

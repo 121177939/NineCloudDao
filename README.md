@@ -1,4 +1,6 @@
-# 九霄问道 Web Alpha 0.11.10-fix1
+# 九霄问道 Web Alpha 0.11.10-fix3
+
+本版为纯前端导航修复：底部导航每页固定显示6项，更多入口左右滑动进入下一页；不新增数据库迁移。
 
 本修复版以V0.11.9为数据库基线，修正V0.11.10主SQL把`spirit_roots.id`、`realm_stages.id`误写成UUID的问题；这些查询表ID实际为`smallint`。
 
