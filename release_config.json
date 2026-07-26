@@ -1,9 +1,9 @@
 {
-  "version": "V0.12.0 FIX1",
-  "release": "market-casino-security-completeness-fix",
-  "base": "V0.11.10 FIX3",
-  "databaseBaseline": "V0.11.10 FIX1 + FIX2",
-  "migration": "database/V0.12.0/202607260830_v0120_fix1_market_casino.sql",
-  "precheck": "database/V0.12.0/202607260830_v0120_fix1_precheck.sql",
-  "check": "database/V0.12.0/202607260830_v0120_fix1_check.sql"
+  "version": "V0.13.0",
+  "release": "breakthrough-heavenly-insight-cultivation-hard-cap",
+  "base": "V0.12.0 FIX1 + Deploy Hotfix",
+  "databaseBaseline": "V0.11.10 FIX1/FIX2 + V0.12.0 FIX1",
+  "migration": "database/V0.13.0/202607261300_v0130_breakthrough_cultivation_cap.sql",
+  "precheck": "database/V0.13.0/202607261300_v0130_precheck.sql",
+  "check": "database/V0.13.0/202607261300_v0130_check.sql"
 }

@@ -160,6 +160,8 @@
     if (raw.includes('AUTH_REQUIRED')) return '登录状态已失效，请重新登录。';
     if (raw.includes('SEED_DATA_INCOMPLETE')) return '数据库初始数据不完整，请检查阶段1部署。';
     if (raw.includes('INSUFFICIENT_CULTIVATION')) return '当前修为尚未达到突破门槛。';
+    if (raw.includes('BREAKTHROUGH_V0130_DISABLED')) return '天劫突破当前处于维护状态，请稍后再试。';
+    if (raw.includes('CULTIVATION_FULL_CASINO_BLOCKED')) return '你当前境界修为已经圆满，请先完成突破，再参与修为博弈。';
     if (raw.includes('MAXIMUM_REALM_REACHED')) return '你已经抵达当前版本可用的最高境界。';
     if (raw.includes('OPPORTUNITY_EXPIRED')) return '这次机缘已经消散，天道会重新推演。';
     if (raw.includes('OPPORTUNITY_ALREADY_RESOLVED')) return '这次机缘已经选择过了。';
@@ -1511,46 +1513,40 @@
     if (!state.cultivationStatus) return Number(state.character?.cultivation || 0);
     const rate = Number(state.cultivationStatus.current_rate_per_second || 0);
     const elapsed = Math.max(0, (Date.now() - state.liveCultivationStartedAt) / 1000);
-    return Math.floor(state.liveCultivationBase + rate * elapsed);
+    const estimated = Math.floor(state.liveCultivationBase + rate * elapsed);
+    const cap = Number(state.breakthroughStatus?.cultivation_cap || state.breakthroughStatus?.cultivation_required || 0);
+    return cap > 0 ? Math.min(estimated, cap) : estimated;
   }
 
   function breakthroughPanelHtml(status, cultivationValue) {
-    if (!status || status.status === 'loading') {
-      return '<div class="empty-state">天道正在推演下一重道关……</div>';
-    }
-    if (status.status === 'maximum') {
-      return `
-        <div class="panel-title"><h3>境界突破</h3><span class="badge">道途已尽</span></div>
-        <div class="breakthrough-card"><strong>${escapeHtml(status.current_stage_name || '未知境界')}</strong><p>当前版本尚未开放更高境界。</p></div>
-      `;
-    }
-    const required = Number(status.cultivation_required || 0);
-    const current = Number(cultivationValue ?? status.cultivation_total ?? 0);
+    if (!status || status.status === 'loading') return '<div class="empty-state">天道正在推演下一重道关……</div>';
+    if (status.status === 'maximum') return `<div class="panel-title"><h3>境界突破</h3><span class="badge">道途已尽</span></div><div class="breakthrough-card"><strong>${escapeHtml(status.current_stage_name || '未知境界')}</strong><p>当前版本尚未开放更高境界。</p></div>`;
+    if (status.status === 'disabled') return `<div class="panel-title"><h3>境界突破</h3><span class="badge">维护中</span></div><div class="breakthrough-card"><p>天劫突破当前处于维护状态。修为上限保护仍然生效。</p></div>`;
+    const required = Number(status.cultivation_cap || status.cultivation_required || 0);
+    const current = Math.min(Number(cultivationValue ?? status.cultivation_total ?? 0), required || Number.MAX_SAFE_INTEGER);
     const percent = required > 0 ? Math.max(0, Math.min(100, current / required * 100)) : 100;
     const canBreakthrough = current >= required;
+    const insights = Number(status.heavenly_insight_count || 0);
+    const insightBonus = Number(status.compensation_bonus || insights * 0.05);
     return `
       <div class="panel-title"><h3>境界突破</h3><span class="badge">目标 · ${escapeHtml(status.next_stage_name || '未知')}</span></div>
-      <div class="breakthrough-card">
-        <div class="breakthrough-heading">
-          <div><span>下一道关</span><strong>${escapeHtml(status.next_stage_name || '未知境界')}</strong></div>
-          <div class="chance-orb"><small>成功率</small><b>${formatNumber(Number(status.success_rate || 0) * 100, 1)}%</b></div>
-        </div>
-        <div class="progress-label"><span>累计修为</span><strong id="breakthroughProgressText">${formatNumber(current)} / ${formatNumber(required)}</strong></div>
+      <div class="breakthrough-card ${canBreakthrough ? 'cultivation-full' : ''}">
+        <div class="breakthrough-heading"><div><span>下一道关</span><strong>${escapeHtml(status.next_stage_name || '未知境界')}</strong></div><div class="chance-orb"><small>本次成功率</small><b>${formatNumber(Number(status.success_rate || 0) * 100, 1)}%</b></div></div>
+        <div class="progress-label"><span>${canBreakthrough ? '修为已至圆满' : '累计修为'}</span><strong id="breakthroughProgressText">${formatNumber(current)} / ${formatNumber(required)}</strong></div>
         <div class="progress-track"><div id="breakthroughProgressFill" class="progress-fill" style="width:${percent}%"></div></div>
+        ${canBreakthrough ? '<div class="cultivation-full-notice"><strong>修为已至圆满</strong><p>丹田灵力已臻当前境界极限，再行吐纳亦无法寸进。唯有叩问天关、完成突破，方可继续修行。</p></div>' : ''}
         <div class="breakthrough-meta">
-          <span>突破成功：寿元 +${escapeHtml(status.lifespan_bonus || 0)} 年</span>
-          <span>境界吐纳：${formatNumber(status.current_base_rate_per_second || 0, 2)} → ${formatNumber(status.next_base_rate_per_second || 0, 2)}/秒</span>
-          ${Number(status.failure_count || 0) > 0 ? `<span>失败补偿：已失败 ${escapeHtml(status.failure_count)} 次，累计 +${formatNumber(Number(status.compensation_bonus || 0) * 100, 0)} 个百分点</span>` : '<span>失败补偿：尚未触发</span>'}
-          ${status.original_target_stage_name ? `<span>原始目标：${escapeHtml(status.original_target_stage_name)}；达到后清除补偿</span>` : '<span>补偿生效后，最终突破成功率最高80%</span>'}
-          ${status.penalty_enabled === false ? '<span>元婴以下保护：失败不死亡、不跌境、不清修为、不附加伤势</span>' : '<span>元婴期及以上：突破失败结果机制生效</span>'}
-          ${status.major_fall_used ? `<span>大跌境锁：已跌落一次；回到${escapeHtml(status.major_fall_origin_stage_name || '原始大境界')}后解除</span>` : '<span>大跌境规则：同一恢复周期最多触发一次</span>'}
-          <span>境界下限：任何失败结果均不得使角色跌到元婴期以下</span>
+          <span>基础成功率：${formatNumber(Number(status.base_success_rate || 0) * 100, 1)}%</span>
+          <span>天劫感悟：${formatNumber(insights)}丝（+${formatNumber(insightBonus * 100, 0)}个百分点）</span>
+          <span>最终成功率上限：${formatNumber(Number(status.compensation_cap || 0.8) * 100, 0)}%</span>
+          ${status.original_target_stage_name ? `<span>感悟绑定目标：${escapeHtml(status.original_target_stage_name)}；真正抵达后清除</span>` : '<span>实际受到失败惩罚后，天劫感悟+1丝，目标突破率+5%</span>'}
+          <span>失败结果：身死0.5% · 大跌境5% · 小跌境8% · 全损15% · 半损30% · 有惊无险41.5%</span>
+          <span>有惊无险、死亡及保护生效时不增加天劫感悟</span>
+          ${status.penalty_enabled === false ? '<span>元婴以下保护：失败不死亡、不跌境、不扣修为、不增加感悟</span>' : '<span>元婴期及以上：完整天劫失败结果生效</span>'}
+          ${status.major_fall_used ? `<span>大跌境锁：已触发；回到${escapeHtml(status.major_fall_origin_stage_name || '原始大境界')}后解除</span>` : '<span>同一恢复周期最多真正跌落一次大境界</span>'}
         </div>
-        <button id="attemptBreakthroughBtn" class="primary-btn full" type="button" ${canBreakthrough ? '' : 'disabled'}>
-          ${canBreakthrough ? `冲击${escapeHtml(status.next_stage_name || '境界')}` : `尚缺 ${formatNumber(Math.max(0, required - current))} 修为`}
-        </button>
-      </div>
-    `;
+        <button id="attemptBreakthroughBtn" class="primary-btn full" type="button" ${canBreakthrough ? '' : 'disabled'}>${canBreakthrough ? `冲击${escapeHtml(status.next_stage_name || '境界')}` : `尚缺 ${formatNumber(Math.max(0, required - current))} 修为`}</button>
+      </div>`;
   }
 
   function latestOpportunityResult(opportunity) {
@@ -1838,6 +1834,21 @@
     });
   }
 
+  function breakthroughOutcomeName(code) {
+    const names = { death:'身死道消', major_fall:'大境跌落', minor_fall:'小境跌落', stage_reset:'道基受挫', stage_half:'灵力溃散', no_loss:'有惊无险', low_realm_no_penalty:'天道护持', major_fall_guarded:'大跌境保护', realm_floor_guarded:'元婴下限保护' };
+    return names[code] || '冲关未成';
+  }
+
+  function applyLocalCultivationGain(gain) {
+    const requested = Math.max(0, Number(gain || 0));
+    const cap = Number(state.breakthroughStatus?.cultivation_cap || state.breakthroughStatus?.cultivation_required || 0);
+    const current = Number(state.character?.cultivation || state.liveCultivationBase || 0);
+    const accepted = cap > 0 ? Math.min(requested, Math.max(0, cap - current)) : requested;
+    state.liveCultivationBase = Math.min(cap > 0 ? cap : Number.MAX_SAFE_INTEGER, Number(state.liveCultivationBase || current) + accepted);
+    if (state.character) state.character.cultivation = current + accepted;
+    return accepted;
+  }
+
   function bindProgressionActions() {
     const breakthroughButton = document.getElementById('attemptBreakthroughBtn');
     if (breakthroughButton && breakthroughButton.dataset.bound !== '1') {
@@ -1848,11 +1859,11 @@
           const result = await rpcAttemptBreakthrough();
           showResultModal({
             seal: result?.success ? '破' : '劫',
-            title: result?.success ? `突破成功 · ${result.target_stage_name}` : '冲关未成',
-            message: result?.message || (result?.success ? '道关已开。' : '灵机散乱。'),
+            title: result?.success ? `突破成功 · ${result.target_stage_name}` : `突破失败 · ${breakthroughOutcomeName(result?.outcome_code)}`,
+            message: result?.message || (result?.success ? '道关已开。' : '此番冲关未成。'),
             detail: result?.success
-              ? `${Number(result.lifespan_bonus || 0) > 0 ? `寿元增加 ${formatNumber(result.lifespan_bonus)} 年。` : ''}${result.affliction_name ? ` 当前状态：${result.affliction_name}。` : ''}${Number(result.compensation_bonus || 0) > 0 ? ` 失败补偿仍保留 +${formatNumber(Number(result.compensation_bonus) * 100, 0)} 个百分点，直到抵达原始目标。` : ' 已抵达原始目标时，失败补偿会自动清除。'}`
-              : `${result.affliction_name ? `状态：${result.affliction_name}。` : ''}累计失败 ${formatNumber(result.failure_count || 0)} 次，补偿 +${formatNumber(Number(result.compensation_bonus || 0) * 100, 0)} 个百分点；补偿介入后的最终成功率最高80%。`,
+              ? `${Number(result.lifespan_bonus || 0) > 0 ? `寿元增加 ${formatNumber(result.lifespan_bonus)} 年。` : ''}${result.affliction_name ? ` 当前状态：${result.affliction_name}。` : ''}${Number(result.heavenly_insight_count || 0) > 0 ? ` 天劫感悟仍保留 ${formatNumber(result.heavenly_insight_count)} 丝，直到抵达原始目标。` : ' 抵达原始目标后，天劫感悟已经清除。'}`
+              : `${Number(result.cultivation_lost || 0) > 0 ? `修为损失 ${formatNumber(result.cultivation_lost)}，当前修为 ${formatNumber(result.cultivation_after)}。` : '境界与修为没有额外损失。'}${result.affliction_name ? ` 状态：${result.affliction_name}。` : ''}${result.insight_gained ? ` 天劫感悟 +1丝；当前共 ${formatNumber(result.heavenly_insight_count || 0)} 丝，目标突破率累计 +${formatNumber(Number(result.compensation_bonus || 0) * 100, 0)} 个百分点。` : ' 本次不增加天劫感悟与突破成功率。'}最终成功率最高80%。`,
             success: Boolean(result?.success)
           });
         } catch (error) {
@@ -1868,8 +1879,8 @@
   function updateProgressionDisplay() {
     const status = state.breakthroughStatus;
     if (!status || status.status !== 'available') return;
-    const current = currentDisplayedCultivation();
-    const required = Number(status.cultivation_required || 0);
+    const required = Number(status.cultivation_cap || status.cultivation_required || 0);
+    const current = Math.min(currentDisplayedCultivation(), required || Number.MAX_SAFE_INTEGER);
     const percent = required > 0 ? Math.max(0, Math.min(100, current / required * 100)) : 100;
     const text = document.getElementById('breakthroughProgressText');
     const fill = document.getElementById('breakthroughProgressFill');
@@ -2917,10 +2928,7 @@
         try {
           const result = await rpcInteractWithNpcV1(button.dataset.npcId, button.dataset.npcAction);
           const gain = Number(result?.cultivation_gain || 0);
-          if (gain > 0) {
-            state.liveCultivationBase += gain;
-            if (state.character) state.character.cultivation = Number(state.character.cultivation || 0) + gain;
-          }
+          if (gain > 0) applyLocalCultivationGain(gain);
           const karmaDelta = Number(result?.karma_delta || 0);
           if (karmaDelta && state.character) state.character.karma = Math.max(-100, Math.min(100, Number(state.character.karma || 0) + karmaDelta));
           showToast(result?.content || '红尘因缘已有变化。');
@@ -3121,10 +3129,7 @@
         try {
           const result = await rpcCompleteSectTaskV1(button.dataset.sectTask);
           const gain = Number(result?.cultivation_gain || 0);
-          if (gain > 0) {
-            state.liveCultivationBase += gain;
-            if (state.character) state.character.cultivation = Number(state.character.cultivation || 0) + gain;
-          }
+          if (gain > 0) applyLocalCultivationGain(gain);
           const karmaDelta = Number(result?.karma_delta || 0);
           if (karmaDelta && state.character) state.character.karma = Math.max(-100, Math.min(100, Number(state.character.karma || 0) + karmaDelta));
           showToast(result?.content || '宗门事务已经完成。');
@@ -3187,12 +3192,13 @@
     const mine = Array.isArray(data.my_duels) ? data.my_duels : [];
     const draws = Array.isArray(data.latest_draws) ? data.latest_draws : [];
     const totalCount = Number(activity.total_count || 0);
+    const cultivationFull = Boolean(character.cultivation_full);
     const personalClosed = totalCount >= 30;
     const disabled = data.status !== 'active' || personalClosed;
     const greed = totalCount >= 30 ? '今日闭楼' : totalCount >= 20 ? '贪念缠心' : totalCount >= 10 ? '贪念微起' : '道心尚稳';
     const duelRows = open.length ? open.map(d => {
       const opts = duelChoices(d.game_code).map(([v,n]) => `<option value="${v}">${n}</option>`).join('');
-      return `<article class="path-card"><span>${escapeHtml(d.creator_name || '无名修士')} · ${d.game_code === 'five_elements' ? '五行灵拳' : '灵拳对弈'}</span><strong>${formatNumber(d.stake_amount)} ${d.stake_type === 'cultivation' ? '修为' : '灵石'}</strong><p>一局定胜负；赌桌约在 ${formatDuration(d.expires_in || 0)} 后散去。</p><label>暗选招式<select data-duel-choice-for="${escapeHtml(d.id)}">${opts}</select></label><button class="ghost-btn" data-duel-join="${escapeHtml(d.id)}">封招应局</button></article>`;
+      return `<article class="path-card"><span>${escapeHtml(d.creator_name || '无名修士')} · ${d.game_code === 'five_elements' ? '五行灵拳' : '灵拳对弈'}</span><strong>${formatNumber(d.stake_amount)} ${d.stake_type === 'cultivation' ? '修为' : '灵石'}</strong><p>一局定胜负；赌桌约在 ${formatDuration(d.expires_in || 0)} 后散去。</p><label>暗选招式<select data-duel-choice-for="${escapeHtml(d.id)}">${opts}</select></label><button class="ghost-btn" data-duel-join="${escapeHtml(d.id)}" ${cultivationFull && d.stake_type === 'cultivation' ? 'disabled title="修为圆满，请先突破"' : ''}>封招应局</button></article>`;
     }).join('') : '<p class="muted">当前没有等待应局的公开赌桌。</p>';
     const myRows = mine.length ? mine.map(d => {
       const choices = d.my_choice ? `<p>你：【${escapeHtml(d.my_choice)}】　对手：【${escapeHtml(d.opponent_choice || '未知')}】</p>` : '';
@@ -3207,10 +3213,11 @@
       <article class="path-card"><span>当前可用</span><strong>${formatNumber(character.spirit_stones || 0)} 灵石</strong><p>当前大境界可动用修为：${formatNumber(character.cultivation_available || 0)}</p><p>修为单注上限：${formatNumber(character.cultivation_max_stake || 0)}</p></article>
       <article class="path-card"><span>今日楼中状态</span><strong>${greed}</strong><p>大堂 ${activity.house_count || 0}/30 · 雅间 ${activity.duel_count || 0}/15 · 修为局 ${activity.cultivation_count || 0}/10</p></article>
       </div>
+      ${cultivationFull ? '<div class="market-lore cultivation-full-market"><p><b>你体内灵力已经充盈至极，当前境界再难容纳半分修为。</b></p><p>荷老抚须道：“道友已至瓶颈，还是先叩开天门，再来赌这修为吧。”灵石玩法不受影响。</p></div>' : ''}
       ${data.status !== 'active' ? '<div class="market-lore"><p><b>万运博弈楼当前暂停接受新赌契。</b>已有赌契仍会正常结算或返还。</p></div>' : personalClosed ? '<div class="market-lore"><p><b>荷老已经按住玉盅：今日三十次落注已满。</b>已有赌契仍会正常结算或返还，明日再来。</p></div>' : ''}
       <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，半筹问造化。</b></p><p>荷老拢袖而坐：“灵石可再聚，修为难重来。落筹之前，道友可想清楚了。”</p></div>
-      <div class="double-panel-grid"><section><h4>大堂 · 荷老坐庄</h4><div class="market-form"><label>赌注<select id="houseStakeType"><option value="spirit_stone">灵石</option><option value="cultivation" ${character.cultivation_eligible ? '' : 'disabled'}>修为（元婴开放，最低5万）</option></select></label><label>数量<input id="houseStakeAmount" type="number" min="20" step="10" value="100"></label><label>灵骰问道<select id="diceChoice"><option value="big">押大（约48.61%，1:1）</option><option value="small">押小（约48.61%，1:1）</option><option value="triple">押围骰（约2.78%，1:34）</option></select></label><button class="primary-btn" data-house-game="spirit_dice" ${disabled ? 'disabled' : ''}>摇盅问道</button><label>气运龟卜<select id="turtleChoice"><option value="auspicious">押吉（25%，1:3）</option><option value="neutral">押平（50%，1:1）</option><option value="ominous">押凶（25%，1:3）</option></select></label><button class="ghost-btn" data-house-game="turtle_oracle" ${disabled ? 'disabled' : ''}>灵火灼甲</button><p class="muted">每局5%公证费用全部进入对应造化池；完成有效对局可得一张本期造化签。</p></div></section>
-      <section><h4>贵宾雅间 · 异步赌契</h4><div class="market-form"><label>玩法<select id="duelGame"><option value="spirit_fist">灵拳对弈</option><option value="five_elements">五行灵拳</option></select></label><label>赌注<select id="duelStakeType"><option value="spirit_stone">灵石（10—5000）</option><option value="cultivation" ${character.cultivation_eligible ? '' : 'disabled'}>修为（最低5万）</option></select></label><label>数量<input id="duelStakeAmount" type="number" min="10" step="10" value="100"></label><label>暗选招式<select id="duelChoice"></select></label><button class="primary-btn" id="createDuelBtn" ${disabled ? 'disabled' : ''}>封招开桌</button><p class="muted">第二名玩家应局后五分钟统一揭晓，一局定胜负；平局全额退还且不抽水。三十分钟无人应局自动返还。</p></div></section></div>
+      <div class="double-panel-grid"><section><h4>大堂 · 荷老坐庄</h4><div class="market-form"><label>赌注<select id="houseStakeType"><option value="spirit_stone">灵石</option><option value="cultivation" ${character.cultivation_eligible ? '' : 'disabled'}>修为（${cultivationFull ? '圆满后禁止' : '元婴开放，最低5万'}）</option></select></label><label>数量<input id="houseStakeAmount" type="number" min="20" step="10" value="100"></label><label>灵骰问道<select id="diceChoice"><option value="big">押大（约48.61%，1:1）</option><option value="small">押小（约48.61%，1:1）</option><option value="triple">押围骰（约2.78%，1:34）</option></select></label><button class="primary-btn" data-house-game="spirit_dice" ${disabled ? 'disabled' : ''}>摇盅问道</button><label>气运龟卜<select id="turtleChoice"><option value="auspicious">押吉（25%，1:3）</option><option value="neutral">押平（50%，1:1）</option><option value="ominous">押凶（25%，1:3）</option></select></label><button class="ghost-btn" data-house-game="turtle_oracle" ${disabled ? 'disabled' : ''}>灵火灼甲</button><p class="muted">每局5%公证费用全部进入对应造化池；完成有效对局可得一张本期造化签。</p></div></section>
+      <section><h4>贵宾雅间 · 异步赌契</h4><div class="market-form"><label>玩法<select id="duelGame"><option value="spirit_fist">灵拳对弈</option><option value="five_elements">五行灵拳</option></select></label><label>赌注<select id="duelStakeType"><option value="spirit_stone">灵石（10—5000）</option><option value="cultivation" ${character.cultivation_eligible ? '' : 'disabled'}>修为（${cultivationFull ? '圆满后禁止' : '最低5万'}）</option></select></label><label>数量<input id="duelStakeAmount" type="number" min="10" step="10" value="100"></label><label>暗选招式<select id="duelChoice"></select></label><button class="primary-btn" id="createDuelBtn" ${disabled ? 'disabled' : ''}>封招开桌</button><p class="muted">第二名玩家应局后五分钟统一揭晓，一局定胜负；平局全额退还且不抽水。三十分钟无人应局自动返还。</p></div></section></div>
       <h4>公开赌桌</h4><div class="foundation-grid">${duelRows}</div><h4>我的赌契</h4><div class="foundation-grid">${myRows}</div><h4>近期造化</h4><div class="foundation-grid">${drawRows}</div>`;
   }
 
@@ -3289,7 +3296,9 @@
     const heavenBalance = normalizeHeavenBalance(bundle.heavenBalance || state.heavenBalance, cultivation);
     const breakthrough = bundle.breakthroughStatus || state.breakthroughStatus || { status: 'loading' };
     const opportunity = bundle.opportunityStatus || state.opportunityStatus || { status: 'loading' };
-    const rate = Number(cultivation.current_rate_per_second || 0);
+    const cultivationCap = Number(breakthrough?.cultivation_cap || breakthrough?.cultivation_required || 0);
+    const cultivationFull = cultivationCap > 0 && Number(c.cultivation || 0) >= cultivationCap;
+    const rate = cultivationFull ? 0 : Number(cultivation.current_rate_per_second || 0);
     const lifespanRemaining = Math.max(0, Number(c.lifespan_total) - Number(c.lifespan_used));
     const realmLabel = realm.code === 'mortal' ? (stage.stage_name || realm.name || '凡人') : `${realm.name || ''}${stage.stage_name ? ` · ${stage.stage_name}` : ''}`;
     const techniqueSystem = bundle.techniqueSystem || state.techniqueSystem || { techniques: [], combinations: [], slots: {} };
@@ -3334,7 +3343,7 @@
               </div>
             </div>
             <div class="hero-side-actions">
-              <span class="badge live-badge"><i></i>自动修炼中</span>
+              <span class="badge live-badge ${cultivationFull ? 'is-full' : ''}"><i></i>${cultivationFull ? '修为圆满' : '自动修炼中'}</span>
               <button id="manualSyncBtn" class="ghost-btn hero-sync-btn" type="button">立即同步</button>
             </div>
           </div>
@@ -3384,10 +3393,11 @@
               <div class="focus-stat">
                 <span>当前自动修炼速度</span>
                 <strong id="liveRateValue">${formatRate(rate)}</strong>
-                <small>${requiredForNext > 0 ? `距下一境还差 ${formatNumber(toNext)} 修为` : '当前版本已达可读取的道关上限。'}</small>
+                <small>${cultivationFull ? '丹田已至当前境界极限，请先突破。' : requiredForNext > 0 ? `距下一境还差 ${formatNumber(toNext)} 修为` : '当前版本已达可读取的道关上限。'}</small>
               </div>
               <div class="progress-label compact"><span>破境进度</span><strong id="breakthroughProgressTextCompact">${requiredForNext > 0 ? `${formatNumber(currentCultivation)} / ${formatNumber(requiredForNext)}` : '已满'}</strong></div>
               <div class="progress-track compact"><div id="breakthroughProgressFillCompact" class="progress-fill" style="width:${nextPercent}%"></div></div>
+              ${cultivationFull ? '<div class="cultivation-full-inline">修为已至圆满，继续吐纳不会获得修为。请完成突破后再继续修行。</div>' : ''}
               ${offlineGain > 0 && elapsed >= 5 ? `
                 <div class="offline-inline">
                   <strong>离线修炼 +${formatNumber(offlineGain)}</strong>
@@ -3601,7 +3611,7 @@
     if (!value || !state.cultivationStatus) return;
     const rate = Number(state.cultivationStatus.current_rate_per_second || 0);
     const elapsed = Math.max(0, (Date.now() - state.liveCultivationStartedAt) / 1000);
-    value.textContent = formatNumber(Math.floor(state.liveCultivationBase + rate * elapsed));
+    value.textContent = formatNumber(currentDisplayedCultivation());
     const compactText = document.getElementById('breakthroughProgressTextCompact');
     const compactFill = document.getElementById('breakthroughProgressFillCompact');
     if (compactText && state.breakthroughStatus && state.breakthroughStatus.status === 'available') {

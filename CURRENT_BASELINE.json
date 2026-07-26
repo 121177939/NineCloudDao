@@ -1,12 +1,19 @@
 {
-  "version": "0.12.0-fix1",
-  "sourceBaseline": "V0.11.10 FIX3",
-  "databaseBaseline": "V0.11.10 FIX1 + FIX2",
-  "migration": "database/V0.12.0/202607260830_v0120_fix1_market_casino.sql",
-  "precheck": "database/V0.12.0/202607260830_v0120_fix1_precheck.sql",
-  "check": "database/V0.12.0/202607260830_v0120_fix1_check.sql",
-  "emergencyDisable": "database/V0.12.0/202607260830_v0120_fix1_emergency_disable.sql",
-  "resume": "database/V0.12.0/202607260830_v0120_fix1_resume.sql",
-  "rollback": "database/V0.12.0/202607260830_v0120_fix1_rollback.sql",
-  "notes": "修复V0.12.0初稿的辅助函数公开执行风险、修为输钱不跌小境界、赌桌超时不返还、结果不揭示招式、造化池无开奖、检查SQL过弱及版本元数据未更新等问题。"
+  "version": "0.13.0",
+  "releaseLabel": "Web Alpha V0.13.0",
+  "sourceBaseline": "V0.12.0 FIX1 + Deploy Hotfix",
+  "databaseBaseline": "V0.11.10 FIX1/FIX2 + V0.12.0 FIX1",
+  "migration": "database/V0.13.0/202607261300_v0130_breakthrough_cultivation_cap.sql",
+  "precheck": "database/V0.13.0/202607261300_v0130_precheck.sql",
+  "check": "database/V0.13.0/202607261300_v0130_check.sql",
+  "emergencyDisable": "database/V0.13.0/202607261300_v0130_emergency_disable.sql",
+  "resume": "database/V0.13.0/202607261300_v0130_resume.sql",
+  "rollback": "database/V0.13.0/202607261300_v0130_rollback.sql",
+  "dataAudit": "database/V0.13.0/202607261300_v0130_data_audit.sql",
+  "notes": [
+    "突破失败后二次结果改为0.5/5/8/15/30/41.5。",
+    "只有实际受罚结果增加1丝天劫感悟与5个百分点。",
+    "修为不得超过下一境界门槛，历史超额修为直接截断。",
+    "旧V0.12.0 FIX3永久废弃，不得部署。"
+  ]
 }

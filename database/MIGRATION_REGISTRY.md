@@ -80,3 +80,16 @@
 - `database/V0.12.0/202607260830_v0120_fix1_rollback.sql`：先返还未结算赌注，再移除赌场结构。
 
 V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则缺口，标记为废弃，严禁部署。若已部署，直接执行FIX1主SQL覆盖修复，不要重复执行初稿。
+
+
+## V0.13.0
+
+- 基线：V0.12.0 FIX1 + Deploy Hotfix；数据库V0.11.10 FIX1/FIX2 + V0.12.0 FIX1。
+- `database/V0.13.0/202607261300_v0130_precheck.sql`：只读前置检查。
+- `database/V0.13.0/202607261300_v0130_breakthrough_cultivation_cap.sql`：天劫感悟、失败概率、修为硬上限、旧数据截断及赌场限制。
+- `database/V0.13.0/202607261300_v0130_check.sql`：31项部署检查。
+- `database/V0.13.0/202607261300_v0130_data_audit.sql`：超额修为截断审计。
+- `database/V0.13.0/202607261300_v0130_emergency_disable.sql`：关闭新突破但保留修为上限。
+- `database/V0.13.0/202607261300_v0130_resume.sql`：恢复。
+- `database/V0.13.0/202607261300_v0130_rollback.sql`：恢复基线函数；无法恢复已截断数值，数据恢复必须使用部署前备份。
+- **永久废弃：所有旧V0.12.0 FIX3突破补丁，严禁部署。**

@@ -24,10 +24,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Verify V0.12.0 FIX1 release
+      - name: Verify V0.13.0 release
         run: |
-          python3 tools/audit_v0120_fix1.py .
-          node tools/test_market_render_v0120_fix1.js .
+          python3 tools/verify_release_v0130.py .
+          python3 tools/sql_static_audit_v0130.py .
+          node tools/test_market_render_v0130.js .
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
