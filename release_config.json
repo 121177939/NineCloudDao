@@ -1,9 +1,11 @@
 {
-  "version": "V0.13.0",
-  "release": "breakthrough-heavenly-insight-cultivation-hard-cap",
-  "base": "V0.12.0 FIX1 + Deploy Hotfix",
-  "databaseBaseline": "V0.11.10 FIX1/FIX2 + V0.12.0 FIX1",
-  "migration": "database/V0.13.0/202607261300_v0130_breakthrough_cultivation_cap.sql",
-  "precheck": "database/V0.13.0/202607261300_v0130_precheck.sql",
-  "check": "database/V0.13.0/202607261300_v0130_check.sql"
+  "version": "V0.13.1",
+  "release": "github-actions-pages-pipeline-hotfix",
+  "base": "V0.13.0 FINAL",
+  "databaseBaseline": "V0.13.0（本版无数据库变化）",
+  "databaseMigration": null,
+  "pagesStagingDirectory": ".pages-site",
+  "pythonVersion": "3.13.5",
+  "nodeVersion": "24",
+  "incident": "GitHub Actions #28 verify failure caused by stale tracked legacy tool after overlay update"
 }

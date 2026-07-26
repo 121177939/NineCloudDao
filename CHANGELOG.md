@@ -1,3 +1,16 @@
+# 更新记录
+
+## V0.13.1
+
+- 记录V0.13.0 GitHub Actions #28部署阻断事故。
+- 确认根因：覆盖式更新不会删除Git已跟踪的旧工具文件，V0.13.0验证器错误要求旧文件必须不存在。
+- 删除该脆弱判断，改为检查旧工具不被当前工作流引用。
+- 新增独立最小Pages制品目录 `.pages-site`。
+- 新增 `prepare_pages_site_v0131.py` 与 `verify_pages_site_v0131.py`。
+- GitHub Actions拆分为版本验证、JS语法、SQL静态审计、页面模拟、制品构建、制品验证和部署。
+- 固定Python 3.13.5、Node.js 24，并升级官方Actions入口。
+- 本版无数据库变化，不执行新SQL。
+
 # 更新日志
 
 ## V0.13.0

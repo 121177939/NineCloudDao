@@ -1,19 +1,27 @@
 {
-  "version": "0.13.0",
-  "releaseLabel": "Web Alpha V0.13.0",
-  "sourceBaseline": "V0.12.0 FIX1 + Deploy Hotfix",
-  "databaseBaseline": "V0.11.10 FIX1/FIX2 + V0.12.0 FIX1",
-  "migration": "database/V0.13.0/202607261300_v0130_breakthrough_cultivation_cap.sql",
-  "precheck": "database/V0.13.0/202607261300_v0130_precheck.sql",
-  "check": "database/V0.13.0/202607261300_v0130_check.sql",
-  "emergencyDisable": "database/V0.13.0/202607261300_v0130_emergency_disable.sql",
-  "resume": "database/V0.13.0/202607261300_v0130_resume.sql",
-  "rollback": "database/V0.13.0/202607261300_v0130_rollback.sql",
-  "dataAudit": "database/V0.13.0/202607261300_v0130_data_audit.sql",
+  "version": "0.13.1",
+  "releaseLabel": "Web Alpha V0.13.1",
+  "sourceBaseline": "V0.13.0 FINAL",
+  "databaseBaseline": "V0.13.0突破天劫与修为硬上限迁移（部署状态须以检查SQL为准）",
+  "databaseChange": "NONE",
+  "databaseMigration": null,
+  "inheritedMigration": "database/V0.13.0/202607261300_v0130_breakthrough_cultivation_cap.sql",
+  "inheritedCheck": "database/V0.13.0/202607261300_v0130_check.sql",
+  "deploymentPipeline": {
+    "python": "3.13.5",
+    "node": "24",
+    "pagesStagingDirectory": ".pages-site",
+    "workflow": ".github/workflows/deploy-pages.yml"
+  },
+  "authoritativePackages": {
+    "github": "NineCloudDao_GitHub_Upload_V0.13.1_FINAL.zip",
+    "game": "NineCloudDao_Game_V0.13.1_FINAL.zip"
+  },
+  "criticalIncident": "V0.13.0 GitHub Actions #28在Verify步骤失败：覆盖式升级未删除旧tools/audit_v0120_fix1.py，而验证器把旧文件存在误判为发布失败。",
   "notes": [
-    "突破失败后二次结果改为0.5/5/8/15/30/41.5。",
-    "只有实际受罚结果增加1丝天劫感悟与5个百分点。",
-    "修为不得超过下一境界门槛，历史超额修为直接截断。",
+    "V0.13.1是发布流水线热修复，不新增数据库表、字段、RPC或玩家规则。",
+    "工作流只部署新建的最小.pages-site目录，旧工具、数据库SQL和文档不会进入Pages制品。",
+    "验证器不再因无害旧文件残留误杀，但会检查旧工具未被工作流引用。",
     "旧V0.12.0 FIX3永久废弃，不得部署。"
   ]
 }
