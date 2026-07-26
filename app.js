@@ -3675,7 +3675,7 @@
           </label>
           <div class="casino-confirm-row">
             <button class="primary-btn" type="button" id="confirmHouseGameBtn" ${disabled ? 'disabled' : ''}>确认落注并立即开局</button>
-            <small>有效赌注全额进入对应全服造化池；胜负结算与入池在同一事务完成。</small>
+            <small>大堂每局赌注的5%进入对应全服造化池。赢局返还本金，并发放扣除该5%后的赔率盈利（押100、1倍胜出共到账195）；败局余下95%由天道回收。</small>
           </div>
         </section>`;
     }
@@ -3692,7 +3692,7 @@
           ${casinoStakeControlsHtml('duel', data)}
           <div class="casino-confirm-row">
             <button class="primary-btn" type="button" id="createDuelBtn" ${disabled ? 'disabled' : ''}>确认赌注并封招开桌</button>
-            <small>双方分出胜负后，两笔赌注全额进入对应全服造化池，双方均纳入本期候选名录；同招流局全额返还且不入池。</small>
+            <small>双方各押同额赌注；分出胜负后，胜者取回自己的本金，并获得败者赌注的95%，败者赌注剩余5%进入对应全服造化池。例：双方各押100，胜者共到账195，败者损失100，奖池增加5；双方均纳入本期候选名录，同招流局全额返还且不入池。</small>
           </div>
         </section>
         ${casinoDuelListsHtml(data)}`;
@@ -3704,7 +3704,7 @@
           ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石', hitChance)}
           ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为', hitChance)}
         </div>
-        <div class="market-lore"><p><b>开奖规则：</b>本期玩过对应资源赌局的每名修士拥有一份候选资格；重复游玩可继续向奖池注入赌注，但不会叠加个人中奖权重。开奖时先在全部参与者中等概率抽出一人，再判定40%天机应验、60%天机未应。</p><p>命中时发放对应全服奖池；未中时无人得彩，奖池与之后的新赌注一起滚存到下一期。游玩次数不设每日上限。</p></div>
+        <div class="market-lore"><p><b>开奖规则：</b>本期玩过对应资源赌局的每名修士拥有一份候选资格；大堂每一局赌注的5%进入奖池；贵宾雅间分出胜负时，败者赌注的5%进入奖池、95%转给胜者，重复游玩不会叠加个人中奖权重。开奖时先在全部参与者中等概率抽出一人，再判定40%天机应验、60%天机未应。</p><p>命中时发放对应全服奖池；未中时无人得彩，奖池与之后的新赌注一起滚存到下一期。游玩次数不设每日上限。</p></div>
         <div class="subsection-title"><strong>近期造化</strong><span>命中与未中都会留下记录</span></div>
         ${casinoDrawRowsHtml(draws)}`;
     }
@@ -3726,7 +3726,7 @@
         ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石', hitChance)}
         ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为', hitChance)}
       </div>
-      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>所有玩法不再限制每日次数。每次有效下注都会把实际赌注全额汇入全服共享奖池；同一修士在每期每种资源池中拥有一份等权候选资格。</p></div>`;
+      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>所有玩法不再限制每日次数。大堂每局赌注的5%进入全服共享奖池；贵宾雅间分出胜负时，败者赌注的5%入池、95%转给胜者，胜者另取回自己的本金；同一修士在每期每种资源池中拥有一份等权候选资格。</p></div>`;
   }
 
   function duelChoices(game) {

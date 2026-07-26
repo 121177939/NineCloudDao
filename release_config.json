@@ -1,9 +1,9 @@
 {
   "version": "V0.14.1",
-  "release": "unified-spirit-stone-casino-rework-fix1",
+  "release": "unified-spirit-stone-casino-rework-fix4",
   "base": "V0.14.0 FIX2/FIX3",
   "databaseBaseline": "V0.13.0 + V0.14.0 FIX2九霄界闻 + V0.14.1统一灵石与赌坊重构",
-  "databaseMigration": "database/V0.14.1/202607261700_v0141_spirit_stone_casino.sql",
+  "databaseMigration": "database/V0.14.1/202607262130_v0141_fix4_duel_pool_payout.sql",
   "pagesStagingDirectory": ".pages-site",
   "pythonVersion": "3.13.5",
   "nodeVersion": "24",
@@ -16,9 +16,13 @@
     "灵石或修为自由选择",
     "快捷倍数与自定义赌注",
     "取消每日次数与冷却限制",
-    "全服共享双造化池",
     "每角色每期一份等权资格",
     "40%命中与60%全额滚存",
-    "赌坊自动刷新保留当前表单选择"
+    "赌坊自动刷新保留当前表单选择",
+    "大堂每局赌注5%进入全服造化池",
+    "大堂胜局本金返还且净盈利扣除5%入池",
+    "大堂败局余下95%天道回收",
+    "贵宾雅间败者赌注5%入池、95%转给胜者",
+    "雅间双方各押100时胜者总到账195"
   ]
 }
