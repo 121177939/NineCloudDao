@@ -1,0 +1,247 @@
+--- a/app.js
++++ b/app.js
+@@ -73,6 +73,7 @@
+     opportunityPollTimer: null,
+     opportunityCountdownTimer: null,
+     opportunitySyncing: false,
++    opportunityOfflineSummaryOpen: false,
+     lastOpportunityNoticeId: null,
+     caveSystem: null,
+     caveCountdownTimer: null,
+@@ -363,6 +364,7 @@
+     state.gameSessionHeartbeatTimer = null;
+     state.cultivationSyncing = false;
+     state.opportunitySyncing = false;
++    state.opportunityOfflineSummaryOpen = false;
+     state.caveSyncing = false;
+     state.techniqueSyncing = false;
+     state.heavenBalanceSyncing = false;
+@@ -388,6 +390,8 @@
+     state.breakthroughStatus = null;
+     state.opportunityStatus = null;
+     state.opportunitySyncing = false;
++    state.opportunityOfflineSummaryOpen = false;
++    document.getElementById('opportunityOfflineSummaryBackdrop')?.remove();
+     state.lastOpportunityNoticeId = null;
+     state.caveSystem = null;
+     state.techniqueSystem = null;
+@@ -849,6 +853,22 @@
+     return Array.isArray(result) ? result[0] || null : result;
+   }
+ 
++  async function rpcSettleOpportunityV4() {
++    const result = await restFetch('rpc/settle_opportunity_v4', {
++      method: 'POST',
++      body: { p_settle_cultivation: true }
++    });
++    return Array.isArray(result) ? result[0] || null : result;
++  }
++
++  async function rpcAckOpportunitySummaryV4(batchId) {
++    const result = await restFetch('rpc/ack_opportunity_v4_summary', {
++      method: 'POST',
++      body: { p_batch_id: batchId }
++    });
++    return Array.isArray(result) ? result[0] || null : result;
++  }
++
+   async function rpcResolveOpportunity(opportunityId, choiceKey) {
+     const result = await restFetch('rpc/resolve_opportunity_v1', {
+       method: 'POST',
+@@ -2136,11 +2156,114 @@
+     }
+   }
+ 
++
++  function opportunityGradeSummaryHtml(counts = {}) {
++    const grades = ['黄品', '玄品', '地品', '天品', '仙品', '专属'];
++    return grades.map(grade => `<span class="offline-opportunity-grade grade-${grade}"><b>${escapeHtml(grade)}</b><em>${formatNumber(Number(counts?.[grade] || 0))}</em></span>`).join('');
++  }
++
++  function opportunitySummaryItemRows(items = {}) {
++    const rows = Object.entries(items || {}).filter(([, amount]) => Number(amount || 0) !== 0);
++    if (!rows.length) return '<span class="offline-opportunity-empty">无</span>';
++    return rows.map(([name, amount]) => `<span>${escapeHtml(name)} ${Number(amount) > 0 ? '+' : ''}${formatNumber(amount)}</span>`).join('');
++  }
++
++
++  function opportunitySummaryTechniqueRows(rows = []) {
++    const list = Array.isArray(rows) ? rows : [];
++    if (!list.length) return '<span class="offline-opportunity-empty">无</span>';
++    return list.map(row => {
++      const label = row?.name || row?.technique_name || '未知功法';
++      const grade = row?.grade_name || row?.grade || '';
++      const category = row?.category === 'support' ? '辅修' : '主修';
++      return `<span><b>${escapeHtml(label)}</b>${grade ? ` · ${escapeHtml(grade)}` : ''} · ${category}</span>`;
++    }).join('');
++  }
++
++  function opportunitySummaryTextRows(rows = []) {
++    const list = Array.isArray(rows) ? rows : [];
++    if (!list.length) return '<span class="offline-opportunity-empty">无</span>';
++    return list.map(row => `<span>${escapeHtml(typeof row === 'string' ? row : (row?.text || row?.name || '未知效果'))}</span>`).join('');
++  }
++
++  function opportunityRemainingEffectsHtml(effects = {}) {
++    const rows = [];
++    const positive = effects?.positive;
++    const negative = effects?.negative;
++    if (positive?.rate) rows.push(`<span class="gain">修炼速度 +${formatNumber(Number(positive.rate) * 100, 0)}% · 剩余 ${formatDuration(Number(positive.remaining_seconds || 0))}</span>`);
++    if (negative?.rate) rows.push(`<span class="loss">修炼速度 ${formatNumber(Number(negative.rate) * 100, 0)}% · 剩余 ${formatDuration(Number(negative.remaining_seconds || 0))}</span>`);
++    if (!rows.length) return '<span class="offline-opportunity-empty">无剩余机缘效果</span>';
++    rows.push(`<strong>当前综合 ${Number(effects?.net_rate || 0) >= 0 ? '+' : ''}${formatNumber(Number(effects?.net_rate || 0) * 100, 0)}%</strong>`);
++    return rows.join('');
++  }
++
++  async function closeOpportunityOfflineSummary(batchId) {
++    document.getElementById('opportunityOfflineSummaryBackdrop')?.remove();
++    state.opportunityOfflineSummaryOpen = false;
++    if (batchId) {
++      try { await rpcAckOpportunitySummaryV4(batchId); } catch (error) { console.error(error); }
++    }
++  }
++
++  function showOpportunityOfflineSummary(summary) {
++    if (!summary?.id || state.opportunityOfflineSummaryOpen || document.getElementById('opportunityOfflineSummaryBackdrop')) return;
++    state.opportunityOfflineSummaryOpen = true;
++    const gains = summary.gains || {};
++    const losses = summary.losses || {};
++    const net = summary.net_result || {};
++    const claim = summary.cultivation_claim || {};
++    const gradeCounts = summary.grade_counts || {};
++    const polarity = summary.polarity_counts || {};
++    const newTechniques = Array.isArray(gains.techniques_new) ? gains.techniques_new : [];
++    const duplicateTechniques = Array.isArray(gains.techniques_duplicate) ? gains.techniques_duplicate : [];
++    const masteryPoints = Number(gains.mastery_points || 0);
++    const permanentEffects = Array.isArray(gains.permanent_effects) ? gains.permanent_effects : [];
++    const periodStart = summary.period_started_at ? new Date(summary.period_started_at) : null;
++    const periodEnd = summary.period_ended_at ? new Date(summary.period_ended_at) : null;
++    const seconds = periodStart && periodEnd ? Math.max(0, Math.floor((periodEnd - periodStart) / 1000)) : 0;
++    const host = document.createElement('div');
++    host.id = 'opportunityOfflineSummaryBackdrop';
++    host.className = 'modal-backdrop opportunity-offline-summary-backdrop';
++    host.innerHTML = `
++      <section class="modal opportunity-offline-summary" role="dialog" aria-modal="true" aria-labelledby="opportunityOfflineSummaryTitle">
++        <header class="offline-summary-header">
++          <div><span class="eyebrow">离线修行结算</span><h2 id="opportunityOfflineSummaryTitle">天机未曾停歇</h2></div>
++          <button class="modal-close-button" type="button" data-close-offline-summary aria-label="关闭">×</button>
++        </header>
++        <p class="offline-summary-lead">离线 ${formatDuration(seconds)}，共结算 <strong>${formatNumber(summary.event_count || 0)}</strong> 次机缘。</p>
++        <div class="offline-opportunity-grades">${opportunityGradeSummaryHtml(gradeCounts)}</div>
++        <div class="offline-opportunity-polarity"><span class="gain">趋吉 ${formatNumber(polarity['趋吉'] || 0)} 次</span><span class="loss">涉险 ${formatNumber(polarity['涉险'] || 0)} 次</span></div>
++        <div class="offline-summary-grid">
++          <article class="offline-summary-card gain-card"><span>趋吉所得</span><strong>修为 +${formatNumber(gains.cultivation_direct || 0)}</strong><strong>灵石 +${formatNumber(gains.spirit_stones || 0)}</strong><div class="offline-item-row">物品：${opportunitySummaryItemRows(gains.items)}</div></article>
++          <article class="offline-summary-card loss-card"><span>涉险损耗</span><strong>修为 -${formatNumber(losses.cultivation_direct || 0)}</strong><strong>灵石 -${formatNumber(losses.spirit_stones || 0)}</strong><div class="offline-item-row">物品：${opportunitySummaryItemRows(losses.items)}</div></article>
++        </div>
++        <article class="offline-summary-card cultivation-card"><span>挂机修炼</span><strong>本次挂机获得 ${formatNumber(claim.gained || 0)} 修为</strong><small>机缘速度效果已经按离线时间顺序计入。</small></article>
++        <article class="offline-summary-total"><span>本次最终所得</span><div><strong>修为 ${Number(net.cultivation || 0) >= 0 ? '+' : ''}${formatNumber(net.cultivation || 0)}</strong><strong>灵石 ${Number(net.spirit_stones || 0) >= 0 ? '+' : ''}${formatNumber(net.spirit_stones || 0)}</strong></div><div class="offline-item-row">物品：${opportunitySummaryItemRows(net.items)}</div></article>
++        ${(newTechniques.length || duplicateTechniques.length || masteryPoints > 0) ? `<article class="offline-summary-techniques"><span>功法所得</span>${newTechniques.length ? `<div class="offline-technique-group"><b>新获得</b>${opportunitySummaryTechniqueRows(newTechniques)}</div>` : ''}${duplicateTechniques.length ? `<div class="offline-technique-group"><b>重复转化</b>${opportunitySummaryTechniqueRows(duplicateTechniques)}</div>` : ''}${masteryPoints > 0 ? `<strong>传承点 +${formatNumber(masteryPoints)}</strong>` : ''}</article>` : ''}
++        ${permanentEffects.length ? `<article class="offline-summary-permanent"><span>新增永久效果</span><div>${opportunitySummaryTextRows(permanentEffects)}</div></article>` : ''}
++        <article class="offline-summary-effects"><span>当前剩余效果</span><div>${opportunityRemainingEffectsHtml(summary.remaining_effects || net.effects || {})}</div></article>
++        ${Number(summary.capped_event_count || 0) > 0 ? `<p class="offline-summary-cap">离线机缘最多结算72小时，超出部分 ${formatNumber(summary.capped_event_count)} 次未生成。</p>` : ''}
++        <button class="primary-btn offline-summary-confirm" type="button" data-close-offline-summary>确定</button>
++      </section>`;
++    document.body.appendChild(host);
++    host.querySelectorAll('[data-close-offline-summary]').forEach(btn => btn.addEventListener('click', () => closeOpportunityOfflineSummary(summary.id)));
++    host.addEventListener('click', event => { if (event.target === host) closeOpportunityOfflineSummary(summary.id); });
++  }
++
+   async function refreshOpportunity() {
+     if (state.opportunitySyncing || !state.character) return;
+     state.opportunitySyncing = true;
+     try {
+-      state.opportunityStatus = await rpcGetOpportunity();
++      const settlement = await rpcSettleOpportunityV4();
++      state.opportunityStatus = settlement?.opportunity || state.opportunityStatus;
++      if (settlement?.cultivation) {
++        state.cultivationStatus = settlement.cultivation;
++        state.liveCultivationBase = Number(settlement.cultivation.cultivation_total || state.liveCultivationBase || 0);
++        state.liveCultivationStartedAt = Date.now();
++        if (state.character) state.character.cultivation = settlement.cultivation.cultivation_total;
++        updateLiveCultivationDisplay();
++      }
++      if (settlement?.offline_summary) showOpportunityOfflineSummary(settlement.offline_summary);
+       updateOpportunityEntry();
+       const modalBody = document.getElementById('opportunityModalBody');
+       if (modalBody) {
+@@ -3890,7 +4013,7 @@
+       const action = house.can_deactivate
+         ? '<button class="ghost-btn" type="button" data-player-house-toggle="off">主动下庄</button>'
+         : '';
+-      return `<div class="market-lore"><p><b>当前玩家庄家：${escapeHtml(house.dealer_name || '无名修士')}</b></p><p>玩家庄只接受灵石；闲家输时下注本金100%归庄家，闲家赢时本金100%返还并按实际净倍率由庄家100%赔付。全程零抽成、零入池。</p><p>灵骰单注最高承赔参考：${formatNumber(house.max_stake_spirit_dice || 0)}；龟卜单注最高承赔参考：${formatNumber(house.max_stake_turtle_oracle || 0)}。</p>${action}</div>`;
++      return `<div class="market-lore"><p><b>当前玩家庄家：${escapeHtml(house.dealer_name || '无名修士')}</b></p><p>玩家庄只接受灵石；闲家输时下注本金100%归庄家，闲家赢时本金100%返还，毛利润扣除5%庄家佣金后发放。佣金归当局庄家，不进入造化池。</p><p>灵骰单注最高承赔参考：${formatNumber(house.max_stake_spirit_dice || 0)}；龟卜单注最高承赔参考：${formatNumber(house.max_stake_turtle_oracle || 0)}。</p>${action}</div>`;
+     }
+     if (house.can_activate) {
+       return `<div class="market-lore"><p><b>你当前位列财富榜第一，统一灵石为 ${formatNumber(house.top_wealth || 0)}。</b></p><p>余额严格超过500万，已获得自愿上庄资格。上庄后只接受灵石，并使用你的统一灵石余额承担实际倍率赔付。</p><button class="primary-btn" type="button" data-player-house-toggle="on">自愿上庄</button></div>`;
+@@ -3921,7 +4044,7 @@
+       const draft = getCasinoDraft('house', data);
+       const choiceOptions = houseChoiceOptions(draft.game).map(([value, name]) => `<option value="${value}" ${draft.choice === value ? 'selected' : ''}>${name}</option>`).join('');
+       const houseBetDisabled = disabled || Boolean(playerHouse.is_self_dealer);
+-      const houseSubtitle = playerDealerActive ? '即时开奖 · 玩家庄零抽成灵石对赌' : '即时开奖 · 系统庄沿用FIX7A造化规则';
++      const houseSubtitle = playerDealerActive ? '即时开奖 · 玩家庄赢家毛利润5%佣金' : '即时开奖 · 系统庄沿用FIX7A造化规则';
+       return `${error}${casinoModeHeader(`大堂 · ${escapeHtml(houseDealerName)}坐庄`, houseSubtitle)}${playerHouseControlHtml(data)}${playerDealerActive ? '' : fullNotice}
+         <section class="casino-play-sheet">
+           <div class="subsection-title"><strong>选择玩法</strong><span>${playerDealerActive ? '玩家庄期间仅可选择灵石' : '先定玩法，再选灵石或修为'}</span></div>
+@@ -3937,7 +4060,7 @@
+           <div class="casino-confirm-row">
+             <button class="primary-btn" type="button" id="confirmHouseGameBtn" ${houseBetDisabled ? 'disabled' : ''}>${playerHouse.is_self_dealer ? '庄家不可下注本桌' : '确认落注并立即开局'}</button>
+             <small>${playerDealerActive
+-              ? '灵骰与龟卜继续沿用现有概率和实际净倍率。闲家输时下注本金100%归玩家庄家；闲家赢时本金100%返还，毛利润按实际净倍率由玩家庄家100%赔付。玩家庄模式不抽成、不进入造化池，也不发放本期造化资格。庄家余额不足以覆盖该玩法最高可能赔付时，数据库将拒绝落注。'
++              ? '灵骰与龟卜继续沿用现有概率和实际净倍率。闲家输时下注本金100%归玩家庄家；闲家赢时本金100%返还，毛利润的95%发给闲家，剩余5%作为庄家佣金由当局庄家保留。玩家庄模式不进入造化池，也不发放本期造化资格。例：押100、毛利润1倍时，玩家总到账195，其中净赢95。庄家余额不足以覆盖该玩法最高可能赔付时，数据库将拒绝落注。'
+               : '灵骰先独立抽取大小，大、小各50%，玩家选择和两边下注量不参与开奖结果。3—10点为小，11—18点为大；111/222/333归小，444/555/666归大。普通非豹子押中毛利润1倍，普通豹子毛利润3倍，天命豹子毛利润34倍；普通豹子全服约1/80，天命豹子全服约1/5000。系统庄赢局仅从毛利润提取5%进入造化池；败局下注额10%进入造化池，余下90%由天道回收。'}</small>
+           </div>
+         </section>`;
+@@ -3967,7 +4090,7 @@
+           ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石', hitChance)}
+           ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为', hitChance)}
+         </div>
+-        <div class="market-lore"><p><b>开奖规则：</b>荷老系统庄大堂赢局按毛利润5%进入奖池，败局按下注额10%进入奖池、90%由天道回收，并发放对应候选资格；玩家庄大堂为零抽成全额对赌，不进入造化池，也不发放造化资格。贵宾雅间分出胜负时，败者赌注的5%进入奖池、95%转给胜者，其他规则保持不变。重复游玩不会叠加个人中奖权重。开奖时先在全部有效参与者中等概率抽出一人，再判定40%天机应验、60%天机未应。</p><p>命中时发放对应全服奖池；未中滚存，奖池与之后的新有效入池赌注一起进入下一期。游玩次数不设每日上限。</p></div>
++        <div class="market-lore"><p><b>开奖规则：</b>荷老系统庄大堂赢局按毛利润5%进入奖池，败局按下注额10%进入奖池、90%由天道回收，并发放对应候选资格；玩家庄大堂仅从闲家赢家毛利润中收取5%庄家佣金，佣金归当局庄家，不进入造化池，也不发放造化资格。贵宾雅间分出胜负时，败者赌注的5%进入奖池、95%转给胜者，其他规则保持不变。重复游玩不会叠加个人中奖权重。开奖时先在全部有效参与者中等概率抽出一人，再判定40%天机应验、60%天机未应。</p><p>命中时发放对应全服奖池；未中滚存，奖池与之后的新有效入池赌注一起进入下一期。游玩次数不设每日上限。</p></div>
+         <div class="subsection-title"><strong>近期造化</strong><span>命中与未中都会留下记录</span></div>
+         ${casinoDrawRowsHtml(draws)}`;
+     }
+@@ -3982,7 +4105,7 @@
+       ${playerHouseControlHtml(data)}
+       ${disabled ? '<div class="market-lore"><p><b>万运博弈楼当前暂停接受新赌契。</b>已有赌契仍会正常结算或返还。</p></div>' : ''}
+       <div class="casino-mode-grid">
+-        <button type="button" data-casino-view="house" ${disabled ? 'disabled' : ''}><b>堂</b><strong>大堂</strong><span>${playerDealerActive ? `${escapeHtml(houseDealerName)}坐庄，仅灵石零抽成对赌` : '荷老坐庄，选择资源、数量与倍数后即时开奖'}</span></button>
++        <button type="button" data-casino-view="house" ${disabled ? 'disabled' : ''}><b>堂</b><strong>大堂</strong><span>${playerDealerActive ? `${escapeHtml(houseDealerName)}坐庄，赢家毛利润收取5%佣金` : '荷老坐庄，选择资源、数量与倍数后即时开奖'}</span></button>
+         <button type="button" data-casino-view="duel"><b>雅</b><strong>贵宾雅间</strong><span>开桌等待应局，有人接受即刻结算</span></button>
+         <button type="button" data-casino-view="pools"><b>池</b><strong>全服造化池</strong><span>查看两类共享奖池、造化签和开奖记录</span></button>
+       </div>
+@@ -3990,7 +4113,7 @@
+         ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石', hitChance)}
+         ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为', hitChance)}
+       </div>
+-      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>财富榜第一且统一灵石严格超过500万时，可由本人自愿接替荷老坐庄。玩家庄只接受灵石，庄胜收取100%下注本金，闲家胜则本金100%返还并按实际净倍率获得100%毛利润；玩家庄不抽成、不入池。无人上庄时，荷老继续沿用FIX7A系统庄规则。贵宾雅间与造化池其他规则保持不变。</p></div>`;
++      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>财富榜第一且统一灵石严格超过500万时，可由本人自愿接替荷老坐庄。玩家庄只接受灵石，庄胜收取100%下注本金；闲家胜时本金100%返还，按实际净倍率计算毛利润，其中95%发给闲家、5%作为庄家佣金保留。佣金不进入造化池。无人上庄时，荷老继续沿用FIX7A系统庄规则。贵宾雅间与造化池其他规则保持不变。</p></div>`;
+   }
+ 
+   function duelChoices(game) {
+@@ -4778,14 +4901,15 @@
+         return;
+       }
+ 
+-      const cultivationStatus = await rpcClaimCultivation();
++      const opportunitySettlement = await rpcSettleOpportunityV4();
++      const cultivationStatus = opportunitySettlement?.cultivation || null;
++      const opportunityStatus = opportunitySettlement?.opportunity || null;
+       if (cultivationStatus) {
+         bundle.cultivationStatus = cultivationStatus;
+         bundle.character.cultivation = cultivationStatus.cultivation_total;
+       }
+-      const [breakthroughStatus, opportunityStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents] = await Promise.all([
++      const [breakthroughStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents] = await Promise.all([
+         rpcGetBreakthroughStatus(),
+-        rpcGetOpportunity(),
+         rpcGetTechniqueSystemV2(),
+         rpcGetExclusiveTechniqueSystemV1().catch(error => ({
+           status: 'unavailable', techniques: [], equipped_name: null, error: translateError(error)
+@@ -4838,6 +4962,7 @@
+       state.worldEvents = worldEvents;
+       state.worldEventsFetchedAt = Date.now();
+       renderDashboard(bundle);
++      if (opportunitySettlement?.offline_summary) setTimeout(() => showOpportunityOfflineSummary(opportunitySettlement.offline_summary), 120);
+     } catch (error) {
+       console.error(error);
+       if (String(error?.message || '').includes('GAME_SESSION_REPLACED') || String(error?.message || '').includes('GAME_SESSION_REQUIRED')) {

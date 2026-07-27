@@ -1,0 +1,2673 @@
+{
+  "stories": [
+    {
+      "code": "yellow_auspicious_01",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "灵露凝叶",
+      "story": "你沿山间小径而行，忽见路旁草叶上凝着几滴久久不散的灵露。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_02",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "灵鱼逆流",
+      "story": "你在溪边歇息时，发现几尾灵鱼逆流而上，游动间隐约暗合吐纳之法。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_03",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "落叶成图",
+      "story": "一阵清风掠过林间，几片落叶在你面前盘旋成一个古怪的图案。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_04",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "荒亭残棋",
+      "story": "你经过一座荒废小亭，亭中石桌上留着一盘尚未下完的残棋。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_05",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "古旧铜钱",
+      "story": "你在整理行囊时，发现一枚不知何时混入其中的古旧铜钱。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_06",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "雨后灵光",
+      "story": "山雨过后，一道微弱灵光从湿润的石缝中透出。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_07",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "散修点拨",
+      "story": "一名过路散修与你短暂交谈，临别时随口点出了你修炼中的一处疑惑。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_08",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "梦闻道音",
+      "story": "你夜宿山脚，半梦半醒间听见远处传来若有若无的诵经声。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_09",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "白兽引路",
+      "story": "一只通体雪白的小兽在远处注视你片刻，随后消失在林间。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_10",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "温润石片",
+      "story": "你在河滩拾起一块温润石片，握在手中时心神竟逐渐平静下来。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_01",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "荒草异动",
+      "story": "你踏入一片荒草地时，脚下忽然传来细微震动。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_02",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "林中兽吼",
+      "story": "林中传来低沉兽吼，附近鸟雀顷刻间四散而逃。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_03",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "破庙自开",
+      "story": "你经过一座破庙，庙门却在无风时自行缓缓打开。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_04",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "枯井灰雾",
+      "story": "一缕灰黑雾气从路旁枯井中升起，久久不散。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_05",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "染血修士",
+      "story": "你发现路边倒着一名气息微弱的修士，但他的衣襟上沾着陌生血迹。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_06",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "水中倒影",
+      "story": "你在溪流中洗手时，水面忽然倒映出一个并不存在的人影。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_07",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "阴风凝气",
+      "story": "一阵阴冷山风吹过，你体内灵力出现了短暂凝滞。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_08",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "残阵误触",
+      "story": "你误触一块隐藏在泥土中的残破阵盘，四周灵气顿时紊乱。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_09",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "伤兽警戒",
+      "story": "一只受伤妖兽倒在岩石旁，却仍警惕地盯着你的方向。",
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_10",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "夜影尾随",
+      "story": "夜色中，一道模糊身影始终与你保持着不远不近的距离。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_01",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "洞府残碑",
+      "story": "你在一处废弃洞府中发现半面残碑，其上仍残留着前人悟道的气息。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_02",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "悬崖灵药",
+      "story": "一株散发淡蓝微光的灵药生长在悬崖石缝之间。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_03",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "道人论道",
+      "story": "你偶遇一名云游道人，对方在与你论道后留下了一句意味深长的话。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_04",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "残阵引路",
+      "story": "一道破损阵纹在你经过时突然复苏，似乎在引导你前往某处。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_05",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "山洞灵泉",
+      "story": "你在山洞深处发现了一口尚未完全干涸的灵泉。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_06",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "灵兽赠玉",
+      "story": "一只低阶灵兽主动靠近，将一块沾有灵气的碎玉放在你面前。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_07",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "古树札记",
+      "story": "你在古树树洞中发现了一卷字迹模糊的修炼札记。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_08",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "流星坠谷",
+      "story": "夜空中一颗流星坠落在附近山谷，落点处灵气久久不散。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_09",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "遗址钟鸣",
+      "story": "一阵钟声从废弃宗门遗址深处传出，却没有任何人影出现。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_10",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "石壁行功图",
+      "story": "你在石壁上发现一幅残缺行功图，其中部分路线与你当前功法隐约相合。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_01",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "密林求救",
+      "story": "一道微弱求救声从密林深处传来，四周却安静得异常。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_02",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "石门封闭",
+      "story": "你刚进入废弃洞府，身后的石门便轰然关闭。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_03",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "妖兽守药",
+      "story": "一只盘踞在灵药附近的妖兽突然睁开双眼。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_04",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "残碑神念",
+      "story": "你触碰残碑时，其中封存的混乱神念猛然涌入识海。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_05",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "浑浊灵泉",
+      "story": "地下灵泉忽然变得浑浊，一股腥甜气味随之弥漫。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_06",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "阵中幻景",
+      "story": "你在阵法遗迹中踏错一步，四周景象瞬间发生变化。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_07",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "陌生同行",
+      "story": "一名陌生修士主动邀请你同行，但其言行中始终透着古怪。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_08",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "玉简呢喃",
+      "story": "你拾起一枚破碎玉简，其中却传出低沉而急促的呢喃。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_09",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "山谷灵溃",
+      "story": "山谷深处灵气骤然聚集，随后又以极快速度向外溃散。",
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_10",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "灰雾脚步",
+      "story": "一阵灰白雾气封住去路，雾中不时传来沉重脚步声。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_01",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "藤封石门",
+      "story": "你在荒山深处发现一座被藤蔓覆盖的石门，门上阵纹在你靠近时自行亮起。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_02",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "雷雨剑冢",
+      "story": "一座残破剑冢在雷雨后显露出来，断剑之间仍有剑意流转。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_03",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "古老丹炉",
+      "story": "你在地下洞窟中发现一尊尚未完全熄灭的古老丹炉。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_04",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "前辈玉符",
+      "story": "一名重伤前辈在临终前将一块传承玉符交到你手中。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_05",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "灵脉苏醒",
+      "story": "灵脉深处传来规律震动，仿佛有什么沉睡之物正在苏醒。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_06",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "阵隔山谷",
+      "story": "你进入一片被阵法隔绝的山谷，其中草木历经多年却仍保持旺盛生机。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_07",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "遗址石像",
+      "story": "宗门遗迹中的石像在你经过时缓缓睁开双眼。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_08",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "古井密室",
+      "story": "你在古井底部发现了一间保存完整的密室。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_09",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "残魂苏醒",
+      "story": "一道沉睡多年的残魂短暂苏醒，并主动与你交谈。",
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_10",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "符文巨碑",
+      "story": "你在悬崖之下发现一块刻满古老符文的巨大石碑。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_01",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "尸骨古剑",
+      "story": "一柄锈迹斑斑的古剑斜插在尸骨之间，你刚靠近，四周剑意便同时指向你。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_02",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "丹炉撞响",
+      "story": "地下丹炉突然自行燃起，炉中传来沉闷撞击声。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_03",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "洞府封裂",
+      "story": "你进入古修洞府后，发现其中封印早已出现裂痕。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_04",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "高阶妖兽",
+      "story": "一头高阶妖兽守在灵脉入口，气息已牢牢锁定你。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_05",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "玉符夺识",
+      "story": "传承玉符中残留的意志试图强行进入你的识海。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_06",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "杀阵复苏",
+      "story": "一座沉寂多年的杀阵因你的到来重新运转。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_07",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "尸骨朝外",
+      "story": "你在遗迹深处发现大量尸骨，而所有尸骨都保持着面朝出口的姿势。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_08",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "功法逆侵",
+      "story": "一股陌生力量沿着你运转的功法反向侵入经脉。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_09",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "灵脉暴动",
+      "story": "灵脉骤然暴动，整个洞窟开始剧烈坍塌。",
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_10",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "门后呼吸",
+      "story": "一道古老石门缓缓开启，门后却传来令人心悸的呼吸声。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_01",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "星辰偏移",
+      "story": "夜空星辰忽然偏移，一道只有你能够看见的星光穿透云层，落入识海。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_02",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "上古宗门",
+      "story": "一座只存在于古籍中的上古宗门遗址在你面前短暂显现。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_03",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "灵气漩涡",
+      "story": "天地灵气汇聚成巨大漩涡，而漩涡中心恰好位于你的闭关之地。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_04",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "大能残魂",
+      "story": "一位大能残魂从沉睡中苏醒，称你与其昔日故人有几分相似。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_05",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "大道符文",
+      "story": "你在秘境核心发现一枚仍在跳动的大道符文。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_06",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "雷中灵宝",
+      "story": "一株只在传说中出现的天材地宝于雷霆中缓缓成熟。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_07",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "九天钟鸣",
+      "story": "九天之上传来悠远钟鸣，你体内灵力随之自行运转。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_08",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "失落记忆",
+      "story": "一段被天地抹去的古老记忆突然在你识海中显现。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_09",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "时间异域",
+      "story": "你进入一处时间流速异常的空间，外界一瞬，内部却似经历数日。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_10",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "法宝残影",
+      "story": "一柄无主法宝残影横贯天穹，最终停留在你的神识之中。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_01",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "虚空注视",
+      "story": "天地灵气骤然逆流，一道不属于此世的目光隔着虚空落在你身上。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_02",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "群修逼近",
+      "story": "上古遗址开启的同时，数道强大气息从远方迅速逼近。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_03",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "残魂夺舍",
+      "story": "大能残魂并未消散，而是试图借你的身躯重返世间。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_04",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "符文入识",
+      "story": "一枚大道符文强行融入识海，引发剧烈冲突。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_05",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "古兽苏醒",
+      "story": "天材地宝成熟之时，守护其多年的古兽也从沉睡中苏醒。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_06",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "秘境崩溃",
+      "story": "秘境核心开始崩溃，而出口正在以肉眼可见的速度消失。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_07",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "天雷锁气",
+      "story": "一道天雷毫无征兆地锁定了你的气机。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_08",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "上古禁秘",
+      "story": "你窥见了一段不应被后世知晓的上古真相。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_09",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "残宝认主",
+      "story": "一件残缺法宝主动认主，却同时带来难以承受的力量。",
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_10",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "神魂剥离",
+      "story": "你踏入一片静止空间，发现自己的神魂正被缓慢剥离。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_01",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "识海仙宫",
+      "story": "你闭目修行时，识海中忽然浮现一座从未见过的仙宫。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_02",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "大道碎片",
+      "story": "一块大道碎片穿越虚空，停留在你的丹田上方。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_03",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "仙域梦门",
+      "story": "已经毁灭的古老仙域在梦境中向你短暂敞开门户。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_04",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "仙影回首",
+      "story": "一道仙人残影自岁月长河中回首，目光与你相接。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_05",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "法则显纹",
+      "story": "天地法则在你周围显化成肉眼可见的金色纹路。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_06",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "仙器共鸣",
+      "story": "一件失落仙器的残影跨越无数岁月，主动与你产生共鸣。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_07",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "前世残忆",
+      "story": "你在静坐中看见了自身前世修行的一段残缺记忆。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_08",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "云海仙门",
+      "story": "一座远古仙门遗址自云海之上浮现，仅存在片刻。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_09",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "仙光落身",
+      "story": "九天雷云忽然散去，一束纯净仙光落在你的身上。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_10",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "无边道海",
+      "story": "你的神魂进入一片无边道海，无数法则在其中生灭轮转。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_01",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "毁灭仙域",
+      "story": "天穹无声裂开，缝隙之后是一片已经毁灭的古老仙域。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_02",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "碎片失控",
+      "story": "大道碎片进入识海后突然失控，开始撕裂你的神魂。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_03",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "仙念杀意",
+      "story": "仙人残念误将你认作昔日仇敌，一缕杀意跨越岁月而来。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_04",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "仙器索灵",
+      "story": "一件残损仙器试图以你的灵力修复自身。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_05",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "法则反噬",
+      "story": "你窥见天地法则真容的瞬间，天道反噬随之降临。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_06",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "前世覆今",
+      "story": "前世记忆并未消散，而是试图覆盖你今生的意识。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_07",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "仙门坠落",
+      "story": "远古仙门遗址开始坠落，毁灭力量封锁了所有退路。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_08",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "仙血冲根",
+      "story": "一滴仙血融入体内，却与现有根基产生剧烈冲突。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_09",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "道海翻覆",
+      "story": "无边道海突然翻覆，亿万法则化作浪潮向你压来。",
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_10",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "仙人视野",
+      "story": "你获得了一瞬间的仙人视野，却同时看见了不可承受的真相。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_01",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "本命气机",
+      "story": "你运转周天时，本命气机忽然脱离原有轨迹，一篇陌生经文自行浮现在识海。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_02",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "命格共鸣",
+      "story": "命格深处传来一阵隐晦共鸣，一卷道法虚影自无尽虚空缓缓垂落。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_03",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "梦入道宫",
+      "story": "你在梦中踏入一座无名道宫，宫中只悬浮着五卷散发不同气息的经书。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_04",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "星列命象",
+      "story": "夜空星辰突然排列成命格之象，一道传承光辉随之降临。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_05",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "前世修忆",
+      "story": "一段不属于今生的修行记忆在识海深处逐渐苏醒。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_06",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "血魂同振",
+      "story": "你的血脉与神魂同时震动，仿佛有某种古老传承正在寻找归宿。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_07",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "无字天书",
+      "story": "一卷无字天书在灵台之中展开，五道不同道意依次显现。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_08",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "本命贯天",
+      "story": "本命气机贯通天地，一道专属于命格的功法气息正在靠近。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_09",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "闭关闻道",
+      "story": "你闭关时忽闻大道之音，字字皆似从命格最深处传来。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_10",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "五法同现",
+      "story": "天道垂下一缕特殊机缘，五道功法虚影同时出现在你的识海。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_01",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "天机逆转",
+      "story": "专属天机即将落下时突然逆转，一道紊乱道音冲入识海。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_02",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "五法撕裂",
+      "story": "五道功法虚影刚刚显现，便同时被一股未知力量撕裂。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_03",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "乱力锁命",
+      "story": "你的本命气机试图接引传承，却反被虚空中的混乱力量锁定。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_04",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "道法崩解",
+      "story": "一卷专属道法已靠近识海，却在最后一刻发生剧烈崩解。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_05",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "命格失衡",
+      "story": "命格与天地短暂共鸣后突然失衡，周身灵力随之逆转。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_06",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "天书乱文",
+      "story": "无字天书刚刚展开，其中经文便化作大量混乱符号。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_07",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "古意介入",
+      "story": "天道垂下专属机缘时，另一股古老意志强行介入其中。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_08",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "五法冲识",
+      "story": "五道功法气息在识海中彼此冲突，引发剧烈神魂震荡。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_09",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "乱流击法",
+      "story": "一道本应属于你的传承被虚空乱流击中，残余力量反向涌入经脉。",
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_10",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "道音尖啸",
+      "story": "命格深处传来的大道之音突然变得尖锐，仿佛有无数声音同时在神魂中回响。",
+      "weight": 1
+    }
+  ],
+  "results": [
+    {
+      "code": "yellow_auspicious_result_01",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "微有所得",
+      "narrative": "你从细微灵机中获得了一点感悟，原本滞涩的修行稍有进展。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.004
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_result_02",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "吐纳顺畅",
+      "narrative": "你顺势调整吐纳节奏，周身灵气运转得更加顺畅。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.006
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_result_03",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "一瞬明悟",
+      "narrative": "一瞬间的明悟在心中绽开，让你省去了数日苦修。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.008
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_result_04",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "灵材换石",
+      "narrative": "你在附近找到一些尚有价值的灵材，将其换成了灵石。",
+      "effect_spec": {
+        "spirit_gain_mult": 1.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_result_05",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "资源感悟",
+      "narrative": "你不仅得到少量资源，也从此次经历中有所领悟。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.003,
+        "spirit_gain_mult": 0.7
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_result_06",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "清灵绕脉",
+      "narrative": "清灵之气萦绕经脉，接下来一段时间内修炼更加轻松。",
+      "effect_spec": {
+        "speed_bonus": 0.05,
+        "duration_minutes": 15
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_result_07",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "心神澄明",
+      "narrative": "你心神澄明，短时间内对灵气的感应明显增强。",
+      "effect_spec": {
+        "speed_bonus": 0.08,
+        "duration_minutes": 15
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_result_08",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "印证功法",
+      "narrative": "此番经历印证了当前功法中的一处细节。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.0035,
+        "speed_bonus": 0.03,
+        "duration_minutes": 15
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_result_09",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "根基略固",
+      "narrative": "你将所得感悟融入修行，根基略有稳固。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.005,
+        "spirit_gain_mult": 0.3
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_auspicious_result_10",
+      "grade": "黄品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "小机缘圆满",
+      "narrative": "一缕微弱机缘被你完整把握，短期收益颇为圆满。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.0045,
+        "speed_bonus": 0.05,
+        "duration_minutes": 15
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_01",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "灵气散失",
+      "narrative": "你虽及时脱身，仍因灵气紊乱损失了少量修为。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.01,
+        "cultivation_loss_stage_cap_pct": 0.0015
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_02",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "异力冲脉",
+      "narrative": "一股异力冲击经脉，使你刚刚积累的修为有所散失。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.02,
+        "cultivation_loss_stage_cap_pct": 0.003
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_03",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "破局耗石",
+      "narrative": "你为摆脱麻烦耗费了一些灵石。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.005,
+        "spirit_loss_base_mult": 1.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_04",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "遗落资源",
+      "narrative": "你匆忙离开险地，遗落了一部分随身资源。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.01,
+        "spirit_loss_base_mult": 1.5
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_05",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "阴气滞脉",
+      "narrative": "残留阴气影响了灵力运转。",
+      "effect_spec": {
+        "speed_bonus": -0.05,
+        "duration_minutes": 15
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_06",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "经脉滞涩",
+      "narrative": "经脉出现轻微滞涩，需要一段时间自行恢复。",
+      "effect_spec": {
+        "speed_bonus": -0.08,
+        "duration_minutes": 30
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_07",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "强行抵御",
+      "narrative": "你强行抵御异力，虽然成功脱身，却消耗了不少精力。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.01,
+        "cultivation_loss_stage_cap_pct": 0.0015,
+        "speed_bonus": -0.03,
+        "duration_minutes": 15
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_08",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "护阵脱险",
+      "narrative": "你以灵石布下简易护阵，才避开进一步危险。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.005,
+        "spirit_loss_base_mult": 1.0,
+        "speed_bonus": -0.03,
+        "duration_minutes": 15
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_09",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "险中窥机",
+      "narrative": "你在危险中也窥见了一丝灵机，只是代价并不算小。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.002,
+        "speed_bonus": -0.05,
+        "duration_minutes": 15
+      },
+      "weight": 1
+    },
+    {
+      "code": "yellow_risk_result_10",
+      "grade": "黄品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "受创带回",
+      "narrative": "你虽受到轻微波及，却从现场带走了一些残留资源。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.01,
+        "cultivation_loss_stage_cap_pct": 0.0015,
+        "spirit_gain_mult": 0.5
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_01",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "残意入心",
+      "narrative": "你参透了一部分残留道意，修为明显精进。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.008
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_02",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "补足缺漏",
+      "narrative": "前人遗留的感悟补足了你修行中的一处缺漏。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.011
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_03",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "深层悟道",
+      "narrative": "你借此机会完成了一次难得的深层悟道。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.015
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_04",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "遗迹资源",
+      "narrative": "你从遗迹中带出一批尚有价值的修炼资源。",
+      "effect_spec": {
+        "spirit_gain_mult": 2.5
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_05",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "不虚此行",
+      "narrative": "你同时收获资源与感悟，此行可谓不虚。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.007,
+        "spirit_gain_mult": 1.5
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_06",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "灵泉洗脉",
+      "narrative": "灵泉之气洗涤经脉，使修行效率短期提高。",
+      "effect_spec": {
+        "speed_bonus": 0.08,
+        "duration_minutes": 30
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_07",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "灵气敏锐",
+      "narrative": "你对周围灵气的掌控变得更加敏锐。",
+      "effect_spec": {
+        "speed_bonus": 0.12,
+        "duration_minutes": 30
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_08",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "道意共鸣",
+      "narrative": "残留道意与你当前功法产生共鸣。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.007,
+        "speed_bonus": 0.05,
+        "duration_minutes": 30
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_09",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "稳妥行功",
+      "narrative": "你从古修札记中寻得一条更稳妥的行功路线。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.009,
+        "spirit_gain_mult": 0.8
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_auspicious_result_10",
+      "grade": "玄品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "多项收获",
+      "narrative": "此番机缘令你的修为与资源均有所增长。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.006,
+        "spirit_gain_mult": 1.2,
+        "speed_bonus": 0.05,
+        "duration_minutes": 30
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_01",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "灵气冲丹",
+      "narrative": "混乱灵气冲击丹田，使部分修为暂时散失。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.03,
+        "cultivation_loss_stage_cap_pct": 0.004
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_02",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "神念反噬",
+      "narrative": "你遭到残留神念反噬，根基受到轻微震荡。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.05,
+        "cultivation_loss_stage_cap_pct": 0.008
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_03",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "破阵耗石",
+      "narrative": "你为破除困局消耗了不少灵石。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.01,
+        "spirit_loss_base_mult": 2.5
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_04",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "资源损毁",
+      "narrative": "你虽成功离开，却损毁了一批随身资源。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.02,
+        "spirit_loss_base_mult": 4.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_05",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "阴煞残留",
+      "narrative": "阴煞之气残留体内，灵力运转受到影响。",
+      "effect_spec": {
+        "speed_bonus": -0.08,
+        "duration_minutes": 30
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_06",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "阵冲经脉",
+      "narrative": "经脉受到阵法冲击，需要较长时间调息。",
+      "effect_spec": {
+        "speed_bonus": -0.12,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_07",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "冲破幻境",
+      "narrative": "你强行冲破幻境，神识与经脉同时受到损耗。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.03,
+        "cultivation_loss_stage_cap_pct": 0.004,
+        "speed_bonus": -0.05,
+        "duration_minutes": 30
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_08",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "稳阵脱困",
+      "narrative": "你用灵石强行稳定阵法，才没有陷入更深处。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.01,
+        "spirit_loss_base_mult": 2.5,
+        "speed_bonus": -0.05,
+        "duration_minutes": 30
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_09",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "反噬截意",
+      "narrative": "你在反噬中截取了一丝残留道意。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.004,
+        "speed_bonus": -0.1,
+        "duration_minutes": 30
+      },
+      "weight": 1
+    },
+    {
+      "code": "mystic_risk_result_10",
+      "grade": "玄品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "失财得悟",
+      "narrative": "你虽然失去部分资源，却从险地带回了有用之物。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.01,
+        "spirit_loss_base_mult": 2.0,
+        "cultivation_gain_pct": 0.004
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_01",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "古修道意",
+      "narrative": "你参悟古修遗留的道意，修为获得显著增长。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.015
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_02",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "传承关键",
+      "narrative": "传承中的关键感悟令你对当前境界理解更深。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.022
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_03",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "难得顿悟",
+      "narrative": "你完成了一次难得的深层悟道，省去大量苦修。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.03
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_04",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "古修宝藏",
+      "narrative": "你从古修遗迹中带回大量可用资源。",
+      "effect_spec": {
+        "spirit_gain_mult": 6.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_05",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "传承资源",
+      "narrative": "你同时得到传承感悟与珍贵修炼资源。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.013,
+        "spirit_gain_mult": 4.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_06",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "灵脉洗身",
+      "narrative": "灵脉之力洗涤全身，使修炼速度明显提高。",
+      "effect_spec": {
+        "speed_bonus": 0.12,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_07",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "深层共鸣",
+      "narrative": "古修传承与你当前修行产生深层共鸣。",
+      "effect_spec": {
+        "speed_bonus": 0.18,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_08",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "融入体系",
+      "narrative": "你将遗迹中的道意融入自身修炼体系。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.012,
+        "speed_bonus": 0.1,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_09",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "炼化药力",
+      "narrative": "丹炉残留药力被你成功炼化。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.015,
+        "spirit_gain_mult": 2.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_auspicious_result_10",
+      "grade": "地品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "三益并得",
+      "narrative": "此次机缘令你在修为、资源与效率上同时受益。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.01,
+        "spirit_gain_mult": 3.0,
+        "speed_bonus": 0.08,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_01",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "杀阵贯脉",
+      "narrative": "杀阵余威贯穿经脉，部分修为因此散失。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.06,
+        "cultivation_loss_stage_cap_pct": 0.008
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_02",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "古意冲识",
+      "narrative": "古老意志冲击识海，使你的境界进度受到明显影响。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.1,
+        "cultivation_loss_stage_cap_pct": 0.015
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_03",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "镇灵耗石",
+      "narrative": "你为镇压失控灵气消耗了大量灵石。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.02,
+        "spirit_loss_base_mult": 6.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_04",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "洞塌毁资",
+      "narrative": "洞府坍塌使你损毁了不少随身资源。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.03,
+        "spirit_loss_base_mult": 10.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_05",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "剑意压制",
+      "narrative": "剑意残留体内，灵力运转持续受到压制。",
+      "effect_spec": {
+        "speed_bonus": -0.12,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_06",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "神识受创",
+      "narrative": "神识与经脉均受到冲击，需要较长时间恢复。",
+      "effect_spec": {
+        "speed_bonus": -0.18,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_07",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "夺传反噬",
+      "narrative": "你强行夺取传承，虽然成功，却承受了严重反噬。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.06,
+        "cultivation_loss_stage_cap_pct": 0.008,
+        "speed_bonus": -0.1,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_08",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "稳脉脱险",
+      "narrative": "你用大量灵石稳定灵脉，才避免了更大的灾祸。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.02,
+        "spirit_loss_base_mult": 6.0,
+        "speed_bonus": -0.08,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_09",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "失控截悟",
+      "narrative": "你从失控传承中强行截取了一部分感悟。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.008,
+        "speed_bonus": -0.15,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "earth_risk_result_10",
+      "grade": "地品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "受创携宝",
+      "narrative": "你虽在险境中受创，却带回了一部分遗迹资源。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.05,
+        "cultivation_loss_stage_cap_pct": 0.007,
+        "spirit_gain_mult": 3.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_01",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "星辰入识",
+      "narrative": "星辰道意融入识海，使你的修为大幅增长。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.03
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_02",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "大能补道",
+      "narrative": "大能残留感悟补全了你对当前境界的理解。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.045
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_03",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "天地顿悟",
+      "narrative": "你把握住了一次真正的天地顿悟。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.06
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_04",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "上古珍藏",
+      "narrative": "你从上古遗址中得到了一批极为珍贵的资源。",
+      "effect_spec": {
+        "spirit_gain_mult": 15.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_05",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "天地馈赠",
+      "narrative": "天地馈赠同时化作修为与资源归入你手中。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.025,
+        "spirit_gain_mult": 10.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_06",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "大道环身",
+      "narrative": "大道灵机持续环绕周身，修炼速度大幅提升。",
+      "effect_spec": {
+        "speed_bonus": 0.18,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_07",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "天地共鸣",
+      "narrative": "你与天地灵气产生罕见共鸣。",
+      "effect_spec": {
+        "speed_bonus": 0.25,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_08",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "吸收真意",
+      "narrative": "上古传承中的部分真意被你成功吸收。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.025,
+        "speed_bonus": 0.15,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_09",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "时间馈赠",
+      "narrative": "时间异常为你带来了远超寻常闭关的收获。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.035,
+        "spirit_gain_mult": 5.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_auspicious_result_10",
+      "grade": "天品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "天机全益",
+      "narrative": "此次天品机缘从多个方面推动了你的修行。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.02,
+        "spirit_gain_mult": 8.0,
+        "speed_bonus": 0.12,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_01",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "天威撼基",
+      "narrative": "天道威压冲击根基，使大量修为暂时散失。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.1,
+        "cultivation_loss_stage_cap_pct": 0.018
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_02",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "神魂冲突",
+      "narrative": "上古意志与神魂激烈冲突，境界进度受到重创。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.18,
+        "cultivation_loss_stage_cap_pct": 0.03
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_03",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "御雷耗石",
+      "narrative": "你为抵御天雷耗费了极为庞大的灵石资源。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.03,
+        "spirit_loss_base_mult": 15.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_04",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "秘境毁资",
+      "narrative": "秘境崩塌摧毁了你携带的大量资源。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.05,
+        "spirit_loss_base_mult": 25.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_05",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "天威压修",
+      "narrative": "天道威压持续笼罩，使修行效率明显下降。",
+      "effect_spec": {
+        "speed_bonus": -0.18,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_06",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "神魂静养",
+      "narrative": "神魂受损，需要长时间静养。",
+      "effect_spec": {
+        "speed_bonus": -0.25,
+        "duration_minutes": 240
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_07",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "承符重创",
+      "narrative": "你强行承受大道符文，虽然没有失败，却付出沉重代价。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.1,
+        "cultivation_loss_stage_cap_pct": 0.018,
+        "speed_bonus": -0.15,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_08",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "燃石脱境",
+      "narrative": "你燃烧大量灵石才从崩溃秘境中脱身。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.03,
+        "spirit_loss_base_mult": 15.0,
+        "speed_bonus": -0.12,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_09",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "反噬截道",
+      "narrative": "你从天道反噬中截取了一缕珍贵道意。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.018,
+        "speed_bonus": -0.22,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "heaven_risk_result_10",
+      "grade": "天品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "负伤携遗",
+      "narrative": "你虽然被上古力量所伤，却带回了部分珍贵遗物。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.08,
+        "cultivation_loss_stage_cap_pct": 0.015,
+        "spirit_gain_mult": 8.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_01",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "仙意入基",
+      "narrative": "一缕仙道真意融入根基，使修为产生巨大增长。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.06
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_02",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "碎片悟道",
+      "narrative": "你从大道碎片中参悟到远超当前境界的奥妙。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.09
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_03",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "仙影演法",
+      "narrative": "仙人残影为你演化大道，带来一次罕见蜕变。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.12
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_04",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "仙域珍资",
+      "narrative": "你从仙域残片中取得了数量惊人的珍贵资源。",
+      "effect_spec": {
+        "spirit_gain_mult": 35.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_05",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "大道双馈",
+      "narrative": "大道馈赠同时化为修为与庞大资源。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.05,
+        "spirit_gain_mult": 25.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_06",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "仙光洗脉",
+      "narrative": "仙光持续洗涤经脉，使修行速度产生质的提升。",
+      "effect_spec": {
+        "speed_bonus": 0.25,
+        "duration_minutes": 240
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_07",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "法则共鸣",
+      "narrative": "你与部分天地法则产生短暂共鸣。",
+      "effect_spec": {
+        "speed_bonus": 0.4,
+        "duration_minutes": 240
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_08",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "仙意改法",
+      "narrative": "仙道真意暂时改变了你运转功法的方式。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.05,
+        "speed_bonus": 0.2,
+        "duration_minutes": 240
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_09",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "道海长修",
+      "narrative": "你在道海中完成了一次远超寻常的修行。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.07,
+        "spirit_gain_mult": 15.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_auspicious_result_10",
+      "grade": "仙品",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "仙缘全益",
+      "narrative": "此次仙品机缘令你的修为、资源与效率同时跃升。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.04,
+        "spirit_gain_mult": 20.0,
+        "speed_bonus": 0.18,
+        "duration_minutes": 240
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_01",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "仙威撼基",
+      "narrative": "仙道威压撼动根基，使大量修为散失。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.18,
+        "cultivation_loss_stage_cap_pct": 0.03
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_02",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "大道重创",
+      "narrative": "大道反噬重创神魂，当前境界进度遭受严重影响。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.3,
+        "cultivation_loss_stage_cap_pct": 0.05
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_03",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "御器燃石",
+      "narrative": "你燃烧庞大灵石才勉强抵御仙器侵蚀。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.05,
+        "spirit_loss_base_mult": 35.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_04",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "仙域毁资",
+      "narrative": "仙域毁灭余波摧毁了大量修炼资源。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.08,
+        "spirit_loss_base_mult": 60.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_05",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "仙力滞脉",
+      "narrative": "仙道残力滞留经脉，使修行效率严重下降。",
+      "effect_spec": {
+        "speed_bonus": -0.25,
+        "duration_minutes": 240
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_06",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "道冲神魂",
+      "narrative": "神魂与大道发生冲突，需要长时间恢复。",
+      "effect_spec": {
+        "speed_bonus": -0.4,
+        "duration_minutes": 480
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_07",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "保我重损",
+      "narrative": "你强行保住自我意识，却付出了沉重的修为代价。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.18,
+        "cultivation_loss_stage_cap_pct": 0.03,
+        "speed_bonus": -0.2,
+        "duration_minutes": 240
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_08",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "封印碎片",
+      "narrative": "你燃烧大量灵石才将失控大道碎片封印。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.05,
+        "spirit_loss_base_mult": 35.0,
+        "speed_bonus": -0.18,
+        "duration_minutes": 240
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_09",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "毁灭悟仙",
+      "narrative": "你从毁灭余波中截取了一丝真正的仙道感悟。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.03,
+        "speed_bonus": -0.35,
+        "duration_minutes": 240
+      },
+      "weight": 1
+    },
+    {
+      "code": "immortal_risk_result_10",
+      "grade": "仙品",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "反噬携珍",
+      "narrative": "你虽然遭到仙道反噬，却从残破仙域带回珍贵资源。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.15,
+        "cultivation_loss_stage_cap_pct": 0.025,
+        "spirit_gain_mult": 20.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_01",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 1,
+      "title": "本命契合一",
+      "narrative": "五道功法虚影依次消散，唯有与你命格完全契合的那一卷留在识海。",
+      "effect_spec": {
+        "exclusive_outcome": "success"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_02",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 2,
+      "title": "本命契合二",
+      "narrative": "天命牵引之下，与你命格契合的功法穿越虚空而来。",
+      "effect_spec": {
+        "exclusive_outcome": "success"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_03",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 3,
+      "title": "本命契合三",
+      "narrative": "那卷道法与你的本命气机完全共鸣，最终选择认你为主。",
+      "effect_spec": {
+        "exclusive_outcome": "success"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_04",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 4,
+      "title": "本命契合四",
+      "narrative": "无数经文融入识海，你终于看清了这门功法的真正名称。",
+      "effect_spec": {
+        "exclusive_outcome": "success"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_05",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 5,
+      "title": "本命契合五",
+      "narrative": "你与功法之间的因果彻底闭合，专属传承正式归位。",
+      "effect_spec": {
+        "exclusive_outcome": "success"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_06",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 6,
+      "title": "异命收回一",
+      "narrative": "一卷强大道法已经显化，却与你的本命气机始终无法相融。",
+      "effect_spec": {
+        "exclusive_outcome": "mismatch"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_07",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 7,
+      "title": "异命收回二",
+      "narrative": "功法虽已降临，却因命格不合而逐渐崩散。",
+      "effect_spec": {
+        "exclusive_outcome": "mismatch"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_08",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 8,
+      "title": "异命收回三",
+      "narrative": "道法虚影在识海中停留片刻，最终被天道重新带走。",
+      "effect_spec": {
+        "exclusive_outcome": "mismatch"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_09",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 9,
+      "title": "异命收回四",
+      "narrative": "你尝试与其共鸣，却始终无法跨越命格之间的隔阂。",
+      "effect_spec": {
+        "exclusive_outcome": "mismatch"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_auspicious_result_10",
+      "grade": "专属",
+      "polarity": "auspicious",
+      "sequence": 10,
+      "title": "异命收回五",
+      "narrative": "一道天道印记落下，将不属于你的传承封回虚空。",
+      "effect_spec": {
+        "exclusive_outcome": "mismatch"
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_01",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 1,
+      "title": "残意滞脉",
+      "narrative": "传承虽然没有成功降临，但残留道意仍让你窥见了一丝玄妙。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.008,
+        "speed_bonus": -0.08,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_02",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 2,
+      "title": "截文耗神",
+      "narrative": "你强行稳住崩解的经文，从中截取少量灵机，却消耗了大量心神。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.006,
+        "speed_bonus": -0.12,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_03",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 3,
+      "title": "乱流散修",
+      "narrative": "虚空乱流冲散部分修为，但也带来了一些可被利用的残留资源。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.08,
+        "cultivation_loss_stage_cap_pct": 0.015,
+        "spirit_gain_mult": 5.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_04",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 4,
+      "title": "稳命耗石",
+      "narrative": "你以大量灵石稳固命格，才没有让天机反噬继续扩大。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.02,
+        "spirit_loss_base_mult": 15.0,
+        "cultivation_gain_pct": 0.005
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_05",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 5,
+      "title": "余气滞识",
+      "narrative": "专属天机被迫中断，残余气息长时间滞留识海。",
+      "effect_spec": {
+        "speed_bonus": -0.1,
+        "duration_minutes": 120,
+        "spirit_gain_mult": 3.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_06",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 6,
+      "title": "道音撼魂",
+      "narrative": "混乱道音撼动神魂，使部分修为散失，但你也看清了根基的一处缺漏。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.06,
+        "cultivation_loss_stage_cap_pct": 0.01,
+        "cultivation_gain_pct": 0.004
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_07",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 7,
+      "title": "驱异耗资",
+      "narrative": "你成功驱散了异命气息，却在过程中耗费了大量灵石与精力。",
+      "effect_spec": {
+        "spirit_loss_balance_pct": 0.015,
+        "spirit_loss_base_mult": 10.0,
+        "speed_bonus": -0.08,
+        "duration_minutes": 60
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_08",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 8,
+      "title": "五法震魂",
+      "narrative": "五道功法虚影相互冲突，神魂受到明显震荡，你保住了一丝残余感悟。",
+      "effect_spec": {
+        "cultivation_gain_pct": 0.01,
+        "speed_bonus": -0.15,
+        "duration_minutes": 120
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_09",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 9,
+      "title": "命格反噬",
+      "narrative": "命格共鸣失败，引发短暂反噬，但崩散经文留下了一些天道余辉。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.1,
+        "cultivation_loss_stage_cap_pct": 0.02,
+        "spirit_gain_mult": 8.0
+      },
+      "weight": 1
+    },
+    {
+      "code": "exclusive_risk_result_10",
+      "grade": "专属",
+      "polarity": "risk",
+      "sequence": 10,
+      "title": "碎法残意",
+      "narrative": "专属传承彻底破碎，强大余波冲击全身，你从毁灭中截取了少量大道残意。",
+      "effect_spec": {
+        "cultivation_loss_current_pct": 0.12,
+        "cultivation_loss_stage_cap_pct": 0.025,
+        "speed_bonus": -0.1,
+        "duration_minutes": 120,
+        "cultivation_gain_pct": 0.008
+      },
+      "weight": 1
+    }
+  ]
+}

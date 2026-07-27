@@ -1,0 +1,107 @@
+{
+  "supportTechniques": [
+    {
+      "grade": "玄品",
+      "category": "support",
+      "name": "静水调息篇",
+      "level1Effect": "修炼速度+1%",
+      "firstReward": "永久修炼速度+1%"
+    },
+    {
+      "grade": "玄品",
+      "category": "support",
+      "name": "微尘引灵术",
+      "level1Effect": "每秒修为+1",
+      "firstReward": "当前小境界需求0.5%修为"
+    },
+    {
+      "grade": "地品",
+      "category": "support",
+      "name": "两仪养元诀",
+      "level1Effect": "修炼速度+3%",
+      "firstReward": "当前小境界需求1.2%修为"
+    },
+    {
+      "grade": "地品",
+      "category": "support",
+      "name": "绵息周天法",
+      "level1Effect": "每秒修为+2",
+      "firstReward": "永久每秒修为+2"
+    },
+    {
+      "grade": "地品",
+      "category": "support",
+      "name": "玉枢辅脉篇",
+      "level1Effect": "修炼速度+4%",
+      "firstReward": "永久修炼速度+1%"
+    },
+    {
+      "grade": "天品",
+      "category": "support",
+      "name": "星河辅元经",
+      "level1Effect": "修炼速度+7%",
+      "firstReward": "当前小境界需求3%修为"
+    },
+    {
+      "grade": "天品",
+      "category": "support",
+      "name": "太清归息法",
+      "level1Effect": "每秒修为+6",
+      "firstReward": "当前小境界需求2%修为+境界灵石基数×3"
+    },
+    {
+      "grade": "天品",
+      "category": "support",
+      "name": "青冥养神篇",
+      "level1Effect": "修炼速度+8%",
+      "firstReward": "永久修炼速度+3%"
+    },
+    {
+      "grade": "天品",
+      "category": "support",
+      "name": "九转聚灵诀",
+      "level1Effect": "每秒修为+8",
+      "firstReward": "永久每秒修为+3"
+    },
+    {
+      "grade": "仙品",
+      "category": "support",
+      "name": "紫府仙息经",
+      "level1Effect": "修炼速度+14%",
+      "firstReward": "永久修炼速度+10%+当前小境界需求6%修为"
+    },
+    {
+      "grade": "仙品",
+      "category": "support",
+      "name": "太初辅元录",
+      "level1Effect": "每秒修为+16",
+      "firstReward": "永久每秒修为+8+当前小境界需求6%修为"
+    },
+    {
+      "grade": "仙品",
+      "category": "support",
+      "name": "混元灵台篇",
+      "level1Effect": "修炼速度+16%",
+      "firstReward": "永久修炼速度+8%+当前小境界需求6%修为+境界灵石基数×20"
+    }
+  ],
+  "dropRates": {
+    "玄品": {
+      "main": 0.027777777777777776,
+      "support": 0.013888888888888888
+    },
+    "地品": {
+      "main": 0.06666666666666667,
+      "support": 0.03333333333333333
+    },
+    "天品": {
+      "main": 0.16666666666666666,
+      "support": 0.08333333333333333
+    },
+    "仙品": {
+      "main": 0.3333333333333333,
+      "support": 0.16666666666666666
+    }
+  },
+  "note": "概率均为抽中对应品级且趋吉后的概率；主修保持旧值，辅修为旧主修的一半。"
+}

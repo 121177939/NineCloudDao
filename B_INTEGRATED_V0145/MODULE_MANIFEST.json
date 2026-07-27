@@ -1,0 +1,220 @@
+{
+  "moduleId": "B-20260727-COMBINED-OPPORTUNITY-TECHNIQUES-COMMISSION",
+  "name": "机缘V4完整功法扩充、离线汇总与玩家庄5%佣金",
+  "status": "ready_for_integration",
+  "baseline": {
+    "baselineId": "V0.14.4_AB2",
+    "releaseLabel": "Web Alpha V0.14.4 CACHE8",
+    "sourceSha256": "c624987869c5668e7ac723e577e4410ad873355739bd5fec62aadd8451d36ba8",
+    "moduleId": "B-20260727-COMBINED-OPPORTUNITY-TECHNIQUES-COMMISSION",
+    "status": "ready_for_integration",
+    "userApprovedProtectedChange": "玩家庄赢家毛利润5%归庄家",
+    "sharedFileHashes": {
+      "app.js": "eb4e837909f974bac37b11d4f6b896119bcefb6701f243a7b8cdf4c1585dd3bf",
+      "styles.css": "b49db58e021e372b0afa4377c3db1a2530cdadb0f7e866eafd19d73603a1bb03"
+    }
+  },
+  "scope": [
+    "在线离线统一5分钟机缘",
+    "120触发+120结果",
+    "原12主修完整保留",
+    "新增12辅修",
+    "专属涉险重做且趋吉机制不变",
+    "手机离线净汇总",
+    "玩家庄赢家毛利润5%佣金"
+  ],
+  "protectedChangeApproved": [
+    "玩家庄由零抽成改为赢家毛利润5%归庄家"
+  ],
+  "sharedFiles": [
+    "app.js",
+    "styles.css"
+  ],
+  "databaseFiles": [
+    "00_precheck.sql",
+    "10_opportunity_v4.sql",
+    "20_player_house_win_commission.sql",
+    "30_postcheck.sql",
+    "90_emergency_disable.sql",
+    "99_rollback.sql"
+  ],
+  "fileCount": 34,
+  "files": [
+    {
+      "path": "A_转发说明.txt",
+      "size": 295,
+      "sha256": "cd4a8e0612f872c1fb2103780c94a6f9d39882f1c1a99450762fc726c4cd2e25"
+    },
+    {
+      "path": "BASELINE_REFERENCE.json",
+      "size": 541,
+      "sha256": "46048a3e7b1ab49fa72d20251cec3a7bb0e8cc3264714fc094c0a644fa86681c"
+    },
+    {
+      "path": "CHANGE_LIST.md",
+      "size": 332,
+      "sha256": "fafe196350e7270a5effa16dd08fec9b1461b566754342f0676b3e4df092c8d4"
+    },
+    {
+      "path": "INTEGRATION_NOTES.md",
+      "size": 604,
+      "sha256": "434af9d58dc2f577b16e90af075800cad1c816c8df68c878ea3b57bb58386528"
+    },
+    {
+      "path": "README_MODULE.md",
+      "size": 1837,
+      "sha256": "641cf76b20932204e09d4f23186a743cfd2f0af5db2a738e4567b2127d7ae8ac"
+    },
+    {
+      "path": "ROLLBACK.md",
+      "size": 298,
+      "sha256": "81722e70bba62149dcbf65ca247957eeb5b357cf5da8f78b9ff93f83d376c189"
+    },
+    {
+      "path": "SHARED_FILE_PATCHES.md",
+      "size": 347,
+      "sha256": "8ee51a7538c0bda67d2e886875f165defd4fd3267734e201eceecf9bbda8dec8"
+    },
+    {
+      "path": "content/opportunity_v4_content.json",
+      "size": 77104,
+      "sha256": "fabfbcd26d6ca5eaa04546606b596ec50cd77cf5191badeb3a98ca50e38cef4a"
+    },
+    {
+      "path": "content/technique_expansion.json",
+      "size": 2951,
+      "sha256": "ee616e7f8273b55c3ae9286e98e9b183e3b9ea312b5ce3a0a7cf79032afd8192"
+    },
+    {
+      "path": "database/00_precheck.sql",
+      "size": 1212,
+      "sha256": "ed536476f5551f276eb8dc445ee845973cc911f867ede48c9faa483dfa99f3a2"
+    },
+    {
+      "path": "database/10_opportunity_v4.sql",
+      "size": 114073,
+      "sha256": "38d2b60c773c2c9608c1f929236c22feb3f1f26e111ce4bd256bc74590ca08eb"
+    },
+    {
+      "path": "database/20_player_house_win_commission.sql",
+      "size": 12741,
+      "sha256": "e9e5c9fda9b74d2130136d0a60f1e3baecfd287225d0ea8e411abdc16de74ba1"
+    },
+    {
+      "path": "database/30_postcheck.sql",
+      "size": 1718,
+      "sha256": "b7d23d388217bc2b1862509b5915d0867dd5c7da21f8abacd06f534849fda978"
+    },
+    {
+      "path": "database/90_emergency_disable.sql",
+      "size": 207,
+      "sha256": "5cef5542a44d428cd64c0e9beca713353d954a26661f8e5da2d3948235c2538d"
+    },
+    {
+      "path": "database/99_rollback.sql",
+      "size": 24334,
+      "sha256": "bb04ef595c3af34274f1718df31213f995096ab23cfc6432f354f4f9a01fcdd0"
+    },
+    {
+      "path": "docs/FINAL_RULES.md",
+      "size": 1760,
+      "sha256": "ec84c9714bb969b265722ed7fcc367cb8cc29673514c6b1c79d130c3510f1858"
+    },
+    {
+      "path": "docs/PROBABILITY_NOTES.md",
+      "size": 654,
+      "sha256": "51ca146ea6edb6ac6af91bcc215f121e870a58f03bf680bef404244fc8885a67"
+    },
+    {
+      "path": "docs/TECHNIQUE_TABLE.md",
+      "size": 1943,
+      "sha256": "feb5753095378c14ec4e1487907bb19b9c38f997ea349ff9aa56ddbd320641d7"
+    },
+    {
+      "path": "patches/app.js.patch",
+      "size": 21400,
+      "sha256": "8130ac41e411bf5c215ebee3a282d885a96c8c0a86be4d5bf3bf09a4c17cbb68"
+    },
+    {
+      "path": "patches/styles.css.patch",
+      "size": 4106,
+      "sha256": "88108672f7ad382df506259ce925d202ffbfa7395946365065edd414477cca61"
+    },
+    {
+      "path": "reference/claim_cultivation_v0144_original.sql",
+      "size": 10461,
+      "sha256": "154d56bf67ac45c0211c37938f4705c6abafd0c35e8280dfbf5fc6f4b6438ae2"
+    },
+    {
+      "path": "reference/get_auto_opportunity_v3_original.sql",
+      "size": 11573,
+      "sha256": "cddd34a30b1efa2d090a3c2de0d89f89d165661fd7ae8dec22f6d5ed25b9deb2"
+    },
+    {
+      "path": "source/candidate/app.js",
+      "size": 264367,
+      "sha256": "772370dcc432b40775c411ed3a5a6b8f4413030dc9605459e278c0d53e785fe8"
+    },
+    {
+      "path": "source/candidate/styles.css",
+      "size": 136971,
+      "sha256": "670161d3b9f0e650f536fee7fe89393aa5037e273a0d3c0f401d413e08faab20"
+    },
+    {
+      "path": "tests/TEST_REPORT.md",
+      "size": 1920,
+      "sha256": "bf9ffed7ebaeabfd4eba1ac86b3a8a2784f9635a63c923eb0d90987fa73a936d"
+    },
+    {
+      "path": "tests/UNEXECUTED_TESTS.md",
+      "size": 305,
+      "sha256": "b7bced27638a08bd4c3075601f27f9033e403e1b29ec850970ebcb3252fdf33e"
+    },
+    {
+      "path": "tests/raw_test_output.txt",
+      "size": 1229,
+      "sha256": "b243df413556667499c4a27b76d4d92a5ca96a4e8ca6d59fd51ec65e04f7fc1d"
+    },
+    {
+      "path": "tests/run_all.sh",
+      "size": 493,
+      "sha256": "85e2c7854140445c5ecbda823f64bdce5ac730efc03b096a6b9b538812668e24"
+    },
+    {
+      "path": "tests/sql_static_audit.py",
+      "size": 926,
+      "sha256": "c78a022b2ffeba956c1b4c97bcec654e9e8613508cdd46c8968c1330e08ca5b3"
+    },
+    {
+      "path": "tests/test_combined_ui.js",
+      "size": 705,
+      "sha256": "24798af8c47404a5b4542d83a06390dabac4346acd0dc4754a498ff39424ac47"
+    },
+    {
+      "path": "tests/test_commission_math.py",
+      "size": 536,
+      "sha256": "11bba624f9942ae9a6e1e38369b3c52e29f5016fca514e031e8393cfe86d128b"
+    },
+    {
+      "path": "tests/test_opportunity_v4_ui.js",
+      "size": 972,
+      "sha256": "65b2354cdde4c772229ee35d9d2321bf1e3bf93a1c1e4dd9ab55641c1cef1f15"
+    },
+    {
+      "path": "tests/test_player_house_commission_ui.js",
+      "size": 3456,
+      "sha256": "77632037c39597cdc1cfc3510ac6f6484219d784dcd66ab13c51eaf3a2fbeb09"
+    },
+    {
+      "path": "tests/test_probability_math.py",
+      "size": 468,
+      "sha256": "84954d14d5b3176ec45da50c16d49f2c7f9fcde0151aa79f14361d5137a0bae3"
+    }
+  ],
+  "limitations": [
+    "未连接真实Supabase执行SQL",
+    "未完成864次真实离线性能测试",
+    "未完成双设备/双账号并发测试",
+    "未完成手机真机测试"
+  ]
+}

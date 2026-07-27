@@ -1,0 +1,64 @@
+# 静态测试报告
+
+结果：`PASS`。
+
+已验证：
+- 合并后的app.js通过Node语法检查。
+- app.js/styles.css补丁可在V0.14.4_AB2基线上无冲突应用，应用后与candidate逐字一致。
+- 离线汇总、手机底部抽屉、功法汇总和玩家庄文案静态检查通过。
+- 120条触发、120个结果、原12主修、新12辅修、4档概率表、专属保底与重复传承点静态检查通过。
+- 天品实际总功法概率高于仙品的数学检查通过。
+- 玩家庄100→净赢95、佣金5及多倍率取整检查通过。
+
+未执行项目见`UNEXECUTED_TESTS.md`，不得将静态通过描述为生产数据库已通过。
+
+## 原始输出
+
+```text
+PASS summary
+PASS mobile
+PASS commission
+PASS noTimeline
+PASS v4 rpc
+PASS ack rpc
+PASS mobile modal
+PASS grade summary
+PASS net summary
+PASS no timeline list
+PASS mobile media
+PASS safe area
+PASS login settles v4
+PASS refresh settles v4
+PASS 120 stories
+PASS 12 support seeds
+PASS 24 technique pool
+PASS old main retained
+PASS new support retained
+PASS five minute
+PASS exclusive unchanged
+PASS duplicate mastery
+PASS summary techniques
+玄品 main 0.003472222222222222 support 0.001736111111111111
+地品 main 0.0026666666666666666 support 0.0013333333333333333
+天品 main 0.0012499999999999998 support 0.0006249999999999999
+仙品 main 0.0008333333333333333 support 0.00041666666666666664
+PASS overall heaven technique rates exceed immortal
+PASS 100 1 fee 5 net 95 reward 195
+PASS 100 3 fee 15 net 285 reward 385
+PASS 100 34 fee 170 net 3230 reward 3330
+PASS 250 1 fee 12 net 238 reward 488
+PASS 10 1 fee 0 net 10 reward 20
+TOTAL 5 PASS 5 FAIL 0
+PASS house subtitle
+PASS principal protected
+PASS 95 percent to bettor
+PASS 5 percent dealer commission
+PASS example total 195
+PASS zero pool
+PASS lobby copy
+PASS pools copy
+PASS old zero-fee copy removed
+PASS system rule preserved
+TOTAL=10 PASS=10 FAIL=0
+ALL STATIC TESTS PASSED
+```

@@ -1,0 +1,12 @@
+{
+  "baselineId": "V0.14.4_AB2",
+  "releaseLabel": "Web Alpha V0.14.4 CACHE8",
+  "sourceSha256": "c624987869c5668e7ac723e577e4410ad873355739bd5fec62aadd8451d36ba8",
+  "moduleId": "B-20260727-COMBINED-OPPORTUNITY-TECHNIQUES-COMMISSION",
+  "status": "ready_for_integration",
+  "userApprovedProtectedChange": "玩家庄赢家毛利润5%归庄家",
+  "sharedFileHashes": {
+    "app.js": "eb4e837909f974bac37b11d4f6b896119bcefb6701f243a7b8cdf4c1585dd3bf",
+    "styles.css": "b49db58e021e372b0afa4377c3db1a2530cdadb0f7e866eafd19d73603a1bb03"
+  }
+}

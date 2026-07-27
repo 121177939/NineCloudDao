@@ -1,0 +1,276 @@
+create or replace function public.claim_cultivation_v1()
+returns table (
+  character_id uuid,
+  gained bigint,
+  cultivation_total bigint,
+  elapsed_seconds bigint,
+  current_rate_per_second numeric,
+  base_rate_per_second numeric,
+  root_multiplier numeric,
+  qi_multiplier numeric,
+  fate_bonus numeric,
+  technique_flat_rate numeric,
+  technique_multiplier_bonus numeric,
+  effect_flat_rate numeric,
+  effect_multiplier_bonus numeric,
+  claimed_at timestamptz
+)
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_character_id uuid;
+  v_world_id uuid;
+  v_realm_stage_id smallint;
+  v_age integer;
+  v_player_realm_order integer := 0;
+  v_mainstream_realm_order integer := 0;
+  v_realm_gap integer := 0;
+  v_heaven_coefficient numeric := 1;
+  v_cultivation_before bigint;
+  v_base_rate numeric := 0;
+  v_root_multiplier numeric := 1;
+  v_qi_base numeric := 1;
+  v_effective_qi_multiplier numeric := 1;
+  v_fate_bonus numeric := 0;
+  v_technique_flat numeric := 0;
+  v_technique_multiplier numeric := 0;
+  v_effect_flat numeric := 0;
+  v_effect_multiplier numeric := 0;
+  v_last_claim timestamptz;
+  v_now timestamptz := clock_timestamp();
+  v_cursor timestamptz;
+  v_boundary timestamptz;
+  v_segment_seconds numeric;
+  v_segment_effect_flat numeric;
+  v_segment_effect_multiplier numeric;
+  v_segment_fixed_rate numeric;
+  v_segment_rate numeric;
+  v_exact_gain numeric := 0;
+  v_fraction numeric := 0;
+  v_gained bigint := 0;
+  v_elapsed bigint := 0;
+  v_current_fixed_rate numeric := 0;
+  v_current_rate numeric := 0;
+  v_cultivation_cap bigint;
+  v_requested_gain bigint := 0;
+  v_discarded_gain bigint := 0;
+  v_insight_multiplier numeric := 1;
+begin
+  if v_user_id is null then
+    raise exception 'AUTH_REQUIRED';
+  end if;
+
+  select
+    pc.id, pc.world_id, pc.realm_stage_id, pc.age, pc.cultivation,
+    r.major_order, cs.last_claim_at, cs.fractional_remainder
+  into
+    v_character_id, v_world_id, v_realm_stage_id, v_age, v_cultivation_before,
+    v_player_realm_order, v_last_claim, v_fraction
+  from public.player_characters pc
+  join public.character_cultivation_state cs on cs.character_id = pc.id
+  join public.realm_stages rs on rs.id = pc.realm_stage_id
+  join public.realms r on r.id = rs.realm_id
+  where pc.user_id = v_user_id
+    and pc.status in ('active','secluded','missing')
+  order by pc.created_at desc
+  limit 1
+  for update of pc, cs;
+
+  if v_character_id is null then
+    raise exception 'NO_ACTIVE_CHARACTER';
+  end if;
+
+  v_insight_multiplier := public.heavenly_insight_cultivation_multiplier_v0144(v_character_id);
+
+  v_base_rate := coalesce(public.realm_base_cultivation_rate_v1(v_realm_stage_id), 10);
+  v_last_claim := least(coalesce(v_last_claim, v_now), v_now);
+  v_elapsed := greatest(0, floor(extract(epoch from (v_now - v_last_claim)))::bigint);
+
+  select coalesce(sr.cultivation_multiplier, 1.000000)
+  into v_root_multiplier
+  from public.character_spirit_roots csr
+  join public.spirit_roots sr on sr.id = csr.spirit_root_id
+  where csr.character_id = v_character_id and csr.is_primary
+  limit 1;
+  v_root_multiplier := coalesce(v_root_multiplier, 1.000000);
+
+  select coalesce(gw.spiritual_qi_level, 1.000000)
+  into v_qi_base
+  from public.game_worlds gw
+  where gw.id = v_world_id;
+  v_qi_base := coalesce(v_qi_base, 1.000000);
+
+  select coalesce(round(avg(r.major_order))::integer, v_player_realm_order)
+  into v_mainstream_realm_order
+  from public.player_characters pc
+  join public.realm_stages rs on rs.id = pc.realm_stage_id
+  join public.realms r on r.id = rs.realm_id
+  where pc.world_id = v_world_id
+    and pc.status in ('active','secluded','missing');
+
+  v_mainstream_realm_order := coalesce(v_mainstream_realm_order, v_player_realm_order);
+  v_realm_gap := coalesce(v_player_realm_order, 0) - coalesce(v_mainstream_realm_order, 0);
+  v_heaven_coefficient := public.heaven_balance_multiplier_v1(v_realm_gap);
+  v_effective_qi_multiplier := greatest(0, v_qi_base * v_heaven_coefficient);
+
+  select coalesce(sum(
+    case
+      when f.code = 'late_bloomer' then
+        case
+          when v_age >= coalesce((f.trigger_rules->>'late_age')::integer, 60)
+            then coalesce((f.modifiers->>'late_cultivation')::numeric, 0)
+          else coalesce((f.modifiers->>'early_cultivation')::numeric, 0)
+        end
+      else coalesce((f.modifiers->>'cultivation')::numeric, 0)
+    end
+  ), 0)
+  into v_fate_bonus
+  from public.character_fates cf
+  join public.fates f on f.id = cf.fate_id
+  where cf.character_id = v_character_id and cf.is_active;
+
+  select
+    coalesce(sum(coalesce((t.fixed_effects->>'cultivation_per_second')::numeric, 0) * ct.level), 0),
+    coalesce(sum(greatest(coalesce((t.fixed_effects->>'cultivation_multiplier')::numeric, 1) - 1, 0)), 0)
+  into v_technique_flat, v_technique_multiplier
+  from public.character_techniques ct
+  join public.techniques t on t.id = ct.technique_id
+  where ct.character_id = v_character_id
+    and ct.is_equipped
+    and t.is_active;
+
+  v_exact_gain := coalesce(v_fraction, 0);
+  v_cursor := v_last_claim;
+
+  for v_boundary in
+    select boundary_at
+    from (
+      select v_now as boundary_at
+      union
+      select greatest(e.starts_at, v_last_claim)
+      from public.character_cultivation_effects e
+      where e.character_id = v_character_id and e.is_active
+        and e.starts_at > v_last_claim and e.starts_at < v_now
+      union
+      select least(e.expires_at, v_now)
+      from public.character_cultivation_effects e
+      where e.character_id = v_character_id and e.is_active
+        and e.expires_at is not null
+        and e.expires_at > v_last_claim and e.expires_at < v_now
+    ) boundaries
+    where boundary_at > v_last_claim
+    order by boundary_at
+  loop
+    if v_boundary <= v_cursor then continue; end if;
+
+    select coalesce(sum(e.flat_rate_per_second), 0), coalesce(sum(e.multiplier_bonus), 0)
+    into v_segment_effect_flat, v_segment_effect_multiplier
+    from public.character_cultivation_effects e
+    where e.character_id = v_character_id and e.is_active
+      and e.starts_at <= v_cursor
+      and (e.expires_at is null or e.expires_at > v_cursor);
+
+    v_segment_seconds := greatest(0, extract(epoch from (v_boundary - v_cursor)));
+    v_segment_fixed_rate := greatest(
+      0,
+      (v_base_rate + v_technique_flat + v_segment_effect_flat)
+      * v_root_multiplier
+      * greatest(0, 1 + v_fate_bonus + v_technique_multiplier + v_segment_effect_multiplier)
+    );
+
+    -- 天道动态系数是最后一层，对前面完整结果整体相乘。
+    v_segment_rate := greatest(0, v_segment_fixed_rate * v_effective_qi_multiplier * v_insight_multiplier);
+    v_exact_gain := v_exact_gain + (v_segment_rate * v_segment_seconds);
+    v_cursor := v_boundary;
+  end loop;
+
+  v_requested_gain := floor(v_exact_gain)::bigint;
+  v_gained := v_requested_gain;
+  v_fraction := v_exact_gain - v_requested_gain;
+  v_cultivation_cap := public.character_cultivation_cap_v1(v_realm_stage_id);
+  if v_cultivation_cap is not null then
+    v_gained := least(v_requested_gain, greatest(0, v_cultivation_cap - v_cultivation_before));
+    v_discarded_gain := greatest(0, v_requested_gain - v_gained);
+    if v_discarded_gain > 0 or v_cultivation_before >= v_cultivation_cap then
+      -- 圆满后的超额修为与小数余量直接舍弃，不能带入下一境界。
+      v_fraction := 0;
+    end if;
+  end if;
+
+  select coalesce(sum(e.flat_rate_per_second), 0), coalesce(sum(e.multiplier_bonus), 0)
+  into v_effect_flat, v_effect_multiplier
+  from public.character_cultivation_effects e
+  where e.character_id = v_character_id and e.is_active
+    and e.starts_at <= v_now
+    and (e.expires_at is null or e.expires_at > v_now);
+
+  v_current_fixed_rate := greatest(
+    0,
+    (v_base_rate + v_technique_flat + v_effect_flat)
+    * v_root_multiplier
+    * greatest(0, 1 + v_fate_bonus + v_technique_multiplier + v_effect_multiplier)
+  );
+  v_current_rate := greatest(0, v_current_fixed_rate * v_effective_qi_multiplier * v_insight_multiplier);
+  if v_cultivation_cap is not null and v_cultivation_before + v_gained >= v_cultivation_cap then
+    v_current_rate := 0;
+  end if;
+
+  if v_gained > 0 then
+    update public.player_characters
+    set cultivation = cultivation + v_gained, updated_at = now()
+    where id = v_character_id;
+  end if;
+
+  update public.character_cultivation_state as ccs
+  set base_rate_per_second = v_base_rate,
+      last_claim_at = v_now,
+      fractional_remainder = v_fraction,
+      total_cultivation_seconds = ccs.total_cultivation_seconds + v_elapsed,
+      updated_at = now()
+  where ccs.character_id = v_character_id;
+
+  if v_gained > 0 and v_elapsed >= 300 then
+    insert into public.cultivation_records (
+      character_id, world_year, action_type, years_spent,
+      cultivation_before, cultivation_delta, cultivation_after,
+      result, calculation_snapshot
+    )
+    select
+      v_character_id, gw.current_year, 'cultivate', 0,
+      v_cultivation_before, v_gained, v_cultivation_before + v_gained,
+      'success',
+      jsonb_build_object(
+        'mode', 'automatic_v0144_insight_total_multiplier',
+        'elapsed_seconds', v_elapsed,
+        'realm_base_rate', v_base_rate,
+        'rate_before_heaven', v_current_fixed_rate,
+        'rate_per_second', v_current_rate,
+        'root_multiplier', v_root_multiplier,
+        'world_qi_base', v_qi_base,
+        'heaven_balance_coefficient', v_heaven_coefficient,
+        'effective_qi_multiplier', v_effective_qi_multiplier,
+        'heavenly_insight_multiplier', v_insight_multiplier,
+        'fate_bonus', v_fate_bonus,
+        'technique_flat_rate', v_technique_flat,
+        'technique_multiplier_bonus', v_technique_multiplier,
+        'effect_flat_rate', v_effect_flat,
+        'effect_multiplier_bonus', v_effect_multiplier,
+        'cultivation_cap', v_cultivation_cap,
+        'requested_gain', v_requested_gain,
+        'discarded_gain', v_discarded_gain,
+        'cap_rule', 'v0130_hard_cap'
+      )
+    from public.game_worlds gw where gw.id = v_world_id;
+  end if;
+
+  return query select
+    v_character_id, v_gained, v_cultivation_before + v_gained, v_elapsed,
+    round(v_current_rate, 6), round(v_base_rate, 6), round(v_root_multiplier, 6),
+    round(v_effective_qi_multiplier, 6), round(v_fate_bonus, 6),
+    round(v_technique_flat, 6), round(v_technique_multiplier, 6),
+    round(v_effect_flat, 6), round(v_effect_multiplier, 6), v_now;
+end;
+$$;
