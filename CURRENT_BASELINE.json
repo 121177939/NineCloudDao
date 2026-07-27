@@ -1,10 +1,10 @@
 {
   "version": "0.14.1",
-  "releaseLabel": "Web Alpha V0.14.1 FIX7 CACHE4",
+  "releaseLabel": "Web Alpha V0.14.1 FIX7A CACHE5",
   "sourceBaseline": "V0.14.0 FIX2/FIX3",
   "databaseBaseline": "V0.13.0修为硬上限 + V0.14.0 FIX2九霄界闻 + V0.14.1统一灵石与赌坊重构",
-  "databaseChange": "SPIRIT_DICE_DESTINY_TRIPLE_EXPECTED_VALUE_FIX7",
-  "databaseMigration": "database/V0.14.1/202607270430_v0141_fix7_destiny_triple_expected_value.sql",
+  "databaseChange": "FAIR_DICE_WIN5_LOSS10_POOL_SPLIT_FIX7A",
+  "databaseMigration": "database/V0.14.1/202607270730_v0141_fix7a_fair_dice_pool_split.sql",
   "inheritedMigration": "database/V0.14.0_FIX2/九霄问道_V0.14.0_FIX2_主迁移.sql",
   "deploymentPipeline": {
     "python": "3.13.5",
@@ -13,36 +13,20 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.1_FIX7_CACHE4.zip",
+    "github": "NineCloudDao_GitHub_Upload_V0.14.1_FIX7_CACHE5.zip",
     "database": "九霄问道_V0.14.1_FIX7_天命豹子期望值热修复.sql"
   },
   "notes": [
-    "游戏内正式名称保持为市坊。",
-    "item_definitions.code=spirit_stone为唯一灵石定义，历史绑定/非绑定余额在迁移时合并为单一非绑定账户。",
-    "机缘、洞府兼容奖励、赌坊、宗门及功法系统统一读写同一灵石账户。",
-    "赌坊进入后先选择大堂、贵宾雅间或全服造化池，再选择灵石/修为、快捷倍数或自定义数量。",
-    "大堂、雅间和修为玩法取消每日次数及冷却限制；仍保留修为准入、20%上限和修为圆满保护。",
-    "同一角色每期每种资源池只有一份等权候选资格；重复游玩只增加池额，不增加个人权重。",
-    "开奖先等概率抽取一名参与者，再以40%判定命中；未中时全池滚存。",
-    "FIX1修复赌坊自动刷新导致资源类型、赌注、倍数、玩法和招式重置；本热修复无SQL。",
-    "FIX2修复大堂与贵宾雅间全额入池错误；资格规则、40%命中与60%滚存保持不变。",
-    "大堂每一局成功结算的赌注均有5%进入对应全服造化池：1倍胜局押100共到账195、奖池增加5；败局余下95%由天道回收。",
-    "FIX3修复大堂每局5%入池：1倍胜局押100总到账195，败局95%由天道回收。",
-    "FIX4统一贵宾雅间：双方各押100，胜者取回本金100并获得败者赌注95，总到账195；奖池增加5；天道不再回收雅间败者赌注。",
-    "雅间同招流局、取消和超时返还仍全额退款且不入池；灵石与修为规则一致。",
-    "核心静态资源使用构建查询参数，Service Worker对导航及JS/CSS/Manifest使用网络优先。",
-    "客户端每60秒读取get_jiuxiao_app_release_control_v1；服务器cache_epoch增加时自动清理九霄问道缓存并重载。",
-    "天劫感悟现在对恢复途中每一道突破持续生效；每丝固定增加5个百分点，最终成功率仍不超过80%。",
-    "感悟仍绑定最初冲击目标，只有真正抵达该目标境界后才会清零；已有角色的感悟数量无需补数据。",
-    "FIX5突破感悟路线修复继续继承：跌境恢复途中累计感悟持续生效。",
-    "灵骰3—10点为小、11—18点为大；111/222/333归小，444/555/666归大。",
-    "FIX6的豹子归入大小规则继续保留：111/222/333归小，444/555/666归大，玩家无需单独押豹子。",
-    "FIX7修复免费豹子34倍导致长期正收益：普通结果与普通豹子押中均按净赔率1倍。",
-    "对应大小的豹子出现后，再以9/275（约3.2727%）判定天命豹子；天命豹子净赔率34倍。",
-    "固定押同一边时天命豹子概率恰为1/2200；按押100计算长期数学期望为-1，赌场优势约1%。",
-    "天命豹子会生成独立九霄界闻播报；灵石与修为规则一致。",
-    "CACHE4将客户端构建号更新为v0141-fix7-cache4，并提升服务器cache_epoch以强制刷新旧页面。"
+    "本补丁从FIX7直接升级，不依赖、也不要求执行FIX8。",
+    "大堂赢局只从毛利润提取5%进入对应全服造化池；本金不参与抽取。",
+    "大堂败局下注额10%进入造化池，余下90%由天道回收。",
+    "灵骰先独立抽取大小，大、小各50%；玩家选择和两边下注量不参与开奖结果。",
+    "普通豹子全服概率1/80，毛利润3倍；天命豹子全服概率1/5000，毛利润34倍。",
+    "固定押任意一边总胜率50%，直接结算长期理论期望约-0.999%。",
+    "整数灵石与修为采用全服比例余数累计，长期精确执行5%与10%，避免小额下注取整漏洞。",
+    "贵宾雅间与全服造化池开奖机制保持不变。",
+    "CACHE5将客户端构建号更新为v0141-fix7a-cache5，并提升服务器cache_epoch强制刷新旧页面。"
   ],
-  "gameplayBaseline": "V0.14.1 FIX7",
-  "clientHotfix": "CACHE_FORCE_UPDATE_CACHE4"
+  "gameplayBaseline": "V0.14.1 FIX7A",
+  "clientHotfix": "CACHE_FORCE_UPDATE_CACHE5"
 }
