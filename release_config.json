@@ -1,9 +1,9 @@
 {
   "version": "V0.14.1",
-  "release": "unified-spirit-stone-casino-rework-fix6-cache3",
+  "release": "unified-spirit-stone-casino-rework-fix7-cache4",
   "base": "V0.14.0 FIX2/FIX3",
-  "databaseBaseline": "V0.14.1 FIX6灵骰豹子自动归类 + FIX5突破感悟路线修复 + CACHE3客户端发布控制",
-  "databaseMigration": "database/V0.14.1/202607270230_v0141_fix6_spirit_dice_triple_auto_side.sql",
+  "databaseBaseline": "V0.14.1 FIX7天命豹子期望值修复 + FIX6豹子归大小 + FIX5突破感悟路线 + CACHE4发布控制",
+  "databaseMigration": "database/V0.14.1/202607270430_v0141_fix7_destiny_triple_expected_value.sql",
   "pagesStagingDirectory": ".pages-site",
   "pythonVersion": "3.13.5",
   "nodeVersion": "24",
@@ -33,9 +33,14 @@
     "原始目标抵达后再清除感悟",
     "灵骰只押大或小",
     "豹子按点数自动归入大小",
-    "豹子命中大小时净赢34倍",
-    "CACHE3资源构建号"
+    "普通豹子命中按普通1倍",
+    "豹子后9/275触发天命豹子",
+    "天命豹子净赢34倍",
+    "固定押一边天命豹子概率1/2200",
+    "长期赌场优势约1%",
+    "天命豹子九霄界闻播报",
+    "CACHE4资源构建号"
   ],
-  "clientBuild": "v0141-fix6-cache3",
-  "gameplayBaseline": "V0.14.1 FIX6"
+  "clientBuild": "v0141-fix7-cache4",
+  "gameplayBaseline": "V0.14.1 FIX7"
 }

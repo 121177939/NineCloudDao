@@ -12,5 +12,5 @@ for rel in files:
  if not src.is_file(): raise SystemExit(f'MISSING_PAGE_FILE:{rel}')
  dst=out/rel; dst.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(src,dst)
  data=dst.read_bytes(); manifest.append({'path':rel,'size':len(data),'sha256':hashlib.sha256(data).hexdigest()})
-(out/'PAGES_ARTIFACT_MANIFEST.json').write_text(json.dumps({'version':'V0.14.1','clientBuild':'v0141-fix6-cache3','files':manifest},ensure_ascii=False,indent=2)+'\n','utf-8')
+(out/'PAGES_ARTIFACT_MANIFEST.json').write_text(json.dumps({'version':'V0.14.1','clientBuild':'v0141-fix7-cache4','files':manifest},ensure_ascii=False,indent=2)+'\n','utf-8')
 print(f'PAGES_SITE_BUILT files={len(manifest)+1} output={out}')

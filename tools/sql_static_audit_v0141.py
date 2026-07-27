@@ -2,9 +2,9 @@
 from pathlib import Path
 import re,sys
 root=Path(sys.argv[1]).resolve() if len(sys.argv)>1 else Path(__file__).resolve().parents[1]
-p=root/'database/V0.14.1/202607261700_v0141_spirit_stone_casino.sql'; s=p.read_text('utf-8'); p2=root/'database/V0.14.1/202607261930_v0141_fix2_loss_pool_rate.sql'; s2=p2.read_text('utf-8'); p3=root/'database/V0.14.1/202607262030_v0141_fix3_house_win_pool_rate.sql'; s3=p3.read_text('utf-8'); p4=root/'database/V0.14.1/202607262130_v0141_fix4_duel_pool_payout.sql'; s4=p4.read_text('utf-8'); p5=root/'database/V0.14.1/202607262230_v0141_fix4_cache1_release_control.sql'; s5=p5.read_text('utf-8'); p6=root/'database/V0.14.1/202607270100_v0141_fix5_breakthrough_insight_route.sql'; s6=p6.read_text('utf-8'); p7=root/'database/V0.14.1/202607270230_v0141_fix6_spirit_dice_triple_auto_side.sql'; s7=p7.read_text('utf-8'); checks=[]
+p=root/'database/V0.14.1/202607261700_v0141_spirit_stone_casino.sql'; s=p.read_text('utf-8'); p2=root/'database/V0.14.1/202607261930_v0141_fix2_loss_pool_rate.sql'; s2=p2.read_text('utf-8'); p3=root/'database/V0.14.1/202607262030_v0141_fix3_house_win_pool_rate.sql'; s3=p3.read_text('utf-8'); p4=root/'database/V0.14.1/202607262130_v0141_fix4_duel_pool_payout.sql'; s4=p4.read_text('utf-8'); p5=root/'database/V0.14.1/202607262230_v0141_fix4_cache1_release_control.sql'; s5=p5.read_text('utf-8'); p6=root/'database/V0.14.1/202607270100_v0141_fix5_breakthrough_insight_route.sql'; s6=p6.read_text('utf-8'); p7=root/'database/V0.14.1/202607270230_v0141_fix6_spirit_dice_triple_auto_side.sql'; s7=p7.read_text('utf-8'); p8=root/'database/V0.14.1/202607270430_v0141_fix7_destiny_triple_expected_value.sql'; s8=p8.read_text('utf-8'); checks=[]
 def ck(n,o,d=''): checks.append((n,bool(o),d))
-ck('file',p.is_file()); ck('fix2-file',p2.is_file()); ck('fix3-file',p3.is_file()); ck('fix4-file',p4.is_file()); ck('cache1-file',p5.is_file()); ck('fix5-file',p6.is_file()); ck('fix6-file',p7.is_file()); ck('transaction',bool(re.search(r'(?mi)^begin;\s*$',s)) and bool(re.search(r'(?mi)^commit;\s*$',s)))
+ck('file',p.is_file()); ck('fix2-file',p2.is_file()); ck('fix3-file',p3.is_file()); ck('fix4-file',p4.is_file()); ck('cache1-file',p5.is_file()); ck('fix5-file',p6.is_file()); ck('fix6-file',p7.is_file()); ck('fix7-file',p8.is_file()); ck('transaction',bool(re.search(r'(?mi)^begin;\s*$',s)) and bool(re.search(r'(?mi)^commit;\s*$',s)))
 ck('dollar-pairs',s.count('$$')%2==0,str(s.count('$$')))
 for a,b,n in [('(',')','parentheses'),('[',']','brackets')]: ck(n,s.count(a)==s.count(b),f'{s.count(a)}/{s.count(b)}')
 for token in [
@@ -121,6 +121,19 @@ ck('fix6-transaction',bool(re.search(r'(?mi)^begin;\s*$',s7)) and bool(re.search
 ck('fix6-dollar-pairs',s7.count('$$')%2==0,str(s7.count('$$')))
 ck('fix6-no-triple-choice',"p_choice in ('big','small','triple')" not in s7)
 ck('fix6-permission','grant execute on function public.play_house_game_v1(text,text,bigint,text) to authenticated;' in s7)
+for token in [
+ 'create or replace function public.casino_spirit_dice_rule_v0141_fix7',
+ 'spirit_dice_destiny_triple_numerator',
+ 'spirit_dice_destiny_triple_denominator',
+ 'spirit_dice_destiny_triple_net_odds',
+ 'fixed_side_destiny_probability_is_1_of_2200',
+ 'expected_net_per_100_is_minus_1',
+ "release_name='V0.14.1 FIX7 CACHE4'"
+]: ck('fix7-token:'+token, token in s8)
+ck('fix7-transaction',bool(re.search(r'(?mi)^begin;\s*$',s8)) and bool(re.search(r'(?mi)^commit;\s*$',s8)))
+ck('fix7-dollar-pairs',s8.count('$$')%2==0,str(s8.count('$$')))
+ck('fix7-permission','grant execute on function public.play_house_game_v1(text,text,bigint,text) to authenticated;' in s8)
+
 failed=[x for x in checks if not x[1]]
 for n,o,d in checks: print(('PASS' if o else 'FAIL'),n,d)
 print(f'TOTAL={len(checks)} PASS={len(checks)-len(failed)} FAIL={len(failed)}')

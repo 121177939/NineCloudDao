@@ -1,10 +1,10 @@
 {
   "version": "0.14.1",
-  "releaseLabel": "Web Alpha V0.14.1 FIX6 CACHE3",
+  "releaseLabel": "Web Alpha V0.14.1 FIX7 CACHE4",
   "sourceBaseline": "V0.14.0 FIX2/FIX3",
   "databaseBaseline": "V0.13.0修为硬上限 + V0.14.0 FIX2九霄界闻 + V0.14.1统一灵石与赌坊重构",
-  "databaseChange": "SPIRIT_DICE_TRIPLE_AUTO_BIG_SMALL_FIX6",
-  "databaseMigration": "database/V0.14.1/202607270230_v0141_fix6_spirit_dice_triple_auto_side.sql",
+  "databaseChange": "SPIRIT_DICE_DESTINY_TRIPLE_EXPECTED_VALUE_FIX7",
+  "databaseMigration": "database/V0.14.1/202607270430_v0141_fix7_destiny_triple_expected_value.sql",
   "inheritedMigration": "database/V0.14.0_FIX2/九霄问道_V0.14.0_FIX2_主迁移.sql",
   "deploymentPipeline": {
     "python": "3.13.5",
@@ -13,8 +13,8 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.1_FIX6_CACHE3.zip",
-    "database": "九霄问道_V0.14.1_FIX6_灵骰豹子规则热修复.sql"
+    "github": "NineCloudDao_GitHub_Upload_V0.14.1_FIX7_CACHE4.zip",
+    "database": "九霄问道_V0.14.1_FIX7_天命豹子期望值热修复.sql"
   },
   "notes": [
     "游戏内正式名称保持为市坊。",
@@ -35,12 +35,14 @@
     "天劫感悟现在对恢复途中每一道突破持续生效；每丝固定增加5个百分点，最终成功率仍不超过80%。",
     "感悟仍绑定最初冲击目标，只有真正抵达该目标境界后才会清零；已有角色的感悟数量无需补数据。",
     "FIX5突破感悟路线修复继续继承：跌境恢复途中累计感悟持续生效。",
-    "FIX6重做灵骰问道豹子规则：玩家只押大或小，不再单独押围骰。",
     "灵骰3—10点为小、11—18点为大；111/222/333归小，444/555/666归大。",
-    "豹子命中所押大小时使用净赔率34倍；普通非豹子命中仍为净赔率1倍。",
-    "大堂每局5%入池规则不变；押100豹子命中时实际总到账3495，奖池增加5。",
-    "CACHE3将客户端构建号更新为v0141-fix6-cache3，并提升服务器cache_epoch以强制刷新旧页面。"
+    "FIX6的豹子归入大小规则继续保留：111/222/333归小，444/555/666归大，玩家无需单独押豹子。",
+    "FIX7修复免费豹子34倍导致长期正收益：普通结果与普通豹子押中均按净赔率1倍。",
+    "对应大小的豹子出现后，再以9/275（约3.2727%）判定天命豹子；天命豹子净赔率34倍。",
+    "固定押同一边时天命豹子概率恰为1/2200；按押100计算长期数学期望为-1，赌场优势约1%。",
+    "天命豹子会生成独立九霄界闻播报；灵石与修为规则一致。",
+    "CACHE4将客户端构建号更新为v0141-fix7-cache4，并提升服务器cache_epoch以强制刷新旧页面。"
   ],
-  "gameplayBaseline": "V0.14.1 FIX6",
-  "clientHotfix": "CACHE_FORCE_UPDATE_CACHE3"
+  "gameplayBaseline": "V0.14.1 FIX7",
+  "clientHotfix": "CACHE_FORCE_UPDATE_CACHE4"
 }
