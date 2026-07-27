@@ -1,4 +1,4 @@
-/* Current release: Web Alpha 0.14.2 */
+/* Current release: Web Alpha 0.14.3 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -1356,6 +1356,18 @@ button, .badge, .hero-chip { max-width: 100%; }
 
 /* Web Alpha 0.9.1 · 天命榜 */
 .destiny-ranking-root { display: grid; gap: 11px; }
+.ranking-board-tabs { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); border: 1px solid rgba(206,182,126,.30); background: rgba(13,12,10,.32); }
+.ranking-board-tab { min-width: 0; min-height: 58px; display: grid; place-items: center; align-content: center; gap: 3px; padding: 8px 5px; border: 0; border-right: 1px solid rgba(206,182,126,.18); background: transparent; color: var(--paper-muted); font: inherit; cursor: pointer; }
+.ranking-board-tab:last-child { border-right: 0; }
+.ranking-board-tab strong { color: inherit; font-size: 14px; font-weight: 500; letter-spacing: .08em; }
+.ranking-board-tab small { color: var(--paper-muted); font-size: 8px; }
+.ranking-board-tab:hover { color: var(--gold-bright); background: rgba(201,167,95,.06); }
+.ranking-board-tab.active { color: var(--gold-bright); background: linear-gradient(180deg,rgba(201,167,95,.15),rgba(201,167,95,.05)); box-shadow: inset 0 -2px 0 var(--gold); }
+.ranking-board-tab.pending:not(.active) { opacity: .72; }
+.ranking-unopened { min-height: 240px; display: grid; place-items: center; align-content: center; gap: 10px; padding: 28px 18px; border: 1px dashed rgba(206,182,126,.28); background: radial-gradient(circle at 50% 40%,rgba(201,167,95,.09),transparent 42%),rgba(13,12,10,.24); text-align: center; }
+.ranking-unopened-seal { width: 58px; height: 58px; display: grid; place-items: center; border: 1px solid rgba(206,182,126,.45); border-radius: 50%; color: var(--gold-bright); font-family: var(--font-serif); font-size: 24px; background: rgba(201,167,95,.07); }
+.ranking-unopened strong { color: var(--gold-bright); font-size: 17px; font-weight: 500; }
+.ranking-unopened p { max-width: 420px; margin: 0; color: var(--paper-muted); font-size: 10px; line-height: 1.7; }
 .destiny-ranking-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 13px; border: 1px solid rgba(206,182,126,.22); background: linear-gradient(145deg,rgba(86,73,122,.12),rgba(13,12,10,.34)); }
 .destiny-ranking-head > div { min-width: 0; display: grid; gap: 3px; }
 .destiny-ranking-head span, .destiny-ranking-head small { color: var(--paper-muted); font-size: 10px; }
@@ -1382,7 +1394,7 @@ button, .badge, .hero-chip { max-width: 100%; }
 .destiny-rank-side { display: grid; justify-items: end; gap: 4px; text-align: right; }
 .destiny-rank-side span { color: var(--paper-muted); font-size: 9px; }
 .destiny-rank-side strong { color: var(--gold-bright); font-size: 10px; font-weight: 500; white-space: nowrap; }
-.destiny-ranking-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 3px; }
+.destiny-ranking-footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding-top: 3px; }
 .destiny-ranking-footer span, .destiny-ranking-footer small { color: var(--paper-muted); font-size: 10px; }
 .ranking-notice { padding: 16px; border: 1px dashed rgba(206,182,126,.28); background: rgba(13,12,10,.24); display: grid; gap: 8px; justify-items: start; }
 .ranking-notice strong { color: var(--gold-bright); font-size: 14px; font-weight: 500; }
@@ -1393,6 +1405,10 @@ button, .badge, .hero-chip { max-width: 100%; }
 
 @media (max-width: 600px), (min-width: 1024px) {
   .destiny-ranking-root { gap: 7px; }
+  .ranking-board-tab { min-height: 50px; padding: 6px 3px; }
+  .ranking-board-tab strong { font-size: 12px; }
+  .ranking-board-tab small { font-size: 7px; }
+  .ranking-unopened { min-height: 190px; padding: 22px 12px; }
   .destiny-ranking-head { padding: 8px; }
   .destiny-ranking-head span, .destiny-ranking-head small { font-size: 8px; }
   .destiny-ranking-head strong { font-size: 11px; }

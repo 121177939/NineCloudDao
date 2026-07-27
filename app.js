@@ -89,6 +89,9 @@
     destinyRankingSyncTimer: null,
     destinyRankingSyncing: false,
     destinyRankingFetchedAt: 0,
+    rankingBoard: 'cultivation',
+    wealthRanking: null,
+    wealthRankingSyncing: false,
     npcSocial: null,
     npcSocialSyncTimer: null,
     npcSocialSyncing: false,
@@ -233,8 +236,8 @@
     if (raw.includes('ALCHEMY_OUTPUT_ITEM_MISSING')) return '丹方对应的物品定义缺失，请检查聚气丹、聚灵香或悟道茶配置。';
     if (raw.includes('ALCHEMY_BATCH_NOT_FOUND')) return '当前没有可以领取的炼丹批次。';
     if (raw.includes('ALCHEMY_NOT_READY')) return '丹药尚未炼成，请等待倒计时结束。';
-    if (raw.includes('INVALID_RANKING_PAGE')) return '天命榜分页参数无效，请重新刷新。';
-    if (raw.includes('V091_REQUIRED')) return 'V0.9.1天命榜热修复尚未完成，请先部署并检查。';
+    if (raw.includes('INVALID_RANKING_PAGE')) return '榜单分页参数无效，请重新进入榜单。';
+    if (raw.includes('V091_REQUIRED')) return 'V0.9.1修为榜基础尚未完成，请先部署并检查。';
     if (raw.includes('NPC_SOCIAL_SETTINGS_MISSING')) return '红尘录配置缺失，请执行V0.10.0数据库升级。';
     if (raw.includes('NPC_INTERACTIONS_DISABLED')) return '红尘交游目前处于暂停状态。';
     if (raw.includes('NPC_RELATIONSHIPS_DISABLED')) return '关系缔结目前处于暂停状态。';
@@ -378,6 +381,9 @@
     state.heavenBalance = null;
     state.destinyRanking = null;
     state.destinyRankingFetchedAt = 0;
+    state.rankingBoard = 'cultivation';
+    state.wealthRanking = null;
+    state.wealthRankingSyncing = false;
     state.npcSocial = null;
     state.npcSocialFetchedAt = 0;
     state.sectSystem = null;
@@ -863,6 +869,17 @@
 
   async function rpcGetDestinyRankingV1(limit = 50, offset = 0) {
     const result = await restFetch('rpc/get_destiny_ranking_v1', {
+      method: 'POST',
+      body: {
+        p_limit: Math.max(1, Math.min(100, Number(limit || 50))),
+        p_offset: Math.max(0, Number(offset || 0))
+      }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetWealthRankingV1(limit = 50, offset = 0) {
+    const result = await restFetch('rpc/get_wealth_ranking_v1', {
       method: 'POST',
       body: {
         p_limit: Math.max(1, Math.min(100, Number(limit || 50))),
@@ -2815,42 +2832,96 @@
     return String(rank);
   }
 
-  function destinyRankingPanelHtml(ranking) {
-    const result = ranking || { status: 'loading', entries: [], total_count: 0 };
-    const entries = Array.isArray(result.entries) ? result.entries : [];
-    const total = Math.max(entries.length, Number(result.total_count || 0));
-    if (result.status === 'unavailable') {
+  function rankingBoardMeta(board = 'cultivation') {
+    return {
+      cultivation: {
+        label: '修为榜',
+        champion: '修为榜首',
+        empty: '九霄界尚无在世修士。',
+        unavailable: '修为榜尚未开启',
+        loading: '正在推演修为榜……',
+        fallbackRule: '境界优先，其次小境界与已结算修为'
+      },
+      wealth: {
+        label: '财富榜',
+        champion: '财富榜首',
+        empty: '九霄界尚无可入榜修士。',
+        unavailable: '财富榜尚未开启',
+        loading: '正在清点九霄财富……',
+        fallbackRule: '统一灵石余额由高到低，同额时境界优先'
+      },
+      battle: {
+        label: '战力榜',
+        champion: '战力榜首',
+        empty: '',
+        unavailable: '战力榜暂未开放',
+        loading: '',
+        fallbackRule: ''
+      }
+    }[board] || null;
+  }
+
+  function rankingBoardTabsHtml(activeBoard = 'cultivation') {
+    return `
+      <div class="ranking-board-tabs" role="tablist" aria-label="九霄榜单切换">
+        ${['cultivation', 'wealth', 'battle'].map(board => {
+          const meta = rankingBoardMeta(board);
+          const active = board === activeBoard;
+          return `<button class="ranking-board-tab${active ? ' active' : ''}${board === 'battle' ? ' pending' : ''}" type="button" role="tab" aria-selected="${active ? 'true' : 'false'}" data-ranking-board="${board}"><strong>${meta.label}</strong>${board === 'battle' ? '<small>未开放</small>' : ''}</button>`;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  function rankingEntryMetric(board, row) {
+    if (board === 'wealth') return `${formatNumber(row.wealth || 0)} 灵石`;
+    return `${formatNumber(row.cultivation || 0)} 修为`;
+  }
+
+  function rankingCenterPanelHtml(board = 'cultivation', cultivationRanking = null, wealthRanking = null) {
+    const safeBoard = ['cultivation', 'wealth', 'battle'].includes(board) ? board : 'cultivation';
+    const meta = rankingBoardMeta(safeBoard);
+    if (safeBoard === 'battle') {
       return `
-        <div id="destinyRankingRoot" class="destiny-ranking-root">
-          <div class="ranking-notice">
-            <strong>天命榜尚未开启</strong>
-            <p>${escapeHtml(result.error || '请先执行 V0.9.1 天命榜数据库升级。')}</p>
-            <button class="ghost-btn" type="button" data-ranking-refresh>重新读取</button>
+        <div id="destinyRankingRoot" class="destiny-ranking-root" data-ranking-active="battle">
+          ${rankingBoardTabsHtml('battle')}
+          <div class="ranking-unopened">
+            <div class="ranking-unopened-seal" aria-hidden="true">战</div>
+            <strong>战力榜暂未开放</strong>
+            <p>战斗体系与统一战力算法仍在推演中，待规则完备后再正式开榜。</p>
           </div>
         </div>
       `;
     }
-    if (result.status === 'loading') {
-      return '<div id="destinyRankingRoot" class="destiny-ranking-root"><div class="empty-state">天机推演中……</div></div>';
+
+    const result = (safeBoard === 'wealth' ? wealthRanking : cultivationRanking) || { status: 'loading', entries: [], total_count: 0 };
+    const entries = Array.isArray(result.entries) ? result.entries : [];
+    const total = Math.max(entries.length, Number(result.total_count || 0));
+    if (result.status === 'unavailable') {
+      return `
+        <div id="destinyRankingRoot" class="destiny-ranking-root" data-ranking-active="${safeBoard}">
+          ${rankingBoardTabsHtml(safeBoard)}
+          <div class="ranking-notice">
+            <strong>${meta.unavailable}</strong>
+            <p>${escapeHtml(result.error || (safeBoard === 'wealth' ? '请先执行 V0.14.3 财富榜数据库升级。' : '请先检查修为榜数据库函数。'))}</p>
+          </div>
+        </div>
+      `;
+    }
+    if (result.status === 'loading' || result.status === 'idle') {
+      return `<div id="destinyRankingRoot" class="destiny-ranking-root" data-ranking-active="${safeBoard}">${rankingBoardTabsHtml(safeBoard)}<div class="empty-state">${meta.loading}</div></div>`;
     }
     const champion = entries[0] || null;
     return `
-      <div id="destinyRankingRoot" class="destiny-ranking-root">
-        <div class="destiny-ranking-head">
-          <div>
-            <span>九霄界在世修士</span>
-            <strong>${total ? `${formatNumber(total)} 人入榜` : '尚无人入榜'}</strong>
-            <small>${escapeHtml(result.ranking_rule || '境界优先，其次小境界与云端修为')}</small>
-          </div>
-          <button class="ghost-btn" type="button" data-ranking-refresh>刷新天命</button>
-        </div>
+      <div id="destinyRankingRoot" class="destiny-ranking-root" data-ranking-active="${safeBoard}">
+        ${rankingBoardTabsHtml(safeBoard)}
         ${champion ? `
           <article class="destiny-champion ${champion.is_self ? 'self' : ''}">
             <div class="destiny-champion-seal">天</div>
             <div>
-              <span>天命榜首${champion.is_self ? ' · 本尊' : ''}</span>
+              <span>${meta.champion}${champion.is_self ? ' · 本尊' : ''}</span>
               <strong>${escapeHtml(champion.name || '无名修士')}</strong>
-              <p>${escapeHtml(champion.realm || '未知境界')} · 命格「${escapeHtml(champion.fate || '未定命格')}」</p>
+              <p>${escapeHtml(champion.realm || '未知境界')} · 命格「${escapeHtml(champion.fate || '未定命格')}」 · ${escapeHtml(rankingEntryMetric(safeBoard, champion))}</p>
             </div>
           </article>
         ` : ''}
@@ -2866,72 +2937,101 @@
                 </div>
                 <div class="destiny-rank-side">
                   <span>第 ${formatNumber(row.generation || 1)} 世</span>
-                  <strong>${formatNumber(row.cultivation || 0)} 修为</strong>
+                  <strong>${escapeHtml(rankingEntryMetric(safeBoard, row))}</strong>
                 </div>
               </article>
             `;
-          }).join('') || '<div class="empty-state">九霄界尚无在世修士。</div>'}
+          }).join('') || `<div class="empty-state">${meta.empty}</div>`}
         </div>
         <div class="destiny-ranking-footer">
-          <span>已显示 ${formatNumber(entries.length)} / ${formatNumber(total)} 名</span>
-          ${result.has_more ? '<button class="primary-btn" type="button" data-ranking-load-more>继续观榜</button>' : '<small>榜单已全部展开</small>'}
+          <span>已显示 ${formatNumber(entries.length)} / ${formatNumber(total)} 名 · ${escapeHtml(result.ranking_rule || meta.fallbackRule)}</span>
+          ${result.has_more ? `<button class="primary-btn" type="button" data-ranking-load-more data-ranking-load-board="${safeBoard}">继续观榜</button>` : '<small>榜单已全部展开</small>'}
         </div>
       </div>
     `;
   }
 
+  function destinyRankingPanelHtml(ranking) {
+    return rankingCenterPanelHtml(
+      state.rankingBoard || 'cultivation',
+      ranking || state.destinyRanking,
+      state.wealthRanking
+    );
+  }
+
   function updateDestinyRankingPanel() {
     const root = document.getElementById('destinyRankingRoot');
     if (!root) return;
-    root.outerHTML = destinyRankingPanelHtml(state.destinyRanking);
+    root.outerHTML = rankingCenterPanelHtml(state.rankingBoard, state.destinyRanking, state.wealthRanking);
     bindDestinyRankingActions();
   }
 
-  async function refreshDestinyRanking(append = false, silent = true) {
-    if (state.destinyRankingSyncing || !state.character) return;
-    state.destinyRankingSyncing = true;
+  async function refreshRankingBoard(board = state.rankingBoard, append = false, silent = true) {
+    const safeBoard = ['cultivation', 'wealth'].includes(board) ? board : null;
+    if (!safeBoard || !state.character) return;
+    const isCultivation = safeBoard === 'cultivation';
+    const syncingKey = isCultivation ? 'destinyRankingSyncing' : 'wealthRankingSyncing';
+    const dataKey = isCultivation ? 'destinyRanking' : 'wealthRanking';
+    if (state[syncingKey]) return;
+
+    const currentEntries = append && Array.isArray(state[dataKey]?.entries) ? state[dataKey].entries : [];
+    state[syncingKey] = true;
+    if (!append) {
+      state[dataKey] = { status: 'loading', entries: [], total_count: 0 };
+      if (state.rankingBoard === safeBoard) updateDestinyRankingPanel();
+    }
     try {
-      const currentEntries = append && Array.isArray(state.destinyRanking?.entries) ? state.destinyRanking.entries : [];
-      const result = await rpcGetDestinyRankingV1(50, append ? currentEntries.length : 0);
+      const result = isCultivation
+        ? await rpcGetDestinyRankingV1(50, append ? currentEntries.length : 0)
+        : await rpcGetWealthRankingV1(50, append ? currentEntries.length : 0);
       if (append) {
         const nextEntries = Array.isArray(result?.entries) ? result.entries : [];
-        state.destinyRanking = { ...result, entries: [...currentEntries, ...nextEntries], offset: 0 };
+        state[dataKey] = { ...result, entries: [...currentEntries, ...nextEntries], offset: 0 };
       } else {
-        state.destinyRanking = result || { status: 'ok', entries: [], total_count: 0 };
+        state[dataKey] = result || { status: 'ok', entries: [], total_count: 0 };
       }
-      state.destinyRankingFetchedAt = Date.now();
-      updateDestinyRankingPanel();
-      if (!silent) showToast(append ? '天命榜已继续展开。' : '天命榜已刷新。');
+      if (isCultivation) state.destinyRankingFetchedAt = Date.now();
+      if (state.rankingBoard === safeBoard) updateDestinyRankingPanel();
+      if (!silent) showToast(append ? `${rankingBoardMeta(safeBoard).label}已继续展开。` : `${rankingBoardMeta(safeBoard).label}已更新。`);
     } catch (error) {
-      state.destinyRanking = {
+      state[dataKey] = {
         status: 'unavailable',
         entries: [],
         total_count: 0,
         error: translateError(error)
       };
-      updateDestinyRankingPanel();
+      if (state.rankingBoard === safeBoard) updateDestinyRankingPanel();
       if (!silent) showToast(translateError(error), 'error');
     } finally {
-      state.destinyRankingSyncing = false;
+      state[syncingKey] = false;
     }
   }
 
+  async function refreshDestinyRanking(append = false, silent = true) {
+    return refreshRankingBoard('cultivation', append, silent);
+  }
+
+  function setRankingBoard(board) {
+    const safeBoard = ['cultivation', 'wealth', 'battle'].includes(board) ? board : 'cultivation';
+    if (state.rankingBoard === safeBoard) return;
+    state.rankingBoard = safeBoard;
+    updateDestinyRankingPanel();
+    if (safeBoard !== 'battle') refreshRankingBoard(safeBoard, false, true);
+  }
+
   function bindDestinyRankingActions() {
-    document.querySelectorAll('[data-ranking-refresh]').forEach(button => {
+    document.querySelectorAll('[data-ranking-board]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button, true, '推演中……');
-        await refreshDestinyRanking(false, false);
-        setBusy(button, false);
-      });
+      button.addEventListener('click', () => setRankingBoard(button.dataset.rankingBoard || 'cultivation'));
     });
     document.querySelectorAll('[data-ranking-load-more]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
       button.addEventListener('click', async () => {
+        const board = button.dataset.rankingLoadBoard || state.rankingBoard;
         setBusy(button, true, '展开中……');
-        await refreshDestinyRanking(true, false);
+        await refreshRankingBoard(board, true, false);
         setBusy(button, false);
       });
     });
@@ -3375,7 +3475,7 @@
         <div class="bazaar-root" data-bazaar-view="home">
           <div class="bazaar-entry-grid" aria-label="市坊功能入口">
             <button class="bazaar-entry-button" type="button" data-bazaar-target="ranking">
-              <span aria-hidden="true">榜</span><strong>天命榜</strong><small>观众生浮沉</small>
+              <span aria-hidden="true">榜</span><strong>天命榜</strong><small>修为 · 财富 · 战力</small>
             </button>
             <button class="bazaar-entry-button" type="button" data-bazaar-target="casino">
               <span aria-hidden="true">赌</span><strong>赌坊</strong><small>一筹问造化</small>
@@ -3396,7 +3496,7 @@
     }
 
     const pageMeta = {
-      ranking: ['天命榜', '窥天机，观众生浮沉'],
+      ranking: ['天命榜', '修为、财富与战力总览'],
       casino: ['赌坊 · 万运博弈楼', '灵石 · 修为 · 造化彩池'],
       treasure: ['珍宝阁', '奇珍万象，静候机缘']
     }[safeView];
@@ -3438,11 +3538,14 @@
     const previousView = state.marketView;
     state.marketView = safeView;
     if (safeView === 'casino' && previousView !== 'casino') state.casinoView = 'lobby';
+    if (safeView === 'ranking' && previousView !== 'ranking') state.rankingBoard = 'cultivation';
     updateBazaarPanel();
     if (pushHistory && safeView !== 'home') {
       window.history.pushState({ nineCloudBazaarView: safeView }, '', '#marketSection');
     }
-    if (safeView === 'ranking' && Date.now() - Number(state.destinyRankingFetchedAt || 0) > 30000) refreshDestinyRanking(false, true);
+    if (safeView === 'ranking' && previousView !== 'ranking') {
+      refreshRankingBoard('cultivation', false, true);
+    }
     if (safeView === 'casino') refreshMarketSystem(true);
     if (safeView === 'home' && Date.now() - Number(state.worldEventsFetchedAt || 0) > 15000) refreshWorldEvents(true);
   }
@@ -4428,7 +4531,6 @@
     state.caveSyncTimer = setInterval(() => refreshCaveSystem(true), 60000);
     state.techniqueSyncTimer = setInterval(() => refreshTechniqueSystem(false), 60000);
     state.heavenBalanceSyncTimer = setInterval(() => refreshHeavenBalance(true), 60000);
-    state.destinyRankingSyncTimer = setInterval(() => refreshDestinyRanking(false, true), 60000);
     state.npcSocialSyncTimer = setInterval(() => refreshNpcSocial(true), 60000);
     state.sectSystemSyncTimer = setInterval(() => refreshSectSystem(true), 60000);
     state.marketSyncTimer = setInterval(() => { if (!document.hidden && state.marketView === 'casino') refreshMarketSystem(true); }, 10000);

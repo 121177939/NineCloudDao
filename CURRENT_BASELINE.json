@@ -1,11 +1,11 @@
 {
-  "version": "0.14.2",
-  "releaseLabel": "Web Alpha V0.14.2 CACHE6",
-  "sourceBaseline": "V0.14.1 FIX7A CACHE5",
-  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.0 FIX2/FIX3九霄界闻 + V0.14.1统一灵石与赌坊FIX7A + V0.14.2严格新消息排序",
-  "databaseChange": "WORLD_FEED_STRICT_NEWEST_FIRST_V0142",
-  "databaseMigration": "database/V0.14.2/202607270900_v0142_world_feed_strict_newest.sql",
-  "inheritedMigration": "database/V0.14.1/202607270730_v0141_fix7a_fair_dice_pool_split.sql",
+  "version": "0.14.3",
+  "releaseLabel": "Web Alpha V0.14.3 CACHE7",
+  "sourceBaseline": "V0.14.2 CACHE6",
+  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.0 FIX2/FIX3九霄界闻 + V0.14.1统一灵石与赌坊FIX7A + V0.14.2严格新消息排序 + V0.14.3财富榜",
+  "databaseChange": "MULTI_RANKING_WEALTH_V0143",
+  "databaseMigration": "database/V0.14.3/202607271720_v0143_multi_ranking_wealth.sql",
+  "inheritedMigration": "database/V0.14.2/202607270900_v0142_world_feed_strict_newest.sql",
   "deploymentStatus": "release_ready_not_user_confirmed",
   "deploymentPipeline": {
     "python": "3.13.5",
@@ -14,21 +14,23 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.2_FINAL.zip",
-    "database": "九霄问道_V0.14.2_九霄界闻严格新消息置顶.sql",
-    "handoff": "九霄问道_APP项目接管资料包_V0.14.2_完整接管版.zip",
-    "history": "九霄问道_历史归档_V0.6.5-V0.14.2.zip"
+    "github": "NineCloudDao_GitHub_Upload_V0.14.3_FINAL.zip",
+    "database": "九霄问道_V0.14.3_三榜切换与财富榜.sql",
+    "handoff": "九霄问道_APP项目接管资料包_V0.14.3_ADMIN1_完整接管版.zip",
+    "history": "九霄问道_历史归档_V0.6.5-V0.14.3_ADMIN1_补全版.zip"
   },
   "notes": [
-    "九霄界闻不再按is_pinned、事件等级或事件类型优先排序，任何新消息都必须排在旧消息前面。",
-    "数据库新增feed_sequence严格消息序号，解决同一时间高并发消息created_at相同导致排序不稳定的问题。",
-    "前端再次按feed_sequence倒序防御排序；缺少新字段时回退created_at与id。",
-    "界闻拉取数量由20条提高到30条，自动刷新周期由20秒缩短为10秒。",
-    "突破、赌坊、机缘、账号删除等既有播报触发条件不在本版修改范围内。",
-    "赌坊继续沿用FIX7A：大小各50%，普通豹子1/80毛利润3倍，天命豹子1/5000毛利润34倍；赢局毛利润5%入池，败局下注10%入池、90%天道回收。",
-    "V0.14.1 FIX8从未作为当前有效链部署，严禁执行；V0.14.2以FIX7A为直接前置。",
-    "CACHE6将客户端构建号更新为v0142-cache6，并把服务器cache_epoch至少提升到6。"
+    "天命榜子页面升级为修为榜、财富榜、战力榜三项切换。",
+    "进入天命榜时默认打开修为榜并自动读取一次最新数据，不保留手动刷新按钮。",
+    "修为榜与财富榜每次切换时自动重新读取当前榜单。",
+    "财富榜按唯一统一灵石余额倒序，同额时依次按大境界、小境界、修为、创建时间与角色ID稳定排序。",
+    "战力榜仅保留可点击入口与暂未开放占位，不调用数据库。",
+    "财富榜只读RPC不返回邮箱、用户ID、角色ID、道统ID、设备或会话信息。",
+    "九霄界闻继续沿用V0.14.2严格新消息置顶规则。",
+    "赌坊继续沿用FIX7A，V0.14.1 FIX8严禁执行。",
+    "CACHE7将客户端构建号更新为v0143-cache7，并把服务器cache_epoch至少提升到7。"
   ],
   "gameplayBaseline": "V0.14.1 FIX7A",
-  "clientHotfix": "V0.14.2_WORLD_FEED_ORDER_CACHE6"
+  "worldFeedBaseline": "V0.14.2",
+  "clientHotfix": "V0.14.3_MULTI_RANKING_CACHE7"
 }
