@@ -1,4 +1,4 @@
-/* Current release: Web Alpha 0.14.3 */
+/* Current release: Web Alpha 0.14.4 CACHE8 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -2374,4 +2374,23 @@ button, .badge, .hero-chip { max-width: 100%; }
 @media (max-width: 370px) {
   .casino-multiplier-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .casino-mode-head { align-items: start; }
+}
+
+
+/* V0.14.4 · 玩家庄、修为全押与私人天谕 */
+.casino-all-in-btn { width: 100%; min-height: 38px; margin-top: -2px; color: var(--gold-bright); border-color: rgba(206,182,126,.38); background: rgba(201,167,95,.06); }
+.casino-all-in-btn:hover:not(:disabled) { background: rgba(201,167,95,.11); }
+.divine-notice-backdrop { background: radial-gradient(circle at 50% 34%,rgba(201,167,95,.11),transparent 40%),rgba(0,0,0,.79); }
+.divine-notice-modal { position: relative; overflow: hidden; border-color: rgba(218,188,111,.78); background: linear-gradient(160deg,#211b13,#15120e); }
+.divine-notice-modal::before { content: "天"; position: absolute; right: -8px; top: -30px; color: rgba(218,188,111,.045); font-family: var(--font-serif); font-size: 180px; line-height: 1; pointer-events: none; }
+.divine-notice-modal.is-punishment { border-color: rgba(196,87,72,.7); background: linear-gradient(160deg,#241713,#15100e); }
+.divine-notice-eyebrow { position: relative; display: block; margin-bottom: 9px; color: var(--gold); font-size: 10px; letter-spacing: .25em; }
+.divine-notice-summary { position: relative; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 17px 0 12px; }
+.divine-notice-summary > div { display: grid; gap: 4px; padding: 11px; border: 1px solid rgba(206,182,126,.2); background: rgba(0,0,0,.18); }
+.divine-notice-summary span { color: var(--paper-muted); font-size: 10px; }
+.divine-notice-summary strong { color: var(--gold-bright); font-size: 16px; font-weight: 500; }
+.divine-notice-modal.is-punishment .divine-notice-summary strong { color: #e4a398; }
+@media (max-width: 520px) {
+  .divine-notice-modal { padding: 25px 18px; }
+  .divine-notice-summary { grid-template-columns: 1fr; }
 }

@@ -114,6 +114,9 @@
     worldEventsSyncing: false,
     worldEventsSyncTimer: null,
     worldEventsFetchedAt: 0,
+    divineNoticeTimer: null,
+    divineNoticeSyncing: false,
+    divineNoticeActive: null,
     timeStatus: null,
     timeStatusStartedAt: 0,
     timeSyncing: false,
@@ -203,15 +206,23 @@
     if (raw.includes('INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法提升功法。';
     if (raw.includes('MARKET_DISABLED')) return '万运博弈楼尚未开放。';
     if (raw.includes('CASINO_INSUFFICIENT_SPIRIT_STONES')) return '统一灵石余额不足，无法落注。';
-    if (raw.includes('CASINO_INSUFFICIENT_CULTIVATION')) return '可动用修为不足，且不得跌出当前大境界。';
-    if (raw.includes('CULTIVATION_STAKE_MINIMUM')) return '修为赌注最低五万点。';
+    if (raw.includes('CASINO_INSUFFICIENT_CULTIVATION')) return '当前小境界内可动用修为不足；境界保底修为不可下注。';
+    if (raw.includes('CULTIVATION_STAKE_MINIMUM')) return '修为赌注通常最低五万点；不足五万时必须一次押上全部可动用修为。';
     if (raw.includes('CASINO_CULTIVATION_REQUIRES_NASCENT_SOUL')) return '修为局仅对元婴期及以上修士开放。';
-    if (raw.includes('CASINO_CULTIVATION_STAKE_EXCEEDS_TWENTY_PERCENT')) return '单次修为赌注不能超过当前大境界可损失修为的20%。';
+    if (raw.includes('CASINO_CULTIVATION_STAKE_EXCEEDS_TWENTY_PERCENT')) return '下注不得超过当前小境界内的全部可动用修为。';
     if (raw.includes('CASINO_STAKE_BELOW_MINIMUM')) return '本玩法赌注低于最低限制。';
     if (raw.includes('CASINO_STAKE_ABOVE_MAXIMUM')) return '本玩法赌注超过单局上限。';
     if (raw.includes('CASINO_STAKE_TOO_LARGE')) return '赌注数值过大，请降低后重试。';
     if (raw.includes('CASINO_ACTIVE_DUEL_EXISTS')) return '你已有一张等待或封存中的赌契，请先处理。';
     if (raw.includes('CASINO_INVALID_CHOICE')) return '招式或押注选项无效。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_NOT_ELIGIBLE')) return '只有当前财富榜第一且统一灵石严格超过500万的修士才能上庄。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_NOT_CURRENT_DEALER')) return '你当前并不是大堂玩家庄家，无法执行下庄。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_SELF_BET_FORBIDDEN')) return '庄家不能下注自己坐庄的大堂赌局。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_ONLY_SPIRIT_STONE')) return '玩家坐庄期间，大堂只接受灵石下注。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_DEALER_INSUFFICIENT')) return '当前玩家庄家的灵石不足以覆盖本玩法最高可能赔付，请降低赌注。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_DISABLED')) return '玩家坐庄功能当前已停用，荷老继续坐庄。';
+    if (raw.includes('DIVINE_NOTICE_NOT_FOUND')) return '这道天谕不存在或已经确认。';
+    if (raw.includes('DIVINE_NOTICE_ALREADY_CLAIMED')) return '这道天谕已由其他在线会话领取。';
     if (raw.includes('DUEL_NOT_AVAILABLE')) return '这张赌桌已不可加入。';
     if (raw.includes('DUEL_OWN_TABLE')) return '不能加入自己开设的赌桌。';
     if (raw.includes('DUEL_CANNOT_CANCEL')) return '只有尚未有人应局的自建赌桌可以取消。';
@@ -333,6 +344,7 @@
     if (state.sectSystemSyncTimer) clearInterval(state.sectSystemSyncTimer);
     if (state.marketSyncTimer) clearInterval(state.marketSyncTimer);
     if (state.worldEventsSyncTimer) clearInterval(state.worldEventsSyncTimer);
+    if (state.divineNoticeTimer) clearInterval(state.divineNoticeTimer);
     if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.cultivationTicker = null;
     state.cultivationSyncTimer = null;
@@ -347,6 +359,7 @@
     state.sectSystemSyncTimer = null;
     state.marketSyncTimer = null;
     state.worldEventsSyncTimer = null;
+    state.divineNoticeTimer = null;
     state.gameSessionHeartbeatTimer = null;
     state.cultivationSyncing = false;
     state.opportunitySyncing = false;
@@ -358,6 +371,7 @@
     state.sectSystemSyncing = false;
     state.marketSyncing = false;
     state.worldEventsSyncing = false;
+    state.divineNoticeSyncing = false;
   }
 
   function clearSession() {
@@ -388,6 +402,7 @@
     state.npcSocialFetchedAt = 0;
     state.sectSystem = null;
     state.sectSystemFetchedAt = 0;
+    state.divineNoticeActive = null;
     state.timeStatus = null;
     state.timeStatusStartedAt = 0;
     state.timeSyncing = false;
@@ -635,6 +650,31 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+  async function rpcGetCasinoPlayerHouseStatusV1() {
+    const result = await restFetch('rpc/get_casino_player_house_status_v1', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcSetCasinoPlayerHouseV1(active) {
+    const result = await restFetch('rpc/set_casino_player_house_v1', {
+      method: 'POST', body: { p_active: Boolean(active) }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+
+  async function rpcClaimNextDivineNoticeV1() {
+    const result = await restFetch('rpc/claim_next_divine_notice_v1', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcAcknowledgeDivineNoticeV1(noticeId) {
+    const result = await restFetch('rpc/acknowledge_divine_notice_v1', {
+      method: 'POST', body: { p_notice_id: noticeId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function rpcCreateDuelV1(gameCode, stakeType, stakeAmount, choice) {
     const result = await restFetch('rpc/create_duel_v1', { method: 'POST', body: {
       p_game_code: gameCode, p_stake_type: stakeType, p_stake_amount: Number(stakeAmount), p_choice: choice
@@ -709,7 +749,13 @@
     captureCasinoUiDrafts();
     state.marketSyncing = true;
     try {
-      state.marketSystem = await rpcGetMarketV1();
+      const [marketSystem, playerHouse] = await Promise.all([
+        rpcGetMarketV1(),
+        rpcGetCasinoPlayerHouseStatusV1().catch(error => ({
+          status: 'unavailable', mode: 'system', dealer_name: '荷老', error: translateError(error)
+        }))
+      ]);
+      state.marketSystem = { ...(marketSystem || {}), player_house: playerHouse || { mode: 'system', dealer_name: '荷老' } };
       if (Number.isFinite(Number(state.marketSystem?.character?.spirit_stones))) {
         setLocalSpiritStoneBalance(Number(state.marketSystem.character.spirit_stones));
       }
@@ -1670,9 +1716,9 @@
         ${canBreakthrough ? '<div class="cultivation-full-notice"><strong>修为已至圆满</strong><p>丹田灵力已臻当前境界极限，再行吐纳亦无法寸进。唯有叩问天关、完成突破，方可继续修行。</p></div>' : ''}
         <div class="breakthrough-meta">
           <span>基础成功率：${formatNumber(Number(status.base_success_rate || 0) * 100, 1)}%</span>
-          <span>天劫感悟：${formatNumber(insights)}丝（+${formatNumber(insightBonus * 100, 0)}个百分点）</span>
+          <span>天劫感悟：${formatNumber(insights)}丝（突破 +${formatNumber(insightBonus * 100, 0)}个百分点 · 总修炼速度 +${formatNumber(insights * 10, 0)}%）</span>
           <span>最终成功率上限：${formatNumber(Number(status.compensation_cap || 0.8) * 100, 0)}%</span>
-          ${status.original_target_stage_name ? `<span>感悟绑定目标：${escapeHtml(status.original_target_stage_name)}；真正抵达后清除</span>` : '<span>实际受到失败惩罚后，天劫感悟+1丝，目标突破率+5%</span>'}
+          ${status.original_target_stage_name ? `<span>感悟绑定目标：${escapeHtml(status.original_target_stage_name)}；真正抵达后清除</span>` : '<span>实际受到失败惩罚后，天劫感悟+1丝：突破率+5个百分点、总修炼速度+10%</span>'}
           <span>失败结果：身死0.5% · 大跌境5% · 小跌境8% · 全损15% · 半损30% · 有惊无险41.5%</span>
           <span>有惊无险、死亡及保护生效时不增加天劫感悟</span>
           ${status.penalty_enabled === false ? '<span>元婴以下保护：失败不死亡、不跌境、不扣修为、不增加感悟</span>' : '<span>元婴期及以上：完整天劫失败结果生效</span>'}
@@ -1949,6 +1995,67 @@
     `;
   }
 
+  function divineNoticeTypeMeta(type) {
+    if (type === 'punishment') return { seal: '罚', title: '天道惩戒', success: false };
+    if (type === 'compensation') return { seal: '补', title: '天道补偿', success: true };
+    return { seal: '赏', title: '天道赏赐', success: true };
+  }
+
+  function showDivineNoticeModal(notice) {
+    if (!notice?.id) return;
+    const meta = divineNoticeTypeMeta(notice.notice_type);
+    const delta = Number(notice.amount_delta || 0);
+    const amountText = `${delta >= 0 ? '+' : '−'}${formatNumber(Math.abs(delta))} 枚灵石`;
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop divine-notice-backdrop">
+        <section class="modal divine-notice-modal ${meta.success ? 'is-reward' : 'is-punishment'}" role="dialog" aria-modal="true" aria-labelledby="divineNoticeTitle">
+          <div class="modal-seal ${meta.success ? '' : 'failure-seal'}">${meta.seal}</div>
+          <span class="divine-notice-eyebrow">九霄天谕 · 仅你可见</span>
+          <h2 id="divineNoticeTitle">${escapeHtml(notice.title || meta.title)}</h2>
+          <p>${escapeHtml(notice.content || '')}</p>
+          <div class="divine-notice-summary">
+            <div><span>灵石变动</span><strong>${escapeHtml(amountText)}</strong></div>
+            <div><span>当前余额</span><strong>${formatNumber(notice.balance_after || 0)}</strong></div>
+          </div>
+          ${notice.reason ? `<div class="result-detail">缘由：${escapeHtml(notice.reason)}</div>` : ''}
+          <button id="ackDivineNoticeBtn" class="primary-btn full" type="button">我已知晓</button>
+        </section>
+      </div>
+    `;
+    const button = document.getElementById('ackDivineNoticeBtn');
+    button?.addEventListener('click', async () => {
+      setBusy(button, true, '天谕归档中……');
+      try {
+        await rpcAcknowledgeDivineNoticeV1(notice.id);
+        if (Number.isFinite(Number(notice.balance_after))) setLocalSpiritStoneBalance(Number(notice.balance_after));
+        state.divineNoticeActive = null;
+        modalRoot.innerHTML = '';
+        await refreshSpiritStoneBalanceV0141(true).catch(() => {});
+        setTimeout(() => checkDivineNotice(true), 120);
+      } catch (error) {
+        showToast(translateError(error), 'error');
+        setBusy(button, false);
+      }
+    });
+  }
+
+  async function checkDivineNotice(silent = true) {
+    if (state.divineNoticeSyncing || state.divineNoticeActive || !state.character || document.hidden) return;
+    if (modalRoot?.children?.length) return;
+    state.divineNoticeSyncing = true;
+    try {
+      const notice = await rpcClaimNextDivineNoticeV1();
+      if (notice?.id) {
+        state.divineNoticeActive = notice;
+        showDivineNoticeModal(notice);
+      }
+    } catch (error) {
+      if (!silent) showToast(translateError(error), 'error');
+    } finally {
+      state.divineNoticeSyncing = false;
+    }
+  }
+
   function showResultModal({ seal = '缘', title, message, detail = '', success = true }) {
     modalRoot.innerHTML = `
       <div class="modal-backdrop">
@@ -1996,7 +2103,7 @@
             message: result?.message || (result?.success ? '道关已开。' : '此番冲关未成。'),
             detail: result?.success
               ? `${Number(result.lifespan_bonus || 0) > 0 ? `寿元增加 ${formatNumber(result.lifespan_bonus)} 年。` : ''}${result.affliction_name ? ` 当前状态：${result.affliction_name}。` : ''}${Number(result.heavenly_insight_count || 0) > 0 ? ` 天劫感悟仍保留 ${formatNumber(result.heavenly_insight_count)} 丝，直到抵达原始目标。` : ' 抵达原始目标后，天劫感悟已经清除。'}`
-              : `${Number(result.cultivation_lost || 0) > 0 ? `修为损失 ${formatNumber(result.cultivation_lost)}，当前修为 ${formatNumber(result.cultivation_after)}。` : '境界与修为没有额外损失。'}${result.affliction_name ? ` 状态：${result.affliction_name}。` : ''}${result.insight_gained ? ` 天劫感悟 +1丝；当前共 ${formatNumber(result.heavenly_insight_count || 0)} 丝，目标突破率累计 +${formatNumber(Number(result.compensation_bonus || 0) * 100, 0)} 个百分点。` : ' 本次不增加天劫感悟与突破成功率。'}最终成功率最高80%。`,
+              : `${Number(result.cultivation_lost || 0) > 0 ? `修为损失 ${formatNumber(result.cultivation_lost)}，当前修为 ${formatNumber(result.cultivation_after)}。` : '境界与修为没有额外损失。'}${result.affliction_name ? ` 状态：${result.affliction_name}。` : ''}${result.insight_gained ? ` 天劫感悟 +1丝；当前共 ${formatNumber(result.heavenly_insight_count || 0)} 丝，突破率累计 +${formatNumber(Number(result.compensation_bonus || 0) * 100, 0)} 个百分点，总修炼速度累计 +${formatNumber(Number(result.heavenly_insight_count || 0) * 10, 0)}%。` : ' 本次不增加天劫感悟与突破成功率。'}最终成功率最高80%。`,
             success: Boolean(result?.success)
           });
         } catch (error) {
@@ -3633,6 +3740,12 @@
       draft.amount = casinoStakeBase('spirit_stone');
       draft.multiplier = null;
     }
+    const playerHouse = data.player_house || state.marketSystem?.player_house || {};
+    if (key === 'house' && playerHouse.mode === 'player' && draft.stakeType !== 'spirit_stone') {
+      draft.stakeType = 'spirit_stone';
+      draft.amount = casinoStakeBase('spirit_stone');
+      draft.multiplier = null;
+    }
     if (key === 'house' && draft.game === 'spirit_dice' && !['big', 'small'].includes(draft.choice)) {
       draft.choice = 'big';
     }
@@ -3681,7 +3794,9 @@
     const multipliers = Array.isArray(settings.quick_multipliers) && settings.quick_multipliers.length
       ? settings.quick_multipliers
       : [1, 5, 10, 50, 100];
-    const cultivationDisabled = !character.cultivation_eligible;
+    const cultivationDisabled = !character.cultivation_eligible || Number(character.cultivation_available || 0) <= 0;
+    const playerHouse = data.player_house || state.marketSystem?.player_house || {};
+    const playerHouseOnlyStones = prefix === 'house' && playerHouse.mode === 'player';
     const draft = getCasinoDraft(prefix, data);
     const cultivation = draft.stakeType === 'cultivation';
     const unit = cultivation ? '修为' : '灵石';
@@ -3690,12 +3805,12 @@
       <label>赌注资源
         <select id="${escapeHtml(prefix)}StakeType" data-casino-stake-type="${escapeHtml(prefix)}">
           <option value="spirit_stone" ${draft.stakeType === 'spirit_stone' ? 'selected' : ''}>灵石 · 当前 ${formatNumber(character.spirit_stones || 0)}</option>
-          <option value="cultivation" ${draft.stakeType === 'cultivation' ? 'selected' : ''} ${cultivationDisabled ? 'disabled' : ''}>修为 · 可动用 ${formatNumber(character.cultivation_available || 0)}</option>
+          ${playerHouseOnlyStones ? '' : `<option value="cultivation" ${draft.stakeType === 'cultivation' ? 'selected' : ''} ${cultivationDisabled ? 'disabled' : ''}>修为 · 可动用 ${formatNumber(character.cultivation_available || 0)}</option>`}
         </select>
       </label>
       <div class="casino-balance-strip">
         <span>统一灵石 <b data-spirit-stone-balance>${formatNumber(character.spirit_stones || 0)}</b></span>
-        <span>修为可动用 <b>${formatNumber(character.cultivation_available || 0)}</b></span>
+        ${playerHouseOnlyStones ? '<span>玩家庄模式仅接受灵石</span>' : `<span>当前小境界可动用 <b>${formatNumber(character.cultivation_available || 0)}</b></span><span>输光后境界不变</span>`}
       </div>
       <div class="casino-multiplier-group">
         <span>快捷倍数</span>
@@ -3705,8 +3820,9 @@
         <small data-stake-base-hint="${escapeHtml(prefix)}">以 ${formatNumber(base)} ${unit}为基数，也可在下方直接填写任意整数。</small>
       </div>
       <label>自定义赌注数量
-        <input id="${escapeHtml(prefix)}StakeAmount" data-casino-stake-amount="${escapeHtml(prefix)}" type="number" min="${cultivation ? 50000 : 10}" step="1" inputmode="numeric" value="${escapeHtml(draft.amount)}">
+        <input id="${escapeHtml(prefix)}StakeAmount" data-casino-stake-amount="${escapeHtml(prefix)}" type="number" min="${cultivation ? Math.min(50000, Math.max(1, Number(character.cultivation_available || 0))) : 10}" step="1" inputmode="numeric" value="${escapeHtml(draft.amount)}">
       </label>
+      ${cultivation ? `<button class="ghost-btn casino-all-in-btn" type="button" data-cultivation-all-in="${escapeHtml(prefix)}">全部修为 · ${formatNumber(character.cultivation_available || 0)}</button>` : ''}
       <div class="casino-stake-summary" data-stake-summary="${escapeHtml(prefix)}">本局确定下注：${formatNumber(draft.amount)} ${unit}</div>
     </div>`;
   }
@@ -3734,7 +3850,7 @@
 
   function casinoDuelListsHtml(data = {}) {
     const character = data.character || {};
-    const cultivationFull = Boolean(character.cultivation_full);
+    const cultivationAvailable = Number(character.cultivation_available || 0);
     const open = Array.isArray(data.open_duels) ? data.open_duels : [];
     const mine = Array.isArray(data.my_duels) ? data.my_duels : [];
     const openRows = open.length ? open.map(duel => {
@@ -3745,14 +3861,14 @@
         <div class="casino-duel-title"><span>${escapeHtml(duel.creator_name || '无名修士')}</span><strong>${duel.game_code === 'five_elements' ? '五行灵拳' : '灵拳对弈'}</strong></div>
         <p>赌注 ${formatNumber(duel.stake_amount || 0)} ${unit} · ${formatDuration(duel.expires_in || 0)} 后无人应局则返还</p>
         <label>暗选招式<select data-duel-choice-for="${escapeHtml(duel.id)}">${options}</select></label>
-        <button class="ghost-btn" type="button" data-duel-join="${escapeHtml(duel.id)}" ${cultivationFull && duel.stake_type === 'cultivation' ? 'disabled title="修为圆满，请先突破"' : ''}>封招应局</button>
+        <button class="ghost-btn" type="button" data-duel-join="${escapeHtml(duel.id)}" ${duel.stake_type === 'cultivation' && cultivationAvailable < Number(duel.stake_amount || 0) ? 'disabled title="当前小境界可动用修为不足"' : ''}>应局并立即开契</button>
       </article>`;
     }).join('') : '<div class="empty-state">当前没有等待应局的公开赌桌。</div>';
     const myRows = mine.length ? mine.map(duel => {
       const unit = duel.stake_type === 'cultivation' ? '修为' : '灵石';
       const choices = duel.my_choice ? `<p>你：【${escapeHtml(duel.my_choice)}】　对手：【${escapeHtml(duel.opponent_choice || '未知')}】</p>` : '';
       const outcome = duel.outcome === 'win' ? '你胜' : duel.outcome === 'loss' ? '你负' : duel.outcome === 'draw' ? '流局' : '';
-      const result = Number(duel.seconds_remaining || 0) > 0 ? `距开契 ${formatDuration(duel.seconds_remaining)}` : escapeHtml(duel.result_text || '等待云端结算');
+      const result = escapeHtml(duel.result_text || (duel.status === 'open' ? '等待道友应局' : '结算中'));
       return `<article class="casino-duel-card mine">
         <div class="casino-duel-title"><span>${escapeHtml(duel.status_name || duel.status)}${outcome ? ` · ${outcome}` : ''}</span><strong>${escapeHtml(duel.opponent_name || '等待道友')}</strong></div>
         <p>赌注 ${formatNumber(duel.stake_amount || 0)} ${unit}</p>${choices}<p>${result}</p>
@@ -3761,8 +3877,28 @@
     }).join('') : '<div class="empty-state">你暂时没有进行中的赌契。</div>';
     return `<div class="casino-duel-sections">
       <section><div class="subsection-title"><strong>公开赌桌</strong><span>${formatNumber(open.length)} 桌待应</span></div><div class="casino-duel-grid">${openRows}</div></section>
-      <section><div class="subsection-title"><strong>我的赌契</strong><span>等待、封存与近期开奖</span></div><div class="casino-duel-grid">${myRows}</div></section>
+      <section><div class="subsection-title"><strong>我的赌契</strong><span>等待应局与即时结算记录</span></div><div class="casino-duel-grid">${myRows}</div></section>
     </div>`;
+  }
+
+  function playerHouseControlHtml(data = {}) {
+    const house = data.player_house || {};
+    if (house.status === 'unavailable') {
+      return `<div class="market-lore"><p><b>玩家庄状态暂不可用。</b>${escapeHtml(house.error || '当前先按荷老坐庄显示，数据库仍会执行最终判定。')}</p></div>`;
+    }
+    if (house.mode === 'player') {
+      const action = house.can_deactivate
+        ? '<button class="ghost-btn" type="button" data-player-house-toggle="off">主动下庄</button>'
+        : '';
+      return `<div class="market-lore"><p><b>当前玩家庄家：${escapeHtml(house.dealer_name || '无名修士')}</b></p><p>玩家庄只接受灵石；闲家输时下注本金100%归庄家，闲家赢时本金100%返还并按实际净倍率由庄家100%赔付。全程零抽成、零入池。</p><p>灵骰单注最高承赔参考：${formatNumber(house.max_stake_spirit_dice || 0)}；龟卜单注最高承赔参考：${formatNumber(house.max_stake_turtle_oracle || 0)}。</p>${action}</div>`;
+    }
+    if (house.can_activate) {
+      return `<div class="market-lore"><p><b>你当前位列财富榜第一，统一灵石为 ${formatNumber(house.top_wealth || 0)}。</b></p><p>余额严格超过500万，已获得自愿上庄资格。上庄后只接受灵石，并使用你的统一灵石余额承担实际倍率赔付。</p><button class="primary-btn" type="button" data-player-house-toggle="on">自愿上庄</button></div>`;
+    }
+    const topLine = house.top_name
+      ? `当前财富榜第一为【${escapeHtml(house.top_name)}】，统一灵石 ${formatNumber(house.top_wealth || 0)}。`
+      : '当前财富榜暂无有效角色。';
+    return `<div class="market-lore"><p><b>当前由荷老坐庄。</b></p><p>${topLine} 财富榜第一且统一灵石严格超过500万时，可由本人选择是否上庄。</p></div>`;
   }
 
   function marketPanelHtml(data = {}, view = 'lobby') {
@@ -3775,15 +3911,20 @@
     const draws = Array.isArray(data.latest_draws) ? data.latest_draws : [];
     const hitChance = Number(settings.pool_hit_chance ?? 0.4);
     const disabled = data.status !== 'active';
+    const playerHouse = data.player_house || {};
+    const playerDealerActive = playerHouse.mode === 'player';
+    const houseDealerName = playerDealerActive ? (playerHouse.dealer_name || '无名庄家') : '荷老';
     const error = data.error ? `<div class="market-lore"><p><b>赌坊数据暂不可用：</b>${escapeHtml(data.error)}</p></div>` : '';
-    const fullNotice = character.cultivation_full ? '<div class="market-lore cultivation-full-market"><p><b>当前境界修为已圆满，修为玩法暂不可用。</b></p><p>灵石玩法不受影响；完成突破后即可再次选择修为落注。</p></div>' : '';
+    const fullNotice = character.cultivation_full ? '<div class="market-lore cultivation-full-market"><p><b>当前境界修为已圆满。</b></p><p>仍可押注当前小境界起始线以上的修为；输光后境界保持不变。</p></div>' : '';
 
     if (safeView === 'house') {
       const draft = getCasinoDraft('house', data);
       const choiceOptions = houseChoiceOptions(draft.game).map(([value, name]) => `<option value="${value}" ${draft.choice === value ? 'selected' : ''}>${name}</option>`).join('');
-      return `${error}${casinoModeHeader('大堂 · 荷老坐庄', '即时开奖 · 本期每人一份造化资格')}${fullNotice}
+      const houseBetDisabled = disabled || Boolean(playerHouse.is_self_dealer);
+      const houseSubtitle = playerDealerActive ? '即时开奖 · 玩家庄零抽成灵石对赌' : '即时开奖 · 系统庄沿用FIX7A造化规则';
+      return `${error}${casinoModeHeader(`大堂 · ${escapeHtml(houseDealerName)}坐庄`, houseSubtitle)}${playerHouseControlHtml(data)}${playerDealerActive ? '' : fullNotice}
         <section class="casino-play-sheet">
-          <div class="subsection-title"><strong>选择玩法</strong><span>先定玩法，再选灵石或修为</span></div>
+          <div class="subsection-title"><strong>选择玩法</strong><span>${playerDealerActive ? '玩家庄期间仅可选择灵石' : '先定玩法，再选灵石或修为'}</span></div>
           <div class="casino-game-buttons">
             <button class="${draft.game === 'spirit_dice' ? 'active' : ''}" type="button" data-house-select-game="spirit_dice"><b>骰</b><span>灵骰问道</span><small>大小各50% · 豹子3倍 · 天命34倍</small></button>
             <button class="${draft.game === 'turtle_oracle' ? 'active' : ''}" type="button" data-house-select-game="turtle_oracle"><b>卜</b><span>气运龟卜</span><small>吉、平、凶</small></button>
@@ -3794,15 +3935,17 @@
             <select id="houseChoice">${choiceOptions}</select>
           </label>
           <div class="casino-confirm-row">
-            <button class="primary-btn" type="button" id="confirmHouseGameBtn" ${disabled ? 'disabled' : ''}>确认落注并立即开局</button>
-            <small>灵骰先独立抽取大小，大、小各50%，玩家选择和两边下注量不参与开奖结果。3—10点为小，11—18点为大；111/222/333归小，444/555/666归大。普通非豹子押中毛利润1倍，普通豹子毛利润3倍，天命豹子毛利润34倍；普通豹子全服约1/80，天命豹子全服约1/5000。赢局仅从毛利润提取5%进入造化池；败局下注额10%进入造化池，余下90%由天道回收。</small>
+            <button class="primary-btn" type="button" id="confirmHouseGameBtn" ${houseBetDisabled ? 'disabled' : ''}>${playerHouse.is_self_dealer ? '庄家不可下注本桌' : '确认落注并立即开局'}</button>
+            <small>${playerDealerActive
+              ? '灵骰与龟卜继续沿用现有概率和实际净倍率。闲家输时下注本金100%归玩家庄家；闲家赢时本金100%返还，毛利润按实际净倍率由玩家庄家100%赔付。玩家庄模式不抽成、不进入造化池，也不发放本期造化资格。庄家余额不足以覆盖该玩法最高可能赔付时，数据库将拒绝落注。'
+              : '灵骰先独立抽取大小，大、小各50%，玩家选择和两边下注量不参与开奖结果。3—10点为小，11—18点为大；111/222/333归小，444/555/666归大。普通非豹子押中毛利润1倍，普通豹子毛利润3倍，天命豹子毛利润34倍；普通豹子全服约1/80，天命豹子全服约1/5000。系统庄赢局仅从毛利润提取5%进入造化池；败局下注额10%进入造化池，余下90%由天道回收。'}</small>
           </div>
         </section>`;
     }
 
     if (safeView === 'duel') {
       const draft = getCasinoDraft('duel', data);
-      return `${error}${casinoModeHeader('贵宾雅间 · 无相赌契', '玩家对局 · 五分钟统一开契')}${fullNotice}
+      return `${error}${casinoModeHeader('贵宾雅间 · 无相赌契', '有人应局 · 立即开契结算')}${fullNotice}
         <section class="casino-play-sheet">
           <div class="subsection-title"><strong>开设赌桌</strong><span>无人应局可主动取消并原数返还</span></div>
           <div class="casino-form-grid">
@@ -3824,7 +3967,7 @@
           ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石', hitChance)}
           ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为', hitChance)}
         </div>
-        <div class="market-lore"><p><b>开奖规则：</b>本期玩过对应资源赌局的每名修士拥有一份候选资格；大堂赢局按毛利润5%进入奖池，败局按下注额10%进入奖池、90%由天道回收；贵宾雅间分出胜负时，败者赌注的5%进入奖池、95%转给胜者，重复游玩不会叠加个人中奖权重。开奖时先在全部参与者中等概率抽出一人，再判定40%天机应验、60%天机未应。</p><p>命中时发放对应全服奖池；未中时无人得彩，奖池与之后的新赌注一起滚存到下一期。游玩次数不设每日上限。</p></div>
+        <div class="market-lore"><p><b>开奖规则：</b>荷老系统庄大堂赢局按毛利润5%进入奖池，败局按下注额10%进入奖池、90%由天道回收，并发放对应候选资格；玩家庄大堂为零抽成全额对赌，不进入造化池，也不发放造化资格。贵宾雅间分出胜负时，败者赌注的5%进入奖池、95%转给胜者，其他规则保持不变。重复游玩不会叠加个人中奖权重。开奖时先在全部有效参与者中等概率抽出一人，再判定40%天机应验、60%天机未应。</p><p>命中时发放对应全服奖池；未中滚存，奖池与之后的新有效入池赌注一起进入下一期。游玩次数不设每日上限。</p></div>
         <div class="subsection-title"><strong>近期造化</strong><span>命中与未中都会留下记录</span></div>
         ${casinoDrawRowsHtml(draws)}`;
     }
@@ -3832,21 +3975,22 @@
     return `${error}
       <div class="casino-lobby-summary">
         <div><span>统一灵石</span><strong data-spirit-stone-balance>${formatNumber(character.spirit_stones || 0)}</strong><small>机缘、洞府、功法与赌坊共用</small></div>
-        <div><span>可动用修为</span><strong>${formatNumber(character.cultivation_available || 0)}</strong><small>单注最高 ${formatNumber(character.cultivation_max_stake || 0)}</small></div>
+        <div><span>当前境界可动用修为</span><strong>${formatNumber(character.cultivation_available || 0)}</strong><small>可一次押上全部，输光不跌境</small></div>
         <div><span>今日参与</span><strong>${formatNumber(activity.total_count || 0)} 局</strong><small>已取消每日次数限制</small></div>
       </div>
-      ${fullNotice}
+      ${playerDealerActive ? '' : fullNotice}
+      ${playerHouseControlHtml(data)}
       ${disabled ? '<div class="market-lore"><p><b>万运博弈楼当前暂停接受新赌契。</b>已有赌契仍会正常结算或返还。</p></div>' : ''}
       <div class="casino-mode-grid">
-        <button type="button" data-casino-view="house" ${disabled ? 'disabled' : ''}><b>堂</b><strong>大堂</strong><span>荷老坐庄，选择资源、数量与倍数后即时开奖</span></button>
-        <button type="button" data-casino-view="duel"><b>雅</b><strong>贵宾雅间</strong><span>开桌、应局或查看自己的异步赌契</span></button>
+        <button type="button" data-casino-view="house" ${disabled ? 'disabled' : ''}><b>堂</b><strong>大堂</strong><span>${playerDealerActive ? `${escapeHtml(houseDealerName)}坐庄，仅灵石零抽成对赌` : '荷老坐庄，选择资源、数量与倍数后即时开奖'}</span></button>
+        <button type="button" data-casino-view="duel"><b>雅</b><strong>贵宾雅间</strong><span>开桌等待应局，有人接受即刻结算</span></button>
         <button type="button" data-casino-view="pools"><b>池</b><strong>全服造化池</strong><span>查看两类共享奖池、造化签和开奖记录</span></button>
       </div>
       <div class="casino-pool-grid compact">
         ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石', hitChance)}
         ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为', hitChance)}
       </div>
-      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>所有玩法不再限制每日次数。大堂赢局按毛利润5%进入全服共享奖池，败局按下注额10%入池、90%由天道回收；贵宾雅间分出胜负时，败者赌注的5%入池、95%转给胜者，胜者另取回自己的本金；同一修士在每期每种资源池中拥有一份等权候选资格。</p></div>`;
+      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>财富榜第一且统一灵石严格超过500万时，可由本人自愿接替荷老坐庄。玩家庄只接受灵石，庄胜收取100%下注本金，闲家胜则本金100%返还并按实际净倍率获得100%毛利润；玩家庄不抽成、不入池。无人上庄时，荷老继续沿用FIX7A系统庄规则。贵宾雅间与造化池其他规则保持不变。</p></div>`;
   }
 
   function duelChoices(game) {
@@ -3867,11 +4011,14 @@
     if (!typeSelect || !amountInput) return;
     const cultivation = typeSelect.value === 'cultivation';
     const base = casinoStakeBase(typeSelect.value);
-    amountInput.min = cultivation ? '50000' : '10';
+    const available = Number(state.marketSystem?.character?.cultivation_available || 0);
+    amountInput.min = cultivation ? String(Math.min(50000, Math.max(1, available))) : '10';
     amountInput.step = '1';
     const value = Math.max(0, Math.floor(Number(amountInput.value || 0)));
     const unit = cultivation ? '修为' : '灵石';
-    if (hint) hint.textContent = `以 ${formatNumber(base)} ${unit}为基数，也可在下方直接填写任意整数。`;
+    if (hint) hint.textContent = cultivation
+      ? `通常最低 50,000 修为；不足 50,000 时只允许一次押上全部可动用修为。当前境界不会跌落。`
+      : `以 ${formatNumber(base)} ${unit}为基数，也可在下方直接填写任意整数。`;
     if (summary) summary.textContent = `本局确定下注：${formatNumber(value)} ${unit}`;
   }
 
@@ -3881,9 +4028,9 @@
     const stakeType = typeSelect?.value || 'spirit_stone';
     const amount = Math.floor(Number(amountInput?.value || 0));
     const character = state.marketSystem?.character || {};
-    const minimum = stakeType === 'cultivation' ? 50000 : 10;
     const available = stakeType === 'cultivation' ? Number(character.cultivation_available || 0) : Number(character.spirit_stones || 0);
-    const maximum = stakeType === 'cultivation' ? Number(character.cultivation_max_stake || 0) : available;
+    const minimum = stakeType === 'cultivation' ? Math.min(50000, Math.max(1, available)) : 10;
+    const maximum = stakeType === 'cultivation' ? available : available;
     if (!Number.isSafeInteger(amount) || amount < minimum) {
       throw new Error(stakeType === 'cultivation' ? 'CULTIVATION_STAKE_MINIMUM' : 'CASINO_STAKE_BELOW_MINIMUM');
     }
@@ -3909,6 +4056,47 @@
       button.addEventListener('click', () => {
         state.casinoView = 'lobby';
         renderCasinoPanel();
+      });
+    });
+
+    document.querySelectorAll('[data-player-house-toggle]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        const active = button.dataset.playerHouseToggle === 'on';
+        setBusy(button, true, active ? '上庄中……' : '下庄中……');
+        try {
+          const result = await rpcSetCasinoPlayerHouseV1(active);
+          showToast(active
+            ? `你已自愿上庄，当前大堂庄家为【${result?.dealer_name || '你'}】。`
+            : '你已主动下庄，荷老重新接管大堂。', 'success');
+          await Promise.all([refreshMarketSystem(true), refreshSpiritStoneBalanceV0141(true)]);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+        } finally {
+          setBusy(button, false);
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-cultivation-all-in]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        const prefix = button.dataset.cultivationAllIn;
+        const typeSelect = document.getElementById(`${prefix}StakeType`);
+        const amountInput = document.getElementById(`${prefix}StakeAmount`);
+        const available = Math.max(0, Math.floor(Number(state.marketSystem?.character?.cultivation_available || 0)));
+        if (!typeSelect || !amountInput || available <= 0) return;
+        typeSelect.value = 'cultivation';
+        amountInput.value = String(available);
+        const draft = getCasinoDraft(prefix);
+        draft.stakeType = 'cultivation';
+        draft.amount = available;
+        draft.multiplier = null;
+        state.casinoDrafts[prefix] = draft;
+        document.querySelectorAll(`[data-stake-prefix="${CSS.escape(prefix)}"]`).forEach(node => node.classList.remove('active'));
+        updateCasinoStakeControl(prefix);
       });
     });
 
@@ -4075,7 +4263,7 @@
         setBusy(button, true, '应局中……');
         try {
           const result = await rpcJoinDuelV1(button.dataset.duelJoin, choice.value);
-          showToast(result?.content || '双方招式已封存，五分钟后开契。');
+          showToast(result?.content || result?.result_text || '应局成功，赌契已经立即结算。', result?.outcome === 'win' ? 'success' : result?.outcome === 'loss' ? 'error' : undefined);
           await Promise.all([refreshMarketSystem(true), refreshSpiritStoneBalanceV0141(true)]);
         } catch (error) {
           showToast(translateError(error), 'error');
@@ -4535,9 +4723,11 @@
     state.sectSystemSyncTimer = setInterval(() => refreshSectSystem(true), 60000);
     state.marketSyncTimer = setInterval(() => { if (!document.hidden && state.marketView === 'casino') refreshMarketSystem(true); }, 10000);
     state.worldEventsSyncTimer = setInterval(() => { if (!document.hidden) refreshWorldEvents(true); }, 10000);
+    state.divineNoticeTimer = setInterval(() => checkDivineNotice(true), 10000);
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
     updateCaveCountdown();
+    setTimeout(() => checkDivineNotice(true), 180);
   }
 
   function historyHtml(rows) {
@@ -4693,6 +4883,7 @@
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
           await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshWorldEvents(true)]);
+          checkDivineNotice(true);
         }
       }
     });
@@ -4709,6 +4900,7 @@
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
           await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshWorldEvents(true)]);
+          checkDivineNotice(true);
         }
       }
     });
