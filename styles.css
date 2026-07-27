@@ -1,4 +1,4 @@
-/* Current release: Web Alpha 0.14.1 */
+/* Current release: Web Alpha 0.14.2 */
 :root {
   --bg: #12100d;
   --bg-soft: #1a1712;
@@ -1936,7 +1936,7 @@ button, .badge, .hero-chip { max-width: 100%; }
 @media(max-width:640px){.cultivation-full-notice,.cultivation-full-inline{padding:9px 10px;font-size:.82rem}.breakthrough-meta span{line-height:1.5}}
 
 
-/* V0.14.1 · 市坊、统一灵石与赌坊重构 */
+/* V0.14.2 · 市坊、统一灵石与赌坊重构 */
 .bazaar-root { display: grid; gap: 18px; }
 .bazaar-entry-grid {
   display: grid;
@@ -2103,7 +2103,7 @@ button, .badge, .hero-chip { max-width: 100%; }
   .bazaar-world-heading > small { display: none; }
 }
 
-/* V0.14.1 · 万运博弈楼分层玩法、统一灵石与全服造化池 */
+/* V0.14.2 · 万运博弈楼分层玩法、统一灵石与全服造化池 */
 .casino-lobby-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

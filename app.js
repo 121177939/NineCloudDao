@@ -614,7 +614,7 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcGetWorldEventsV1(limit = 20) {
+  async function rpcGetWorldEventsV1(limit = 30) {
     const result = await restFetch('rpc/get_world_events_v1', {
       method: 'POST',
       body: { p_limit: Number(limit) }
@@ -720,7 +720,7 @@
     if (state.worldEventsSyncing || !state.character || document.hidden) return state.worldEvents;
     state.worldEventsSyncing = true;
     try {
-      state.worldEvents = await rpcGetWorldEventsV1(20);
+      state.worldEvents = await rpcGetWorldEventsV1(30);
       state.worldEventsFetchedAt = Date.now();
       updateWorldEventsPanel();
       return state.worldEvents;
@@ -3317,10 +3317,24 @@
     return Number.isFinite(createdAt) && createdAt > 0 ? new Date(createdAt).toLocaleDateString('zh-CN') : '天机未明';
   }
 
+  function sortWorldEventEntriesNewestFirst(entries = []) {
+    return [...entries].sort((left, right) => {
+      const leftSequence = Number(left?.feed_sequence);
+      const rightSequence = Number(right?.feed_sequence);
+      if (Number.isFinite(leftSequence) && Number.isFinite(rightSequence) && leftSequence !== rightSequence) {
+        return rightSequence - leftSequence;
+      }
+      const leftTime = new Date(left?.created_at || 0).getTime();
+      const rightTime = new Date(right?.created_at || 0).getTime();
+      if (leftTime !== rightTime) return rightTime - leftTime;
+      return String(right?.id || '').localeCompare(String(left?.id || ''));
+    });
+  }
+
   function worldEventsPanelHtml(data = {}) {
-    const entries = Array.isArray(data.entries) ? data.entries : [];
+    const entries = sortWorldEventEntriesNewestFirst(Array.isArray(data.entries) ? data.entries : []);
     if (data.status === 'unavailable') {
-      return `<div id="worldEventsRoot" class="world-events-root"><div class="empty-state"><h4>九霄界闻尚未开启</h4><p>${escapeHtml(data.error || '请先执行 V0.14.1 数据库升级。')}</p><button class="ghost-btn" type="button" data-world-events-refresh>重新聆听</button></div></div>`;
+      return `<div id="worldEventsRoot" class="world-events-root"><div class="empty-state"><h4>九霄界闻尚未开启</h4><p>${escapeHtml(data.error || '请先执行 V0.14.2 数据库升级。')}</p><button class="ghost-btn" type="button" data-world-events-refresh>重新聆听</button></div></div>`;
     }
     if (data.status === 'loading') {
       return '<div id="worldEventsRoot" class="world-events-root"><div class="empty-state">天道正在汇聚诸域消息……</div></div>';
@@ -3342,7 +3356,7 @@
             </div>
           </article>
         `).join('')}</div>` : '<div class="empty-state">天地寂静，近日暂无足以惊动九霄之事。</div>'}
-        <div class="world-event-footer"><span>仅收录足以传遍诸域之事</span><button class="ghost-btn" type="button" data-world-events-refresh>刷新界闻</button></div>
+        <div class="world-event-footer"><span>严格按最新消息排序，新消息永远置顶</span><button class="ghost-btn" type="button" data-world-events-refresh>刷新界闻</button></div>
       </div>
     `;
   }
@@ -4418,7 +4432,7 @@
     state.npcSocialSyncTimer = setInterval(() => refreshNpcSocial(true), 60000);
     state.sectSystemSyncTimer = setInterval(() => refreshSectSystem(true), 60000);
     state.marketSyncTimer = setInterval(() => { if (!document.hidden && state.marketView === 'casino') refreshMarketSystem(true); }, 10000);
-    state.worldEventsSyncTimer = setInterval(() => { if (!document.hidden) refreshWorldEvents(true); }, 20000);
+    state.worldEventsSyncTimer = setInterval(() => { if (!document.hidden) refreshWorldEvents(true); }, 10000);
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
     updateCaveCountdown();
@@ -4500,7 +4514,7 @@
         rpcGetMarketV1().catch(error => ({
           status: 'unavailable', pools: {}, tickets: {}, open_duels: [], my_duels: [], latest_draws: [], error: translateError(error)
         })),
-        rpcGetWorldEventsV1(20).catch(error => ({
+        rpcGetWorldEventsV1(30).catch(error => ({
           status: 'unavailable', entries: [], error: translateError(error)
         }))
       ]);

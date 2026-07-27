@@ -40,8 +40,8 @@ jobs:
           python --version
           node --version
 
-      - name: Verify V0.14.1 release metadata
-        run: python tools/verify_release_v0141.py .
+      - name: Verify V0.14.2 release metadata
+        run: python tools/verify_release_v0142.py .
 
       - name: JavaScript syntax checks
         run: |
@@ -50,18 +50,25 @@ jobs:
           node --check update-guard.js
           node --check sw.js
           node --check tools/test_casino_render_v0141.js
+          node --check tools/test_world_events_render_v0142.js
 
-      - name: V0.14.1 SQL static audit
-        run: python tools/sql_static_audit_v0141.py .
+      - name: V0.14.1 FIX7A SQL static audit
+        run: python tools/sql_static_audit_v0141_fix7a.py .
+
+      - name: V0.14.2 SQL static audit
+        run: python tools/sql_static_audit_v0142.py .
 
       - name: Casino render simulation
         run: node tools/test_casino_render_v0141.js .
 
+      - name: World feed strict ordering simulation
+        run: node tools/test_world_events_render_v0142.js .
+
       - name: Build clean Pages staging directory
-        run: python tools/prepare_pages_site_v0141.py . .pages-site
+        run: python tools/prepare_pages_site_v0142.py . .pages-site
 
       - name: Verify Pages staging directory
-        run: python tools/verify_pages_site_v0141.py .pages-site
+        run: python tools/verify_pages_site_v0142.py .pages-site
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
