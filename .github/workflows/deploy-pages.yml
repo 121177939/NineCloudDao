@@ -40,8 +40,8 @@ jobs:
           python --version
           node --version
 
-      - name: Verify V0.14.4 release metadata
-        run: python tools/verify_release_v0144.py .
+      - name: Verify V0.14.6 release metadata
+        run: python tools/verify_release_v0146.py .
 
       - name: JavaScript syntax checks
         run: |
@@ -53,6 +53,8 @@ jobs:
           node --check tools/test_world_events_render_v0142.js
           node --check tools/test_ranking_render_v0143.js
           node --check tools/test_features_v0144.js
+          node --check tools/test_features_v0145.js
+          node --check tools/test_opportunity_history_v0146.js
 
       - name: V0.14.1 FIX7A SQL static audit
         run: python tools/sql_static_audit_v0141_fix7a.py .
@@ -66,6 +68,11 @@ jobs:
       - name: V0.14.4 SQL static audit
         run: python tools/sql_static_audit_v0144.py .
 
+      - name: V0.14.5 inherited SQL static audit
+        run: python tools/sql_static_audit_v0145.py .
+      - name: V0.14.6 SQL static audit
+        run: python tools/sql_static_audit_v0146.py .
+
       - name: Casino render simulation
         run: node tools/test_casino_render_v0141.js .
 
@@ -75,14 +82,19 @@ jobs:
       - name: Ranking switch render simulation
         run: node tools/test_ranking_render_v0143.js .
 
-      - name: V0.14.4 integrated feature checks
+      - name: V0.14.4 inherited feature checks
         run: node tools/test_features_v0144.js .
 
+      - name: V0.14.5 inherited feature checks
+        run: node tools/test_features_v0145.js .
+      - name: V0.14.6 opportunity history checks
+        run: node tools/test_opportunity_history_v0146.js .
+
       - name: Build clean Pages staging directory
-        run: python tools/prepare_pages_site_v0144.py . .pages-site
+        run: python tools/prepare_pages_site_v0146.py . .pages-site
 
       - name: Verify Pages staging directory
-        run: python tools/verify_pages_site_v0144.py .pages-site
+        run: python tools/verify_pages_site_v0146.py .pages-site
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

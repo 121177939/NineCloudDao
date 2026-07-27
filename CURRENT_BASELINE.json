@@ -1,11 +1,10 @@
 {
-  "version": "0.14.4",
-  "releaseLabel": "Web Alpha V0.14.4 CACHE8",
-  "sourceBaseline": "V0.14.3 CACHE7",
-  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.0 FIX2/FIX3九霄界闻 + V0.14.1统一灵石与赌坊FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级",
-  "databaseChange": "PLAYER_HOUSE_CASINO_NOTICE_INSIGHT_V0144",
-  "databaseMigration": "database/V0.14.4/202607272200_v0144_player_house_casino_notice_insight.sql",
-  "inheritedMigration": "database/V0.14.3/202607271720_v0143_multi_ranking_wealth.sql",
+  "version": "0.14.6",
+  "releaseLabel": "Web Alpha V0.14.6 CACHE10",
+  "sourceBaseline": "V0.14.5 CACHE9",
+  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细修复",
+  "databaseChange": "OPPORTUNITY_HISTORY_DETAIL_V0146",
+  "databaseMigration": "database/V0.14.6/202607280230_v0146_opportunity_history_detail.sql",
   "deploymentStatus": "release_ready_not_user_confirmed",
   "deploymentPipeline": {
     "python": "3.13.5",
@@ -14,28 +13,25 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.4_FINAL.zip",
-    "database": "九霄问道_V0.14.4_玩家庄与综合规则升级.sql",
+    "github": "NineCloudDao_GitHub_Upload_V0.14.6_FINAL.zip",
+    "database": "九霄问道_V0.14.6_离线机缘命书与具体结果修复.sql",
     "adminDatabase": "九霄问道_V0.14.4_ADMIN2_灵石赏罚与私人天谕.sql",
     "adminHtml": "九霄问道_账号管理后台_ADMIN2_灵石赏罚版.html",
-    "handoff": "九霄问道_APP项目接管资料包_V0.14.4_ADMIN2_完整接管版.zip",
-    "history": "九霄问道_历史归档_V0.6.5-V0.14.4_ADMIN2_补全版.zip"
+    "handoff": "九霄问道_APP项目接管资料包_V0.14.6_ADMIN2_完整接管版.zip",
+    "history": "九霄问道_历史归档_V0.6.5-V0.14.6_ADMIN2_补全版.zip",
+    "developmentBaseline": "NineCloudDao_Development_Baseline_V0.14.6_AB4.zip"
   },
   "notes": [
-    "合并B线玩家自愿坐庄模块：财富榜第一且统一灵石严格超过500万者可自愿上庄。",
-    "玩家庄仅接受灵石，零抽成、零入池；无人有效上庄时回退荷老FIX7A系统庄。",
-    "修为下注最多可押当前小境界起始线以上的全部修为，输光后大小境界均不变化。",
-    "贵宾赌契有人应局后在同一数据库事务中立即开奖结算，不再等待5分钟。",
-    "每丝天劫感悟继续增加5个百分点突破率，并额外增加10%最终总修炼速度。",
-    "新增指定玩家一次性私人天道赏罚公告，由ADMIN2赏罚事务写入。",
-    "修正玩家庄模块中的庄家称呼为荷老。",
-    "九霄界闻继续沿用V0.14.2严格新消息置顶；三榜继续沿用V0.14.3。",
-    "FIX7A概率与系统庄入池规则保持不变；V0.14.1 FIX8永久禁止执行。",
-    "CACHE8将客户端构建号更新为v0144-cache8，并把服务器cache_epoch至少提升到8。"
+    "命书合并读取opportunity_v3_results最近100条完整机缘，黄品至专属均可显示。",
+    "离线补算完成后在首次页面渲染前重新读取命书。",
+    "在线自动结算后即时刷新命书。",
+    "修炼-机缘优先显示reward_text/penalty_text/result_text，不再只显示通用自动结算文案。",
+    "正式SQL同时包含V0.14.5 FIX1和FIX2兼容修复。",
+    "CACHE10强制刷新前端资源。"
   ],
-  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4玩家庄分派",
+  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4综合规则 + V0.14.5机缘与玩家庄佣金",
   "worldFeedBaseline": "V0.14.2",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "clientHotfix": "V0.14.4_PLAYER_HOUSE_CASINO_NOTICE_INSIGHT_CACHE8"
+  "clientHotfix": "V0.14.6_OPPORTUNITY_HISTORY_DETAIL_CACHE10"
 }

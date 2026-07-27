@@ -869,6 +869,14 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+  async function rpcGetOpportunityHistoryV0146(limit = 100) {
+    const result = await restFetch('rpc/get_opportunity_history_v0146', {
+      method: 'POST',
+      body: { p_limit: Math.max(1, Math.min(100, Number(limit || 100))) }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function rpcResolveOpportunity(opportunityId, choiceKey) {
     const result = await restFetch('rpc/resolve_opportunity_v1', {
       method: 'POST',
@@ -1103,6 +1111,37 @@
     return [canonical, ...source.filter(row => row.definition?.code !== 'spirit_stone')];
   }
 
+  function mergeHistoryWithOpportunityResults(historyRows = [], opportunityRows = []) {
+    const baseRows = (Array.isArray(historyRows) ? historyRows : []).filter(row => row?.event_type !== 'opportunity');
+    const opportunity = Array.isArray(opportunityRows) ? opportunityRows : [];
+    const unique = new Map();
+    [...baseRows, ...opportunity].forEach(row => {
+      const key = `${row?.event_type || 'history'}:${row?.id || row?.created_at || Math.random()}`;
+      if (!unique.has(key)) unique.set(key, row);
+    });
+    return Array.from(unique.values()).sort((left, right) => {
+      const lt = new Date(left?.created_at || 0).getTime() || 0;
+      const rt = new Date(right?.created_at || 0).getTime() || 0;
+      return rt - lt;
+    }).slice(0, 100);
+  }
+
+  async function refreshOpportunityHistoryTimeline() {
+    if (!state.character) return state.history;
+    try {
+      const payload = await rpcGetOpportunityHistoryV0146(100);
+      const entries = Array.isArray(payload?.entries) ? payload.entries : [];
+      state.history = mergeHistoryWithOpportunityResults(state.history, entries);
+      if (state.details) state.details.history = state.history;
+      const root = document.getElementById('historyTimelineRoot');
+      if (root) root.innerHTML = historyHtml(state.history);
+      return state.history;
+    } catch (error) {
+      console.error(error);
+      return state.history;
+    }
+  }
+
   async function loadCharacterBundle() {
     const character = await getOne('player_characters', {
       select: 'id,user_id,world_id,lineage_id,generation_number,name,gender,birth_year,age,realm_stage_id,cultivation,lifespan_total,lifespan_used,comprehension,luck,mindset,karma,adversity,health_status,status,created_at',
@@ -1111,7 +1150,7 @@
     });
     if (!character) return null;
 
-    const [world, stage, rootLink, fateLink, historyRows] = await Promise.all([
+    const [world, stage, rootLink, fateLink, historyRows, opportunityHistory] = await Promise.all([
       getOne('game_worlds', {
         select: 'id,code,name,current_year,era_name,spiritual_qi_level,heaven_state',
         id: `eq.${character.world_id}`
@@ -1139,7 +1178,8 @@
           order: 'world_year.desc,created_at.desc',
           limit: '100'
         }
-      })
+      }),
+      rpcGetOpportunityHistoryV0146(100).catch(() => ({ status: 'unavailable', entries: [] }))
     ]);
 
     const [realm, spiritRoot, fate, cultivationState, techniqueLinks, cultivationEffects, inventoryLinks] = await Promise.all([
@@ -1227,7 +1267,7 @@
       techniques,
       inventory,
       cultivationEffects: Array.isArray(cultivationEffects) ? cultivationEffects : [],
-      history: Array.isArray(historyRows) ? historyRows : []
+      history: mergeHistoryWithOpportunityResults(historyRows, opportunityHistory?.entries)
     };
   }
 
@@ -1984,7 +2024,9 @@
     const luckyBonus = Number(opportunity?.lucky_auspicious_bonus ?? result?.lucky_auspicious_bonus ?? 0);
     const isRisk = result?.path_name === '涉险';
     const outcomeLabel = isRisk ? '涉险代价' : '趋吉所得';
-    const outcomeText = isRisk ? (result?.penalty_text || '本次涉险未记录具体代价') : (result?.reward_text || '本次趋吉结果已自动结算');
+    const outcomeText = isRisk
+      ? (result?.penalty_text || result?.result_text || '本次涉险未记录具体代价')
+      : (result?.reward_text || result?.result_text || '本次趋吉结果已自动结算');
     return `
       <div class="panel-title"><h3>天机推演</h3><span class="badge ${result ? `rarity-${escapeHtml(rarity)}` : ''}">${escapeHtml(result ? rarityLabel : '天机流转')}</span></div>
       <div class="opportunity-waiting opportunity-summary-panel">
@@ -2264,6 +2306,7 @@
         updateLiveCultivationDisplay();
       }
       if (settlement?.offline_summary) showOpportunityOfflineSummary(settlement.offline_summary);
+      if (Number(settlement?.events_resolved || 0) > 0) await refreshOpportunityHistoryTimeline();
       updateOpportunityEntry();
       const modalBody = document.getElementById('opportunityModalBody');
       if (modalBody) {
@@ -4641,7 +4684,7 @@
 
         <section id="historySection" class="panel" data-mobile-screen="history">
           <div class="panel-title"><h3>命书</h3><span class="badge">最新 100 条</span></div>
-          ${historyHtml(bundle.history)}
+          <div id="historyTimelineRoot">${historyHtml(bundle.history)}</div>
         </section>
 
         ${mobileBottomNavHtml(state.activeMobileTab)}
@@ -4961,6 +5004,11 @@
       state.marketSystem = marketSystem;
       state.worldEvents = worldEvents;
       state.worldEventsFetchedAt = Date.now();
+      if (Number(opportunitySettlement?.events_resolved || 0) > 0) {
+        const opportunityHistory = await rpcGetOpportunityHistoryV0146(100).catch(() => ({ entries: [] }));
+        bundle.history = mergeHistoryWithOpportunityResults(bundle.history, opportunityHistory?.entries);
+        state.history = bundle.history;
+      }
       renderDashboard(bundle);
       if (opportunitySettlement?.offline_summary) setTimeout(() => showOpportunityOfflineSummary(opportunitySettlement.offline_summary), 120);
     } catch (error) {
