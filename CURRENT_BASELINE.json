@@ -1,10 +1,10 @@
 {
   "version": "0.14.1",
-  "releaseLabel": "Web Alpha V0.14.1 FIX5 CACHE2",
+  "releaseLabel": "Web Alpha V0.14.1 FIX6 CACHE3",
   "sourceBaseline": "V0.14.0 FIX2/FIX3",
   "databaseBaseline": "V0.13.0修为硬上限 + V0.14.0 FIX2九霄界闻 + V0.14.1统一灵石与赌坊重构",
-  "databaseChange": "BREAKTHROUGH_INSIGHT_ROUTE_FIX5",
-  "databaseMigration": "database/V0.14.1/202607270100_v0141_fix5_breakthrough_insight_route.sql",
+  "databaseChange": "SPIRIT_DICE_TRIPLE_AUTO_BIG_SMALL_FIX6",
+  "databaseMigration": "database/V0.14.1/202607270230_v0141_fix6_spirit_dice_triple_auto_side.sql",
   "inheritedMigration": "database/V0.14.0_FIX2/九霄问道_V0.14.0_FIX2_主迁移.sql",
   "deploymentPipeline": {
     "python": "3.13.5",
@@ -13,8 +13,8 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.1_FIX5_CACHE2.zip",
-    "database": "九霄问道_V0.14.1_FIX5_突破感悟热修复.sql"
+    "github": "NineCloudDao_GitHub_Upload_V0.14.1_FIX6_CACHE3.zip",
+    "database": "九霄问道_V0.14.1_FIX6_灵骰豹子规则热修复.sql"
   },
   "notes": [
     "游戏内正式名称保持为市坊。",
@@ -32,11 +32,15 @@
     "雅间同招流局、取消和超时返还仍全额退款且不入池；灵石与修为规则一致。",
     "核心静态资源使用构建查询参数，Service Worker对导航及JS/CSS/Manifest使用网络优先。",
     "客户端每60秒读取get_jiuxiao_app_release_control_v1；服务器cache_epoch增加时自动清理九霄问道缓存并重载。",
-    "FIX5修复跌落小境界或大境界后，已累计天劫感悟在恢复途中被成功率计算暂时忽略的问题。",
     "天劫感悟现在对恢复途中每一道突破持续生效；每丝固定增加5个百分点，最终成功率仍不超过80%。",
     "感悟仍绑定最初冲击目标，只有真正抵达该目标境界后才会清零；已有角色的感悟数量无需补数据。",
-    "CACHE2沿用CACHE1的网络优先与服务器cache_epoch强制刷新机制，并将客户端构建号更新为v0141-fix5-cache2。"
+    "FIX5突破感悟路线修复继续继承：跌境恢复途中累计感悟持续生效。",
+    "FIX6重做灵骰问道豹子规则：玩家只押大或小，不再单独押围骰。",
+    "灵骰3—10点为小、11—18点为大；111/222/333归小，444/555/666归大。",
+    "豹子命中所押大小时使用净赔率34倍；普通非豹子命中仍为净赔率1倍。",
+    "大堂每局5%入池规则不变；押100豹子命中时实际总到账3495，奖池增加5。",
+    "CACHE3将客户端构建号更新为v0141-fix6-cache3，并提升服务器cache_epoch以强制刷新旧页面。"
   ],
-  "gameplayBaseline": "V0.14.1 FIX5",
-  "clientHotfix": "CACHE_FORCE_UPDATE_CACHE2"
+  "gameplayBaseline": "V0.14.1 FIX6",
+  "clientHotfix": "CACHE_FORCE_UPDATE_CACHE3"
 }

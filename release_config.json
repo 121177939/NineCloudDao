@@ -1,9 +1,9 @@
 {
   "version": "V0.14.1",
-  "release": "unified-spirit-stone-casino-rework-fix5-cache2",
+  "release": "unified-spirit-stone-casino-rework-fix6-cache3",
   "base": "V0.14.0 FIX2/FIX3",
-  "databaseBaseline": "V0.14.1 FIX5突破感悟路线修复 + CACHE2客户端发布控制",
-  "databaseMigration": "database/V0.14.1/202607270100_v0141_fix5_breakthrough_insight_route.sql",
+  "databaseBaseline": "V0.14.1 FIX6灵骰豹子自动归类 + FIX5突破感悟路线修复 + CACHE3客户端发布控制",
+  "databaseMigration": "database/V0.14.1/202607270230_v0141_fix6_spirit_dice_triple_auto_side.sql",
   "pagesStagingDirectory": ".pages-site",
   "pythonVersion": "3.13.5",
   "nodeVersion": "24",
@@ -31,8 +31,11 @@
     "跌境后天劫感悟持续生效",
     "3丝感悟在恢复路线中实际增加15个百分点",
     "原始目标抵达后再清除感悟",
-    "CACHE2资源构建号"
+    "灵骰只押大或小",
+    "豹子按点数自动归入大小",
+    "豹子命中大小时净赢34倍",
+    "CACHE3资源构建号"
   ],
-  "clientBuild": "v0141-fix5-cache2",
-  "gameplayBaseline": "V0.14.1 FIX5"
+  "clientBuild": "v0141-fix6-cache3",
+  "gameplayBaseline": "V0.14.1 FIX6"
 }

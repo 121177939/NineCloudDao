@@ -1,8 +1,16 @@
-# 九霄问道 Web Alpha V0.14.1 FIX5 CACHE2
+# 九霄问道 Web Alpha V0.14.1 FIX6 CACHE3
 
-> 当前玩法基线为V0.14.1 FIX5；CACHE2继续负责旧页面缓存与PWA更新。
+> 当前玩法基线为V0.14.1 FIX6；CACHE3继续负责旧页面缓存与PWA更新。
 
 本版在V0.14.0 FIX2/FIX3基础上统一灵石系统并重构万运博弈楼。
+
+
+## FIX6灵骰豹子规则热修复
+
+- 灵骰只提供“大”“小”两种押注，不再要求单独押豹子。
+- 3—10点为小，11—18点为大；豹子同样按总点数归类。
+- 豹子命中所押大小时净赢34倍，普通命中净赢1倍。
+- 大堂每局5%入池规则保持不变。
 
 
 ## FIX5突破感悟热修复
@@ -12,7 +20,7 @@
 - 感悟仍绑定最初目标，真正抵达目标后才清零；已有的感悟数量会直接生效，无需修改角色数据。
 - 部署SQL：`database/V0.14.1/202607270100_v0141_fix5_breakthrough_insight_route.sql`。
 
-## CACHE1/CACHE2缓存热修复
+## CACHE1/CACHE2/CACHE3缓存热修复
 
 - 页面核心资源使用构建编号查询参数，避免同名旧JS/CSS继续命中缓存。
 - Service Worker对导航和JS/CSS/Manifest采用网络优先，离线时再使用缓存。
@@ -34,8 +42,8 @@
 
 ## 数据库
 
-当前玩法数据库基线为FIX5。升级时只执行一次：
+当前玩法数据库基线为FIX6。若正式环境已完成FIX5，只需再执行一次：
 
-`database/V0.14.1/202607270100_v0141_fix5_breakthrough_insight_route.sql`
+`database/V0.14.1/202607270230_v0141_fix6_spirit_dice_triple_auto_side.sql`
 
-执行前必须已经完成V0.13.0突破系统；当前正式环境还应已完成V0.14.1主迁移、FIX2、FIX3与FIX4。FIX5末尾8项自检应全部为`true`，不要重跑前序SQL。
+执行前必须已经完成V0.14.1主迁移、FIX2、FIX3与FIX4。FIX6末尾检查应全部为`true`，不要重跑前序SQL。

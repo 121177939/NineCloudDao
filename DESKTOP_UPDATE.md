@@ -1,18 +1,15 @@
-# V0.14.1 FIX5 CACHE2更新说明
+# V0.14.1 FIX6 CACHE3更新说明
 
-1. 先在Supabase执行`database/V0.14.1/202607270100_v0141_fix5_breakthrough_insight_route.sql`，末尾8项检查均应为`true`。
-2. 再覆盖GitHub仓库并部署本包。
-3. 已部署CACHE1的客户端会收到新的`cache_epoch`并自动刷新。
-4. 不要重跑V0.13.0、V0.14.1主迁移、FIX2、FIX3或FIX4。
+1. 先确认Supabase已完成V0.14.1主迁移、FIX2、FIX3与FIX4；FIX5突破感悟热修复按当前环境实际情况执行。
+2. 在Supabase完整执行一次`database/V0.14.1/202607270230_v0141_fix6_spirit_dice_triple_auto_side.sql`。
+3. 脚本末尾检查应全部为`true`，不要重复执行前序迁移。
+4. 再使用本包覆盖GitHub仓库并部署。
+5. 已安装CACHE1及后续版本的客户端会通过`cache_epoch`自动清理旧缓存并刷新。
 
----
+## FIX6灵骰规则
 
-# V0.14.1 FIX4 CACHE1 覆盖升级
-
-1. 使用本包覆盖GitHub仓库并推送。
-2. GitHub Pages部署完成后，执行一次CACHE1发布控制SQL。
-3. 旧页面首次收到新Service Worker后会自动刷新一次。
-4. 玩法数据库仍为V0.14.1 FIX4，不要重跑主迁移、FIX2、FIX3或FIX4。
-5. 以后发布新前端时，同时修改`buildId`和资源查询参数，并将`cache_epoch`加1。
-
-本热修复不改变任何游戏玩法或玩家资产。
+- 玩家只押大或小。
+- 3—10点为小，11—18点为大。
+- 豹子按点数自动归类：111/222/333归小，444/555/666归大。
+- 豹子命中对应大小时净赢34倍；普通命中净赢1倍。
+- 大堂每局5%进入造化池的规则保持不变。

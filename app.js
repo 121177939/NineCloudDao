@@ -3516,6 +3516,9 @@
       draft.amount = casinoStakeBase('spirit_stone');
       draft.multiplier = null;
     }
+    if (key === 'house' && draft.game === 'spirit_dice' && !['big', 'small'].includes(draft.choice)) {
+      draft.choice = 'big';
+    }
     draft.amount = Number.isSafeInteger(Number(draft.amount)) && Number(draft.amount) >= 0
       ? Math.floor(Number(draft.amount))
       : casinoStakeBase(draft.stakeType);
@@ -3594,7 +3597,7 @@
   function houseChoiceOptions(game) {
     return game === 'turtle_oracle'
       ? [['auspicious', '押吉 · 25% · 净赢3倍'], ['neutral', '押平 · 50% · 净赢1倍'], ['ominous', '押凶 · 25% · 净赢3倍']]
-      : [['big', '押大 · 约48.61% · 净赢1倍'], ['small', '押小 · 约48.61% · 净赢1倍'], ['triple', '押围骰 · 约2.78% · 净赢34倍']];
+      : [['big', '押大 · 11—18点 · 普通净赢1倍 · 豹子净赢34倍'], ['small', '押小 · 3—10点 · 普通净赢1倍 · 豹子净赢34倍']];
   }
 
   function casinoDrawRowsHtml(draws = []) {
@@ -3665,7 +3668,7 @@
         <section class="casino-play-sheet">
           <div class="subsection-title"><strong>选择玩法</strong><span>先定玩法，再选灵石或修为</span></div>
           <div class="casino-game-buttons">
-            <button class="${draft.game === 'spirit_dice' ? 'active' : ''}" type="button" data-house-select-game="spirit_dice"><b>骰</b><span>灵骰问道</span><small>大、小、围骰</small></button>
+            <button class="${draft.game === 'spirit_dice' ? 'active' : ''}" type="button" data-house-select-game="spirit_dice"><b>骰</b><span>灵骰问道</span><small>只押大、小 · 豹子自动归类</small></button>
             <button class="${draft.game === 'turtle_oracle' ? 'active' : ''}" type="button" data-house-select-game="turtle_oracle"><b>卜</b><span>气运龟卜</span><small>吉、平、凶</small></button>
           </div>
           <input id="houseGame" type="hidden" value="${escapeHtml(draft.game)}">
@@ -3675,7 +3678,7 @@
           </label>
           <div class="casino-confirm-row">
             <button class="primary-btn" type="button" id="confirmHouseGameBtn" ${disabled ? 'disabled' : ''}>确认落注并立即开局</button>
-            <small>大堂每局赌注的5%进入对应全服造化池。赢局返还本金，并发放扣除该5%后的赔率盈利（押100、1倍胜出共到账195）；败局余下95%由天道回收。</small>
+            <small>大堂每局赌注的5%进入对应全服造化池。灵骰只需押大或小：3—10点为小、11—18点为大；豹子同样按点数归类，押中时净赢34倍。普通胜局净赢1倍；败局余下95%由天道回收。</small>
           </div>
         </section>`;
     }
