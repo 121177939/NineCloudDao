@@ -1,10 +1,10 @@
 {
   "version": "0.14.1",
-  "releaseLabel": "Web Alpha V0.14.1 FIX4",
+  "releaseLabel": "Web Alpha V0.14.1 FIX5 CACHE2",
   "sourceBaseline": "V0.14.0 FIX2/FIX3",
   "databaseBaseline": "V0.13.0修为硬上限 + V0.14.0 FIX2九霄界闻 + V0.14.1统一灵石与赌坊重构",
-  "databaseChange": "CASINO_DUEL_POOL_PAYOUT_FIX4",
-  "databaseMigration": "database/V0.14.1/202607262130_v0141_fix4_duel_pool_payout.sql",
+  "databaseChange": "BREAKTHROUGH_INSIGHT_ROUTE_FIX5",
+  "databaseMigration": "database/V0.14.1/202607270100_v0141_fix5_breakthrough_insight_route.sql",
   "inheritedMigration": "database/V0.14.0_FIX2/九霄问道_V0.14.0_FIX2_主迁移.sql",
   "deploymentPipeline": {
     "python": "3.13.5",
@@ -13,8 +13,8 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.1_FIX4.zip",
-    "database": "九霄问道_V0.14.1_FIX4_雅间胜者结算热修复.sql"
+    "github": "NineCloudDao_GitHub_Upload_V0.14.1_FIX5_CACHE2.zip",
+    "database": "九霄问道_V0.14.1_FIX5_突破感悟热修复.sql"
   },
   "notes": [
     "游戏内正式名称保持为市坊。",
@@ -29,6 +29,14 @@
     "大堂每一局成功结算的赌注均有5%进入对应全服造化池：1倍胜局押100共到账195、奖池增加5；败局余下95%由天道回收。",
     "FIX3修复大堂每局5%入池：1倍胜局押100总到账195，败局95%由天道回收。",
     "FIX4统一贵宾雅间：双方各押100，胜者取回本金100并获得败者赌注95，总到账195；奖池增加5；天道不再回收雅间败者赌注。",
-    "雅间同招流局、取消和超时返还仍全额退款且不入池；灵石与修为规则一致。"
-  ]
+    "雅间同招流局、取消和超时返还仍全额退款且不入池；灵石与修为规则一致。",
+    "核心静态资源使用构建查询参数，Service Worker对导航及JS/CSS/Manifest使用网络优先。",
+    "客户端每60秒读取get_jiuxiao_app_release_control_v1；服务器cache_epoch增加时自动清理九霄问道缓存并重载。",
+    "FIX5修复跌落小境界或大境界后，已累计天劫感悟在恢复途中被成功率计算暂时忽略的问题。",
+    "天劫感悟现在对恢复途中每一道突破持续生效；每丝固定增加5个百分点，最终成功率仍不超过80%。",
+    "感悟仍绑定最初冲击目标，只有真正抵达该目标境界后才会清零；已有角色的感悟数量无需补数据。",
+    "CACHE2沿用CACHE1的网络优先与服务器cache_epoch强制刷新机制，并将客户端构建号更新为v0141-fix5-cache2。"
+  ],
+  "gameplayBaseline": "V0.14.1 FIX5",
+  "clientHotfix": "CACHE_FORCE_UPDATE_CACHE2"
 }

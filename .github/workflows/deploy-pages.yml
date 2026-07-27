@@ -47,6 +47,7 @@ jobs:
         run: |
           node --check app.js
           node --check config.js
+          node --check update-guard.js
           node --check sw.js
           node --check tools/test_casino_render_v0141.js
 

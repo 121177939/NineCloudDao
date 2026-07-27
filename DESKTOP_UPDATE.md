@@ -1,12 +1,18 @@
-# GitHub Desktop更新到V0.14.1 FIX4
+# V0.14.1 FIX5 CACHE2更新说明
 
-1. 先备份Supabase数据库和当前GitHub仓库。
-2. 确认V0.14.1主迁移、FIX2与FIX3已经部署。
-3. 只执行一次`九霄问道_V0.14.1_FIX4_雅间胜者结算热修复.sql`。
-4. 确认脚本末尾所有自检项均为`true`。
-5. 解压`NineCloudDao_GitHub_Upload_V0.14.1_FIX4.zip`并覆盖仓库根目录。
-6. GitHub Desktop提交：`Fix VIP duel payout for V0.14.1 FIX4`。
-7. 推送后确认版本验证、JavaScript检查、SQL静态审计、赌坊渲染模拟和Pages制品验证均为绿色。
-8. 部署完成后刷新PWA缓存，确认雅间规则显示“双方各押100，胜者共到账195，奖池增加5”。
+1. 先在Supabase执行`database/V0.14.1/202607270100_v0141_fix5_breakthrough_insight_route.sql`，末尾8项检查均应为`true`。
+2. 再覆盖GitHub仓库并部署本包。
+3. 已部署CACHE1的客户端会收到新的`cache_epoch`并自动刷新。
+4. 不要重跑V0.13.0、V0.14.1主迁移、FIX2、FIX3或FIX4。
 
-不要重跑V0.14.1主迁移、FIX2或FIX3。FIX4只覆盖贵宾雅间正常胜负结算与页面说明。
+---
+
+# V0.14.1 FIX4 CACHE1 覆盖升级
+
+1. 使用本包覆盖GitHub仓库并推送。
+2. GitHub Pages部署完成后，执行一次CACHE1发布控制SQL。
+3. 旧页面首次收到新Service Worker后会自动刷新一次。
+4. 玩法数据库仍为V0.14.1 FIX4，不要重跑主迁移、FIX2、FIX3或FIX4。
+5. 以后发布新前端时，同时修改`buildId`和资源查询参数，并将`cache_epoch`加1。
+
+本热修复不改变任何游戏玩法或玩家资产。
