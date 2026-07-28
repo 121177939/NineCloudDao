@@ -3123,3 +3123,21 @@ button, .badge, .hero-chip { max-width: 100%; }
   border-color: rgba(224,190,112,.32);
   background: rgba(201,167,95,.055);
 }
+
+/* V0.15.3 FIX1 · 普通功法五槽 */
+.technique-slot.locked { opacity: .52; border-style: dotted; }
+.technique-slot-actions { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; align-items: center; }
+.technique-slot-actions select {
+  min-width: 0;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid rgba(206,182,126,.28);
+  background: rgba(8,8,7,.52);
+  color: var(--paper);
+}
+.technique-slot-actions select:disabled { opacity: .55; }
+@media (max-width: 600px) {
+  .technique-slot-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .technique-slot-actions { grid-template-columns: minmax(0,1fr); }
+  .technique-slot-actions select { padding: 7px 8px; font-size: 9px; }
+}

@@ -1,21 +1,22 @@
 {
   "version": "V0.15.3",
-  "release": "pages-ci-gate-fix-cache20",
+  "release": "technique-five-slot-constraint-ui-fix-cache21",
   "base": "V0.15.2 CACHE19",
   "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局 + V0.15.0连续落注 + V0.15.1赌场界闻与40秒轮次",
-  "databaseMigration": "database/V0.15.3/202607281800_v0153_release_cache20.sql",
+  "databaseMigration": "database/V0.15.3_FIX1/202607281900_v0153_fix1_technique_slot_constraint_ui.sql",
   "pagesStagingDirectory": ".pages-site",
   "features": [
-    "GitHub Pages构建门禁升级到V0.15.3",
-    "CACHE20强制更新",
-    "保留B01命格方案A与造化池",
-    "保留功法五槽、灵石升级、圆满与道卷兑换",
-    "保留突破失败历史小境界保护"
+    "修复普通功法ordinary_1至ordinary_5被旧CHECK约束拒绝",
+    "功法页移除主修/辅修、熟练度与传承点旧界面",
+    "普通功法五槽明确选槽，槽位倍率100%/60%/50%/40%/30%",
+    "历史凡品兼容映射为黄品规则",
+    "CACHE21强制客户端更新",
+    "保留B01命格方案A、造化池与突破历史小境界保护"
   ],
-  "clientBuild": "v0153-cache20",
+  "clientBuild": "v0153-fix1-cache21",
   "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8 + V0.15.0 + V0.15.1",
   "worldFeedBaseline": "V0.14.2 + V0.15.1赌场庄家与鱼虾结算播报",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "databaseChange": "deploy_pipeline_fix_and_cache20_release_gate"
+  "databaseChange": "technique_slot_constraint_reader_ui_and_cache21"
 }

@@ -18,7 +18,7 @@ for rel in ['app.js', 'config.js', 'update-guard.js', 'sw.js']:
 for rel in [
     'tools/prepare_pages_site_v0153.py', 'tools/verify_pages_site_v0153.py',
     'tools/verify_release_v0153.py', 'tools/sql_static_audit_v0152.py',
-    'tools/sql_static_audit_v0153.py', 'tools/ci_v0153.py'
+    'tools/sql_static_audit_v0153.py', 'tools/sql_static_audit_v0153_fix1.py', 'tools/ci_v0153.py'
 ]:
     run(f'python syntax {rel}', [py, '-m', 'py_compile', rel])
 
@@ -28,7 +28,8 @@ sql_audits = [
     'tools/sql_static_audit_v0145.py', 'tools/sql_static_audit_v0146.py',
     'tools/sql_static_audit_v0147.py', 'tools/sql_static_audit_v0148.py',
     'tools/sql_static_audit_v0150.py', 'tools/sql_static_audit_v0151.py',
-    'tools/sql_static_audit_v0152.py', 'tools/sql_static_audit_v0153.py'
+    'tools/sql_static_audit_v0152.py', 'tools/sql_static_audit_v0153.py',
+    'tools/sql_static_audit_v0153_fix1.py'
 ]
 for rel in sql_audits:
     run(f'SQL audit {rel}', [py, rel, '.'])

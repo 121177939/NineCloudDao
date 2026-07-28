@@ -34,7 +34,7 @@ for rel in files:
         'sha256': hashlib.sha256(data).hexdigest(),
     })
 
-payload = {'version': 'V0.15.3', 'clientBuild': 'v0153-cache20', 'files': manifest}
+payload = {'version': 'V0.15.3', 'clientBuild': 'v0153-fix1-cache21', 'files': manifest}
 (out / 'PAGES_ARTIFACT_MANIFEST.json').write_text(
     json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
 )

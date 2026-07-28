@@ -1,0 +1,12 @@
+V0.15.3 FIX1 CACHE21 测试结果
+
+PASS：发布元数据与必需文件校验（55/55）
+PASS：app.js / config.js / update-guard.js / sw.js Node语法检查
+PASS：Python工具语法检查
+PASS：V0.14.1 FIX7A 至 V0.15.3 FIX1 全部SQL静态审计
+PASS：既有13组前端回归测试
+PASS：普通功法五槽客户端门禁
+PASS：旧主修/辅修规则文本已移除
+PASS：GitHub Pages staging构建与43项产物校验
+
+说明：数据库脚本已完成静态与结构校验；实际Supabase执行结果以SQL/08返回的ok为准。

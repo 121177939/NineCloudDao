@@ -2,7 +2,7 @@
   'use strict';
 
   const config = window.GAME_CONFIG || {};
-  const BUILD_ID = String(config.buildId || 'v0153-cache20');
+  const BUILD_ID = String(config.buildId || 'v0153-fix1-cache21');
   const CACHE_PREFIX = 'nine-cloud-dao-';
   const BUILD_STORAGE_KEY = 'nine_cloud_dao_client_build_v1';
   const EPOCH_STORAGE_KEY = 'nine_cloud_dao_cache_epoch_v1';

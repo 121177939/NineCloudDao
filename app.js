@@ -2584,13 +2584,15 @@
 
   function techniqueCategoryName(value) {
     const map = {
-      main: '主修功法',
-      support: '辅修功法',
+      ordinary: '普通功法',
+      exclusive: '专属功法',
+      main: '普通功法',
+      support: '普通功法',
       divine_ability: '神通',
       body: '炼体功法',
       movement: '身法'
     };
-    return map[value] || value || '功法';
+    return map[value] || value || '普通功法';
   }
 
   function techniqueEffectText(row) {
@@ -2691,11 +2693,30 @@
 
   function techniqueSlotName(value) {
     const map = {
-      main: '主修槽',
-      support_1: '辅修一',
-      support_2: '辅修二'
+      ordinary_1: '第一槽 · 100%',
+      ordinary_2: '第二槽 · 60%',
+      ordinary_3: '第三槽 · 50%',
+      ordinary_4: '第四槽 · 40%',
+      ordinary_5: '第五槽 · 30%',
+      main: '第一槽 · 100%',
+      support_1: '第二槽 · 60%',
+      support_2: '第三槽 · 50%'
     };
     return map[value] || '未运转';
+  }
+
+  function techniqueSlotMultiplier(value) {
+    const map = {
+      ordinary_1: 1,
+      ordinary_2: 0.6,
+      ordinary_3: 0.5,
+      ordinary_4: 0.4,
+      ordinary_5: 0.3,
+      main: 1,
+      support_1: 0.6,
+      support_2: 0.5
+    };
+    return Number(map[value] || 0);
   }
 
   function techniqueGradeClass(value) {
@@ -2705,19 +2726,16 @@
   function techniqueV2EffectValues(row, targetLevel = null) {
     const fixed = row?.fixed_effects || row?.definition?.fixed_effects || {};
     const level = Math.max(1, Number(targetLevel ?? row?.level ?? 1));
-    const growth = Math.max(0, Number(fixed.linear_growth_per_level || 0));
+    const growth = 0.10;
     const factor = 1 + growth * (level - 1);
-    const isOpportunityTechnique = Object.prototype.hasOwnProperty.call(fixed, 'v3_base_cultivation_per_second') || Object.prototype.hasOwnProperty.call(fixed, 'v3_base_cultivation_multiplier');
-    const flatBase = Number(isOpportunityTechnique ? fixed.v3_base_cultivation_per_second : fixed.cultivation_per_second || 0);
-    const multiplierBase = Number(isOpportunityTechnique
-      ? fixed.v3_base_cultivation_multiplier || 0
-      : Math.max(0, Number(fixed.cultivation_multiplier || 1) - 1));
+    const flatBase = Number(fixed.v3_base_cultivation_per_second ?? fixed.cultivation_per_second ?? 0);
+    const rawMultiplier = Number(fixed.v3_base_cultivation_multiplier ?? fixed.cultivation_multiplier ?? 0);
+    const multiplierBase = rawMultiplier > 1 ? rawMultiplier - 1 : Math.max(0, rawMultiplier);
     return {
-      flat: flatBase * (isOpportunityTechnique ? factor : level),
-      multiplier: multiplierBase * (isOpportunityTechnique ? factor : 1),
+      flat: flatBase * factor,
+      multiplier: multiplierBase * factor,
       factor,
-      growth,
-      isOpportunityTechnique
+      growth
     };
   }
 
@@ -2727,18 +2745,25 @@
     const maxLevel = Math.max(level, Number(row?.max_level || level));
     const current = techniqueV2EffectValues(row, level);
     const next = techniqueV2EffectValues(row, Math.min(maxLevel, level + 1));
-    const maximum = techniqueV2EffectValues(row, maxLevel);
+    const slotMultiplier = Number(row?.slot_multiplier ?? techniqueSlotMultiplier(row?.equipped_slot));
+    const masteryMultiplier = row?.is_mastered ? 1.2 : 1;
+    const actualFlat = current.flat * slotMultiplier * masteryMultiplier;
+    const actualMultiplier = current.multiplier * slotMultiplier * masteryMultiplier;
     const parts = [];
-    if (current.flat) parts.push(`当前每秒修为 +${formatNumber(current.flat, 3)}`);
-    if (current.multiplier) parts.push(`当前修炼速度 +${formatNumber(current.multiplier * 100, 2)}%`);
-    if (current.isOpportunityTechnique && level < maxLevel) {
-      if (next.flat) parts.push(`下一级 +${formatNumber(next.flat, 3)}/秒`);
-      if (next.multiplier) parts.push(`下一级 +${formatNumber(next.multiplier * 100, 2)}%`);
+    if (current.flat) parts.push(`本层基础每秒修为 +${formatNumber(current.flat, 3)}`);
+    if (current.multiplier) parts.push(`本层基础修炼速度 +${formatNumber(current.multiplier * 100, 2)}%`);
+    if (row?.equipped_slot) {
+      if (actualFlat) parts.push(`实际贡献 +${formatNumber(actualFlat, 3)}/秒`);
+      if (actualMultiplier) parts.push(`实际贡献 +${formatNumber(actualMultiplier * 100, 2)}%`);
+    } else {
+      parts.push('未装备，当前不计入属性池');
     }
-    if (current.isOpportunityTechnique) {
-      if (maximum.flat) parts.push(`满级 +${formatNumber(maximum.flat, 3)}/秒`);
-      if (maximum.multiplier) parts.push(`满级 +${formatNumber(maximum.multiplier * 100, 2)}%`);
+    if (!row?.is_mastered && level < maxLevel) {
+      if (next.flat) parts.push(`下一级基础 +${formatNumber(next.flat, 3)}/秒`);
+      if (next.multiplier) parts.push(`下一级基础 +${formatNumber(next.multiplier * 100, 2)}%`);
     }
+    if (row?.is_mastered) parts.push('已圆满 · 数值型效果 ×120%');
+    else if (level >= maxLevel) parts.push('已满级 · 可支付灵石圆满');
     if (Number(fixed.lifespan_bonus || 0)) parts.push(`寿元潜力 +${formatNumber(Number(fixed.lifespan_bonus) * 100, 1)}%`);
     if (Number(fixed.recovery || 0)) parts.push(`恢复效率 +${formatNumber(Number(fixed.recovery) * 100, 1)}%`);
     return parts.join(' · ') || '当前没有直接修炼数值加成';
@@ -2825,92 +2850,74 @@
 
   function techniquePanelHtml(system, inventory) {
     const rows = Array.isArray(system?.techniques) ? system.techniques : [];
-    const combinations = Array.isArray(system?.combinations) ? system.combinations : [];
     const stone = (inventory || []).find(row => row.definition?.code === 'spirit_stone');
-    const stones = Number(stone?.quantity || 0);
+    const stones = Number(stone?.quantity ?? system?.spirit_stones ?? 0);
     const slots = system?.slots || {};
+    const openSlots = Math.max(0, Math.min(5, Number(system?.open_ordinary_slots || 0)));
     if (!rows.length) return '<div id="techniqueV2Root"><div class="empty-state">尚未习得功法。</div></div>';
 
     return `
       <div id="techniqueV2Root" class="technique-v2-root">
         <div class="resource-inline"><span>可用灵石</span><strong data-spirit-stone-balance>${formatNumber(stones)}</strong></div>
         <div class="technique-slot-grid">
-          ${['ordinary_1', 'ordinary_2', 'ordinary_3', 'ordinary_4', 'ordinary_5'].map(slot => {
+          ${['ordinary_1', 'ordinary_2', 'ordinary_3', 'ordinary_4', 'ordinary_5'].map((slot, index) => {
             const equipped = rows.find(row => row.character_technique_id === slots?.[slot] || row.equipped_slot === slot);
-            return `<article class="technique-slot ${equipped ? 'filled' : ''}">
+            const unlocked = index < openSlots;
+            return `<article class="technique-slot ${equipped ? 'filled' : ''} ${unlocked ? '' : 'locked'}">
               <span>${escapeHtml(techniqueSlotName(slot))}</span>
-              <strong>${escapeHtml(equipped?.name || '空置')}</strong>
-              <small>${equipped ? `${escapeHtml(equipped.grade_name || '凡品')} · 第 ${formatNumber(equipped.level)} 层` : '选择功法开始运转'}</small>
+              <strong>${escapeHtml(unlocked ? (equipped?.name || '空置') : '境界未解锁')}</strong>
+              <small>${unlocked ? (equipped ? `${escapeHtml(equipped.grade_name || '黄品')} · 第 ${formatNumber(equipped.level)} 层` : '在功法卡中选择此槽') : '每突破一个大境界开放一槽'}</small>
             </article>`;
           }).join('')}
         </div>
         <div class="technique-rule-note">
-          <strong>功法 V3</strong>
-          <span>主修熟练速度100%，辅修50%；每层需要100点熟练/传承进度。重复获得只转化为传承点，不再叠加永久修炼效果。</span>
+          <strong>普通功法五槽</strong>
+          <span>第一至第五槽依次发挥100%、60%、50%、40%、30%。升级只消耗灵石；达到品级上限后可圆满，数值型效果×120%。熟练度与传承点已取消。</span>
         </div>
+        ${openSlots < 1 ? '<div class="empty-state">凡人境可以持有和兑换道卷，但不能学习、装备、升级或圆满功法。</div>' : ''}
         <div class="technique-manage-list">
           ${rows.map(row => {
-            const category = row.category || 'main';
-            const isMain = category === 'main';
-            const equipped = Boolean(row.equipped_slot);
+            const equippedSlot = row.equipped_slot || '';
+            const equipped = Boolean(equippedSlot);
             const level = Number(row.level || 1);
-            const maxLevel = Number(row.max_level || 20);
-            const proficiency = Math.max(0, Math.min(100, Number(row.proficiency || 0)));
-            const mastery = Math.max(0, Number(row.mastery_points || 0));
-            const combinedProgress = Math.min(100, proficiency + mastery);
-            const maxed = level >= maxLevel;
-            const canUpgrade = Boolean(row.can_upgrade) && !maxed;
-            const slotTarget = equipped ? 'none' : (isMain ? 'main' : 'auto_support');
-            const slotLabel = equipped ? (isMain ? '主修运转中' : '停止辅修') : (isMain ? '设为主修' : '设为辅修');
+            const maxLevel = Number(row.max_level || 6);
+            const mastered = Boolean(row.is_mastered);
+            const canProgress = Boolean(row.can_upgrade) && !mastered && openSlots > 0;
+            const progressLabel = mastered ? '已圆满' : (level >= maxLevel ? `圆满 · ${formatNumber(row.upgrade_cost || 0)} 灵石` : `精进 · ${formatNumber(row.upgrade_cost || 0)} 灵石`);
+            const defaultSlot = equippedSlot || (openSlots > 0 ? 'ordinary_1' : 'none');
             return `
               <article class="manage-card technique-v2-card ${equipped ? 'equipped' : ''}">
                 <div class="manage-card-head">
                   <div>
-                    <span class="technique-grade ${escapeHtml(techniqueGradeClass(row.grade_code))}">${escapeHtml(row.grade_name || row.raw_grade || '凡品')}</span>
+                    <span class="technique-grade ${escapeHtml(techniqueGradeClass(row.grade_code))}">${escapeHtml(row.grade_name || '黄品')}</span>
                     <strong>${escapeHtml(row.name || '未知功法')} <small>第 ${level}/${maxLevel} 层</small></strong>
                   </div>
-                  <span class="badge">${escapeHtml(equipped ? techniqueSlotName(row.equipped_slot) : techniqueCategoryName(category))}</span>
+                  <span class="badge">${escapeHtml(equipped ? techniqueSlotName(equippedSlot) : '普通功法')}</span>
                 </div>
                 <p>${escapeHtml(techniqueV2EffectText(row))}</p>
                 <small class="manage-description">${escapeHtml(row.description || '')}</small>
                 <div class="technique-progress-copy">
-                  <span>熟练 ${formatNumber(proficiency)}/100</span>
-                  <span>传承点 ${formatNumber(mastery)}</span>
                   <span>获得 ${formatNumber(row.acquisition_count || 1)} 次</span>
+                  <span>等级成长 ×${formatNumber(1 + Math.max(0, level - 1) * 0.10, 2)}</span>
+                  <span>${mastered ? '圆满 ×1.20' : '未圆满'}</span>
                 </div>
-                <div class="progress-track technique-progress"><div class="progress-fill" style="width:${combinedProgress}%"></div></div>
-                <small class="technique-progress-hint">${maxed ? '已达到当前品质层数上限' : (canUpgrade ? '已经满足精进条件' : `还需 ${formatNumber(row.progress_needed || Math.max(0, 100 - proficiency - mastery))} 点熟练或传承进度`)}</small>
+                <div class="technique-slot-actions">
+                  <select data-technique-target-for="${escapeHtml(row.character_technique_id)}" ${openSlots > 0 ? '' : 'disabled'}>
+                    ${equipped ? '<option value="none">停止运转</option>' : ''}
+                    ${[1,2,3,4,5].map(index => {
+                      const slot = `ordinary_${index}`;
+                      const locked = index > openSlots;
+                      return `<option value="${slot}" ${slot === defaultSlot ? 'selected' : ''} ${locked ? 'disabled' : ''}>${escapeHtml(techniqueSlotName(slot))}${locked ? ' · 未解锁' : ''}</option>`;
+                    }).join('')}
+                  </select>
+                  <button class="ghost-btn" type="button" data-apply-technique-slot="${escapeHtml(row.character_technique_id)}" ${openSlots > 0 ? '' : 'disabled'}>${equipped ? '调整槽位' : '装备功法'}</button>
+                </div>
                 <div class="manage-actions">
-                  <button
-                    class="ghost-btn"
-                    type="button"
-                    data-technique-slot="${escapeHtml(row.character_technique_id)}"
-                    data-target-slot="${escapeHtml(slotTarget)}"
-                    ${equipped && isMain ? 'disabled' : ''}
-                  >${escapeHtml(slotLabel)}</button>
-                  <button
-                    class="primary-btn"
-                    type="button"
-                    data-upgrade-technique-v2="${escapeHtml(row.character_technique_id)}"
-                    ${canUpgrade ? '' : 'disabled'}
-                  >${maxed ? '已满层' : `精进 · ${formatNumber(row.upgrade_cost || 0)} 灵石`}</button>
+                  <button class="primary-btn" type="button" data-upgrade-technique-v2="${escapeHtml(row.character_technique_id)}" ${canProgress ? '' : 'disabled'}>${escapeHtml(progressLabel)}</button>
                 </div>
               </article>
             `;
           }).join('')}
-        </div>
-        <div class="technique-combination-section">
-          <div class="subsection-title"><strong>功法组合</strong><span>${combinations.filter(row => row.is_active).length} 个已激活</span></div>
-          <div class="technique-combination-grid">
-            ${combinations.map(row => `
-              <article class="combination-card ${row.is_active ? 'active' : ''}">
-                <span>${row.is_active ? '已激活' : '未激活'}</span>
-                <strong>${escapeHtml(row.name)}</strong>
-                <p>${escapeHtml(row.description || '')}</p>
-                <small>${escapeHtml(combinationEffectText(row))}</small>
-              </article>
-            `).join('') || '<div class="empty-state">尚无功法组合配置。</div>'}
-          </div>
         </div>
       </div>
     `;
@@ -3340,17 +3347,18 @@
       }));
     });
 
-    document.querySelectorAll('[data-technique-slot]').forEach(button => {
+    document.querySelectorAll('[data-apply-technique-slot]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
       button.addEventListener('click', async () => {
+        const techniqueId = button.dataset.applyTechniqueSlot;
+        const selector = Array.from(document.querySelectorAll('[data-technique-target-for]'))
+          .find(node => node.dataset.techniqueTargetFor === techniqueId);
+        const targetSlot = selector?.value || 'none';
         setBusy(button, true, '调整中……');
         try {
           state.activeMobileTab = 'techniques';
-          const result = await rpcSetTechniqueSlotV2(
-            button.dataset.techniqueSlot,
-            button.dataset.targetSlot || 'none'
-          );
+          const result = await rpcSetTechniqueSlotV2(techniqueId, targetSlot);
           showToast(`${result?.technique_name || '功法'}${result?.equipped ? `已放入${techniqueSlotName(result?.equipped_slot)}` : '已停止运转'}。`);
           await refreshTechniqueSystem(true);
           await syncCultivation(true);
@@ -3376,7 +3384,7 @@
           showResultModal({
             seal: '法',
             title: `功法精进 · 第 ${formatNumber(result?.level || 0)} 层`,
-            message: `${result?.technique_name || '功法'}已突破本层桎梏。`,
+            message: result?.mastered ? `${result?.technique_name || '功法'}已臻圆满。` : `${result?.technique_name || '功法'}已突破本层桎梏。`,
             detail: `消耗灵石 ${formatNumber(result?.cost || 0)}。${result?.mastered ? ' 功法已圆满，数值型效果额外提升20%。' : ''}`,
             success: true
           });
