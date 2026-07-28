@@ -1,21 +1,21 @@
 {
-  "version": "V0.14.9",
-  "release": "fish-responsive-cache15",
-  "base": "V0.14.9 CACHE14",
-  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局",
-  "databaseMigration": "database/V0.14.8/202607281630_v0148_fish_shrimp_mobile_casino.sql (沿用；V0.14.9无新增SQL)",
+  "version": "V0.15.1",
+  "release": "casino-world-feed-dealer-fish40-30-2-5-3-cache18",
+  "base": "V0.15.0 CACHE16",
+  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局 + V0.15.0连续落注 + V0.15.1赌场界闻与40秒轮次",
+  "databaseMigration": "database/V0.15.1/202607282040_v0151_fix1_fish_30_2_5_3.sql",
   "pagesStagingDirectory": ".pages-site",
   "features": [
-    "恢复六枚鱼虾灵局SVG法印画面",
-    "鱼虾灵局桌面与移动端随玩法容器自适应",
-    "保留手机三列押注卡与命中发光",
-    "保留GitHub Pages build/artifact/deploy工作流",
-    "CACHE15强制更新"
+    "鱼虾灵局结算发布九霄界闻",
+    "赌场界闻显示荷老或具体玩家庄姓名及净赢净输",
+    "鱼虾灵局40秒节奏修正为30秒下注、2秒封盘、5秒开骰、3秒展示",
+    "保留连续点击、串行提交、自适应极简页面与命中发光",
+    "CACHE18强制更新"
   ],
-  "clientBuild": "v0149-cache15",
-  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8",
-  "worldFeedBaseline": "V0.14.2",
+  "clientBuild": "v0151-cache18",
+  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8 + V0.15.0 + V0.15.1",
+  "worldFeedBaseline": "V0.14.2 + V0.15.1赌场庄家与鱼虾结算播报",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "databaseChange": "none"
+  "databaseChange": "casino_world_feed_dealer_and_fish_40s_timing_fix"
 }

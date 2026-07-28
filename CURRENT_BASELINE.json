@@ -1,10 +1,10 @@
 {
-  "version": "0.14.9",
-  "releaseLabel": "Web Alpha V0.14.9 CACHE15",
-  "sourceBaseline": "V0.14.9 CACHE14",
-  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局",
-  "databaseChange": "NONE_FRONTEND_AND_DEPLOYMENT_RELEASE",
-  "databaseMigration": "沿用 database/V0.14.8/202607281630_v0148_fish_shrimp_mobile_casino.sql；V0.14.9不新增SQL",
+  "version": "0.15.1",
+  "releaseLabel": "Web Alpha V0.15.1 CACHE18",
+  "sourceBaseline": "V0.15.0 CACHE16",
+  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局 + V0.15.0连续落注 + V0.15.1赌场界闻与40秒轮次",
+  "databaseChange": "V0.15.1_FISH_TIMING_30_2_5_3_CACHE18",
+  "databaseMigration": "database/V0.15.1/202607282040_v0151_fix1_fish_30_2_5_3.sql",
   "deploymentStatus": "release_candidate_local_ci_passed",
   "deploymentPipeline": {
     "runner": "ubuntu-latest",
@@ -14,20 +14,23 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.9_RESPONSIVE_FINAL.zip",
-    "developmentBaseline": "NineCloudDao_Development_Baseline_V0.14.9_AB8.zip"
+    "github": "NineCloudDao_GitHub_Upload_V0.15.1_CACHE18_FINAL.zip",
+    "upgrade": "九霄问道_V0.15.1_CACHE18_鱼虾30秒下注节奏修正升级包.zip",
+    "developmentBaseline": "NineCloudDao_Development_Baseline_V0.15.1_AB10_CACHE18.zip",
+    "handoff": "九霄问道_APP项目接管资料包_V0.15.1_CACHE18_ADMIN2_完整接管版.zip",
+    "history": "九霄问道_历史归档_V0.6.5-V0.15.1_CACHE18_ADMIN2_补全版.zip"
   },
   "notes": [
-    "恢复鱼、虾、蟹、铜钱、葫芦、青蛙六枚完整SVG法印，不再只显示单个汉字。",
-    "取消鱼虾灵局460px桌面宽度限制，与其他玩法一样随父容器自适应。",
-    "保持押注设置、开盘灵骰、选择压什么、20局历史、结算明细、规则的确认顺序。",
-    "继续使用GitHub Pages的build/artifact/deploy工作流。",
-    "CACHE15强制刷新CACHE14资源。"
+    "鱼虾灵局与其他赌场结算继续发布九霄界闻。",
+    "荷老局显示与荷老对局；玩家庄局显示具体玩家庄姓名。",
+    "界闻显示本局净赢或净输金额。",
+    "鱼虾灵局40秒正确节奏：30秒下注、2秒封盘、5秒开骰、3秒结算展示。",
+    "继续保留连续点击、120毫秒合并和串行提交。"
   ],
-  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4综合规则 + V0.14.5玩家庄佣金 + V0.14.7双庄兜底 + V0.14.8鱼虾灵局",
-  "worldFeedBaseline": "V0.14.2",
+  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8 + V0.15.0 + V0.15.1",
+  "worldFeedBaseline": "V0.14.2 + V0.15.1赌场庄家与鱼虾结算播报",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "clientHotfix": "V0.14.9_FISH_RESPONSIVE_CACHE15",
-  "developmentBaseline": "V0.14.9_AB8"
+  "clientHotfix": "V0.15.1_FISH_TIMING_30_2_5_3_CACHE18",
+  "developmentBaseline": "V0.15.1_AB10_CACHE18"
 }

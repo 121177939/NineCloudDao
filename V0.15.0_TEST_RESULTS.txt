@@ -1,0 +1,310 @@
+
+=== release metadata ===
+PASS required:index.html
+PASS required:404.html
+PASS required:app.js
+PASS required:styles.css
+PASS required:config.js
+PASS required:update-guard.js
+PASS required:sw.js
+PASS required:manifest.webmanifest
+PASS required:VERSION.txt
+PASS required:CURRENT_BASELINE.json
+PASS required:release_config.json
+PASS required:.github/workflows/deploy-pages.yml
+PASS required:database/V0.15.0/202607281900_v0150_precheck.sql
+PASS required:database/V0.15.0/202607281910_v0150_fish_continuous_bet_world_feed_exclusion.sql
+PASS required:database/V0.15.0/202607281920_v0150_check.sql
+PASS required:database/V0.15.0/202607281930_v0150_rollback.sql
+PASS required:docs/V0.15.0_SOURCE_CHANGE_REPORT.md
+PASS required:docs/V0.15.0_DEPLOYMENT_GUIDE.md
+PASS required:docs/V0.15.0_BUILD_VERIFY_REPORT.md
+PASS required:tools/prepare_pages_site_v0150.py
+PASS required:tools/verify_pages_site_v0150.py
+PASS required:tools/test_fish_continuous_bet_v0150.js
+PASS required:tools/sql_static_audit_v0150.py
+PASS version
+PASS cache16:index.html
+PASS cache16:404.html
+PASS cache16:sw.js
+PASS cache16:manifest.webmanifest
+PASS cache16:config.js
+PASS cache16:update-guard.js
+PASS release-build
+PASS baseline-hotfix
+PASS database-change
+PASS queue-functions
+PASS no-button-busy
+PASS serial-batch
+PASS pending-ui
+PASS desktop-responsive
+PASS world-feed-exclusion
+PASS workflow-pages
+TOTAL=40 PASS=40 FAIL=0
+
+=== node syntax app.js ===
+
+=== node syntax config.js ===
+
+=== node syntax update-guard.js ===
+
+=== node syntax sw.js ===
+
+=== node syntax tools/test_casino_render_v0141.js ===
+
+=== node syntax tools/test_world_events_render_v0142.js ===
+
+=== node syntax tools/test_ranking_render_v0143.js ===
+
+=== node syntax tools/test_features_v0144.js ===
+
+=== node syntax tools/test_features_v0145.js ===
+
+=== node syntax tools/test_opportunity_history_v0146.js ===
+
+=== node syntax tools/test_features_v0147.js ===
+
+=== node syntax tools/test_features_v0148.js ===
+
+=== node syntax tools/test_fish_render_v0148.js ===
+
+=== node syntax tools/test_fish_entry_click_v0148_fix1.js ===
+
+=== node syntax tools/test_fish_ui_v0149.js ===
+
+=== node syntax tools/test_fish_continuous_bet_v0150.js ===
+
+=== SQL audit tools/sql_static_audit_v0141_fix7a.py ===
+{
+  "ok": true,
+  "checks": 22,
+  "expected_value": -0.00999,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0142.py ===
+{
+  "ok": true,
+  "checks": 16,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0143.py ===
+{
+  "ok": true,
+  "checks": 25,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0144.py ===
+{
+  "ok": true,
+  "checks": 31,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0145.py ===
+{
+  "ok": true,
+  "checks": 28,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0146.py ===
+{
+  "ok": true,
+  "checks": 12,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0147.py ===
+{
+  "ok": true,
+  "checks": 25,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0148.py ===
+{
+  "ok": true,
+  "checks": 23,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0150.py ===
+PASS file:precheck
+PASS file:main
+PASS file:check
+PASS file:rollback
+PASS transaction
+PASS explicit fish guard
+PASS early return after guard
+PASS preserves destiny triple
+PASS preserves existing games
+PASS cache16
+PASS postcheck guard
+PASS rollback available
+PASS no destructive fish data
+TOTAL=13 PASS=13 FAIL=0
+
+=== test tools/test_casino_render_v0141.js ===
+{"ok":true,"checks":50,"lobby":2419,"house":3470,"duel":3179,"pools":1780}
+
+=== test tools/test_world_events_render_v0142.js ===
+{"ok":true,"checks":4,"order":["breakthrough","casino","old-pinned"]}
+
+=== test tools/test_ranking_render_v0143.js ===
+{"ok":true,"checks":16}
+
+=== test tools/test_features_v0144.js ===
+PASS player-house-rpc
+PASS player-house-toggle
+PASS player-house-copy
+PASS system-dealer-name
+PASS no-wrong-dealer-name
+PASS cultivation-all-in
+PASS minor-stage-copy
+PASS no-twenty-percent
+PASS duel-immediate
+PASS join-immediate
+PASS no-five-minute
+PASS insight-speed
+PASS insight-ten
+PASS notice-rpc
+PASS notice-modal
+PASS notice-ack
+PASS notice-poll
+PASS notice-css
+PASS all-in-css
+TOTAL=19 PASS=19 FAIL=0
+
+=== test tools/test_features_v0145.js ===
+PASS v4-rpc
+PASS ack-rpc
+PASS offline-summary
+PASS mobile-modal
+PASS safe-area
+PASS new-techniques
+PASS mastery
+PASS commission-copy
+PASS system-fix7a
+PASS story-pool
+PASS result-pool
+PASS support-seeds
+PASS five-minute
+PASS 864
+PASS commission-500
+PASS rls
+PASS old-protections
+PASS dealer-name
+TOTAL=18 PASS=18 FAIL=0
+
+=== test tools/test_opportunity_history_v0146.js ===
+PASS RPC
+PASS merge
+PASS initial refresh
+PASS online refresh
+PASS specific result
+PASS history root
+TOTAL=6 PASS=6 FAIL=0
+
+=== test tools/test_features_v0147.js ===
+PASS library rpc
+PASS book study
+PASS specific opportunity result
+PASS history grade/title/story/result
+PASS high-tier shared color
+PASS quantity modal
+PASS quantity rpc
+PASS system player switch
+PASS five million only
+PASS two hour term
+PASS unlimited player stake
+PASS system cover
+PASS commission retained
+PASS fix7a system route
+PASS old client system safe
+PASS no unauthorized loss
+TOTAL=16 PASS=16 FAIL=0
+
+=== test tools/test_features_v0148.js ===
+PASS B summary 2x2
+PASS B primary nav 1x4
+PASS B lobby 2x2
+PASS formal naming
+PASS fish rpc
+PASS fish selector
+PASS compact order
+PASS six symbols
+PASS three columns
+PASS hit glow
+PASS history 20
+PASS dealer label once grouping
+PASS 60 second SQL
+PASS player house rules
+PASS no demo placeholders
+TOTAL=15 PASS=15 FAIL=0
+
+=== test tools/test_fish_render_v0148.js ===
+PASS page renders
+PASS strict order
+PASS compact balances
+PASS quantity multiplier
+PASS three results
+PASS hit only actual winning bet
+PASS dealer once in detail
+PASS history dealer label once
+PASS player switch exists
+TOTAL=9 PASS=9 FAIL=0
+
+=== test tools/test_fish_entry_click_v0148_fix1.js ===
+PASS selector handler exists
+PASS fish branch exists
+PASS draft saved first
+PASS hidden field synced before render
+PASS fix marker exists
+PASS regression model stays fish_shrimp
+TOTAL=6 PASS=6 FAIL=0
+
+=== test tools/test_fish_ui_v0149.js ===
+PASS page renders
+PASS six inline svg seals
+PASS desktop responsive layout
+PASS strict order
+PASS compact balances
+PASS quantity multiplier
+PASS three results
+PASS hit only actual winning bet
+PASS dealer once in detail
+PASS history dealer label once
+PASS player switch exists
+TOTAL=11 PASS=11 FAIL=0
+
+=== test tools/test_fish_continuous_bet_v0150.js ===
+PASS queue helper exists
+PASS button never busy locked
+PASS click enqueues immediately
+PASS queue batches clicks
+PASS queue serial worker
+PASS queue delay window
+PASS pending amount shown
+PASS queue feedback says continue
+PASS refresh guarded during queue
+PASS only phase disables cards
+PASS queued css exists
+PASS five fish clicks merged
+PASS different symbol separate
+PASS render shows pending fish
+TOTAL=14 PASS=14 FAIL=0
+
+=== build pages ===
+PAGES_SITE_BUILT 15
+
+=== verify pages ===
+{
+  "ok": true,
+  "checks": 36,
+  "failed": []
+}
+
+V0.15.0 CI PASS

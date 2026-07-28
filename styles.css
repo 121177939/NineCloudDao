@@ -3099,3 +3099,27 @@ button, .badge, .hero-chip { max-width: 100%; }
   margin-left: 0;
   margin-right: 0;
 }
+
+/* V0.15.0：鱼虾灵局连续落注，不锁定法印按钮 */
+.fish-target-card.queued {
+  border-color: rgba(224,190,112,.62);
+  box-shadow: 0 0 0 1px rgba(224,190,112,.12), inset 0 0 18px rgba(224,190,112,.045);
+}
+.fish-target-pending {
+  display: block;
+  min-height: 11px;
+  margin-top: 5px;
+  color: var(--gold-bright);
+  font-size: 7px;
+  font-style: normal;
+  text-align: right;
+  white-space: nowrap;
+}
+.fish-target-pending:empty {
+  visibility: hidden;
+}
+.fish-bet-status.is-queueing {
+  color: var(--gold-bright);
+  border-color: rgba(224,190,112,.32);
+  background: rgba(201,167,95,.055);
+}
