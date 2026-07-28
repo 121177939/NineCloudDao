@@ -1,10 +1,10 @@
 {
-  "version": "0.14.6",
-  "releaseLabel": "Web Alpha V0.14.6 CACHE10",
-  "sourceBaseline": "V0.14.5 CACHE9",
-  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细修复",
-  "databaseChange": "OPPORTUNITY_HISTORY_DETAIL_V0146",
-  "databaseMigration": "database/V0.14.6/202607280230_v0146_opportunity_history_detail.sql",
+  "version": "0.14.7",
+  "releaseLabel": "Web Alpha V0.14.7 CACHE11",
+  "sourceBaseline": "V0.14.6 CACHE10",
+  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底",
+  "databaseChange": "TECHNIQUE_BOOK_LIBRARY_OPPORTUNITY_DETAIL_QUANTITY_DUAL_HOUSE_V0147",
+  "databaseMigration": "database/V0.14.7/202607280600_v0147_library_opportunity_inventory_house.sql",
   "deploymentStatus": "release_ready_not_user_confirmed",
   "deploymentPipeline": {
     "python": "3.13.5",
@@ -13,25 +13,27 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.6_FINAL.zip",
-    "database": "九霄问道_V0.14.6_离线机缘命书与具体结果修复.sql",
+    "github": "NineCloudDao_GitHub_Upload_V0.14.7_FINAL.zip",
+    "database": "九霄问道_V0.14.7_藏经架机缘明细批量使用与双庄兜底.sql",
     "adminDatabase": "九霄问道_V0.14.4_ADMIN2_灵石赏罚与私人天谕.sql",
     "adminHtml": "九霄问道_账号管理后台_ADMIN2_灵石赏罚版.html",
-    "handoff": "九霄问道_APP项目接管资料包_V0.14.6_ADMIN2_完整接管版.zip",
-    "history": "九霄问道_历史归档_V0.6.5-V0.14.6_ADMIN2_补全版.zip",
-    "developmentBaseline": "NineCloudDao_Development_Baseline_V0.14.6_AB4.zip"
+    "handoff": "九霄问道_APP项目接管资料包_V0.14.7_ADMIN2_完整接管版.zip",
+    "history": "九霄问道_历史归档_V0.6.5-V0.14.7_ADMIN2_补全版.zip",
+    "developmentBaseline": "NineCloudDao_Development_Baseline_V0.14.7_AB5.zip"
   },
   "notes": [
-    "命书合并读取opportunity_v3_results最近100条完整机缘，黄品至专属均可显示。",
-    "离线补算完成后在首次页面渲染前重新读取命书。",
-    "在线自动结算后即时刷新命书。",
-    "修炼-机缘优先显示reward_text/penalty_text/result_text，不再只显示通用自动结算文案。",
-    "正式SQL同时包含V0.14.5 FIX1和FIX2兼容修复。",
-    "CACHE10强制刷新前端资源。"
+    "B线功法书、洞府藏经架与本命专属研习已接入；普通与专属道卷均不自动学习或装备。",
+    "命书和天机推演共用机缘结算明细，展示品阶、故事及具体所得或惩罚。",
+    "黄玄地沿用默认色；天仙专属统一使用高阶强调色。",
+    "洞府可使用物品支持选择数量，数据库在同一事务内批量结算。",
+    "玩家庄资格仅需统一灵石不少于500万，每次任期最多2小时。",
+    "有玩家庄时仍可选择荷老系统庄；玩家庄不限下注金额，赔付不足由荷老补足。",
+    "玩家庄5%佣金、FIX7A系统庄、贵宾雅间、严格界闻和三榜规则保持不变。",
+    "禁止越权授权门禁继续作为永久接管规则。"
   ],
-  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4综合规则 + V0.14.5机缘与玩家庄佣金",
+  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4综合规则 + V0.14.5机缘与玩家庄佣金 + V0.14.7藏经架与双庄兜底",
   "worldFeedBaseline": "V0.14.2",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "clientHotfix": "V0.14.6_OPPORTUNITY_HISTORY_DETAIL_CACHE10"
+  "clientHotfix": "V0.14.7_TECHNIQUE_LIBRARY_DUAL_HOUSE_CACHE11"
 }

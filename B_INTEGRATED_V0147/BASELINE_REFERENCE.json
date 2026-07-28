@@ -1,0 +1,33 @@
+{
+  "moduleId": "B-20260727-TECHNIQUE-BOOK-LIBRARY",
+  "status": "READY_FOR_A",
+  "baselineId": "V0.14.6_AB4",
+  "releaseLabel": "Web Alpha V0.14.6 CACHE10",
+  "uploadedDevelopmentBaseline": "NineCloudDao_Development_Baseline_V0.14.6_AB4.zip",
+  "uploadedDevelopmentBaselineSha256": "828cfd396ca7bfbe38e2a69af3d1e5b4aa83e8775dc9a7d4c79a8e2853ac6dbe",
+  "authoritativeSourcePackage": "NineCloudDao_GitHub_Upload_V0.14.6_FINAL.zip",
+  "authoritativeSourceSha256": "f2337b3255f4fd5621728ed6b106652f796c44e6da79b4d78ce941a03064bfd5",
+  "authoritativeGameSql": "九霄问道_V0.14.6_离线机缘命书与具体结果修复.sql",
+  "authoritativeGameSqlSha256": "2e517664057173fefc072af8af4e7581a353b4c381ac3fe7fa7af6d204677eab",
+  "baselineSharedFiles": {
+    "app.js": "e945f9dc2665934df924298f5777f99ee6175fd98bd28ad9585f0b0051740c6e",
+    "styles.css": "09fa1430daf2d9aa01bcaf623cfe74938fc364ec1cb04a8de326548d7c3fe41d"
+  },
+  "baselineMigration": {
+    "path": "database/V0.14.6/202607280230_v0146_opportunity_history_detail.sql",
+    "sha256": "2e517664057173fefc072af8af4e7581a353b4c381ac3fe7fa7af6d204677eab"
+  },
+  "candidateSharedFiles": {
+    "app.js": "da740bf43d9f983cbed1ed3ee9d5821ddefcb8410d53dde2cfc3f4e174a4d5ed",
+    "styles.css": "647c7e77dfe5acd2acf3df8f0ef4cddda4318784dfda6729ab97d0da83071fc3"
+  },
+  "patches": {
+    "app.js.patch": "f9d11ac1fa67b68a88f8666802179f3cf9da53cefeb3ecadb7c737bdd8f86c80",
+    "styles.css.patch": "677c47ebbcdb5be9419303af3dc0f4cd0d559d8c45b744c3523aaf85889ac6fe"
+  },
+  "database": {
+    "10_technique_book_library.sql": "7bce962bc1c777892ea5a2c77fa192cf0e0f36bbf7efd030651bda977a9c290a",
+    "九霄问道_B线_功法书与洞府藏经架.sql": "48e8a640d75d40eb70278ecfabd3ed8efa63cf9ddfe761c02704845d171a2475"
+  },
+  "compatibility": "仅适配V0.14.6_AB4；禁止套用到其他基线。"
+}

@@ -2418,3 +2418,82 @@ button, .badge, .hero-chip { max-width: 100%; }
 .offline-item-row{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:.82rem}.offline-opportunity-empty{color:var(--muted)}
 .offline-summary-cap{font-size:.8rem;color:var(--muted);line-height:1.55;margin:10px 2px 0}.offline-summary-confirm{width:100%;margin-top:14px;min-height:48px}
 @media(max-width:520px){.opportunity-offline-summary-backdrop{padding:0;align-items:flex-end}.opportunity-offline-summary{width:100%;max-height:92vh;border-radius:22px 22px 0 0;padding:18px 14px calc(18px + env(safe-area-inset-bottom))}.offline-opportunity-grades{grid-template-columns:repeat(2,minmax(0,1fr))}.offline-summary-grid{grid-template-columns:1fr}.offline-summary-total>div{display:grid;grid-template-columns:1fr 1fr;gap:8px}.offline-summary-header{position:sticky;top:-18px;z-index:2;padding-top:16px;padding-bottom:10px;background:var(--panel-bg,#111)} }
+
+/* B线：洞府藏经架与功法书 */
+.technique-library-title { margin-top: 2px; }
+.technique-library-note {
+  margin: -4px 0 2px;
+  padding: 9px 11px;
+  border-left: 2px solid rgba(206,182,126,.5);
+  color: var(--paper-muted);
+  background: rgba(201,167,95,.045);
+  font-size: 11px;
+  line-height: 1.65;
+}
+.technique-book-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.technique-book-card { align-items: stretch; min-height: 150px; }
+.technique-book-card .inventory-copy { display: grid; align-content: center; gap: 4px; min-width: 0; }
+.technique-book-card .inventory-copy > p { margin: 2px 0; }
+.technique-book-card .inventory-icon {
+  align-self: center;
+  border-color: rgba(206,182,126,.42);
+  color: var(--gold-bright);
+  background: radial-gradient(circle,rgba(201,167,95,.12),rgba(201,167,95,.025));
+}
+.technique-book-card.exclusive-book { border-color: rgba(212,173,98,.42); background: linear-gradient(145deg,rgba(201,167,95,.07),rgba(13,12,10,.3)); }
+.technique-book-card.locked { opacity: .82; }
+.technique-book-effect,.technique-book-reward,.technique-book-lock { display:block; line-height:1.55; overflow-wrap:anywhere; }
+.technique-book-effect { color: var(--paper); }
+.technique-book-reward { color: var(--gold); }
+.technique-book-lock { color: #d6a09a; }
+.technique-book-action { align-self:center; min-width:72px; }
+@media (max-width: 760px) {
+  .technique-book-grid { grid-template-columns: 1fr; }
+  .technique-book-card { min-height: 0; grid-template-columns: 36px minmax(0,1fr) auto; padding: 10px; }
+  .technique-book-action { min-width:64px; padding-left:9px; padding-right:9px; }
+  .technique-library-note { font-size: 10px; padding: 8px 9px; }
+}
+@media (max-width: 380px) {
+  .technique-book-card { grid-template-columns: 32px minmax(0,1fr); }
+  .technique-book-action { grid-column: 1 / -1; width: 100%; }
+}
+
+/* V0.14.7 · 机缘明细、批量使用与双庄切换 */
+.opportunity-grade-badge.high-tier,
+.opportunity-history-grade.high-tier {
+  color: #d5a7ff;
+  border-color: rgba(190, 132, 231, .58);
+  background: rgba(139, 83, 177, .13);
+}
+.opportunity-history-item h4 { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+.opportunity-history-grade { color: var(--gold); font-size: .88em; }
+.opportunity-history-result { display: grid; gap: 4px; margin-top: 8px; padding: 8px 10px; border-left: 2px solid rgba(206,182,126,.42); background: rgba(201,167,95,.055); }
+.opportunity-history-result span { color: var(--gold); font-size: 10px; }
+.opportunity-history-result strong { color: var(--paper); font-size: 12px; font-weight: 500; line-height: 1.65; }
+.timeline-item.opportunity-high-tier::before { border-color: #c48be6; box-shadow: 0 0 10px rgba(190,132,231,.32); }
+
+.inventory-quantity-backdrop { z-index: 80; }
+.inventory-quantity-modal { width: min(460px, 100%); display: grid; gap: 13px; text-align: left; }
+.inventory-quantity-modal h3 { margin: 0; color: var(--gold-bright); font-weight: 500; }
+.inventory-quantity-modal > p { margin: 0; color: var(--paper-muted); line-height: 1.65; }
+.inventory-quantity-stock { color: var(--paper-muted); }
+.inventory-quantity-stock strong { color: var(--gold-bright); }
+.inventory-quantity-stepper { display: grid; grid-template-columns: 48px minmax(0,1fr) 48px; gap: 8px; }
+.inventory-quantity-stepper button,
+.inventory-quantity-quick button { min-height: 40px; border: 1px solid var(--line); background: rgba(201,167,95,.06); color: var(--paper); font: inherit; cursor: pointer; }
+.inventory-quantity-stepper input { min-width: 0; width: 100%; border: 1px solid var(--line); background: rgba(8,7,6,.62); color: var(--paper); text-align: center; font: inherit; }
+.inventory-quantity-quick { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; }
+.inventory-quantity-quick button:disabled { opacity: .4; cursor: not-allowed; }
+.inventory-quantity-preview { padding: 9px 10px; border: 1px solid rgba(206,182,126,.2); color: var(--paper-muted); background: rgba(13,12,10,.28); }
+
+.casino-house-switch { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; margin-bottom: 10px; padding: 6px; border: 1px solid rgba(206,182,126,.22); background: rgba(13,12,10,.28); }
+.casino-house-switch button { min-height: 38px; border: 1px solid transparent; background: transparent; color: var(--paper-muted); font: inherit; cursor: pointer; }
+.casino-house-switch button.active { border-color: var(--gold); background: rgba(201,167,95,.1); color: var(--gold-bright); }
+
+@media (max-width: 760px) {
+  .opportunity-history-result { padding: 6px 8px; }
+  .opportunity-history-result strong { font-size: 10px; }
+  .inventory-quantity-modal { width: 100%; }
+  .inventory-quantity-quick { grid-template-columns: 1fr; }
+  .casino-house-switch button { min-height: 34px; font-size: 10px; }
+}

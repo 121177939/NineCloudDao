@@ -1,0 +1,45 @@
+--- a/styles.css
++++ b/styles.css
+@@ -2418,3 +2418,42 @@
+ .offline-item-row{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:.82rem}.offline-opportunity-empty{color:var(--muted)}
+ .offline-summary-cap{font-size:.8rem;color:var(--muted);line-height:1.55;margin:10px 2px 0}.offline-summary-confirm{width:100%;margin-top:14px;min-height:48px}
+ @media(max-width:520px){.opportunity-offline-summary-backdrop{padding:0;align-items:flex-end}.opportunity-offline-summary{width:100%;max-height:92vh;border-radius:22px 22px 0 0;padding:18px 14px calc(18px + env(safe-area-inset-bottom))}.offline-opportunity-grades{grid-template-columns:repeat(2,minmax(0,1fr))}.offline-summary-grid{grid-template-columns:1fr}.offline-summary-total>div{display:grid;grid-template-columns:1fr 1fr;gap:8px}.offline-summary-header{position:sticky;top:-18px;z-index:2;padding-top:16px;padding-bottom:10px;background:var(--panel-bg,#111)} }
++
++/* B线：洞府藏经架与功法书 */
++.technique-library-title { margin-top: 2px; }
++.technique-library-note {
++  margin: -4px 0 2px;
++  padding: 9px 11px;
++  border-left: 2px solid rgba(206,182,126,.5);
++  color: var(--paper-muted);
++  background: rgba(201,167,95,.045);
++  font-size: 11px;
++  line-height: 1.65;
++}
++.technique-book-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
++.technique-book-card { align-items: stretch; min-height: 150px; }
++.technique-book-card .inventory-copy { display: grid; align-content: center; gap: 4px; min-width: 0; }
++.technique-book-card .inventory-copy > p { margin: 2px 0; }
++.technique-book-card .inventory-icon {
++  align-self: center;
++  border-color: rgba(206,182,126,.42);
++  color: var(--gold-bright);
++  background: radial-gradient(circle,rgba(201,167,95,.12),rgba(201,167,95,.025));
++}
++.technique-book-card.exclusive-book { border-color: rgba(212,173,98,.42); background: linear-gradient(145deg,rgba(201,167,95,.07),rgba(13,12,10,.3)); }
++.technique-book-card.locked { opacity: .82; }
++.technique-book-effect,.technique-book-reward,.technique-book-lock { display:block; line-height:1.55; overflow-wrap:anywhere; }
++.technique-book-effect { color: var(--paper); }
++.technique-book-reward { color: var(--gold); }
++.technique-book-lock { color: #d6a09a; }
++.technique-book-action { align-self:center; min-width:72px; }
++@media (max-width: 760px) {
++  .technique-book-grid { grid-template-columns: 1fr; }
++  .technique-book-card { min-height: 0; grid-template-columns: 36px minmax(0,1fr) auto; padding: 10px; }
++  .technique-book-action { min-width:64px; padding-left:9px; padding-right:9px; }
++  .technique-library-note { font-size: 10px; padding: 8px 9px; }
++}
++@media (max-width: 380px) {
++  .technique-book-card { grid-template-columns: 32px minmax(0,1fr); }
++  .technique-book-action { grid-column: 1 / -1; width: 100%; }
++}

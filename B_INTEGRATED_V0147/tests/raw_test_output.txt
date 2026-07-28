@@ -1,0 +1,71 @@
+PASS lexical 00_precheck.sql: lines=20 dollar_tokens=2 functions=0
+PASS lexical 10_technique_book_library.sql: lines=455 dollar_tokens=14 functions=7
+PASS lexical 30_postcheck.sql: lines=13 dollar_tokens=0 functions=0
+PASS lexical 90_emergency_disable.sql: lines=5 dollar_tokens=0 functions=0
+PASS lexical 91_resume.sql: lines=4 dollar_tokens=0 functions=0
+PASS lexical 99_rollback.sql: lines=234 dollar_tokens=4 functions=2
+PASS lexical 九霄问道_B线_功法书与洞府藏经架.sql: lines=493 dollar_tokens=16 functions=7
+PASS book table
+PASS ordinary book award
+PASS no ordinary auto learn
+PASS exclusive book storage
+PASS mismatch not reclaimed
+PASS mismatch no 100 stones
+PASS fate gate
+PASS no auto equip on study
+PASS ordinary no auto equip
+PASS active study rewards
+PASS duplicate manual mastery
+PASS offline book summary
+PASS pity mismatch +2
+PASS pity natal reset
+TOTAL_STATIC_CHECKS=14 ALL_PASS
+PASS library rpc
+PASS use book rpc
+PASS cave library render
+PASS ordinary study copy
+PASS exclusive fate copy
+PASS study button
+PASS no auto equip copy
+PASS offline book summary
+PASS online refresh library
+PASS mobile css
+PASS locked css
+PASS legacy history hook
+TOTAL=12 PASS=12 FAIL=0
+PASS patches apply cleanly and match candidate files
+PASS v4-rpc
+PASS ack-rpc
+PASS offline-summary
+PASS mobile-modal
+PASS safe-area
+PASS new-techniques
+PASS mastery
+PASS commission-copy
+PASS system-fix7a
+PASS story-pool
+PASS result-pool
+PASS support-seeds
+PASS five-minute
+PASS 864
+PASS commission-500
+PASS rls
+PASS old-protections
+PASS dealer-name
+TOTAL=18 PASS=18 FAIL=0
+PASS RPC
+PASS merge
+PASS initial refresh
+PASS online refresh
+PASS specific result
+PASS history root
+TOTAL=6 PASS=6 FAIL=0
+{"ok":true,"checks":50,"lobby":1727,"house":3001,"duel":2836,"pools":1437}
+{"ok":true,"checks":4,"order":["breakthrough","casino","old-pinned"]}
+{"ok":true,"checks":16}
+{
+  "ok": true,
+  "checks": 12,
+  "failed": []
+}
+ALL SELECTED STATIC TESTS PASSED

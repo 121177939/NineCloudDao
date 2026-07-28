@@ -4,7 +4,7 @@ const app=fs.readFileSync(path.join(root,'app.js'),'utf8');
 const css=fs.readFileSync(path.join(root,'styles.css'),'utf8');
 const checks=[]; const ck=(n,o)=>checks.push([n,!!o]);
 [
- ['player-house-rpc','rpcGetCasinoPlayerHouseStatusV1'],['player-house-toggle','data-player-house-toggle'],['player-house-copy','财富榜第一且统一灵石严格超过500万'],
+ ['player-house-rpc','rpcGetCasinoPlayerHouseStatusV1'],['player-house-toggle','data-player-house-toggle'],['player-house-copy','余额达到500万即可自愿上庄，无需财富榜第一'],
  ['system-dealer-name','荷老'],['no-wrong-dealer-name',!app.includes('何老')],['cultivation-all-in','data-cultivation-all-in'],
  ['minor-stage-copy','输光后境界不变'],['no-twenty-percent',!app.includes('最高20%')&&!app.includes('可动用修为的20%')],
  ['duel-immediate','确认落注并立即开局'],['join-immediate','应局并立即开契'],['no-five-minute',!app.includes('五分钟后')&&!app.includes('等待5分钟')],

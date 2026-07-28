@@ -225,3 +225,7 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 ## V0.14.6 CACHE10
 - `database/V0.14.6/202607280230_v0146_opportunity_history_detail.sql`
 - 修复机缘V4效果来源约束、结算批次外键、离线命书明细和具体结果展示。
+
+## V0.14.7 CACHE11
+- `database/V0.14.7/202607280600_v0147_library_opportunity_inventory_house.sql`
+- 功法书藏经架、机缘明细、物品批量使用、双庄切换、2小时任期与玩家庄系统兜底。

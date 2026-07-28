@@ -1,0 +1,39 @@
+{
+  "protocolVersion": "AB-DEV-CONTROL V1.2",
+  "baselineId": "V0.14.7_AB5",
+  "applicableGameVersion": "0.14.7",
+  "releaseLabel": "Web Alpha V0.14.7 CACHE11",
+  "sourcePackage": "NineCloudDao_GitHub_Upload_V0.14.7_FINAL.zip",
+  "sourceSha256": "1448cb8a56ef08b8157a04e11fa9c83e19fb00994d14cba8ad74a64feb2ca2aa",
+  "gameSqlPackage": "九霄问道_V0.14.7_藏经架机缘明细批量使用与双庄兜底.sql",
+  "gameSqlSha256": "d5c089667ea564c8ff0afdd398644e2723707c185e43c3ca2c8d621fb95d0d95",
+  "adminPackage": "九霄问道_V0.14.4_ADMIN2_后台灵石赏罚完整包.zip",
+  "adminSha256": "e87ed28114cb6cac1f3bac41fcf5eb163c22a3d983c25272d879eaac2dd3ab27",
+  "handoffPackage": "九霄问道_APP项目接管资料包_V0.14.7_ADMIN2_完整接管版.zip",
+  "handoffSha256": "94a3ecbe77d1cb490d6562aabc071a5d51b3fff0575a4dce6195bfea3bf4dbf2",
+  "historyPackage": "九霄问道_历史归档_V0.6.5-V0.14.7_ADMIN2_补全版.zip",
+  "historySha256": "02d88090ad85b732915ef9ba9fc4101ef357ee94bc3f763b71e30465883e31c3",
+  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4综合规则 + V0.14.5机缘与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底",
+  "worldFeedBaseline": "V0.14.2严格新消息置顶",
+  "rankingBaseline": "V0.14.3三榜与财富榜",
+  "adminBaseline": "V0.14.4 ADMIN2 local only",
+  "deploymentStatus": "release_ready_not_production_confirmed",
+  "authorizationGate": {
+    "required": true,
+    "acceptedExamples": [
+      "开始制作",
+      "直接升级",
+      "接入并升级",
+      "现在执行"
+    ],
+    "bugReportAlone": false,
+    "draftOnlyWithoutAuthorization": true
+  },
+  "forbidden": [
+    "V0.14.1 FIX8",
+    "public deployment of ADMIN2",
+    "client Secret/service_role",
+    "client direct critical resource updates",
+    "unauthorized implementation or packaging"
+  ]
+}

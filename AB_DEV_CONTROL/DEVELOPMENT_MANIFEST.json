@@ -1,0 +1,27 @@
+{
+  "baselineId": "V0.14.7_AB5",
+  "releaseLabel": "Web Alpha V0.14.7 CACHE11",
+  "role": "A线唯一开发基线",
+  "sourceSha256": "1448cb8a56ef08b8157a04e11fa9c83e19fb00994d14cba8ad74a64feb2ca2aa",
+  "sharedFiles": [
+    "app.js",
+    "styles.css",
+    "index.html",
+    "config.js",
+    "sw.js",
+    "update-guard.js"
+  ],
+  "nextProtocol": "B线提交ready_for_integration模块，A线核验且仅在用户明确授权后接入",
+  "authorizationGate": "explicit_user_implementation_authorization_required",
+  "protectedSummary": [
+    "FIX7A",
+    "严格界闻",
+    "三榜",
+    "V0.14.4综合规则",
+    "V0.14.5机缘V4与佣金",
+    "V0.14.6机缘明细",
+    "V0.14.7功法书藏经架与双庄兜底"
+  ],
+  "handoffSha256": "94a3ecbe77d1cb490d6562aabc071a5d51b3fff0575a4dce6195bfea3bf4dbf2",
+  "historySha256": "02d88090ad85b732915ef9ba9fc4101ef357ee94bc3f763b71e30465883e31c3"
+}

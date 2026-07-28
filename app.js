@@ -81,6 +81,7 @@
     caveSyncing: false,
     techniqueSystem: null,
     exclusiveTechniqueSystem: null,
+    techniqueLibrary: null,
     heavenBalance: null,
     heavenBalanceSyncTimer: null,
     heavenBalanceSyncing: false,
@@ -104,6 +105,7 @@
     marketSystem: null,
     marketView: 'home',
     casinoView: 'lobby',
+    casinoHouseMode: 'system',
     casinoDrafts: {
       house: { stakeType: 'spirit_stone', amount: 100, multiplier: null, game: 'spirit_dice', choice: 'big' },
       duel: { stakeType: 'spirit_stone', amount: 100, multiplier: null, game: 'spirit_fist', choice: 'rock' }
@@ -200,7 +202,13 @@
     if (raw.includes('SUPPORT_SLOTS_FULL')) return '辅修槽已满，最多同时运转两门辅修功法。';
     if (raw.includes('MAIN_TECHNIQUE_REQUIRED')) return '主修功法不能卸下，请直接切换另一门主修功法。';
     if (raw.includes('TECHNIQUE_MAX_LEVEL')) return '这门功法已经修至当前品质允许的最高层。';
-    if (raw.includes('TECHNIQUE_PROFICIENCY_REQUIRED')) return '功法熟练与传承点合计不足100，继续运转或重复获得后再精进。';
+    if (raw.includes('TECHNIQUE_PROFICIENCY_REQUIRED')) return '功法熟练与传承点合计不足100，继续运转或参悟同名功法书后再精进。';
+    if (raw.includes('TECHNIQUE_BOOK_NOT_FOUND')) return '洞府中没有找到这本道卷。';
+    if (raw.includes('TECHNIQUE_BOOK_EMPTY')) return '这本道卷已经用尽。';
+    if (raw.includes('TECHNIQUE_ALREADY_LEARNED')) return '这门功法已经学会，可将额外功法书用于参悟。';
+    if (raw.includes('ORDINARY_TECHNIQUE_NOT_LEARNED')) return '尚未学会这门功法，不能直接参悟。';
+    if (raw.includes('EXCLUSIVE_BOOK_FATE_MISMATCH')) return '此专属道卷与你当前命格不契合，只能收藏，无法研习。';
+    if (raw.includes('EXCLUSIVE_TECHNIQUE_ALREADY_LEARNED')) return '这门本命专属功法已经学会，额外道卷继续留存在藏经架。';
     if (raw.includes('INVALID_TECHNIQUE_SLOT')) return '功法槽位无效，请重新选择。';
     if (raw.includes('MAIN_TECHNIQUE_SLOT_ONLY')) return '主修功法只能放入主修槽。';
     if (raw.includes('SUPPORT_TECHNIQUE_SLOT_ONLY')) return '这门功法只能放入辅修槽。';
@@ -216,12 +224,15 @@
     if (raw.includes('CASINO_STAKE_TOO_LARGE')) return '赌注数值过大，请降低后重试。';
     if (raw.includes('CASINO_ACTIVE_DUEL_EXISTS')) return '你已有一张等待或封存中的赌契，请先处理。';
     if (raw.includes('CASINO_INVALID_CHOICE')) return '招式或押注选项无效。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_NOT_ELIGIBLE')) return '只有当前财富榜第一且统一灵石严格超过500万的修士才能上庄。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_NOT_ELIGIBLE')) return '统一灵石达到500万后才能申请上庄。';
     if (raw.includes('CASINO_PLAYER_HOUSE_NOT_CURRENT_DEALER')) return '你当前并不是大堂玩家庄家，无法执行下庄。';
     if (raw.includes('CASINO_PLAYER_HOUSE_SELF_BET_FORBIDDEN')) return '庄家不能下注自己坐庄的大堂赌局。';
     if (raw.includes('CASINO_PLAYER_HOUSE_ONLY_SPIRIT_STONE')) return '玩家坐庄期间，大堂只接受灵石下注。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_DEALER_INSUFFICIENT')) return '当前玩家庄家的灵石不足以覆盖本玩法最高可能赔付，请降低赌注。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_DEALER_INSUFFICIENT')) return '玩家庄结算异常，请稍后重试；正常情况下不足部分由荷老补足。';
     if (raw.includes('CASINO_PLAYER_HOUSE_DISABLED')) return '玩家坐庄功能当前已停用，荷老继续坐庄。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_OCCUPIED')) return '已有其他修士正在坐庄，请等待其下庄或任期结束。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_EXPIRED')) return '本次玩家庄任期已经结束，请重新申请上庄。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_NOT_ACTIVE')) return '当前没有可选择的玩家庄，请切换荷老。';
     if (raw.includes('DIVINE_NOTICE_NOT_FOUND')) return '这道天谕不存在或已经确认。';
     if (raw.includes('DIVINE_NOTICE_ALREADY_CLAIMED')) return '这道天谕已由其他在线会话领取。';
     if (raw.includes('DUEL_NOT_AVAILABLE')) return '这张赌桌已不可加入。';
@@ -396,6 +407,7 @@
     state.caveSystem = null;
     state.techniqueSystem = null;
     state.exclusiveTechniqueSystem = null;
+    state.techniqueLibrary = null;
     state.heavenBalance = null;
     state.destinyRanking = null;
     state.destinyRankingFetchedAt = 0;
@@ -416,6 +428,7 @@
     state.marketSystem = null;
     state.marketView = 'home';
     state.casinoView = 'lobby';
+    state.casinoHouseMode = 'system';
     state.marketSyncing = false;
     state.worldEvents = null;
     state.worldEventsSyncing = false;
@@ -647,8 +660,9 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcPlayHouseGameV1(gameCode, stakeType, stakeAmount, choice) {
-    const result = await restFetch('rpc/play_house_game_v1', { method: 'POST', body: {
+  async function rpcPlayHouseGameV0147(houseMode, gameCode, stakeType, stakeAmount, choice) {
+    const result = await restFetch('rpc/play_house_game_v0147', { method: 'POST', body: {
+      p_house_mode: houseMode === 'player' ? 'player' : 'system',
       p_game_code: gameCode, p_stake_type: stakeType, p_stake_amount: Number(stakeAmount), p_choice: choice
     }});
     return Array.isArray(result) ? result[0] || null : result;
@@ -869,8 +883,8 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcGetOpportunityHistoryV0146(limit = 100) {
-    const result = await restFetch('rpc/get_opportunity_history_v0146', {
+  async function rpcGetOpportunityHistoryV0147(limit = 100) {
+    const result = await restFetch('rpc/get_opportunity_history_v0147', {
       method: 'POST',
       body: { p_limit: Math.max(1, Math.min(100, Number(limit || 100))) }
     });
@@ -901,10 +915,10 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcUseInventoryItem(inventoryId) {
-    const result = await restFetch('rpc/use_inventory_item_v1', {
+  async function rpcUseInventoryItemQuantityV0147(inventoryId, quantity) {
+    const result = await restFetch('rpc/use_inventory_item_quantity_v0147', {
       method: 'POST',
-      body: { p_inventory_id: inventoryId }
+      body: { p_inventory_id: inventoryId, p_quantity: Number(quantity) }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -1068,6 +1082,19 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+  async function rpcGetTechniqueLibraryV1() {
+    const result = await restFetch('rpc/get_technique_library_v1', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcUseTechniqueBookV1(bookId) {
+    const result = await restFetch('rpc/use_technique_book_v1', {
+      method: 'POST',
+      body: { p_book_id: bookId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function rpcSetExclusiveTechniqueSlotV1(characterExclusiveId) {
     const result = await restFetch('rpc/set_exclusive_technique_slot_v1', {
       method: 'POST',
@@ -1129,7 +1156,7 @@
   async function refreshOpportunityHistoryTimeline() {
     if (!state.character) return state.history;
     try {
-      const payload = await rpcGetOpportunityHistoryV0146(100);
+      const payload = await rpcGetOpportunityHistoryV0147(100);
       const entries = Array.isArray(payload?.entries) ? payload.entries : [];
       state.history = mergeHistoryWithOpportunityResults(state.history, entries);
       if (state.details) state.details.history = state.history;
@@ -1179,7 +1206,7 @@
           limit: '100'
         }
       }),
-      rpcGetOpportunityHistoryV0146(100).catch(() => ({ status: 'unavailable', entries: [] }))
+      rpcGetOpportunityHistoryV0147(100).catch(() => ({ status: 'unavailable', entries: [] }))
     ]);
 
     const [realm, spiritRoot, fate, cultivationState, techniqueLinks, cultivationEffects, inventoryLinks] = await Promise.all([
@@ -2010,6 +2037,47 @@
     entry.addEventListener('click', openOpportunityModal);
   }
 
+  function opportunityHighTier(rarity) {
+    return ['天品', '仙品', '专属', 'heaven', 'immortal', 'exclusive'].includes(String(rarity || ''));
+  }
+
+  function opportunityResultDetailParts(result = {}) {
+    const applied = result.applied || result.result_data?.applied || {};
+    const technique = result.technique || result.result_data?.technique || null;
+    const parts = [];
+    const cultivationGain = Math.max(0, Number(applied.cultivation_gain_actual ?? applied.cultivation_gain_requested ?? 0));
+    const cultivationLoss = Math.max(0, Number(applied.cultivation_loss_actual ?? applied.cultivation_loss_requested ?? 0));
+    const spiritGain = Math.max(0, Number(applied.spirit_gain || 0));
+    const spiritLoss = Math.max(0, Number(applied.spirit_loss || 0));
+    const speedBonus = Number(applied.speed_bonus || 0);
+    const duration = Math.max(0, Number(applied.duration_minutes || 0));
+    if (cultivationGain > 0) parts.push(`修为 +${formatNumber(cultivationGain)}`);
+    if (cultivationLoss > 0) parts.push(`修为 -${formatNumber(cultivationLoss)}`);
+    if (spiritGain > 0) parts.push(`灵石 +${formatNumber(spiritGain)}`);
+    if (spiritLoss > 0) parts.push(`灵石 -${formatNumber(spiritLoss)}`);
+    if (speedBonus !== 0) {
+      const sign = speedBonus > 0 ? '+' : '';
+      parts.push(`总修炼速度 ${sign}${formatNumber(speedBonus * 100, 2)}%${duration > 0 ? `，持续${formatNumber(duration)}分钟` : ''}`);
+    }
+    if (technique?.awarded) {
+      const bookName = technique.book_kind === 'exclusive' ? '专属道卷' : '功法书';
+      const category = technique.category === 'support' ? '辅修' : technique.category === 'main' ? '主修' : '';
+      const grade = technique.grade || result.rarity_name || result.rarity || '';
+      parts.push(`获得${grade || ''}${category}${bookName}《${technique.technique_name || '无名道卷'}》×${formatNumber(technique.quantity_added || 1)}`);
+    }
+    return parts;
+  }
+
+  function opportunityResultDetailText(result = {}) {
+    const structured = String(result.result_detail || '').trim();
+    if (structured) return structured;
+    const parts = opportunityResultDetailParts(result);
+    if (parts.length) return parts.join('；');
+    return String(result.path_name === '涉险'
+      ? (result.penalty_text || result.result_text || '本次涉险未记录具体代价')
+      : (result.reward_text || result.result_text || '本次趋吉结果已完成结算'));
+  }
+
   function opportunityPanelHtml(opportunity) {
     if (!opportunity || opportunity.status === 'loading') {
       return '<div class="empty-state">天机未显，正在观测灵气变化……</div>';
@@ -2024,11 +2092,10 @@
     const luckyBonus = Number(opportunity?.lucky_auspicious_bonus ?? result?.lucky_auspicious_bonus ?? 0);
     const isRisk = result?.path_name === '涉险';
     const outcomeLabel = isRisk ? '涉险代价' : '趋吉所得';
-    const outcomeText = isRisk
-      ? (result?.penalty_text || result?.result_text || '本次涉险未记录具体代价')
-      : (result?.reward_text || result?.result_text || '本次趋吉结果已自动结算');
+    const outcomeText = opportunityResultDetailText(result || {});
+    const highTier = opportunityHighTier(rarityLabel) || opportunityHighTier(rarity);
     return `
-      <div class="panel-title"><h3>天机推演</h3><span class="badge ${result ? `rarity-${escapeHtml(rarity)}` : ''}">${escapeHtml(result ? rarityLabel : '天机流转')}</span></div>
+      <div class="panel-title"><h3>天机推演</h3><span class="badge opportunity-grade-badge ${highTier ? 'high-tier' : ''}">${escapeHtml(result ? rarityLabel : '天机流转')}</span></div>
       <div class="opportunity-waiting opportunity-summary-panel">
         ${opportunityWheelHtml()}
         <strong>角色正在自主推演天机</strong>
@@ -2211,14 +2278,31 @@
   }
 
 
+  function normalizeOpportunityTechniqueBooks(value) {
+    const rows = Array.isArray(value) ? value : (value && typeof value === 'object' ? Object.values(value) : []);
+    const grouped = new Map();
+    rows.forEach(row => {
+      const code = row?.technique_code || row?.code || row?.name || row?.technique_name;
+      if (!code) return;
+      const key = `${row?.book_kind || row?.kind || 'ordinary'}:${code}`;
+      const current = grouped.get(key) || { ...row, quantity: 0 };
+      current.quantity += Math.max(1, Number(row?.quantity || row?.quantity_added || 1));
+      grouped.set(key, current);
+    });
+    return Array.from(grouped.values());
+  }
+
   function opportunitySummaryTechniqueRows(rows = []) {
     const list = Array.isArray(rows) ? rows : [];
     if (!list.length) return '<span class="offline-opportunity-empty">无</span>';
     return list.map(row => {
       const label = row?.name || row?.technique_name || '未知功法';
       const grade = row?.grade_name || row?.grade || '';
-      const category = row?.category === 'support' ? '辅修' : '主修';
-      return `<span><b>${escapeHtml(label)}</b>${grade ? ` · ${escapeHtml(grade)}` : ''} · ${category}</span>`;
+      const category = row?.book_kind === 'exclusive' || row?.category === 'exclusive'
+        ? '专属道卷'
+        : row?.category === 'support' ? '辅修功法书' : '主修功法书';
+      const quantity = Math.max(1, Number(row?.quantity || row?.quantity_added || 1));
+      return `<span><b>《${escapeHtml(label)}》</b>${grade ? ` · ${escapeHtml(grade)}` : ''} · ${category} ×${formatNumber(quantity)}</span>`;
     }).join('');
   }
 
@@ -2256,6 +2340,7 @@
     const claim = summary.cultivation_claim || {};
     const gradeCounts = summary.grade_counts || {};
     const polarity = summary.polarity_counts || {};
+    const techniqueBooks = normalizeOpportunityTechniqueBooks(gains.technique_books || net.technique_books || []);
     const newTechniques = Array.isArray(gains.techniques_new) ? gains.techniques_new : [];
     const duplicateTechniques = Array.isArray(gains.techniques_duplicate) ? gains.techniques_duplicate : [];
     const masteryPoints = Number(gains.mastery_points || 0);
@@ -2281,7 +2366,7 @@
         </div>
         <article class="offline-summary-card cultivation-card"><span>挂机修炼</span><strong>本次挂机获得 ${formatNumber(claim.gained || 0)} 修为</strong><small>机缘速度效果已经按离线时间顺序计入。</small></article>
         <article class="offline-summary-total"><span>本次最终所得</span><div><strong>修为 ${Number(net.cultivation || 0) >= 0 ? '+' : ''}${formatNumber(net.cultivation || 0)}</strong><strong>灵石 ${Number(net.spirit_stones || 0) >= 0 ? '+' : ''}${formatNumber(net.spirit_stones || 0)}</strong></div><div class="offline-item-row">物品：${opportunitySummaryItemRows(net.items)}</div></article>
-        ${(newTechniques.length || duplicateTechniques.length || masteryPoints > 0) ? `<article class="offline-summary-techniques"><span>功法所得</span>${newTechniques.length ? `<div class="offline-technique-group"><b>新获得</b>${opportunitySummaryTechniqueRows(newTechniques)}</div>` : ''}${duplicateTechniques.length ? `<div class="offline-technique-group"><b>重复转化</b>${opportunitySummaryTechniqueRows(duplicateTechniques)}</div>` : ''}${masteryPoints > 0 ? `<strong>传承点 +${formatNumber(masteryPoints)}</strong>` : ''}</article>` : ''}
+        ${techniqueBooks.length ? `<article class="offline-summary-techniques"><span>功法书所得</span><div class="offline-technique-group"><b>已收入洞府藏经架</b>${opportunitySummaryTechniqueRows(techniqueBooks)}</div></article>` : (newTechniques.length || duplicateTechniques.length || masteryPoints > 0) ? `<article class="offline-summary-techniques"><span>功法所得</span>${newTechniques.length ? `<div class="offline-technique-group"><b>新获得</b>${opportunitySummaryTechniqueRows(newTechniques)}</div>` : ''}${duplicateTechniques.length ? `<div class="offline-technique-group"><b>重复转化</b>${opportunitySummaryTechniqueRows(duplicateTechniques)}</div>` : ''}${masteryPoints > 0 ? `<strong>传承点 +${formatNumber(masteryPoints)}</strong>` : ''}</article>` : ''}
         ${permanentEffects.length ? `<article class="offline-summary-permanent"><span>新增永久效果</span><div>${opportunitySummaryTextRows(permanentEffects)}</div></article>` : ''}
         <article class="offline-summary-effects"><span>当前剩余效果</span><div>${opportunityRemainingEffectsHtml(summary.remaining_effects || net.effects || {})}</div></article>
         ${Number(summary.capped_event_count || 0) > 0 ? `<p class="offline-summary-cap">离线机缘最多结算72小时，超出部分 ${formatNumber(summary.capped_event_count)} 次未生成。</p>` : ''}
@@ -2307,6 +2392,7 @@
       }
       if (settlement?.offline_summary) showOpportunityOfflineSummary(settlement.offline_summary);
       if (Number(settlement?.events_resolved || 0) > 0) await refreshOpportunityHistoryTimeline();
+      if (Number(settlement?.events_resolved || 0) > 0) await refreshCaveSystem(true);
       updateOpportunityEntry();
       const modalBody = document.getElementById('opportunityModalBody');
       if (modalBody) {
@@ -2389,14 +2475,21 @@
     if (!state.character || state.caveSyncing) return state.caveSystem;
     state.caveSyncing = true;
     try {
-      const system = await rpcGetCaveSystemV1();
+      const [system, techniqueLibrary] = await Promise.all([
+        rpcGetCaveSystemV1(),
+        rpcGetTechniqueLibraryV1().catch(error => ({ status: 'unavailable', books: [], error: translateError(error) }))
+      ]);
       if (!system || system.status !== 'ok') return system;
       state.caveSystem = system;
+      state.techniqueLibrary = techniqueLibrary || { status: 'unavailable', books: [] };
       if (Number.isFinite(Number(system.spirit_stones))) setLocalSpiritStoneBalance(Number(system.spirit_stones));
-      if (state.details) state.details.caveSystem = system;
+      if (state.details) {
+        state.details.caveSystem = system;
+        state.details.techniqueLibrary = state.techniqueLibrary;
+      }
       const root = document.getElementById('caveSystemRoot');
       if (root && state.details) {
-        root.outerHTML = cavePanelHtml(system, state.details.inventory || []);
+        root.outerHTML = cavePanelHtml(system, state.details.inventory || [], state.techniqueLibrary);
         if (rebind) bindInventoryTechniqueActions();
       }
       return system;
@@ -2754,6 +2847,58 @@
     `;
   }
 
+  function techniqueBookFirstRewardText(spec = {}) {
+    const parts = [];
+    if (Number(spec.permanent_speed_bonus || 0)) parts.push(`永久修炼速度 +${formatNumber(Number(spec.permanent_speed_bonus) * 100, 2)}%`);
+    if (Number(spec.permanent_flat_rate || 0)) parts.push(`永久每秒修为 +${formatNumber(spec.permanent_flat_rate, 3)}`);
+    if (Number(spec.cultivation_gain_pct || 0)) parts.push(`修为 +当前小境界需求的 ${formatNumber(Number(spec.cultivation_gain_pct) * 100, 2)}%`);
+    if (Number(spec.cultivation_gain_fixed || 0)) parts.push(`修为 +${formatNumber(spec.cultivation_gain_fixed)}`);
+    if (Number(spec.spirit_gain_mult || 0)) parts.push(`灵石 +境界基数×${formatNumber(spec.spirit_gain_mult, 2)}`);
+    if (Number(spec.spirit_gain_fixed || 0)) parts.push(`灵石 +${formatNumber(spec.spirit_gain_fixed)}`);
+    if (Number(spec.cave_daily_spirit_mapping || 0)) parts.push(`洞府资源映射 +${formatNumber(spec.cave_daily_spirit_mapping)}`);
+    return parts.join(' · ') || '无额外首次研习奖励';
+  }
+
+  function techniqueBookEffectText(row = {}) {
+    if (row.book_kind === 'exclusive') {
+      return `一级修炼速度 +${formatNumber(Number(row.base_cultivation_multiplier || 0) * 100, 2)}% · 专属槽生效`;
+    }
+    const values = techniqueV2EffectValues({ fixed_effects: row.fixed_effects || {}, level: 1 }, 1);
+    const parts = [];
+    if (values.flat) parts.push(`一级每秒修为 +${formatNumber(values.flat, 3)}`);
+    if (values.multiplier) parts.push(`一级修炼速度 +${formatNumber(values.multiplier * 100, 2)}%`);
+    return parts.join(' · ') || '研习后加入功法列表，自行装备后生效';
+  }
+
+  function techniqueLibraryHtml(library = {}) {
+    const books = Array.isArray(library?.books) ? library.books : [];
+    const total = books.reduce((sum, row) => sum + Math.max(0, Number(row?.quantity || 0)), 0);
+    return `
+      <div class="subsection-title technique-library-title"><strong>藏经架</strong><span>${formatNumber(books.length)} 种道卷 · 共 ${formatNumber(total)} 本</span></div>
+      <p class="technique-library-note">机缘所得功法不会自动学习。同名道卷自动堆叠；普通功法可研习或参悟，本命专属可研习，异命专属仅供收藏。</p>
+      <div class="inventory-grid technique-book-grid">
+        ${books.length ? books.map(row => {
+          const isExclusive = row.book_kind === 'exclusive';
+          const actionLabel = row.can_learn ? '研习' : row.can_contemplate ? '参悟' : row.is_learned ? '已研习·留存' : row.locked_reason || '无法研习';
+          const actionEnabled = Boolean(row.can_learn || row.can_contemplate);
+          const fateLabel = isExclusive ? (row.is_matching_fate ? '本命契合' : `异命·${row.fate_name || '命格不符'}`) : techniqueCategoryName(row.category);
+          return `<article class="inventory-card technique-book-card ${isExclusive ? 'exclusive-book' : ''} ${!actionEnabled ? 'locked' : ''}">
+            <div class="inventory-icon">卷</div>
+            <div class="inventory-copy">
+              <span>${escapeHtml(row.grade_name || row.grade_code || '功法')} · ${escapeHtml(fateLabel)}</span>
+              <strong>《${escapeHtml(row.name || '未知道卷')}》 <small>× ${formatNumber(row.quantity || 0)}</small></strong>
+              <p>${escapeHtml(row.description || '道纹沉静，等待有缘人展开研习。')}</p>
+              <small class="technique-book-effect">功法效果：${escapeHtml(techniqueBookEffectText(row))}</small>
+              ${!isExclusive ? `<small class="technique-book-reward">首次研习：${escapeHtml(techniqueBookFirstRewardText(row.first_reward_spec || {}))}</small>` : ''}
+              ${isExclusive && !row.is_matching_fate ? '<small class="technique-book-lock">当前命格不契合，不能学习、不能装备、不会产生效果。</small>' : ''}
+            </div>
+            <button class="${actionEnabled ? 'primary-btn' : 'ghost-btn'} technique-book-action" type="button" data-use-technique-book="${escapeHtml(row.book_id)}" ${actionEnabled ? '' : 'disabled'}>${escapeHtml(actionLabel)}</button>
+          </article>`;
+        }).join('') : '<div class="empty-state">藏经架尚无功法书。机缘获得后会自动收入此处。</div>'}
+      </div>
+    `;
+  }
+
   function caveResourceName(code) {
     const map = { cave_qi: '灵蕴', spirit_herb: '灵草', spirit_ore: '灵矿', spirit_stone: '灵石' };
     return map[code] || code || '资源';
@@ -2797,7 +2942,7 @@
                 <strong>${escapeHtml(definition.name || '未知物品')} <small>× <span${quantityAttr}>${formatNumber(row.quantity)}</span></small></strong>
                 <p>${escapeHtml(itemEffectText(row))}</p>
               </div>
-              ${usable ? `<button class="primary-btn inventory-use-btn" type="button" data-use-item="${escapeHtml(row.id)}">使用</button>` : ''}
+              ${usable ? `<button class="primary-btn inventory-use-btn" type="button" data-use-item="${escapeHtml(row.id)}" data-use-item-name="${escapeHtml(definition.name || '储物')}" data-use-item-quantity="${escapeHtml(Math.max(1, Number(row.quantity || 1)))}" data-use-item-effect="${escapeHtml(itemEffectText(row))}">选择数量</button>` : ''}
             </article>
           `;
         }).join('') : '<div class="empty-state">储物袋空空如也。</div>'}
@@ -2805,7 +2950,7 @@
     `;
   }
 
-  function cavePanelHtml(system, inventory) {
+  function cavePanelHtml(system, inventory, techniqueLibrary = state.techniqueLibrary || { books: [] }) {
     const resources = Array.isArray(system?.resources) ? system.resources : [];
     const buildings = Array.isArray(system?.buildings) ? system.buildings : [];
     const recipes = Array.isArray(system?.recipes) ? system.recipes : [];
@@ -2833,6 +2978,8 @@
             </article>`;
           }).join('')}
         </div>
+
+        ${techniqueLibraryHtml(techniqueLibrary)}
 
         <div class="subsection-title"><strong>洞府建筑</strong><span>升级费用按当前等级²增长</span></div>
         <div class="cave-building-grid">
@@ -2904,7 +3051,119 @@
     if (seconds <= 0) refreshCaveSystem(true);
   }
 
+  async function refreshInventoryV0147() {
+    if (!state.character) return [];
+    const links = await restFetch('character_inventory', { query: {
+      select: 'id,character_id,item_definition_id,quantity,is_bound,item_instance,acquired_year',
+      character_id: `eq.${state.character.id}`, quantity: 'gt.0', order: 'created_at.asc'
+    }});
+    const itemIds = (Array.isArray(links) ? links : []).map(row => row.item_definition_id);
+    const definitions = itemIds.length ? await restFetch('item_definitions', { query: {
+      select: 'id,code,name,category,rarity,stack_limit,effects,description',
+      id: `in.(${itemIds.join(',')})`
+    }}) : [];
+    const definitionMap = new Map((Array.isArray(definitions) ? definitions : []).map(row => [row.id, row]));
+    const inventory = mergeCanonicalSpiritStoneInventory((Array.isArray(links) ? links : []).map(link => ({
+      ...link, definition: definitionMap.get(link.item_definition_id) || null
+    })).filter(row => row.definition && Number(row.quantity || 0) > 0));
+    if (state.details) state.details.inventory = inventory;
+    return inventory;
+  }
+
+  function openInventoryQuantityModal({ inventoryId, itemName, quantity, effectText }) {
+    const maxQuantity = Math.max(1, Math.floor(Number(quantity || 1)));
+    modalRoot.innerHTML = `
+      <div id="inventoryQuantityBackdrop" class="modal-backdrop inventory-quantity-backdrop">
+        <section class="modal inventory-quantity-modal" role="dialog" aria-modal="true" aria-labelledby="inventoryQuantityTitle">
+          <button id="closeInventoryQuantityBtn" class="modal-close-button" type="button" aria-label="关闭">×</button>
+          <span class="eyebrow">洞府储物袋</span>
+          <h3 id="inventoryQuantityTitle">使用 · ${escapeHtml(itemName)}</h3>
+          <p>${escapeHtml(effectText || '选择本次使用数量。')}</p>
+          <div class="inventory-quantity-stock">当前拥有 <strong>${formatNumber(maxQuantity)}</strong></div>
+          <div class="inventory-quantity-stepper">
+            <button type="button" data-inventory-quantity-delta="-1">−</button>
+            <input id="inventoryQuantityInput" type="number" min="1" max="${maxQuantity}" step="1" inputmode="numeric" value="1">
+            <button type="button" data-inventory-quantity-delta="1">＋</button>
+          </div>
+          <div class="inventory-quantity-quick">
+            <button type="button" data-inventory-quantity-value="1">使用1个</button>
+            <button type="button" data-inventory-quantity-value="10" ${maxQuantity < 10 ? 'disabled' : ''}>使用10个</button>
+            <button type="button" data-inventory-quantity-value="${maxQuantity}">全部使用</button>
+          </div>
+          <div id="inventoryQuantityPreview" class="inventory-quantity-preview">本次使用：1个 · 使用后剩余：${formatNumber(maxQuantity - 1)}</div>
+          <button id="confirmInventoryQuantityBtn" class="primary-btn" type="button">确认使用</button>
+        </section>
+      </div>`;
+    const input = document.getElementById('inventoryQuantityInput');
+    const preview = document.getElementById('inventoryQuantityPreview');
+    const confirm = document.getElementById('confirmInventoryQuantityBtn');
+    const normalize = value => Math.max(1, Math.min(maxQuantity, Math.floor(Number(value || 1))));
+    const update = value => {
+      const normalized = normalize(value);
+      input.value = String(normalized);
+      preview.textContent = `本次使用：${formatNumber(normalized)}个 · 使用后剩余：${formatNumber(maxQuantity - normalized)}`;
+      return normalized;
+    };
+    const close = () => { modalRoot.innerHTML = ''; };
+    document.getElementById('closeInventoryQuantityBtn')?.addEventListener('click', close);
+    document.getElementById('inventoryQuantityBackdrop')?.addEventListener('click', event => { if (event.target?.id === 'inventoryQuantityBackdrop') close(); });
+    input?.addEventListener('input', () => update(input.value));
+    document.querySelectorAll('[data-inventory-quantity-delta]').forEach(button => button.addEventListener('click', () => update(Number(input.value || 1) + Number(button.dataset.inventoryQuantityDelta || 0))));
+    document.querySelectorAll('[data-inventory-quantity-value]').forEach(button => button.addEventListener('click', () => update(button.dataset.inventoryQuantityValue)));
+    confirm?.addEventListener('click', async () => {
+      const useQuantity = update(input.value);
+      setBusy(confirm, true, '炼化中……');
+      try {
+        state.activeMobileTab = 'cave';
+        const result = await rpcUseInventoryItemQuantityV0147(inventoryId, useQuantity);
+        await Promise.all([refreshInventoryV0147(), refreshCaveSystem(false), syncCultivation(true)]);
+        close();
+        showResultModal({
+          seal: '物',
+          title: `使用 · ${result?.item_name || itemName}`,
+          message: result?.reward_text || `已使用 ${formatNumber(result?.quantity_used || useQuantity)} 个。`,
+          detail: Number(result?.quantity_remaining || 0) > 0 ? `剩余数量：${formatNumber(result.quantity_remaining)}` : '该物品已经用尽。',
+          success: true
+        });
+      } catch (error) {
+        showToast(translateError(error), 'error');
+        setBusy(confirm, false);
+      }
+    });
+  }
+
   function bindInventoryTechniqueActions() {
+    document.querySelectorAll('[data-use-technique-book]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', async () => {
+        setBusy(button, true, button.textContent.trim() === '参悟' ? '参悟中……' : '研习中……');
+        try {
+          state.activeMobileTab = 'cave';
+          const result = await rpcUseTechniqueBookV1(button.dataset.useTechniqueBook);
+          await Promise.all([
+            refreshTechniqueSystem(true),
+            refreshExclusiveTechniqueSystem(true),
+            refreshCaveSystem(true),
+            refreshSpiritStoneBalanceV0141(true)
+          ]);
+          const learned = result?.action === 'learn';
+          const exclusive = result?.book_kind === 'exclusive';
+          showResultModal({
+            seal: exclusive ? '专' : '卷',
+            title: `${learned ? '研习' : '参悟'} · 《${result?.technique_name || '功法'}》`,
+            message: result?.message || (learned ? '功法已收入识海，但尚未自动装备。' : `同名功法书已化为 ${formatNumber(result?.mastery_points_gained || 0)} 点传承点。`),
+            detail: `${result?.reward_text ? `${result.reward_text} ` : ''}剩余道卷：${formatNumber(result?.quantity_remaining || 0)}。`,
+            success: true
+          });
+          await syncCultivation(true);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+          setBusy(button, false);
+        }
+      });
+    });
+
     document.querySelectorAll('[data-upgrade-cave]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
@@ -2981,23 +3240,12 @@
     document.querySelectorAll('[data-use-item]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button, true, '炼化中……');
-        try {
-          state.activeMobileTab = 'cave';
-          const result = await rpcUseInventoryItem(button.dataset.useItem);
-          showResultModal({
-            seal: '物',
-            title: `使用 · ${result?.item_name || '储物'}`,
-            message: result?.reward_text || '物品已经生效。',
-            detail: Number(result?.quantity_remaining || 0) > 0 ? `剩余数量：${formatNumber(result.quantity_remaining)}` : '该物品已经用尽。',
-            success: true
-          });
-        } catch (error) {
-          showToast(translateError(error), 'error');
-          setBusy(button, false);
-        }
-      });
+      button.addEventListener('click', () => openInventoryQuantityModal({
+        inventoryId: button.dataset.useItem,
+        itemName: button.dataset.useItemName || '储物',
+        quantity: Math.max(1, Number(button.dataset.useItemQuantity || 1)),
+        effectText: button.dataset.useItemEffect || ''
+      }));
     });
 
     document.querySelectorAll('[data-technique-slot]').forEach(button => {
@@ -3907,7 +4155,7 @@
       draft.multiplier = null;
     }
     const playerHouse = data.player_house || state.marketSystem?.player_house || {};
-    if (key === 'house' && playerHouse.mode === 'player' && draft.stakeType !== 'spirit_stone') {
+    if (key === 'house' && state.casinoHouseMode === 'player' && playerHouse.mode === 'player' && draft.stakeType !== 'spirit_stone') {
       draft.stakeType = 'spirit_stone';
       draft.amount = casinoStakeBase('spirit_stone');
       draft.multiplier = null;
@@ -3962,7 +4210,7 @@
       : [1, 5, 10, 50, 100];
     const cultivationDisabled = !character.cultivation_eligible || Number(character.cultivation_available || 0) <= 0;
     const playerHouse = data.player_house || state.marketSystem?.player_house || {};
-    const playerHouseOnlyStones = prefix === 'house' && playerHouse.mode === 'player';
+    const playerHouseOnlyStones = prefix === 'house' && state.casinoHouseMode === 'player' && playerHouse.mode === 'player';
     const draft = getCasinoDraft(prefix, data);
     const cultivation = draft.stakeType === 'cultivation';
     const unit = cultivation ? '修为' : '灵石';
@@ -4050,21 +4298,18 @@
   function playerHouseControlHtml(data = {}) {
     const house = data.player_house || {};
     if (house.status === 'unavailable') {
-      return `<div class="market-lore"><p><b>玩家庄状态暂不可用。</b>${escapeHtml(house.error || '当前先按荷老坐庄显示，数据库仍会执行最终判定。')}</p></div>`;
+      return `<div class="market-lore"><p><b>玩家庄状态暂不可用。</b>${escapeHtml(house.error || '当前仍可选择荷老系统庄。')}</p></div>`;
     }
     if (house.mode === 'player') {
       const action = house.can_deactivate
         ? '<button class="ghost-btn" type="button" data-player-house-toggle="off">主动下庄</button>'
         : '';
-      return `<div class="market-lore"><p><b>当前玩家庄家：${escapeHtml(house.dealer_name || '无名修士')}</b></p><p>玩家庄只接受灵石；闲家输时下注本金100%归庄家，闲家赢时本金100%返还，毛利润扣除5%庄家佣金后发放。佣金归当局庄家，不进入造化池。</p><p>灵骰单注最高承赔参考：${formatNumber(house.max_stake_spirit_dice || 0)}；龟卜单注最高承赔参考：${formatNumber(house.max_stake_turtle_oracle || 0)}。</p>${action}</div>`;
+      return `<div class="market-lore"><p><b>当前玩家庄家：${escapeHtml(house.dealer_name || '无名修士')}</b></p><p>本次任期剩余 ${formatDuration(house.remaining_seconds || 0)}，最多坐庄2小时，到期后必须重新申请。</p><p>玩家庄局不限下注金额。闲家中奖时，先扣玩家庄应承担部分，不足由荷老补足；毛利润仍扣除5%庄家佣金。玩家庄局不进入造化池。</p>${action}</div>`;
     }
     if (house.can_activate) {
-      return `<div class="market-lore"><p><b>你当前位列财富榜第一，统一灵石为 ${formatNumber(house.top_wealth || 0)}。</b></p><p>余额严格超过500万，已获得自愿上庄资格。上庄后只接受灵石，并使用你的统一灵石余额承担实际倍率赔付。</p><button class="primary-btn" type="button" data-player-house-toggle="on">自愿上庄</button></div>`;
+      return `<div class="market-lore"><p><b>你的统一灵石为 ${formatNumber(house.current_wealth || 0)}。</b></p><p>余额达到500万即可自愿上庄，无需财富榜第一。每次任期最多2小时，到期后需重新申请。</p><button class="primary-btn" type="button" data-player-house-toggle="on">自愿上庄</button></div>`;
     }
-    const topLine = house.top_name
-      ? `当前财富榜第一为【${escapeHtml(house.top_name)}】，统一灵石 ${formatNumber(house.top_wealth || 0)}。`
-      : '当前财富榜暂无有效角色。';
-    return `<div class="market-lore"><p><b>当前由荷老坐庄。</b></p><p>${topLine} 财富榜第一且统一灵石严格超过500万时，可由本人选择是否上庄。</p></div>`;
+    return `<div class="market-lore"><p><b>当前没有玩家庄。</b></p><p>统一灵石达到500万即可申请上庄；荷老系统庄始终可用。</p></div>`;
   }
 
   function marketPanelHtml(data = {}, view = 'lobby') {
@@ -4079,18 +4324,21 @@
     const disabled = data.status !== 'active';
     const playerHouse = data.player_house || {};
     const playerDealerActive = playerHouse.mode === 'player';
-    const houseDealerName = playerDealerActive ? (playerHouse.dealer_name || '无名庄家') : '荷老';
+    if (!playerDealerActive && state.casinoHouseMode === 'player') state.casinoHouseMode = 'system';
+    const selectedPlayerHouse = playerDealerActive && state.casinoHouseMode === 'player';
+    const houseDealerName = selectedPlayerHouse ? (playerHouse.dealer_name || '无名庄家') : '荷老';
     const error = data.error ? `<div class="market-lore"><p><b>赌坊数据暂不可用：</b>${escapeHtml(data.error)}</p></div>` : '';
     const fullNotice = character.cultivation_full ? '<div class="market-lore cultivation-full-market"><p><b>当前境界修为已圆满。</b></p><p>仍可押注当前小境界起始线以上的修为；输光后境界保持不变。</p></div>' : '';
 
     if (safeView === 'house') {
       const draft = getCasinoDraft('house', data);
       const choiceOptions = houseChoiceOptions(draft.game).map(([value, name]) => `<option value="${value}" ${draft.choice === value ? 'selected' : ''}>${name}</option>`).join('');
-      const houseBetDisabled = disabled || Boolean(playerHouse.is_self_dealer);
-      const houseSubtitle = playerDealerActive ? '即时开奖 · 玩家庄赢家毛利润5%佣金' : '即时开奖 · 系统庄沿用FIX7A造化规则';
-      return `${error}${casinoModeHeader(`大堂 · ${escapeHtml(houseDealerName)}坐庄`, houseSubtitle)}${playerHouseControlHtml(data)}${playerDealerActive ? '' : fullNotice}
+      const houseBetDisabled = disabled || Boolean(selectedPlayerHouse && playerHouse.is_self_dealer);
+      const houseSubtitle = selectedPlayerHouse ? '即时开奖 · 玩家庄5%佣金 · 荷老兜底' : '即时开奖 · 系统庄沿用FIX7A造化规则';
+      const houseModeSwitch = playerDealerActive ? `<div class="casino-house-switch" aria-label="选择庄家"><button type="button" data-house-mode="system" class="${state.casinoHouseMode === 'system' ? 'active' : ''}">荷老（系统庄）</button><button type="button" data-house-mode="player" class="${state.casinoHouseMode === 'player' ? 'active' : ''}">${escapeHtml(playerHouse.dealer_name || '玩家庄')}</button></div>` : '';
+      return `${error}${casinoModeHeader(`大堂 · ${escapeHtml(houseDealerName)}坐庄`, houseSubtitle)}${houseModeSwitch}${playerHouseControlHtml(data)}${selectedPlayerHouse ? '' : fullNotice}
         <section class="casino-play-sheet">
-          <div class="subsection-title"><strong>选择玩法</strong><span>${playerDealerActive ? '玩家庄期间仅可选择灵石' : '先定玩法，再选灵石或修为'}</span></div>
+          <div class="subsection-title"><strong>选择玩法</strong><span>${selectedPlayerHouse ? '玩家庄期间仅可选择灵石' : '先定玩法，再选灵石或修为'}</span></div>
           <div class="casino-game-buttons">
             <button class="${draft.game === 'spirit_dice' ? 'active' : ''}" type="button" data-house-select-game="spirit_dice"><b>骰</b><span>灵骰问道</span><small>大小各50% · 豹子3倍 · 天命34倍</small></button>
             <button class="${draft.game === 'turtle_oracle' ? 'active' : ''}" type="button" data-house-select-game="turtle_oracle"><b>卜</b><span>气运龟卜</span><small>吉、平、凶</small></button>
@@ -4101,9 +4349,9 @@
             <select id="houseChoice">${choiceOptions}</select>
           </label>
           <div class="casino-confirm-row">
-            <button class="primary-btn" type="button" id="confirmHouseGameBtn" ${houseBetDisabled ? 'disabled' : ''}>${playerHouse.is_self_dealer ? '庄家不可下注本桌' : '确认落注并立即开局'}</button>
-            <small>${playerDealerActive
-              ? '灵骰与龟卜继续沿用现有概率和实际净倍率。闲家输时下注本金100%归玩家庄家；闲家赢时本金100%返还，毛利润的95%发给闲家，剩余5%作为庄家佣金由当局庄家保留。玩家庄模式不进入造化池，也不发放本期造化资格。例：押100、毛利润1倍时，玩家总到账195，其中净赢95。庄家余额不足以覆盖该玩法最高可能赔付时，数据库将拒绝落注。'
+            <button class="primary-btn" type="button" id="confirmHouseGameBtn" ${houseBetDisabled ? 'disabled' : ''}>${selectedPlayerHouse && playerHouse.is_self_dealer ? '庄家不可下注本桌' : '确认落注并立即开局'}</button>
+            <small>${selectedPlayerHouse
+              ? '灵骰与龟卜沿用现有概率和实际净倍率。玩家庄局不限下注金额；闲家中奖时先从毛利润扣除5%庄家佣金，再优先扣玩家庄余额，不足部分由荷老补足。玩家庄局不进入造化池，也不发放造化资格。'
               : '灵骰先独立抽取大小，大、小各50%，玩家选择和两边下注量不参与开奖结果。3—10点为小，11—18点为大；111/222/333归小，444/555/666归大。普通非豹子押中毛利润1倍，普通豹子毛利润3倍，天命豹子毛利润34倍；普通豹子全服约1/80，天命豹子全服约1/5000。系统庄赢局仅从毛利润提取5%进入造化池；败局下注额10%进入造化池，余下90%由天道回收。'}</small>
           </div>
         </section>`;
@@ -4144,11 +4392,11 @@
         <div><span>当前境界可动用修为</span><strong>${formatNumber(character.cultivation_available || 0)}</strong><small>可一次押上全部，输光不跌境</small></div>
         <div><span>今日参与</span><strong>${formatNumber(activity.total_count || 0)} 局</strong><small>已取消每日次数限制</small></div>
       </div>
-      ${playerDealerActive ? '' : fullNotice}
+      ${selectedPlayerHouse ? '' : fullNotice}
       ${playerHouseControlHtml(data)}
       ${disabled ? '<div class="market-lore"><p><b>万运博弈楼当前暂停接受新赌契。</b>已有赌契仍会正常结算或返还。</p></div>' : ''}
       <div class="casino-mode-grid">
-        <button type="button" data-casino-view="house" ${disabled ? 'disabled' : ''}><b>堂</b><strong>大堂</strong><span>${playerDealerActive ? `${escapeHtml(houseDealerName)}坐庄，赢家毛利润收取5%佣金` : '荷老坐庄，选择资源、数量与倍数后即时开奖'}</span></button>
+        <button type="button" data-casino-view="house" ${disabled ? 'disabled' : ''}><b>堂</b><strong>大堂</strong><span>${playerDealerActive ? `荷老与${escapeHtml(playerHouse.dealer_name || '玩家庄')}可切换` : '荷老坐庄，选择资源、数量与倍数后即时开奖'}</span></button>
         <button type="button" data-casino-view="duel"><b>雅</b><strong>贵宾雅间</strong><span>开桌等待应局，有人接受即刻结算</span></button>
         <button type="button" data-casino-view="pools"><b>池</b><strong>全服造化池</strong><span>查看两类共享奖池、造化签和开奖记录</span></button>
       </div>
@@ -4156,7 +4404,7 @@
         ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石', hitChance)}
         ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为', hitChance)}
       </div>
-      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>财富榜第一且统一灵石严格超过500万时，可由本人自愿接替荷老坐庄。玩家庄只接受灵石，庄胜收取100%下注本金；闲家胜时本金100%返还，按实际净倍率计算毛利润，其中95%发给闲家、5%作为庄家佣金保留。佣金不进入造化池。无人上庄时，荷老继续沿用FIX7A系统庄规则。贵宾雅间与造化池其他规则保持不变。</p></div>`;
+      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>统一灵石达到500万即可自愿上庄，每次最多2小时。玩家庄存在时，闲家仍可自由切换荷老系统庄；选择玩家庄时不限下注金额，中奖赔付先扣玩家庄，不足由荷老补足。玩家庄毛利润5%佣金、零入池规则不变。</p></div>`;
   }
 
   function duelChoices(game) {
@@ -4221,6 +4469,15 @@
       button.dataset.bound = '1';
       button.addEventListener('click', () => {
         state.casinoView = 'lobby';
+        renderCasinoPanel();
+      });
+    });
+
+    document.querySelectorAll('[data-house-mode]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        state.casinoHouseMode = button.dataset.houseMode === 'player' ? 'player' : 'system';
         renderCasinoPanel();
       });
     });
@@ -4354,7 +4611,7 @@
         setBusy(houseConfirm, true, '推演中……');
         try {
           const stake = readCasinoStake('house');
-          const result = await rpcPlayHouseGameV1(houseGameInput?.value || 'spirit_dice', stake.stakeType, stake.amount, houseChoice?.value || 'big');
+          const result = await rpcPlayHouseGameV0147(state.casinoHouseMode, houseGameInput?.value || 'spirit_dice', stake.stakeType, stake.amount, houseChoice?.value || 'big');
           showToast(result?.result_text || '赌契已结算。', result?.won ? 'success' : 'error');
           await Promise.all([refreshMarketSystem(true), refreshWorldEvents(true), refreshSpiritStoneBalanceV0141(true)]);
         } catch (error) {
@@ -4510,6 +4767,7 @@
     const techniques = Array.isArray(techniqueSystem.techniques) ? techniqueSystem.techniques : [];
     const inventory = bundle.inventory || [];
     const caveSystem = bundle.caveSystem || state.caveSystem || { resources: [], buildings: [], recipes: [], rules: {} };
+    const techniqueLibrary = bundle.techniqueLibrary || state.techniqueLibrary || { status: 'loading', books: [] };
     const destinyRanking = bundle.destinyRanking || state.destinyRanking || { status: 'loading', entries: [], total_count: 0 };
     const npcSocial = bundle.npcSocial || state.npcSocial || { status: 'loading', contacts: [], recent_events: [], settings: {} };
     const sectSystem = bundle.sectSystem || state.sectSystem || { status: 'loading', sects: [], buildings: [], tasks: [], recent_events: [], settings: {} };
@@ -4657,8 +4915,8 @@
         </section>
 
         <section id="inventorySection" class="panel info-section" data-mobile-screen="cave">
-          <div class="panel-title"><h3>洞府</h3><span class="badge">建筑 · 产出 · 炼丹</span></div>
-          ${cavePanelHtml(caveSystem, inventory)}
+          <div class="panel-title"><h3>洞府</h3><span class="badge">建筑 · 藏经 · 炼丹</span></div>
+          ${cavePanelHtml(caveSystem, inventory, techniqueLibrary)}
         </section>
 
         <section id="opportunitySection" class="double-panel-grid breakthrough-only-grid">
@@ -4899,13 +5157,21 @@
   function historyHtml(rows) {
     const latestRows = (rows || []).slice(0, 100);
     if (!latestRows.length) return '<div class="empty-state">命书尚为空白。</div>';
-    return `<div class="timeline">${latestRows.map(row => `
-      <article class="timeline-item">
-        <time>仙历 ${escapeHtml(row.world_year)} 年</time>
-        <h4>${escapeHtml(row.title)}</h4>
-        <p>${escapeHtml(row.content)}</p>
-      </article>
-    `).join('')}</div>`;
+    return `<div class="timeline">${latestRows.map(row => {
+      const opportunity = row?.event_type === 'opportunity' || row?.source_type === 'opportunity_result';
+      const rarity = row?.rarity || '';
+      const highTier = opportunityHighTier(rarity);
+      const cleanTitle = String(row?.title || '无名记载').replace(/^机缘[·・]/, '');
+      const outcomeLabel = row?.outcome_label || (row?.path_name === '涉险' ? '涉险代价' : '趋吉所得');
+      const detail = row?.result_detail || '';
+      return `
+        <article class="timeline-item ${opportunity ? 'opportunity-history-item' : ''} ${highTier ? 'opportunity-high-tier' : ''}">
+          <time>仙历 ${escapeHtml(row.world_year)} 年</time>
+          <h4>${opportunity ? `<span class="opportunity-history-grade ${highTier ? 'high-tier' : ''}">【${escapeHtml(rarity || '机缘')}】</span>` : ''}<span>${escapeHtml(cleanTitle)}</span></h4>
+          <p>${escapeHtml(row.content || '')}</p>
+          ${opportunity && detail ? `<div class="opportunity-history-result"><span>${escapeHtml(outcomeLabel)}</span><strong>${escapeHtml(detail)}</strong></div>` : ''}
+        </article>`;
+    }).join('')}</div>`;
   }
 
   async function enterGame() {
@@ -4951,7 +5217,7 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents] = await Promise.all([
+      const [breakthroughStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, techniqueLibrary, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetTechniqueSystemV2(),
         rpcGetExclusiveTechniqueSystemV1().catch(error => ({
@@ -4961,6 +5227,9 @@
           status: 'unavailable', error: translateError(error)
         })),
         rpcGetCaveSystemV1(),
+        rpcGetTechniqueLibraryV1().catch(error => ({
+          status: 'unavailable', books: [], error: translateError(error)
+        })),
         rpcGetDestinyRankingV1(50, 0).catch(error => ({
           status: 'unavailable', entries: [], total_count: 0, error: translateError(error)
         })),
@@ -4983,6 +5252,7 @@
       bundle.exclusiveTechniqueSystem = exclusiveTechniqueSystem;
       bundle.heavenBalance = heavenBalance;
       bundle.caveSystem = caveSystem;
+      bundle.techniqueLibrary = techniqueLibrary;
       bundle.destinyRanking = destinyRanking;
       bundle.npcSocial = npcSocial;
       bundle.sectSystem = sectSystem;
@@ -4995,6 +5265,7 @@
       state.exclusiveTechniqueSystem = exclusiveTechniqueSystem;
       state.heavenBalance = heavenBalance;
       state.caveSystem = caveSystem;
+      state.techniqueLibrary = techniqueLibrary;
       state.destinyRanking = destinyRanking;
       state.destinyRankingFetchedAt = Date.now();
       state.npcSocial = npcSocial;
@@ -5005,7 +5276,7 @@
       state.worldEvents = worldEvents;
       state.worldEventsFetchedAt = Date.now();
       if (Number(opportunitySettlement?.events_resolved || 0) > 0) {
-        const opportunityHistory = await rpcGetOpportunityHistoryV0146(100).catch(() => ({ entries: [] }));
+        const opportunityHistory = await rpcGetOpportunityHistoryV0147(100).catch(() => ({ entries: [] }));
         bundle.history = mergeHistoryWithOpportunityResults(bundle.history, opportunityHistory?.entries);
         state.history = bundle.history;
       }

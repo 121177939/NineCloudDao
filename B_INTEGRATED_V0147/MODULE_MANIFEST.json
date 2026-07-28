@@ -1,0 +1,177 @@
+{
+  "moduleId": "B-20260727-TECHNIQUE-BOOK-LIBRARY",
+  "moduleName": "九霄问道B线：功法书、洞府藏经架与本命专属研习",
+  "status": "READY_FOR_A",
+  "baselineId": "V0.14.6_AB4",
+  "releaseLabel": "Web Alpha V0.14.6 CACHE10",
+  "scope": [
+    "普通机缘功法改为功法书并堆叠",
+    "洞府藏经架主动研习与参悟",
+    "专属本命/异命道卷均入库",
+    "仅本命专属可研习",
+    "离线机缘汇总展示功法书所得"
+  ],
+  "preserved": [
+    "V0.14.5机缘V4品级、掉率、数值和首次奖励内容",
+    "专属本命初始20%、异命+2个百分点、本命重置20%",
+    "FIX7A系统庄、玩家庄5%佣金、严格界闻、三榜、V0.14.6命书明细",
+    "既有已学功法、等级、熟练度、装备和已发永久奖励"
+  ],
+  "databaseExecutionOrder": [
+    "database/00_precheck.sql",
+    "database/10_technique_book_library.sql",
+    "database/30_postcheck.sql"
+  ],
+  "oneShotSql": "database/九霄问道_B线_功法书与洞府藏经架.sql",
+  "sharedFilePatches": [
+    "patches/app.js.patch",
+    "patches/styles.css.patch"
+  ],
+  "candidateFiles": [
+    "source/candidate/app.js",
+    "source/candidate/styles.css"
+  ],
+  "staticValidation": {
+    "status": "passed",
+    "report": "tests/TEST_REPORT.md",
+    "rawOutput": "tests/raw_test_output.txt",
+    "limitations": "tests/UNEXECUTED_TESTS.md"
+  },
+  "files": [
+    {
+      "path": "A_转发说明.txt",
+      "sha256": "43f22f5e14c0fbdbac1cce29687bebcc681cf99fa62c33e5c359995bf8174f66",
+      "bytes": 790
+    },
+    {
+      "path": "BASELINE_REFERENCE.json",
+      "sha256": "2b4f5be81f3d469e462bc95188b759cbfcb5bcbc5715deb4097cb6790d5f278b",
+      "bytes": 1842
+    },
+    {
+      "path": "CHANGE_LIST.md",
+      "sha256": "34fe9a84fb1e5b719016882b437b75a5b5abe6fc8de2e184614df86690874a4f",
+      "bytes": 1699
+    },
+    {
+      "path": "INTEGRATION_NOTES.md",
+      "sha256": "e430fdc8819a3360a0a530e5ff1521d5fe6598ee3e09f1b1c67d8c39cabf3f73",
+      "bytes": 1614
+    },
+    {
+      "path": "README_MODULE.md",
+      "sha256": "25107835e8608f4ff2c227127a02639818903ef08471b8f5f4db926b94a6d61e",
+      "bytes": 2261
+    },
+    {
+      "path": "ROLLBACK.md",
+      "sha256": "6e29a910a9af99b4895adffae2f07b5c222da7236c6d9896e684ee19824cc261",
+      "bytes": 741
+    },
+    {
+      "path": "SHARED_FILE_PATCHES.md",
+      "sha256": "03c8dca77f227d00131663c9fa6b7e84c8ec0f013cd55264c4e7c0aed3228077",
+      "bytes": 591
+    },
+    {
+      "path": "database/00_precheck.sql",
+      "sha256": "2d203f5dba79f7f717b6045d8275ef4e031888ea1883d3cd0b99400f0867836f",
+      "bytes": 1532
+    },
+    {
+      "path": "database/10_technique_book_library.sql",
+      "sha256": "7bce962bc1c777892ea5a2c77fa192cf0e0f36bbf7efd030651bda977a9c290a",
+      "bytes": 38313
+    },
+    {
+      "path": "database/30_postcheck.sql",
+      "sha256": "cf947433423a850fa7bc00273d37fb0bdaf4dbca96973a3909ce705d35eb793a",
+      "bytes": 1446
+    },
+    {
+      "path": "database/90_emergency_disable.sql",
+      "sha256": "ca82cb4efa4e396b536db05a3edc53997f8a0eda07de52e96d63166a5969167e",
+      "bytes": 279
+    },
+    {
+      "path": "database/91_resume.sql",
+      "sha256": "1d9e33fc7cc0325eb032c51fe2c9827d057906dad24945bcfa2d4f79889e1dba",
+      "bytes": 148
+    },
+    {
+      "path": "database/99_rollback.sql",
+      "sha256": "6082c34749ad59ab2003b1d7ba20a7734fec214dc19442e061d28a96f42d3b3e",
+      "bytes": 23187
+    },
+    {
+      "path": "database/九霄问道_B线_功法书与洞府藏经架.sql",
+      "sha256": "48e8a640d75d40eb70278ecfabd3ed8efa63cf9ddfe761c02704845d171a2475",
+      "bytes": 41434
+    },
+    {
+      "path": "docs/DATA_MODEL.md",
+      "sha256": "d7ec5a118af4053c1dc30e3ee2d9f70517c46481720af3653e8328430a3be0d2",
+      "bytes": 548
+    },
+    {
+      "path": "docs/FINAL_RULES.md",
+      "sha256": "1f5f99fd5d750afce8e5c5b5520550db6b7f2cdae7b15f22ed81e52b9819e030",
+      "bytes": 1120
+    },
+    {
+      "path": "patches/app.js.patch",
+      "sha256": "f9d11ac1fa67b68a88f8666802179f3cf9da53cefeb3ecadb7c737bdd8f86c80",
+      "bytes": 20046
+    },
+    {
+      "path": "patches/styles.css.patch",
+      "sha256": "677c47ebbcdb5be9419303af3dc0f4cd0d559d8c45b744c3523aaf85889ac6fe",
+      "bytes": 2815
+    },
+    {
+      "path": "source/candidate/app.js",
+      "sha256": "da740bf43d9f983cbed1ed3ee9d5821ddefcb8410d53dde2cfc3f4e174a4d5ed",
+      "bytes": 276100
+    },
+    {
+      "path": "source/candidate/styles.css",
+      "sha256": "647c7e77dfe5acd2acf3df8f0ef4cddda4318784dfda6729ab97d0da83071fc3",
+      "bytes": 138822
+    },
+    {
+      "path": "tests/TEST_REPORT.md",
+      "sha256": "17a42eddec72f7496a2ad0da96462914b9604676198121ae7ce862b1602427dd",
+      "bytes": 1040
+    },
+    {
+      "path": "tests/UNEXECUTED_TESTS.md",
+      "sha256": "e26a7968c1d2a1396edf1580aa142863ae7f0557a79581eafb718630ebdc2bc1",
+      "bytes": 635
+    },
+    {
+      "path": "tests/raw_test_output.txt",
+      "sha256": "ea9269f004307eb7676f5f9e1d002e362ff27794ceb905e93a32280354e52563",
+      "bytes": 1943
+    },
+    {
+      "path": "tests/run_all.sh",
+      "sha256": "244cfb9ba6d991de008be9dec91c54850b241cb19a8cb648543a0f3f7f79321e",
+      "bytes": 970
+    },
+    {
+      "path": "tests/sql_static_audit.py",
+      "sha256": "520742e2bc1e7f12e89fbf77593c95bb08e3bbdaaedb3782822da3051710a8ce",
+      "bytes": 3390
+    },
+    {
+      "path": "tests/test_patch_application.sh",
+      "sha256": "bbb7cb39df1c809d7691bc7fadc5e128615d88fcad60b9014482a7774992d0bc",
+      "bytes": 615
+    },
+    {
+      "path": "tests/test_technique_book_ui.js",
+      "sha256": "cadb3491ea37b3b18e5fe5fb82036165711d6ce4fe51cdb0b84896495e8eb6ee",
+      "bytes": 1465
+    }
+  ]
+}
