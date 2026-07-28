@@ -1,5 +1,11 @@
 # 数据库迁移登记
 
+## V0.14.9
+
+- 无新增数据库迁移。
+- 继续沿用`database/V0.14.8/202607281630_v0148_fish_shrimp_mobile_casino.sql`。
+- 若V0.14.8已经执行，不得为V0.14.9重复执行。
+
 ## V0.14.1 FIX4 CACHE1
 
 - 文件：`database/V0.14.1/202607262230_v0141_fix4_cache1_release_control.sql`

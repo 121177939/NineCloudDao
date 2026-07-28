@@ -1,25 +1,21 @@
 {
-  "version": "V0.14.8",
-  "release": "casino-mobile-layout-fish-shrimp-cache12",
-  "base": "V0.14.7 CACHE11",
-  "databaseBaseline": "V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合规则 + V0.14.5机缘V4 + V0.14.6机缘明细 + V0.14.7藏经架与双庄兜底 + V0.14.8鱼虾灵局",
-  "databaseMigration": "database/V0.14.8/202607281630_v0148_fish_shrimp_mobile_casino.sql",
+  "version": "V0.14.9",
+  "release": "fish-responsive-cache15",
+  "base": "V0.14.9 CACHE14",
+  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局",
+  "databaseMigration": "database/V0.14.8/202607281630_v0148_fish_shrimp_mobile_casino.sql (沿用；V0.14.9无新增SQL)",
   "pagesStagingDirectory": ".pages-site",
-  "pythonVersion": "3.13.5",
-  "nodeVersion": "24",
   "features": [
-    "接入B线万运博弈楼手机端2x2总览、1x4导航、2x2入口与奖池双列布局",
-    "新增鱼虾灵局60秒全服公共轮次，三枚法印骰共用同一开奖结果",
-    "押注设置、余额、时间和庄家区统一为手机极简紧凑尺寸",
-    "鱼虾蟹铜钱葫芦青蛙六门三列下注，命中按钮结算后边框发光",
-    "支持荷老局灵石与修为，玩家局仅灵石且保留5%佣金与荷老兜底",
-    "已确认下注写入数据库，离开页面后仍保留并在后续服务调用中结算",
-    "最近20局结算历史与结算明细按桌分组，荷老局或玩家局每组只显示一次",
-    "CACHE12强制更新"
+    "恢复六枚鱼虾灵局SVG法印画面",
+    "鱼虾灵局桌面与移动端随玩法容器自适应",
+    "保留手机三列押注卡与命中发光",
+    "保留GitHub Pages build/artifact/deploy工作流",
+    "CACHE15强制更新"
   ],
-  "clientBuild": "v0148-cache12",
+  "clientBuild": "v0149-cache15",
   "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8",
   "worldFeedBaseline": "V0.14.2",
   "rankingBaseline": "V0.14.3",
-  "adminBaseline": "V0.14.4 ADMIN2"
+  "adminBaseline": "V0.14.4 ADMIN2",
+  "databaseChange": "none"
 }

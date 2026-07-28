@@ -4433,9 +4433,22 @@
     return FISH_SHRIMP_SYMBOLS_V0148.find(item => item[0] === code) || ['unknown','?','未知法印'];
   }
 
+  const FISH_SHRIMP_SEAL_SVG_V0149 = Object.freeze({
+    fish: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><path d="M24 50c16-20 37-25 55-9l10-8-2 16 2 16-10-8c-18 16-39 12-55-7Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="60" cy="44" r="3" fill="currentColor"/></svg>`,
+    shrimp: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><path d="M73 28c-25-8-45 10-42 30 3 18 26 24 38 9 8-10 4-21-7-23-10-2-17 7-12 15" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><path d="M73 28l12-6M72 33l14 1" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>`,
+    crab: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><ellipse cx="50" cy="56" rx="22" ry="14" fill="none" stroke="currentColor" stroke-width="7"/><path d="M29 49 17 37m54 12 12-12M31 61 19 65m50-4 12 4M36 68 24 80m40-12 12 12" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M20 39c-5-8 2-14 10-10M80 39c5-8-2-14-10-10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>`,
+    coin: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="8"/><rect x="39" y="39" width="22" height="22" rx="2" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="2"/></svg>`,
+    gourd: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><path d="M52 19c-6 6-4 13 1 19-10-2-18 4-17 14 1 6 6 11 11 13-10 2-19 10-18 21 1 12 12 19 24 17 11-2 18-12 15-23-1-7-6-11-12-14 6-4 9-9 8-16-2-8-7-12-15-11 2-6 5-11 3-20Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    frog: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><circle cx="35" cy="36" r="9" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="65" cy="36" r="9" fill="none" stroke="currentColor" stroke-width="6"/><ellipse cx="50" cy="58" rx="24" ry="16" fill="none" stroke="currentColor" stroke-width="7"/><path d="M39 63c8 6 14 6 22 0" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>`
+  });
+
   function fishShrimpGlyphV0148(code) {
-    const meta = fishShrimpSymbolMetaV0148(code);
-    return `<span class="fish-seal-glyph" aria-hidden="true">${escapeHtml(meta[1].slice(0,1))}</span>`;
+    const svg = FISH_SHRIMP_SEAL_SVG_V0149[code];
+    if (!svg) {
+      const meta = fishShrimpSymbolMetaV0148(code);
+      return `<span class="fish-seal-glyph" aria-hidden="true">${escapeHtml(meta[1].slice(0,1))}</span>`;
+    }
+    return `<span class="fish-seal-glyph fish-seal-${escapeHtml(code)}" aria-hidden="true">${svg}</span>`;
   }
 
   function fishShrimpDraftV0148() {
@@ -5086,11 +5099,14 @@
         draft.game = game;
         draft.choice = game === 'fish_shrimp' ? '' : (houseChoiceOptions(game)[0]?.[0] || 'big');
         state.casinoDrafts.house = draft;
+        // FIX1：先同步旧页面里的隐藏玩法字段，再触发重绘。
+        // 否则 renderCasinoPanel() 开头会从旧DOM重新抓取 spirit_dice，
+        // 将刚选择的 fish_shrimp 覆盖回去，表现为点击鱼虾灵局没有反应。
+        if (houseGameInput) houseGameInput.value = game;
         if (game === 'fish_shrimp' || previousGame === 'fish_shrimp') {
           renderCasinoPanel();
           return;
         }
-        if (houseGameInput) houseGameInput.value = game;
         document.querySelectorAll('[data-house-select-game]').forEach(node => node.classList.toggle('active', node === button));
         fillHouseChoices(game);
         if (houseChoice) houseChoice.value = draft.choice;

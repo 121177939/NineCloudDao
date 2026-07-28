@@ -7,11 +7,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 concurrency:
   group: "pages"
@@ -20,104 +15,25 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.13.5
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13.5"
-
-      - name: Set up Node.js 24
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          package-manager-cache: false
-
-      - name: Show pinned toolchain
+      - name: Show runner toolchain
         run: |
-          python --version
+          python3 --version
           node --version
 
-      - name: Verify V0.14.8 release metadata
-        run: python tools/verify_release_v0148.py .
+      - name: Verify and build V0.14.9
+        run: python3 tools/ci_v0149.py .
 
-      - name: JavaScript syntax checks
-        run: |
-          node --check app.js
-          node --check config.js
-          node --check update-guard.js
-          node --check sw.js
-          node --check tools/test_casino_render_v0141.js
-          node --check tools/test_world_events_render_v0142.js
-          node --check tools/test_ranking_render_v0143.js
-          node --check tools/test_features_v0144.js
-          node --check tools/test_features_v0145.js
-          node --check tools/test_opportunity_history_v0146.js
-          node --check tools/test_features_v0147.js
-          node --check tools/test_features_v0148.js
-          node --check tools/test_fish_render_v0148.js
-
-      - name: V0.14.1 FIX7A SQL static audit
-        run: python tools/sql_static_audit_v0141_fix7a.py .
-
-      - name: V0.14.2 SQL static audit
-        run: python tools/sql_static_audit_v0142.py .
-
-      - name: V0.14.3 SQL static audit
-        run: python tools/sql_static_audit_v0143.py .
-
-      - name: V0.14.4 SQL static audit
-        run: python tools/sql_static_audit_v0144.py .
-
-      - name: V0.14.5 inherited SQL static audit
-        run: python tools/sql_static_audit_v0145.py .
-      - name: V0.14.6 inherited SQL static audit
-        run: python tools/sql_static_audit_v0146.py .
-
-      - name: V0.14.7 inherited SQL static audit
-        run: python tools/sql_static_audit_v0147.py .
-
-      - name: V0.14.8 SQL static audit
-        run: python tools/sql_static_audit_v0148.py .
-
-      - name: Casino render simulation
-        run: node tools/test_casino_render_v0141.js .
-
-      - name: World feed strict ordering simulation
-        run: node tools/test_world_events_render_v0142.js .
-
-      - name: Ranking switch render simulation
-        run: node tools/test_ranking_render_v0143.js .
-
-      - name: V0.14.4 inherited feature checks
-        run: node tools/test_features_v0144.js .
-
-      - name: V0.14.5 inherited feature checks
-        run: node tools/test_features_v0145.js .
-      - name: V0.14.6 inherited opportunity history checks
-        run: node tools/test_opportunity_history_v0146.js .
-
-      - name: V0.14.7 inherited feature checks
-        run: node tools/test_features_v0147.js .
-
-      - name: V0.14.8 feature checks
-        run: node tools/test_features_v0148.js .
-
-      - name: V0.14.8 fish render simulation
-        run: node tools/test_fish_render_v0148.js .
-
-      - name: Build clean Pages staging directory
-        run: python tools/prepare_pages_site_v0148.py . .pages-site
-
-      - name: Verify Pages staging directory
-        run: python tools/verify_pages_site_v0148.py .pages-site
-
-      - name: Configure Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload Pages artifact
+      - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: .pages-site
@@ -125,10 +41,14 @@ jobs:
 
   deploy:
     needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
