@@ -69,6 +69,7 @@
     liveCultivationBase: 0,
     liveCultivationStartedAt: 0,
     breakthroughStatus: null,
+    fateStatus: null,
     opportunityStatus: null,
     opportunityPollTimer: null,
     opportunityCountdownTimer: null,
@@ -942,6 +943,15 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+
+  async function rpcGetFateStatusB01() {
+    const result = await restFetch('rpc/get_character_fate_status_b01', {
+      method: 'POST',
+      body: {}
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function rpcGetBreakthroughStatus() {
     const result = await restFetch('rpc/get_breakthrough_status_v1', {
       method: 'POST',
@@ -1138,6 +1148,15 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+
+  async function rpcRedeemTechniqueBookV0152(bookId, quantity = 1, requestId = crypto.randomUUID()) {
+    const result = await restFetch('rpc/redeem_technique_book_v0152', {
+      method: 'POST',
+      body: { p_book_id: bookId, p_quantity: Number(quantity || 1), p_request_id: requestId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function rpcSetExclusiveTechniqueSlotV1(characterExclusiveId) {
     const result = await restFetch('rpc/set_exclusive_technique_slot_v1', {
       method: 'POST',
@@ -1262,7 +1281,7 @@
         id: `eq.${rootLink.spirit_root_id}`
       }) : null,
       fateLink ? getOne('fates', {
-        select: 'id,code,name,rarity,description,modifiers',
+        select: 'id,code,name,rarity,description,modifiers,trigger_rules',
         id: `eq.${fateLink.fate_id}`
       }) : null,
       getOne('character_cultivation_state', {
@@ -1837,6 +1856,9 @@
     const canBreakthrough = current >= required;
     const insights = Number(status.heavenly_insight_count || 0);
     const insightBonus = Number(status.compensation_bonus || insights * 0.05);
+    const fateStatus = state.fateStatus?.status === 'ok' ? state.fateStatus : null;
+    const unyieldingStacks = Number(fateStatus?.unyielding_stack_count || 0);
+    const unyieldingBonus = Number(fateStatus?.unyielding_current_bonus || 0);
     return `
       <div class="panel-title"><h3>境界突破</h3><span class="badge">目标 · ${escapeHtml(status.next_stage_name || '未知')}</span></div>
       <div class="breakthrough-card ${canBreakthrough ? 'cultivation-full' : ''}">
@@ -1847,8 +1869,10 @@
         <div class="breakthrough-meta">
           <span>基础成功率：${formatNumber(Number(status.base_success_rate || 0) * 100, 1)}%</span>
           <span>天劫感悟：${formatNumber(insights)}丝（突破 +${formatNumber(insightBonus * 100, 0)}个百分点 · 总修炼速度 +${formatNumber(insights * 10, 0)}%）</span>
-          <span>最终成功率上限：${formatNumber(Number(status.compensation_cap || 0.8) * 100, 0)}%</span>
-          ${status.original_target_stage_name ? `<span>感悟绑定目标：${escapeHtml(status.original_target_stage_name)}；真正抵达后清除</span>` : '<span>实际受到失败惩罚后，天劫感悟+1丝：突破率+5个百分点、总修炼速度+10%</span>'}
+          ${fateStatus?.code === 'unyielding_heart' ? `<span>百折道心：${formatNumber(unyieldingStacks)} / ${formatNumber(fateStatus.unyielding_stack_limit || 4)}层（突破额外 +${formatNumber(unyieldingBonus * 100, 0)}个百分点）</span>` : ''}
+          ${fateStatus?.code === 'heaven_jealous' && status.penalty_enabled !== false ? `<span>天妒劫身：渡劫成功率 -${formatNumber(Number(fateStatus.tribulation_success_penalty || 0) * 100, 0)}个百分点</span>` : ''}
+          <span>最终成功率上限：${formatNumber(Number(status.compensation_cap || 0.95) * 100, 0)}%</span>
+          <span>实际受到失败惩罚后获得天劫感悟；百折道心同步获得百折。任意突破成功后两者一起清空。</span>
           <span>失败结果：身死0.5% · 大跌境5% · 小跌境8% · 全损15% · 半损30% · 有惊无险41.5%</span>
           <span>有惊无险、死亡及保护生效时不增加天劫感悟</span>
           ${status.penalty_enabled === false ? '<span>元婴以下保护：失败不死亡、不跌境、不扣修为、不增加感悟</span>' : '<span>元婴期及以上：完整天劫失败结果生效</span>'}
@@ -2274,8 +2298,8 @@
             title: result?.success ? `突破成功 · ${result.target_stage_name}` : `突破失败 · ${breakthroughOutcomeName(result?.outcome_code)}`,
             message: result?.message || (result?.success ? '道关已开。' : '此番冲关未成。'),
             detail: result?.success
-              ? `${Number(result.lifespan_bonus || 0) > 0 ? `寿元增加 ${formatNumber(result.lifespan_bonus)} 年。` : ''}${result.affliction_name ? ` 当前状态：${result.affliction_name}。` : ''}${Number(result.heavenly_insight_count || 0) > 0 ? ` 天劫感悟仍保留 ${formatNumber(result.heavenly_insight_count)} 丝，直到抵达原始目标。` : ' 抵达原始目标后，天劫感悟已经清除。'}`
-              : `${Number(result.cultivation_lost || 0) > 0 ? `修为损失 ${formatNumber(result.cultivation_lost)}，当前修为 ${formatNumber(result.cultivation_after)}。` : '境界与修为没有额外损失。'}${result.affliction_name ? ` 状态：${result.affliction_name}。` : ''}${result.insight_gained ? ` 天劫感悟 +1丝；当前共 ${formatNumber(result.heavenly_insight_count || 0)} 丝，突破率累计 +${formatNumber(Number(result.compensation_bonus || 0) * 100, 0)} 个百分点，总修炼速度累计 +${formatNumber(Number(result.heavenly_insight_count || 0) * 10, 0)}%。` : ' 本次不增加天劫感悟与突破成功率。'}最终成功率最高80%。`,
+              ? `${Number(result.lifespan_bonus || 0) > 0 ? `寿元增加 ${formatNumber(result.lifespan_bonus)} 年。` : ''}${result.affliction_name ? ` 当前状态：${result.affliction_name}。` : ''} 天劫感悟与百折层数已经清空。`
+              : `${Number(result.cultivation_lost || 0) > 0 ? `修为损失 ${formatNumber(result.cultivation_lost)}，当前修为 ${formatNumber(result.cultivation_after)}。` : '境界与修为没有额外损失。'}${result.affliction_name ? ` 状态：${result.affliction_name}。` : ''}${result.insight_gained ? ` 天劫感悟 +1丝；当前共 ${formatNumber(result.heavenly_insight_count || 0)} 丝，突破率累计 +${formatNumber(Number(result.compensation_bonus || 0) * 100, 0)} 个百分点，总修炼速度累计 +${formatNumber(Number(result.heavenly_insight_count || 0) * 10, 0)}%。` : ' 本次不增加天劫感悟与突破成功率。'}最终成功率最高95%。`,
             success: Boolean(result?.success)
           });
         } catch (error) {
@@ -2765,9 +2789,10 @@
             ${rows.map(row => {
               const level = Number(row.level || 1);
               const maxLevel = Number(row.max_level || 36);
-              const canUpgrade = level < maxLevel;
+              const mastered = Boolean(row.is_mastered);
+              const canUpgrade = !mastered;
               const equipLabel = row.equipped ? '专属运转中' : '设为专属';
-              const levelUpText = canUpgrade ? `精进 · ${formatNumber(row.next_upgrade_cost || 0)} 灵石` : '已满层';
+              const levelUpText = mastered ? '已圆满' : (level < maxLevel ? `精进 · ${formatNumber(row.next_upgrade_cost || 0)} 灵石` : `圆满 · ${formatNumber(row.next_upgrade_cost || 0)} 灵石`);
               return `
                 <article class="manage-card technique-v2-card exclusive-technique-card ${row.equipped ? 'equipped' : ''}">
                   <div class="manage-card-head">
@@ -2783,6 +2808,7 @@
                     <span>${escapeHtml(row.is_matching_fate ? '命格契合' : '命格不符')}</span>
                     <span>洞府偏向 ${escapeHtml(exclusiveResourceName(row.cave_resource_code))}</span>
                     <span>当前加成 +${formatNumber(Number(row.effect_multiplier_bonus || 0) * 100, 2)}%</span>
+                    <span>${mastered ? '已圆满 · 数值效果×120%' : (level >= maxLevel ? '可进行圆满' : '每级增加一级基础效果10%')}</span>
                   </div>
                   <div class="manage-actions">
                     <button class="ghost-btn" type="button" data-exclusive-slot="${escapeHtml(row.id)}" ${row.equipped ? 'disabled' : ''}>${escapeHtml(equipLabel)}</button>
@@ -2809,7 +2835,7 @@
       <div id="techniqueV2Root" class="technique-v2-root">
         <div class="resource-inline"><span>可用灵石</span><strong data-spirit-stone-balance>${formatNumber(stones)}</strong></div>
         <div class="technique-slot-grid">
-          ${['main', 'support_1', 'support_2'].map(slot => {
+          ${['ordinary_1', 'ordinary_2', 'ordinary_3', 'ordinary_4', 'ordinary_5'].map(slot => {
             const equipped = rows.find(row => row.character_technique_id === slots?.[slot] || row.equipped_slot === slot);
             return `<article class="technique-slot ${equipped ? 'filled' : ''}">
               <span>${escapeHtml(techniqueSlotName(slot))}</span>
@@ -2819,7 +2845,7 @@
           }).join('')}
         </div>
         <div class="technique-rule-note">
-          <strong>功法 V2</strong>
+          <strong>功法 V3</strong>
           <span>主修熟练速度100%，辅修50%；每层需要100点熟练/传承进度。重复获得只转化为传承点，不再叠加永久修炼效果。</span>
         </div>
         <div class="technique-manage-list">
@@ -2918,12 +2944,12 @@
     const total = books.reduce((sum, row) => sum + Math.max(0, Number(row?.quantity || 0)), 0);
     return `
       <div class="subsection-title technique-library-title"><strong>藏经架</strong><span>${formatNumber(books.length)} 种道卷 · 共 ${formatNumber(total)} 本</span></div>
-      <p class="technique-library-note">机缘所得功法不会自动学习。同名道卷自动堆叠；普通功法可研习或参悟，本命专属可研习，异命专属仅供收藏。</p>
+      <p class="technique-library-note">所有道卷均可自主选择研习、保留或兑换灵石。凡人境不能研习功法；未研习的唯一道卷也允许兑换。</p>
       <div class="inventory-grid technique-book-grid">
         ${books.length ? books.map(row => {
           const isExclusive = row.book_kind === 'exclusive';
           const actionLabel = row.can_learn ? '研习' : row.can_contemplate ? '参悟' : row.is_learned ? '已研习·留存' : row.locked_reason || '无法研习';
-          const actionEnabled = Boolean(row.can_learn || row.can_contemplate);
+          const actionEnabled = Boolean(row.can_learn);
           const fateLabel = isExclusive ? (row.is_matching_fate ? '本命契合' : `异命·${row.fate_name || '命格不符'}`) : techniqueCategoryName(row.category);
           return `<article class="inventory-card technique-book-card ${isExclusive ? 'exclusive-book' : ''} ${!actionEnabled ? 'locked' : ''}">
             <div class="inventory-icon">卷</div>
@@ -2935,7 +2961,10 @@
               ${!isExclusive ? `<small class="technique-book-reward">首次研习：${escapeHtml(techniqueBookFirstRewardText(row.first_reward_spec || {}))}</small>` : ''}
               ${isExclusive && !row.is_matching_fate ? '<small class="technique-book-lock">当前命格不契合，不能学习、不能装备、不会产生效果。</small>' : ''}
             </div>
-            <button class="${actionEnabled ? 'primary-btn' : 'ghost-btn'} technique-book-action" type="button" data-use-technique-book="${escapeHtml(row.book_id)}" ${actionEnabled ? '' : 'disabled'}>${escapeHtml(actionLabel)}</button>
+            <div class="technique-book-actions">
+              <button class="${actionEnabled ? 'primary-btn' : 'ghost-btn'} technique-book-action" type="button" data-use-technique-book="${escapeHtml(row.book_id)}" ${actionEnabled ? '' : 'disabled'}>${escapeHtml(actionLabel)}</button>
+              <button class="ghost-btn technique-book-redeem" type="button" data-redeem-technique-book="${escapeHtml(row.book_id)}" data-technique-name="${escapeHtml(row.name || '功法道卷')}" data-technique-quantity="${formatNumber(row.quantity || 0)}" data-technique-redeem-price="${formatNumber(row.redeem_value || 0)}">兑换灵石</button>
+            </div>
           </article>`;
         }).join('') : '<div class="empty-state">藏经架尚无功法书。机缘获得后会自动收入此处。</div>'}
       </div>
@@ -3176,6 +3205,26 @@
   }
 
   function bindInventoryTechniqueActions() {
+    document.querySelectorAll('[data-redeem-technique-book]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const name = button.dataset.techniqueName || '功法道卷';
+        const held = Math.max(1, Number(button.dataset.techniqueQuantity || 1));
+        const unitValue = Math.max(0, Number(String(button.dataset.techniqueRedeemPrice || '0').replace(/,/g, '')));
+        const raw = window.prompt(`兑换《${name}》道卷数量（当前 ${held} 本，单本 ${formatNumber(unitValue)} 灵石）`, '1');
+        if (raw === null) return;
+        const quantity = Math.floor(Number(raw));
+        if (!Number.isFinite(quantity) || quantity < 1 || quantity > held) { showToast('兑换数量不合法。'); return; }
+        const total = unitValue * quantity;
+        if (!window.confirm(`即将兑换《${name}》道卷 ×${quantity}，获得 ${formatNumber(total)} 灵石。若尚未研习且兑换后归零，将无法研习直到再次获得。此操作不可撤销。`)) return;
+        button.disabled = true;
+        try {
+          const result = await rpcRedeemTechniqueBookV0152(button.dataset.redeemTechniqueBook, quantity);
+          showToast(`兑换成功，获得 ${formatNumber(result?.spirit_stones_gained || total)} 灵石。`);
+          await Promise.all([refreshTechniqueLibrary(true), refreshMarketSystem(true), refreshTechniqueSystem(true)]);
+        } catch (error) { showToast(translateError(error)); }
+        finally { button.disabled = false; }
+      });
+    });
     document.querySelectorAll('[data-use-technique-book]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
@@ -3328,7 +3377,7 @@
             seal: '法',
             title: `功法精进 · 第 ${formatNumber(result?.level || 0)} 层`,
             message: `${result?.technique_name || '功法'}已突破本层桎梏。`,
-            detail: `消耗灵石 ${formatNumber(result?.cost || 0)}，熟练消耗 ${formatNumber(result?.proficiency_spent || 0)}，传承点消耗 ${formatNumber(result?.mastery_spent || 0)}。`,
+            detail: `消耗灵石 ${formatNumber(result?.cost || 0)}。${result?.mastered ? ' 功法已圆满，数值型效果额外提升20%。' : ''}`,
             success: true
           });
           await syncCultivation(true);
@@ -4157,22 +4206,23 @@
     afterCasinoRenderV0148();
   }
 
-  function marketPoolCard(title, pool = {}, myTickets = 0, unit = '灵石', hitChance = 0.4) {
+  function marketPoolCard(title, pool = {}, myTickets = 0, unit = '灵石') {
     const seconds = Number(pool.seconds_remaining || 0);
     const totalTickets = Number(pool.ticket_count || 0);
     let lastResult = '<p>尚无开奖记录。</p>';
     if (pool.last_draw_hit === true && Number(pool.last_prize || 0) > 0) {
-      lastResult = `<p>上期命中：${escapeHtml(pool.last_winner_name || pool.last_candidate_name || '无名修士')} · ${formatNumber(pool.last_prize || 0)}${unit}</p>`;
+      lastResult = `<p>上期抽中：${escapeHtml(pool.last_winner_name || pool.last_candidate_name || '无名修士')} · 领取 ${formatNumber(pool.last_prize || 0)} ${unit}，其余留池。</p>`;
     } else if (pool.last_draw_hit === true) {
-      lastResult = `<p>上期天机应验：${escapeHtml(pool.last_candidate_name || '无名修士')}未能承接，奖池继续滚存。</p>`;
+      lastResult = `<p>上期抽中：${escapeHtml(pool.last_candidate_name || '无名修士')} · 因整数取整或修为硬上限未实际到账，奖池继续留存。</p>`;
     } else if (pool.last_draw_hit === false) {
-      lastResult = `<p>上期未中：${escapeHtml(pool.last_candidate_name || '无名修士')}之签未应，奖池已滚存。</p>`;
+      lastResult = `<p>上期未完成有效开奖，奖池继续留存。</p>`;
     }
     return `<article class="casino-pool-card">
       <span>${escapeHtml(title)}</span>
       <strong>${formatNumber(pool.amount || 0)} ${escapeHtml(unit)}</strong>
       <div class="casino-pool-meta"><p>本期参与 ${formatNumber(totalTickets)} 人</p><p>我的资格 ${Number(myTickets || 0) > 0 ? '已取得' : '未取得'}</p></div>
-      <p>候选资格命中 ${formatNumber(Number(hitChance || 0.4) * 100, 0)}% · 未中则全额滚存</p>
+      <p>有效参与者等概率抽取 · 抽中即获奖</p>
+      <p>中奖者最多领取当前奖池70% · 至少30%留存下期</p>
       <p>距开奖 ${formatDuration(seconds)}</p>
       ${lastResult}
     </article>`;
@@ -4369,11 +4419,14 @@
     return `<div class="casino-record-list">${draws.map(draw => {
       const unit = draw.stake_type === 'cultivation' ? '修为' : '灵石';
       const hit = Boolean(draw.did_hit);
-      const awarded = hit && Number(draw.prize_amount || 0) > 0;
+      const prize = Math.max(0, Number(draw.prize_amount || 0));
+      const poolAmount = Math.max(0, Number(draw.pool_amount || 0));
+      const retained = Math.max(0, poolAmount - prize);
+      const awarded = hit && prize > 0;
       const name = draw.candidate_name || draw.winner_name || '无名修士';
       return `<article class="casino-record-row ${hit ? 'is-hit' : 'is-miss'}">
-        <div><span>${draw.stake_type === 'cultivation' ? '修为造化池' : '灵石造化池'}</span><strong>${awarded ? `天机应验 · ${escapeHtml(name)}` : hit ? `天机应验但难承 · ${escapeHtml(name)}` : `天机未应 · ${escapeHtml(name)}`}</strong></div>
-        <div><b>${awarded ? `${formatNumber(draw.prize_amount || 0)} ${unit}` : `${formatNumber(draw.pool_amount || 0)} ${unit}滚存`}</b><small>${formatNumber(draw.ticket_count || 0)} 名修士参与</small></div>
+        <div><span>${draw.stake_type === 'cultivation' ? '修为造化池' : '灵石造化池'}</span><strong>${awarded ? `票号抽中 · ${escapeHtml(name)}` : hit ? `票号抽中但未到账 · ${escapeHtml(name)}` : '未完成有效开奖'}</strong></div>
+        <div><b>${awarded ? `领取 ${formatNumber(prize)} ${unit} · 留存 ${formatNumber(retained)} ${unit}` : `${formatNumber(poolAmount)} ${unit}全部留存`}</b><small>${formatNumber(draw.ticket_count || 0)} 名修士参与</small></div>
         <p>${escapeHtml(draw.result_text || '')}</p>
       </article>`;
     }).join('')}</div>`;
@@ -4969,11 +5022,11 @@
     if (safeView === 'pools') {
       return `${error}${casinoPrimaryNavHtml('pools', disabled)}${casinoModeHeader('全服造化池', '每名本期参与者拥有一份候选资格')}
         <div class="casino-pool-grid">
-          ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石', hitChance)}
-          ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为', hitChance)}
+          ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石')}
+          ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为')}
         </div>
-        <div class="market-lore"><p><b>开奖规则：</b>荷老系统庄大堂赢局按毛利润5%进入奖池，败局按下注额10%进入奖池、90%由天道回收，并发放对应候选资格；玩家庄大堂仅从闲家赢家毛利润中收取5%庄家佣金，佣金归当局庄家，不进入造化池，也不发放造化资格。贵宾雅间分出胜负时，败者赌注的5%进入奖池、95%转给胜者，其他规则保持不变。重复游玩不会叠加个人中奖权重。开奖时先在全部有效参与者中等概率抽出一人，再判定40%天机应验、60%天机未应。</p><p>命中时发放对应全服奖池；未中滚存，奖池与之后的新有效入池赌注一起进入下一期。游玩次数不设每日上限。</p></div>
-        <div class="subsection-title"><strong>近期造化</strong><span>命中与未中都会留下记录</span></div>
+        <div class="market-lore"><p><b>开奖规则：</b>荷老系统庄大堂赢局按毛利润5%进入奖池，败局按下注额10%进入奖池、90%由天道回收，并发放对应候选资格；玩家庄大堂仅从闲家赢家毛利润中收取5%庄家佣金，佣金归当局庄家，不进入造化池，也不发放造化资格。贵宾雅间分出胜负时，败者赌注的5%进入奖池、95%转给胜者，其他规则保持不变。重复游玩不会叠加个人中奖权重。开奖时在全部有效参与者中等概率抽出一人，票号抽中即中奖，不再进行40%/60%二次判定。</p><p>中奖者最多领取开奖前奖池的70%，整数奖励向下取整；至少30%继续留在奖池，与后续新入池奖励共同进入下一期。修为奖池若受当前境界硬上限限制，未实际承接的部分也继续留池，因此实际留存可能高于30%。游玩次数不设每日上限。</p></div>
+        <div class="subsection-title"><strong>近期造化</strong><span>抽中、领取与留存都会留下记录</span></div>
         ${casinoDrawRowsHtml(draws)}`;
     }
 
@@ -5421,6 +5474,23 @@
     `;
   }
 
+
+  function fateEffectHtml(fate, fateStatus) {
+    const status = fateStatus?.status === 'ok' ? fateStatus : null;
+    if (!status) return `<p>${escapeHtml(fate.description || '命格信息尚未读取。')}</p>`;
+    const base = Number(status.base_cultivation_bonus || 0) * 100;
+    const total = Number(status.total_cultivation_bonus || 0) * 100;
+    let current = '';
+    if (status.code === 'late_bloomer') {
+      current = `<small>当前 ${formatNumber(status.current_age || 0)} 岁 · 厚积薄发 +${formatNumber(Number(status.current_special_cultivation_bonus || 0) * 100, 2)}个百分点 · 命格总修炼 +${formatNumber(total, 2)}%</small>`;
+    } else if (status.code === 'unyielding_heart') {
+      current = `<small>当前百折 ${formatNumber(status.unyielding_stack_count || 0)} / ${formatNumber(status.unyielding_stack_limit || 4)} 层 · 突破额外 +${formatNumber(Number(status.unyielding_current_bonus || 0) * 100, 0)}个百分点</small>`;
+    } else if (status.code === 'sword_heart' && !status.combat_effect_enabled) {
+      current = '<small>剑心通明：战斗系统尚未开放，战斗加成暂不参与其他结算。</small>';
+    }
+    return `<p><b>基础效果：</b>修炼速度 +${formatNumber(base, 2)}%</p><p><b>${escapeHtml(status.special_name || '专属效果')}：</b>${escapeHtml(status.special_description || '')}</p>${current}`;
+  }
+
   function renderDashboard(bundle) {
     renderAccount();
     const c = bundle.character;
@@ -5429,6 +5499,7 @@
     const realm = bundle.realm || {};
     const root = bundle.spiritRoot || {};
     const fate = bundle.fate || {};
+    const fateStatus = bundle.fateStatus || state.fateStatus || null;
     const cultivation = bundle.cultivationStatus || state.cultivationStatus || {};
     const heavenBalance = normalizeHeavenBalance(bundle.heavenBalance || state.heavenBalance, cultivation);
     const breakthrough = bundle.breakthroughStatus || state.breakthroughStatus || { status: 'loading' };
@@ -5561,7 +5632,7 @@
         </section>
 
         <section id="talentSection" class="panel info-section" data-mobile-screen="techniques">
-          <div class="panel-title"><h3>功法</h3><span class="badge">品质 · 熟练 · 组合</span></div>
+          <div class="panel-title"><h3>功法</h3><span class="badge">五槽 · 灵石升级 · 圆满</span></div>
           <div class="foundation-grid">
             <article class="path-card">
               <span>先天灵根 · ${escapeHtml(root.rarity || '未知')}</span>
@@ -5571,7 +5642,7 @@
             <article class="path-card">
               <span>降生命格 · ${escapeHtml(fate.rarity || '未知')}</span>
               <strong>${escapeHtml(fate.name || '未定')}</strong>
-              <p>${escapeHtml(fate.description || '命格信息尚未读取。')}</p>
+              ${fateEffectHtml(fate, fateStatus)}
             </article>
           </div>
           ${exclusiveTechniquePanelHtml(bundle.exclusiveTechniqueSystem || state.exclusiveTechniqueSystem || { status: 'loading', techniques: [] }, inventory)}
@@ -5892,8 +5963,9 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, techniqueLibrary, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents] = await Promise.all([
+      const [breakthroughStatus, fateStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, techniqueLibrary, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents] = await Promise.all([
         rpcGetBreakthroughStatus(),
+        rpcGetFateStatusB01().catch(() => null),
         rpcGetTechniqueSystemV2(),
         rpcGetExclusiveTechniqueSystemV1().catch(error => ({
           status: 'unavailable', techniques: [], equipped_name: null, error: translateError(error)
@@ -5922,6 +5994,7 @@
         }))
       ]);
       bundle.breakthroughStatus = breakthroughStatus;
+      bundle.fateStatus = fateStatus;
       bundle.opportunityStatus = opportunityStatus;
       bundle.techniqueSystem = techniqueSystem;
       bundle.exclusiveTechniqueSystem = exclusiveTechniqueSystem;
@@ -5935,6 +6008,7 @@
       bundle.worldEvents = worldEvents;
       state.cultivationStatus = cultivationStatus;
       state.breakthroughStatus = breakthroughStatus;
+      state.fateStatus = fateStatus;
       state.opportunityStatus = opportunityStatus;
       state.techniqueSystem = techniqueSystem;
       state.exclusiveTechniqueSystem = exclusiveTechniqueSystem;
