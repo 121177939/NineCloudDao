@@ -1,10 +1,10 @@
 {
-  "version": "0.15.1",
-  "releaseLabel": "Web Alpha V0.15.1 CACHE18",
-  "sourceBaseline": "V0.15.0 CACHE16",
+  "version": "0.15.3",
+  "releaseLabel": "Web Alpha V0.15.3 CACHE20",
+  "sourceBaseline": "V0.15.2 CACHE19",
   "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局 + V0.15.0连续落注 + V0.15.1赌场界闻与40秒轮次",
-  "databaseChange": "V0.15.1_FISH_TIMING_30_2_5_3_CACHE18",
-  "databaseMigration": "database/V0.15.1/202607282040_v0151_fix1_fish_30_2_5_3.sql",
+  "databaseChange": "V0.15.3_DEPLOY_PIPELINE_FIX_CACHE20",
+  "databaseMigration": "database/V0.15.3/202607281800_v0153_release_cache20.sql",
   "deploymentStatus": "release_candidate_local_ci_passed",
   "deploymentPipeline": {
     "runner": "ubuntu-latest",
@@ -21,16 +21,15 @@
     "history": "九霄问道_历史归档_V0.6.5-V0.15.1_CACHE18_ADMIN2_补全版.zip"
   },
   "notes": [
-    "鱼虾灵局与其他赌场结算继续发布九霄界闻。",
-    "荷老局显示与荷老对局；玩家庄局显示具体玩家庄姓名。",
-    "界闻显示本局净赢或净输金额。",
-    "鱼虾灵局40秒正确节奏：30秒下注、2秒封盘、5秒开骰、3秒结算展示。",
-    "继续保留连续点击、120毫秒合并和串行提交。"
+    "修复GitHub Pages工作流仍调用V0.15.1固定门禁导致的构建失败。",
+    "前端版本、资源参数、Service Worker与cacheEpoch统一升级到V0.15.3 CACHE20。",
+    "保留V0.15.2命格方案A、造化池、功法五槽与突破历史小境界保护。",
+    "仓库内V0.15.2迁移替换为最终R2/R1修正版。"
   ],
   "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8 + V0.15.0 + V0.15.1",
   "worldFeedBaseline": "V0.14.2 + V0.15.1赌场庄家与鱼虾结算播报",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "clientHotfix": "V0.15.1_FISH_TIMING_30_2_5_3_CACHE18",
-  "developmentBaseline": "V0.15.1_AB10_CACHE18"
+  "clientHotfix": "V0.15.3_CACHE20",
+  "developmentBaseline": "V0.15.3_CACHE20"
 }

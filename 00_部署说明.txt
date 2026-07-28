@@ -1,0 +1,20 @@
+《九霄问道》V0.15.3 CACHE20 完整部署说明
+
+【GitHub部署】
+1. 解压本包。
+2. 将解压后的全部内容上传到GitHub仓库根目录，必须保留隐藏目录“.github”。
+3. 确认默认分支为main。
+4. GitHub仓库 Settings → Pages → Source 选择“GitHub Actions”。
+5. 推送后工作流会执行：python3 tools/ci_v0153.py .
+
+本版已修正：
+- 工作流不再调用V0.15.1固定CI。
+- actions/checkout由错误的@v6改为稳定的@v4。
+- 前端版本、Service Worker、资源参数和cacheEpoch统一为V0.15.3 CACHE20。
+
+【数据库】
+- 已经成功运行V0.15.2的03：只运行SQL/05和SQL/06。
+- 从V0.15.1全新升级：按SQL/01到SQL/06顺序运行。
+
+【重要】
+不要只上传“部署文件”子目录；必须上传本包根目录中的.github、tools、assets及所有根文件。

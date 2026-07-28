@@ -1,16 +1,16 @@
-const CACHE_NAME = 'nine-cloud-dao-v0.15.2-cache19';
+const CACHE_NAME = 'nine-cloud-dao-v0.15.3-cache20';
 const CACHE_PREFIX = 'nine-cloud-dao-';
 const NAVIGATION_FALLBACK = './index.html';
 const APP_SHELL = [
   './index.html',
   './404.html',
-  './styles.css?v=0152-cache19',
-  './config.js?v=0152-cache19',
-  './update-guard.js?v=0152-cache19',
-  './app.js?v=0152-cache19',
-  './manifest.webmanifest?v=0152-cache19',
-  './assets/icon-192.png?v=0152-cache19',
-  './assets/icon-512.png?v=0152-cache19'
+  './styles.css?v=0153-cache20',
+  './config.js?v=0153-cache20',
+  './update-guard.js?v=0153-cache20',
+  './app.js?v=0153-cache20',
+  './manifest.webmanifest?v=0153-cache20',
+  './assets/icon-192.png?v=0153-cache20',
+  './assets/icon-512.png?v=0153-cache20'
 ];
 
 self.addEventListener('message', event => {

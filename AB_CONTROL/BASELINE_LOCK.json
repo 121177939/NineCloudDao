@@ -1,0 +1,15 @@
+{
+  "version": "V0.15.3",
+  "release": "CACHE20",
+  "baseline": "V0.15.3_AB10_CACHE20",
+  "sourcePackage": "九霄问道_V0.15.3_CACHE20_完整部署包.zip",
+  "sourceSha256": "见SHA256SUMS.txt",
+  "timing": {
+    "round": 40,
+    "betting": 30,
+    "lock": 2,
+    "reveal": 5,
+    "settlement": 3,
+    "next": 0
+  }
+}
