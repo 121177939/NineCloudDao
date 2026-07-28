@@ -1,0 +1,14 @@
+V0.15.3 FIX2 CACHE22 测试结果
+日期：2026-07-28
+
+PASS：发布元数据与必需文件 65/65
+PASS：app.js、config.js、update-guard.js、sw.js Node语法检查
+PASS：V0.14.1 FIX7A 至 V0.15.3 FIX2 全部SQL静态审计
+PASS：普通功法读取RPC不再引用 c.spirit_stones
+PASS：普通功法升级使用 spirit_stone_debit_v0141 原子扣款
+PASS：道卷兑换使用 award_spirit_stones_v3 入账
+PASS：旧 player_characters 灵石字段不再被直接读写
+PASS：13组前端回归测试
+PASS：GitHub Pages产物构建与43项产物校验
+
+说明：当前环境未连接用户的Supabase数据库，因此数据库真实执行结果仍以运行SQL/10后的全部ok=true为最终门禁。

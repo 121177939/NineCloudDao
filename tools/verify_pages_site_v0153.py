@@ -24,10 +24,10 @@ for rel in required:
 
 ck('version', txt('VERSION.txt').strip() == 'V0.15.3')
 ck('config-version', "version: '0.15.3'" in txt('config.js'))
-ck('build', 'v0153-fix1-cache21' in txt('config.js'))
-ck('epoch', 'cacheEpoch: 21' in txt('config.js'))
-ck('index-cache', '0153-fix1-cache21' in txt('index.html'))
-ck('service-worker-cache', 'nine-cloud-dao-v0.15.3-fix1-cache21' in txt('sw.js'))
+ck('build', 'v0153-fix2-cache22' in txt('config.js'))
+ck('epoch', 'cacheEpoch: 22' in txt('config.js'))
+ck('index-cache', '0153-fix2-cache22' in txt('index.html'))
+ck('service-worker-cache', 'nine-cloud-dao-v0.15.3-fix2-cache22' in txt('sw.js'))
 ck('40-sec-client', 'elapsed/40*100' in txt('app.js') and '公共40秒轮次' in txt('app.js'))
 ck('30-2-5-3-client', all(x in txt('app.js') for x in [
     '前30秒下注', '随后2秒封盘', '5秒依次开骰',
@@ -40,7 +40,7 @@ ck('exclusive-upgrade-client', 'upgrade_exclusive_technique_v1' in txt('app.js')
 
 manifest = json.loads(txt('PAGES_ARTIFACT_MANIFEST.json'))
 ck('manifest-version', manifest.get('version') == 'V0.15.3')
-ck('manifest-build', manifest.get('clientBuild') == 'v0153-fix1-cache21')
+ck('manifest-build', manifest.get('clientBuild') == 'v0153-fix2-cache22')
 for entry in manifest.get('files', []):
     path = root / entry['path']
     ck(

@@ -1,8 +1,8 @@
 {
   "version": "V0.15.3",
-  "release": "FIX1 CACHE21",
-  "baseline": "V0.15.3_FIX1_AB10_CACHE21",
-  "sourcePackage": "九霄问道_V0.15.3_FIX1_CACHE21_完整部署包.zip",
+  "release": "FIX2 CACHE22",
+  "baseline": "V0.15.3_FIX2_AB10_CACHE22",
+  "sourcePackage": "九霄问道_V0.15.3_FIX2_CACHE22_完整部署包.zip",
   "sourceSha256": "见SHA256SUMS.txt",
   "timing": {
     "round": 40,

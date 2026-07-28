@@ -1,22 +1,22 @@
 {
   "version": "V0.15.3",
-  "release": "technique-five-slot-constraint-ui-fix-cache21",
-  "base": "V0.15.2 CACHE19",
+  "release": "technique-spirit-stone-rpc-fix-cache22",
+  "base": "V0.15.3 FIX1 CACHE21",
   "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局 + V0.15.0连续落注 + V0.15.1赌场界闻与40秒轮次",
-  "databaseMigration": "database/V0.15.3_FIX1/202607281900_v0153_fix1_technique_slot_constraint_ui.sql",
+  "databaseMigration": "database/V0.15.3_FIX2/202607281930_v0153_fix2_spirit_stone_rpc.sql",
   "pagesStagingDirectory": ".pages-site",
   "features": [
-    "修复普通功法ordinary_1至ordinary_5被旧CHECK约束拒绝",
-    "功法页移除主修/辅修、熟练度与传承点旧界面",
-    "普通功法五槽明确选槽，槽位倍率100%/60%/50%/40%/30%",
-    "历史凡品兼容映射为黄品规则",
-    "CACHE21强制客户端更新",
-    "保留B01命格方案A、造化池与突破历史小境界保护"
+    "修复功法读取RPC访问不存在的player_characters.spirit_stones字段",
+    "普通功法升级统一使用spirit_stone_debit_v0141原子扣款",
+    "功法道卷兑换统一使用award_spirit_stones_v3入账",
+    "保留普通功法五槽与历史小境界突破保护",
+    "CACHE22强制客户端更新",
+    "保留B01命格方案A与造化池规则"
   ],
-  "clientBuild": "v0153-fix1-cache21",
+  "clientBuild": "v0153-fix2-cache22",
   "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8 + V0.15.0 + V0.15.1",
   "worldFeedBaseline": "V0.14.2 + V0.15.1赌场庄家与鱼虾结算播报",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "databaseChange": "technique_slot_constraint_reader_ui_and_cache21"
+  "databaseChange": "technique_spirit_stone_inventory_rpc_and_cache22"
 }

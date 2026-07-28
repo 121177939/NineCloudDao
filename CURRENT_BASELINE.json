@@ -1,10 +1,10 @@
 {
   "version": "0.15.3",
-  "releaseLabel": "Web Alpha V0.15.3 FIX1 CACHE21",
-  "sourceBaseline": "V0.15.2 CACHE19",
+  "releaseLabel": "Web Alpha V0.15.3 FIX2 CACHE22",
+  "sourceBaseline": "V0.15.3 FIX1 CACHE21",
   "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局 + V0.15.0连续落注 + V0.15.1赌场界闻与40秒轮次",
-  "databaseChange": "V0.15.3_FIX1_TECHNIQUE_SLOT_CONSTRAINT_UI_CACHE21",
-  "databaseMigration": "database/V0.15.3_FIX1/202607281900_v0153_fix1_technique_slot_constraint_ui.sql",
+  "databaseChange": "V0.15.3_FIX2_TECHNIQUE_SPIRIT_STONE_RPC_CACHE22",
+  "databaseMigration": "database/V0.15.3_FIX2/202607281930_v0153_fix2_spirit_stone_rpc.sql",
   "deploymentStatus": "release_candidate_local_ci_passed",
   "deploymentPipeline": {
     "runner": "ubuntu-latest",
@@ -21,16 +21,15 @@
     "history": "九霄问道_历史归档_V0.6.5-V0.15.1_CACHE18_ADMIN2_补全版.zip"
   },
   "notes": [
-    "修复character_techniques_equipped_slot_check仍拒绝ordinary_1至ordinary_5的问题。",
-    "普通功法读取与界面统一为五槽、灵石升级、满级圆满；删除旧主修/辅修、熟练度与传承点显示。",
-    "历史凡品与未知普通品级按黄品6级规则兼容。",
-    "前端资源与发布门禁提升到CACHE21，强制客户端更新。",
-    "保留V0.15.2命格方案A、造化池与突破历史小境界保护。"
+    "修复get_technique_system_v2读取不存在的player_characters.spirit_stones字段导致云端连接失败。",
+    "普通功法升级改为统一灵石原子扣款；道卷兑换改为统一灵石入账。",
+    "普通五槽、灵石升级、满级圆满、命格方案A与突破历史小境界保护保持不变。",
+    "前端资源与发布门禁提升到CACHE22，强制客户端更新。"
   ],
   "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8 + V0.15.0 + V0.15.1",
   "worldFeedBaseline": "V0.14.2 + V0.15.1赌场庄家与鱼虾结算播报",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "clientHotfix": "V0.15.3_FIX1_CACHE21",
-  "developmentBaseline": "V0.15.3_FIX1_CACHE21"
+  "clientHotfix": "V0.15.3_FIX2_CACHE22",
+  "developmentBaseline": "V0.15.3_FIX2_CACHE22"
 }
