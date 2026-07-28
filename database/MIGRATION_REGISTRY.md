@@ -229,3 +229,7 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 ## V0.14.7 CACHE11
 - `database/V0.14.7/202607280600_v0147_library_opportunity_inventory_house.sql`
 - 功法书藏经架、机缘明细、物品批量使用、双庄切换、2小时任期与玩家庄系统兜底。
+
+## V0.14.8 CACHE12
+- `database/V0.14.8/202607281630_v0148_fish_shrimp_mobile_casino.sql`
+- 新增鱼虾灵局60秒公共轮次、服务端押注/结算及客户端CACHE12。

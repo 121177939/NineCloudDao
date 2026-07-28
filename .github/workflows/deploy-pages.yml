@@ -40,8 +40,8 @@ jobs:
           python --version
           node --version
 
-      - name: Verify V0.14.7 release metadata
-        run: python tools/verify_release_v0147.py .
+      - name: Verify V0.14.8 release metadata
+        run: python tools/verify_release_v0148.py .
 
       - name: JavaScript syntax checks
         run: |
@@ -56,6 +56,8 @@ jobs:
           node --check tools/test_features_v0145.js
           node --check tools/test_opportunity_history_v0146.js
           node --check tools/test_features_v0147.js
+          node --check tools/test_features_v0148.js
+          node --check tools/test_fish_render_v0148.js
 
       - name: V0.14.1 FIX7A SQL static audit
         run: python tools/sql_static_audit_v0141_fix7a.py .
@@ -74,8 +76,11 @@ jobs:
       - name: V0.14.6 inherited SQL static audit
         run: python tools/sql_static_audit_v0146.py .
 
-      - name: V0.14.7 SQL static audit
+      - name: V0.14.7 inherited SQL static audit
         run: python tools/sql_static_audit_v0147.py .
+
+      - name: V0.14.8 SQL static audit
+        run: python tools/sql_static_audit_v0148.py .
 
       - name: Casino render simulation
         run: node tools/test_casino_render_v0141.js .
@@ -94,14 +99,20 @@ jobs:
       - name: V0.14.6 inherited opportunity history checks
         run: node tools/test_opportunity_history_v0146.js .
 
-      - name: V0.14.7 feature checks
+      - name: V0.14.7 inherited feature checks
         run: node tools/test_features_v0147.js .
 
+      - name: V0.14.8 feature checks
+        run: node tools/test_features_v0148.js .
+
+      - name: V0.14.8 fish render simulation
+        run: node tools/test_fish_render_v0148.js .
+
       - name: Build clean Pages staging directory
-        run: python tools/prepare_pages_site_v0147.py . .pages-site
+        run: python tools/prepare_pages_site_v0148.py . .pages-site
 
       - name: Verify Pages staging directory
-        run: python tools/verify_pages_site_v0147.py .pages-site
+        run: python tools/verify_pages_site_v0148.py .pages-site
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

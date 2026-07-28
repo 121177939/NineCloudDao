@@ -1,10 +1,10 @@
 {
-  "version": "0.14.7",
-  "releaseLabel": "Web Alpha V0.14.7 CACHE11",
-  "sourceBaseline": "V0.14.6 CACHE10",
-  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底",
-  "databaseChange": "TECHNIQUE_BOOK_LIBRARY_OPPORTUNITY_DETAIL_QUANTITY_DUAL_HOUSE_V0147",
-  "databaseMigration": "database/V0.14.7/202607280600_v0147_library_opportunity_inventory_house.sql",
+  "version": "0.14.8",
+  "releaseLabel": "Web Alpha V0.14.8 CACHE12",
+  "sourceBaseline": "V0.14.7 CACHE11",
+  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局",
+  "databaseChange": "FISH_SHRIMP_SHARED_ROUND_AND_CASINO_MOBILE_LAYOUT_V0148",
+  "databaseMigration": "database/V0.14.8/202607281630_v0148_fish_shrimp_mobile_casino.sql",
   "deploymentStatus": "release_ready_not_user_confirmed",
   "deploymentPipeline": {
     "python": "3.13.5",
@@ -13,27 +13,28 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.14.7_FINAL.zip",
-    "database": "九霄问道_V0.14.7_藏经架机缘明细批量使用与双庄兜底.sql",
+    "github": "NineCloudDao_GitHub_Upload_V0.14.8_FINAL.zip",
+    "database": "九霄问道_V0.14.8_鱼虾灵局与赌坊手机极简布局.sql",
     "adminDatabase": "九霄问道_V0.14.4_ADMIN2_灵石赏罚与私人天谕.sql",
     "adminHtml": "九霄问道_账号管理后台_ADMIN2_灵石赏罚版.html",
-    "handoff": "九霄问道_APP项目接管资料包_V0.14.7_ADMIN2_完整接管版.zip",
-    "history": "九霄问道_历史归档_V0.6.5-V0.14.7_ADMIN2_补全版.zip",
-    "developmentBaseline": "NineCloudDao_Development_Baseline_V0.14.7_AB5.zip"
+    "handoff": "九霄问道_APP项目接管资料包_V0.14.8_ADMIN2_完整接管版.zip",
+    "history": "九霄问道_历史归档_V0.6.5-V0.14.8_ADMIN2_补全版.zip",
+    "developmentBaseline": "NineCloudDao_Development_Baseline_V0.14.8_AB6.zip"
   },
   "notes": [
-    "B线功法书、洞府藏经架与本命专属研习已接入；普通与专属道卷均不自动学习或装备。",
-    "命书和天机推演共用机缘结算明细，展示品阶、故事及具体所得或惩罚。",
-    "黄玄地沿用默认色；天仙专属统一使用高阶强调色。",
-    "洞府可使用物品支持选择数量，数据库在同一事务内批量结算。",
-    "玩家庄资格仅需统一灵石不少于500万，每次任期最多2小时。",
-    "有玩家庄时仍可选择荷老系统庄；玩家庄不限下注金额，赔付不足由荷老补足。",
-    "玩家庄5%佣金、FIX7A系统庄、贵宾雅间、严格界闻和三榜规则保持不变。",
+    "B线万运博弈楼手机端排版模块已在V0.14.7_AB5哈希门禁通过后接入。",
+    "鱼虾灵局使用60秒公共轮次：40秒下注、3秒封盘、6秒开盘、7秒结算展示、4秒等待下局。",
+    "鱼、虾、蟹、铜钱、葫芦、青蛙出现1/2/3次时按对应倍数计算毛利润。",
+    "荷老局继续执行FIX7A赢利5%入池、败局10%入池与90%天道回收。",
+    "玩家局只接受灵石，毛利润扣5%佣金；玩家庄余额不足时先扣至零，其余由荷老补足。",
+    "下注存入服务端数据库，离开页面不会撤销；结算采用服务端惰性推进，任一后续状态请求会完成到期轮次。",
+    "手机页面统一为紧凑黑金样式，结算明细与历史不重复桌别名称。",
+    "ADMIN2后台本版不修改。",
     "禁止越权授权门禁继续作为永久接管规则。"
   ],
-  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4综合规则 + V0.14.5机缘与玩家庄佣金 + V0.14.7藏经架与双庄兜底",
+  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4综合规则 + V0.14.5玩家庄佣金 + V0.14.7双庄兜底 + V0.14.8鱼虾灵局",
   "worldFeedBaseline": "V0.14.2",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "clientHotfix": "V0.14.7_TECHNIQUE_LIBRARY_DUAL_HOUSE_CACHE11"
+  "clientHotfix": "V0.14.8_FISH_SHRIMP_MOBILE_CACHE12"
 }
