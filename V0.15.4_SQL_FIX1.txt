@@ -1,0 +1,9 @@
+九霄问道 V0.15.4 CACHE23 SQL FIX1
+
+修复内容：
+1. 修复珍宝阁丹药写入 item_definitions 时 category 使用中文“丹药”导致 item_definitions_category_check 失败。
+2. 新脚本优先使用 consumable，并兼容旧库允许的类别值。
+3. 新建内部表显式启用 RLS。
+4. 正式升级仍在单一 BEGIN/COMMIT 事务中执行；旧脚本报错时不会提交部分升级。
+
+客户端版本与 CACHE 保持 V0.15.4 CACHE23，不需要再次提升缓存号。

@@ -1,0 +1,36 @@
+-- 九霄问道 V0.15.4 CACHE23 升级后检查（只读）
+with defs as (
+ select pg_get_functiondef('public.claim_cultivation_v1()'::regprocedure) claim_def,
+        pg_get_functiondef('public.attempt_breakthrough_v1()'::regprocedure) attempt_def
+), checks(item,passed,detail) as (
+ select 'release_cache23',exists(select 1 from public.jiuxiao_app_release_control where singleton_id=1 and cache_epoch>=23),'发布控制已升至CACHE23'
+ union all select 'operation_idempotency_table',to_regclass('public.player_operation_requests_v0154') is not null,'幂等请求表存在'
+ union all select 'treasure_status_rpc',to_regprocedure('public.get_treasure_shop_v0154()') is not null,'珍宝阁读取RPC存在'
+ union all select 'treasure_purchase_rpc',to_regprocedure('public.purchase_treasure_item_v0154(text,integer,uuid)') is not null,'珍宝阁购买RPC存在'
+ union all select 'wash_rpc',to_regprocedure('public.use_spirit_washing_pill_v0154(uuid)') is not null,'洗灵丹RPC存在'
+ union all select 'breakthrough_status_v0154',to_regprocedure('public.get_breakthrough_status_v0154()') is not null,'渡境丹突破状态RPC存在'
+ union all select 'breakthrough_attempt_v0154',to_regprocedure('public.attempt_breakthrough_v0154(integer,uuid)') is not null,'渡境丹突破事务RPC存在'
+ union all select 'ordinary_upgrade_v0154',to_regprocedure('public.upgrade_technique_v0154(uuid,uuid)') is not null,'普通功法幂等升级RPC存在'
+ union all select 'exclusive_upgrade_v0154',to_regprocedure('public.upgrade_exclusive_technique_v0154(uuid,uuid)') is not null,'专属功法幂等升级RPC存在'
+ union all select 'item_use_v0154',to_regprocedure('public.use_inventory_item_quantity_v0154(uuid,integer,uuid)') is not null,'道具幂等使用RPC存在'
+ union all select 'breakthrough_pill_item',exists(select 1 from public.item_definitions where code='breakthrough_clear_origin_pill_v0154' and name='渡境清元丹'),'渡境清元丹定义存在'
+ union all select 'washing_pill_item',exists(select 1 from public.item_definitions where code='spirit_washing_pill_v0154' and name='洗灵丹'),'洗灵丹定义存在'
+ union all select 'pill_category_valid',not exists(select 1 from public.item_definitions where code in('breakthrough_clear_origin_pill_v0154','spirit_washing_pill_v0154') and category='丹药'),'丹药类别符合既有CHECK约束，不再写入中文展示词'
+ union all select 'operation_table_rls',coalesce((select c.relrowsecurity from pg_class c where c.oid='public.player_operation_requests_v0154'::regclass),false),'幂等请求表已启用RLS'
+ union all select 'technique_bucket_fixed',(select position("source_key like 'opptech:%'" in claim_def)>0 and position("not (e.source_key like 'opptech:%'" in claim_def)>0 from defs),'功法效果独立归类，不再计入持续机缘'
+ union all select 'dao_collapse_probability',(select position('v_roll<0.003' in attempt_def)>0 from defs),'道果崩解概率0.3%'
+ union all select 'death_removed',(select position("status='dead'" in attempt_def)=0 and position("v_outcome:='death'" in attempt_def)=0 from defs),'突破失败死亡分支已移除'
+ union all select 'pill_to_100',(select position("current_setting('ncd.v0154_breakthrough_pill_quantity'" in attempt_def)>0 and position('least(1.0' in attempt_def)>0 from defs),'渡境清元丹可把最终概率推至100%')
+)
+select * from checks order by item;
+
+select release_name,cache_epoch,notice_text,updated_at
+from public.jiuxiao_app_release_control where singleton_id=1;
+
+select code,name,effects,description from public.item_definitions
+where code in('breakthrough_clear_origin_pill_v0154','spirit_washing_pill_v0154') order by code;
+
+select count(*) filter(where recovery_active) active_recovery_cycles,
+       count(*) filter(where dao_collapse_active) active_dao_collapse_recoveries,
+       count(*) filter(where recovery_active and (original_target_stage_id is null or recovery_anchor_stage_id is null or recovery_floor_stage_id is null)) incomplete_recovery_rows
+from public.character_breakthrough_states;

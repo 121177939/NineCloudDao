@@ -1,18 +1,15 @@
-《九霄问道》V0.15.3 FIX2 CACHE22 SQL执行说明
+《九霄问道》V0.15.4 CACHE23 SQL FIX1 执行说明
 
-一、你当前已经运行过07，并出现“record c has no field spirit_stones”：
-只运行：
-  09_V0.15.3_FIX2_灵石账户RPC修复.sql
-  10_V0.15.3_FIX2_最终检查.sql
+当前线上已是V0.15.3 FIX2 CACHE22时，只按顺序运行：
+  11_V0.15.4_升级前检查.sql
+  12_V0.15.4_CACHE23_正式升级.sql
+  13_V0.15.4_升级后检查.sql
 
-二、已经成功运行09：
-不要重复执行旧脚本，只运行10检查即可。
+要求：
+- 11中的passed应全部为true。
+- 12必须整段一次执行，成功后再执行13。
+- 13中的passed应全部为true，incomplete_recovery_rows应为0。
+- 不要向player_characters新增spirit_stones字段；灵石继续统一存放在character_inventory。
+- 14_V0.15.4_回滚.sql仅用于紧急撤销；回滚会保留玩家已购买的丹药与经济审计记录，避免数据丢失。
 
-三、全新从V0.15.1升级：
-按顺序运行01、02、03、04、05、06、07、08、09、10。
-
-注意：
-- 不需要回滚，也不要重复运行03或07。
-- 09会重建普通功法读取、升级和道卷兑换RPC。
-- 灵石继续存放在character_inventory，由V0.14.1统一灵石函数管理。
-- 10结果中的ok应全部为true。
+FIX1说明：修复item_definitions.category_check冲突；正式升级脚本已显式启用新表RLS。若旧版脚本在BEGIN/COMMIT事务内报错，整次升级不会提交，直接改用本FIX1脚本重新执行即可。

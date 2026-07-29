@@ -1,11 +1,11 @@
 {
-  "version": "0.15.3",
-  "releaseLabel": "Web Alpha V0.15.3 FIX2 CACHE22",
-  "sourceBaseline": "V0.15.3 FIX1 CACHE21",
-  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局 + V0.15.0连续落注 + V0.15.1赌场界闻与40秒轮次",
-  "databaseChange": "V0.15.3_FIX2_TECHNIQUE_SPIRIT_STONE_RPC_CACHE22",
-  "databaseMigration": "database/V0.15.3_FIX2/202607281930_v0153_fix2_spirit_stone_rpc.sql",
-  "deploymentStatus": "release_candidate_local_ci_passed",
+  "version": "0.15.4",
+  "releaseLabel": "Web Alpha V0.15.4 CACHE23",
+  "sourceBaseline": "V0.15.3 FIX2 CACHE22",
+  "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局 + V0.15.0连续落注 + V0.15.1赌场界闻与40秒轮次 + V0.15.2命格功法 + V0.15.3 FIX2灵石账户",
+  "databaseChange": "V0.15.4_INSTANT_ACTIONS_RATE_BREAKDOWN_TREASURE_B02_CACHE23_SQL_FIX1",
+  "databaseMigration": "database/V0.15.4/202607290100_v0154_cache23_full_upgrade.sql",
+  "deploymentStatus": "authoritative_complete_deployment_package",
   "deploymentPipeline": {
     "runner": "ubuntu-latest",
     "python": "runner python3",
@@ -14,22 +14,29 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "github": "NineCloudDao_GitHub_Upload_V0.15.1_CACHE18_FINAL.zip",
-    "upgrade": "九霄问道_V0.15.1_CACHE18_鱼虾30秒下注节奏修正升级包.zip",
-    "developmentBaseline": "NineCloudDao_Development_Baseline_V0.15.1_AB10_CACHE18.zip",
-    "handoff": "九霄问道_APP项目接管资料包_V0.15.1_CACHE18_ADMIN2_完整接管版.zip",
-    "history": "九霄问道_历史归档_V0.6.5-V0.15.1_CACHE18_ADMIN2_补全版.zip"
+    "completePackage": "九霄问道_V0.15.4_CACHE23_SQLFIX1_完整部署包.zip",
+    "sqlPackage": "九霄问道_V0.15.4_CACHE23_SQL_FIX1.zip"
   },
   "notes": [
-    "修复get_technique_system_v2读取不存在的player_characters.spirit_stones字段导致云端连接失败。",
-    "普通功法升级改为统一灵石原子扣款；道卷兑换改为统一灵石入账。",
-    "普通五槽、灵石升级、满级圆满、命格方案A与突破历史小境界保护保持不变。",
-    "前端资源与发布门禁提升到CACHE22，强制客户端更新。"
+    "功法升级和普通道具使用改为前端即时响应、后台幂等确认",
+    "点击当前修炼速度可查看功法、灵根、命格、机缘、道具、环境与感悟的完整构成",
+    "修复普通及专属功法贡献显示为0或被归入持续机缘的问题",
+    "珍宝阁新增渡境清元丹与洗灵丹",
+    "接入B02突破恢复周期与0.3%道果崩解，取消突破失败死亡",
+    "CACHE23强制客户端更新",
+    "SQL FIX1修复item_definitions.category_check冲突，并显式启用新建表RLS"
   ],
-  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8 + V0.15.0 + V0.15.1",
+  "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8 + V0.15.0 + V0.15.1 + V0.15.2 + V0.15.4",
   "worldFeedBaseline": "V0.14.2 + V0.15.1赌场庄家与鱼虾结算播报",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "clientHotfix": "V0.15.3_FIX2_CACHE22",
-  "developmentBaseline": "V0.15.3_FIX2_CACHE22"
+  "clientHotfix": "V0.15.4_CACHE23",
+  "developmentBaseline": "V0.15.4_AB11_CACHE23",
+  "packagePolicy": {
+    "delivery": "正式交付提供完整部署包与SQL包",
+    "deployment": "完整包解压后全部覆盖到GitHub仓库根目录",
+    "database": "按SQL包00执行说明顺序运行"
+  },
+  "handoffUpdatedAt": "2026-07-29T06:42:40Z",
+  "sqlRevision": "FIX1"
 }

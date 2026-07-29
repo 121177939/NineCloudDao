@@ -69,6 +69,7 @@
     liveCultivationBase: 0,
     liveCultivationStartedAt: 0,
     breakthroughStatus: null,
+    breakthroughPillQuantity: 0,
     fateStatus: null,
     opportunityStatus: null,
     opportunityPollTimer: null,
@@ -88,6 +89,8 @@
     heavenBalanceSyncing: false,
     techniqueSyncTimer: null,
     techniqueSyncing: false,
+    techniqueUpgradeQueue: [],
+    techniqueUpgradeProcessing: false,
     destinyRanking: null,
     destinyRankingSyncTimer: null,
     destinyRankingSyncing: false,
@@ -104,6 +107,9 @@
     sectSystemSyncing: false,
     sectSystemFetchedAt: 0,
     marketSystem: null,
+    treasureShop: null,
+    treasureShopSyncing: false,
+    treasureShopFetchedAt: 0,
     marketView: 'home',
     casinoView: 'lobby',
     casinoHouseMode: 'system',
@@ -208,6 +214,11 @@
     if (raw.includes('ITEM_QUANTITY_EMPTY')) return '该物品数量不足。';
     if (raw.includes('ITEM_NOT_USABLE')) return '该物品当前不能直接使用。';
     if (raw.includes('ITEM_EFFECT_INVALID')) return '物品效果配置不完整，请检查 V0.6 数据库升级。';
+    if (raw.includes('BREAKTHROUGH_PILL_INSUFFICIENT')) return '渡境清元丹数量不足。';
+    if (raw.includes('BREAKTHROUGH_PILL_QUANTITY_INVALID')) return '渡境清元丹使用数量无效。';
+    if (raw.includes('TREASURE_ITEM_NOT_FOUND')) return '珍宝阁没有这件商品。';
+    if (raw.includes('TREASURE_QUANTITY_INVALID')) return '购买数量无效。';
+    if (raw.includes('SPIRIT_WASHING_PILL_INSUFFICIENT')) return '洗灵丹数量不足。';
     if (raw.includes('TECHNIQUE_NOT_FOUND')) return '没有找到这门功法。';
     if (raw.includes('SUPPORT_SLOTS_FULL')) return '辅修槽已满，最多同时运转两门辅修功法。';
     if (raw.includes('MAIN_TECHNIQUE_REQUIRED')) return '主修功法不能卸下，请直接切换另一门主修功法。';
@@ -273,6 +284,11 @@
     if (raw.includes('ALCHEMY_OUTPUT_ITEM_MISSING')) return '丹方对应的物品定义缺失，请检查聚气丹、聚灵香或悟道茶配置。';
     if (raw.includes('ALCHEMY_BATCH_NOT_FOUND')) return '当前没有可以领取的炼丹批次。';
     if (raw.includes('ALCHEMY_NOT_READY')) return '丹药尚未炼成，请等待倒计时结束。';
+    if (raw.includes('TREASURE_ITEM_NOT_FOUND')) return '珍宝阁中没有这件商品。';
+    if (raw.includes('INVALID_TREASURE_QUANTITY')) return '购买数量不正确。';
+    if (raw.includes('BREAKTHROUGH_PILL_INSUFFICIENT')) return '渡境清元丹数量不足。';
+    if (raw.includes('BREAKTHROUGH_PILL_QUANTITY_EXCESS')) return '所选丹药数量超过本次提升到100%所需数量。';
+    if (raw.includes('SPIRIT_WASHING_PILL_INSUFFICIENT')) return '洗灵丹数量不足。';
     if (raw.includes('INVALID_RANKING_PAGE')) return '榜单分页参数无效，请重新进入榜单。';
     if (raw.includes('V091_REQUIRED')) return 'V0.9.1修为榜基础尚未完成，请先部署并检查。';
     if (raw.includes('NPC_SOCIAL_SETTINGS_MISSING')) return '红尘录配置缺失，请执行V0.10.0数据库升级。';
@@ -802,6 +818,66 @@
     }
   }
 
+
+  function currentSpiritStoneBalance() {
+    const row = state.details?.inventory?.find(item => item.definition?.code === 'spirit_stone');
+    return Math.max(0, Number(row?.quantity ?? state.techniqueSystem?.spirit_stones ?? state.marketSystem?.character?.spirit_stones ?? 0));
+  }
+
+  function findInventoryRow(inventoryId) {
+    return state.details?.inventory?.find(row => String(row.id) === String(inventoryId)) || null;
+  }
+
+  function setLocalInventoryQuantity(inventoryId, quantity) {
+    const row = findInventoryRow(inventoryId);
+    if (!row) return null;
+    row.quantity = Math.max(0, Math.floor(Number(quantity || 0)));
+    if (row.quantity <= 0) state.details.inventory = state.details.inventory.filter(item => String(item.id) !== String(inventoryId));
+    return row;
+  }
+
+  function renderCaveSystemFromState() {
+    const root = document.getElementById('caveSystemRoot');
+    if (!root || !state.details) return;
+    root.outerHTML = cavePanelHtml(state.caveSystem || {}, state.details.inventory || [], state.techniqueLibrary || { books: [] });
+    bindInventoryTechniqueActions();
+  }
+
+  async function refreshCultivationEffectsV0154() {
+    if (!state.character || !state.details) return [];
+    try {
+      const rows = await restFetch('character_cultivation_effects', { query: {
+        select: 'id,display_name,source_type,source_key,flat_rate_per_second,multiplier_bonus,starts_at,expires_at,is_active,metadata',
+        character_id: `eq.${state.character.id}`, is_active: 'eq.true', order: 'created_at.asc'
+      }});
+      state.details.cultivationEffects = Array.isArray(rows) ? rows : [];
+      return state.details.cultivationEffects;
+    } catch (error) {
+      console.error(error);
+      return state.details.cultivationEffects || [];
+    }
+  }
+
+  async function refreshTreasureShopV0154(silent = true) {
+    if (!state.character || state.treasureShopSyncing) return state.treasureShop;
+    state.treasureShopSyncing = true;
+    try {
+      const shop = await rpcGetTreasureShopV0154();
+      if (shop?.status === 'ok') {
+        state.treasureShop = shop;
+        state.treasureShopFetchedAt = Date.now();
+        if (Number.isFinite(Number(shop.spirit_stones))) setLocalSpiritStoneBalance(Number(shop.spirit_stones));
+        if (state.marketView === 'treasure') updateBazaarPanel();
+      }
+      return state.treasureShop;
+    } catch (error) {
+      if (!silent) showToast(translateError(error), 'error');
+      return state.treasureShop;
+    } finally {
+      state.treasureShopSyncing = false;
+    }
+  }
+
   async function refreshMarketSystem(silent = false) {
     if (state.marketSyncing) return state.marketSystem;
     captureCasinoUiDrafts();
@@ -953,25 +1029,45 @@
   }
 
   async function rpcGetBreakthroughStatus() {
-    const result = await restFetch('rpc/get_breakthrough_status_v1', {
+    const result = await restFetch('rpc/get_breakthrough_status_v0154', {
       method: 'POST',
       body: {}
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcAttemptBreakthrough() {
-    const result = await restFetch('rpc/attempt_breakthrough_v1', {
+  async function rpcAttemptBreakthrough(pillQuantity = 0, requestId = createUuid()) {
+    const result = await restFetch('rpc/attempt_breakthrough_v0154', {
       method: 'POST',
-      body: {}
+      body: { p_pill_quantity: Math.max(0, Math.floor(Number(pillQuantity || 0))), p_request_id: requestId }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcUseInventoryItemQuantityV0147(inventoryId, quantity) {
-    const result = await restFetch('rpc/use_inventory_item_quantity_v0147', {
+  async function rpcUseInventoryItemQuantityV0154(inventoryId, quantity, requestId = createUuid()) {
+    const result = await restFetch('rpc/use_inventory_item_quantity_v0154', {
       method: 'POST',
-      body: { p_inventory_id: inventoryId, p_quantity: Number(quantity) }
+      body: { p_inventory_id: inventoryId, p_quantity: Number(quantity), p_request_id: requestId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetTreasureShopV0154() {
+    const result = await restFetch('rpc/get_treasure_shop_v0154', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcPurchaseTreasureItemV0154(itemCode, quantity = 1, requestId = createUuid()) {
+    const result = await restFetch('rpc/purchase_treasure_item_v0154', {
+      method: 'POST',
+      body: { p_item_code: itemCode, p_quantity: Math.max(1, Math.floor(Number(quantity || 1))), p_request_id: requestId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcUseSpiritWashingPillV0154(requestId = createUuid()) {
+    const result = await restFetch('rpc/use_spirit_washing_pill_v0154', {
+      method: 'POST', body: { p_request_id: requestId }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -1130,6 +1226,14 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+  async function rpcUpgradeTechniqueV0154(characterTechniqueId, requestId = createUuid()) {
+    const result = await restFetch('rpc/upgrade_technique_v0154', {
+      method: 'POST',
+      body: { p_character_technique_id: characterTechniqueId, p_request_id: requestId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function rpcGetExclusiveTechniqueSystemV1() {
     const result = await restFetch('rpc/get_exclusive_technique_system_v1', { method: 'POST', body: {} });
     return Array.isArray(result) ? result[0] || null : result;
@@ -1169,6 +1273,14 @@
     const result = await restFetch('rpc/upgrade_exclusive_technique_v1', {
       method: 'POST',
       body: { p_character_exclusive_id: characterExclusiveId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcUpgradeExclusiveTechniqueV0154(characterExclusiveId, requestId = createUuid()) {
+    const result = await restFetch('rpc/upgrade_exclusive_technique_v0154', {
+      method: 'POST',
+      body: { p_character_exclusive_id: characterExclusiveId, p_request_id: requestId }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -1726,7 +1838,7 @@
   }
 
   function healthName(value) {
-    const map = { healthy: '安康', injured: '负伤', wounded: '重伤', critical: '垂危' };
+    const map = { healthy: '安康', injured: '负伤', wounded: '重伤', critical: '濒死' };
     return map[value] || value || '安康';
   }
 
@@ -1859,24 +1971,44 @@
     const fateStatus = state.fateStatus?.status === 'ok' ? state.fateStatus : null;
     const unyieldingStacks = Number(fateStatus?.unyielding_stack_count || 0);
     const unyieldingBonus = Number(fateStatus?.unyielding_current_bonus || 0);
+    const recoveryActive = Boolean(status.major_fall_used && status.original_target_stage_name);
+    const pillStock = Math.max(0, Math.floor(Number(status.breakthrough_pill_quantity || 0)));
+    const normalRate = Math.max(0, Math.min(1, Number(status.success_rate || 0)));
+    const serverMaxUseful = Math.max(0, Math.floor(Number(status.max_useful_pills ?? Math.ceil(Math.max(0, 1 - normalRate) / 0.05))));
+    const maxPills = Math.min(pillStock, serverMaxUseful);
+    state.breakthroughPillQuantity = Math.max(0, Math.min(maxPills, Math.floor(Number(state.breakthroughPillQuantity || 0))));
+    const selectedPills = state.breakthroughPillQuantity;
+    const finalRate = Math.min(1, normalRate + selectedPills * 0.05);
     return `
       <div class="panel-title"><h3>境界突破</h3><span class="badge">目标 · ${escapeHtml(status.next_stage_name || '未知')}</span></div>
       <div class="breakthrough-card ${canBreakthrough ? 'cultivation-full' : ''}">
-        <div class="breakthrough-heading"><div><span>下一道关</span><strong>${escapeHtml(status.next_stage_name || '未知境界')}</strong></div><div class="chance-orb"><small>本次成功率</small><b>${formatNumber(Number(status.success_rate || 0) * 100, 1)}%</b></div></div>
+        <div class="breakthrough-heading"><div><span>下一道关</span><strong>${escapeHtml(status.next_stage_name || '未知境界')}</strong></div><div class="chance-orb"><small>本次成功率</small><b id="breakthroughChanceValue">${formatNumber(finalRate * 100, 1)}%</b></div></div>
         <div class="progress-label"><span>${canBreakthrough ? '修为已至圆满' : '累计修为'}</span><strong id="breakthroughProgressText">${formatNumber(current)} / ${formatNumber(required)}</strong></div>
         <div class="progress-track"><div id="breakthroughProgressFill" class="progress-fill" style="width:${percent}%"></div></div>
         ${canBreakthrough ? '<div class="cultivation-full-notice"><strong>修为已至圆满</strong><p>丹田灵力已臻当前境界极限，再行吐纳亦无法寸进。唯有叩问天关、完成突破，方可继续修行。</p></div>' : ''}
+        <div class="breakthrough-pill-selector ${pillStock > 0 ? '' : 'is-empty'}">
+          <div><span>渡境清元丹</span><strong>每枚 +5 个百分点</strong><small>库存 ${formatNumber(pillStock)} 枚 · 最终可提升至100%</small></div>
+          <div class="breakthrough-pill-controls">
+            <button type="button" data-breakthrough-pill-delta="-1" ${selectedPills <= 0 ? 'disabled' : ''}>−</button>
+            <b id="breakthroughPillQuantity">${formatNumber(selectedPills)}</b>
+            <button type="button" data-breakthrough-pill-delta="1" ${selectedPills >= maxPills ? 'disabled' : ''}>＋</button>
+          </div>
+          <p id="breakthroughPillPreview">${selectedPills > 0 ? `本次使用 ${formatNumber(selectedPills)} 枚：${formatNumber(normalRate * 100, 1)}% → ${formatNumber(finalRate * 100, 1)}%` : pillStock > 0 ? `当前不使用：${formatNumber(normalRate * 100, 1)}%` : '当前没有渡境清元丹'}</p>
+        </div>
         <div class="breakthrough-meta">
           <span>基础成功率：${formatNumber(Number(status.base_success_rate || 0) * 100, 1)}%</span>
           <span>天劫感悟：${formatNumber(insights)}丝（突破 +${formatNumber(insightBonus * 100, 0)}个百分点 · 总修炼速度 +${formatNumber(insights * 10, 0)}%）</span>
           ${fateStatus?.code === 'unyielding_heart' ? `<span>百折道心：${formatNumber(unyieldingStacks)} / ${formatNumber(fateStatus.unyielding_stack_limit || 4)}层（突破额外 +${formatNumber(unyieldingBonus * 100, 0)}个百分点）</span>` : ''}
           ${fateStatus?.code === 'heaven_jealous' && status.penalty_enabled !== false ? `<span>天妒劫身：渡劫成功率 -${formatNumber(Number(fateStatus.tribulation_success_penalty || 0) * 100, 0)}个百分点</span>` : ''}
-          <span>最终成功率上限：${formatNumber(Number(status.compensation_cap || 0.95) * 100, 0)}%</span>
-          <span>实际受到失败惩罚后获得天劫感悟；百折道心同步获得百折。任意突破成功后两者一起清空。</span>
-          <span>失败结果：身死0.5% · 大跌境5% · 小跌境8% · 全损15% · 半损30% · 有惊无险41.5%</span>
-          <span>有惊无险、死亡及保护生效时不增加天劫感悟</span>
-          ${status.penalty_enabled === false ? '<span>元婴以下保护：失败不死亡、不跌境、不扣修为、不增加感悟</span>' : '<span>元婴期及以上：完整天劫失败结果生效</span>'}
-          ${status.major_fall_used ? `<span>大跌境锁：已触发；回到${escapeHtml(status.major_fall_origin_stage_name || '原始大境界')}后解除</span>` : '<span>同一恢复周期最多真正跌落一次大境界</span>'}
+          <span>常规加成上限：${formatNumber(Number(status.compensation_cap || 0.95) * 100, 0)}%；渡境清元丹可继续推至100%</span>
+          <span>实际受到修为或境界惩罚后获得天劫感悟；百折道心同步获得百折。恢复周期中，中途突破成功不会清空。</span>
+          <span>失败结果：道果崩解0.3% · 大跌境5% · 小跌境8% · 全损15% · 半损30% · 有惊无险41.7%</span>
+          <span>道果崩解不会死亡：境界与修为回到凡人、状态变为濒死；重新达到保护下限后转为重伤。</span>
+          <span>有惊无险、低境界天道护持及跌境保护拦截时，不增加天劫感悟或百折。</span>
+          ${status.penalty_enabled === false ? '<span>元婴以下保护：失败不死亡、不跌境、不扣修为，已存在的恢复目标与感悟不会消失</span>' : '<span>元婴期及以上：完整天劫失败结果生效，道果崩解可穿透普通跌境保护</span>'}
+          ${recoveryActive
+            ? `<span>恢复周期：目标 ${escapeHtml(status.original_target_stage_name || '未知')} · 首次失败锚点 ${escapeHtml(status.major_fall_origin_stage_name || '未知')} · 普通跌境下限 ${escapeHtml(status.penalty_floor_name || '未知')}</span>`
+            : '<span>首次真实突破失败后，将锁定本轮恢复目标和前一大境界同层级的普通跌境保护下限</span>'}
         </div>
         <button id="attemptBreakthroughBtn" class="primary-btn full" type="button" ${canBreakthrough ? '' : 'disabled'}>${canBreakthrough ? `冲击${escapeHtml(status.next_stage_name || '境界')}` : `尚缺 ${formatNumber(Math.max(0, required - current))} 修为`}</button>
       </div>`;
@@ -2252,7 +2384,7 @@
     }
   }
 
-  function showResultModal({ seal = '缘', title, message, detail = '', success = true }) {
+  function showResultModal({ seal = '缘', title, message, detail = '', success = true, continueText = '确定', onContinue = null }) {
     modalRoot.innerHTML = `
       <div class="modal-backdrop">
         <section class="modal" role="dialog" aria-modal="true">
@@ -2260,18 +2392,18 @@
           <h2>${escapeHtml(title)}</h2>
           <p>${escapeHtml(message)}</p>
           ${detail ? `<div class="result-detail">${escapeHtml(detail)}</div>` : ''}
-          <button id="resultContinueBtn" class="primary-btn full" type="button">继续修行</button>
+          <button id="resultContinueBtn" class="primary-btn full" type="button">${escapeHtml(continueText)}</button>
         </section>
       </div>
     `;
     document.getElementById('resultContinueBtn').addEventListener('click', async () => {
       modalRoot.innerHTML = '';
-      await enterGame();
+      if (typeof onContinue === 'function') await onContinue();
     });
   }
 
   function breakthroughOutcomeName(code) {
-    const names = { death:'身死道消', major_fall:'大境跌落', minor_fall:'小境跌落', stage_reset:'道基受挫', stage_half:'灵力溃散', no_loss:'有惊无险', low_realm_no_penalty:'天道护持', major_fall_guarded:'大跌境保护', realm_floor_guarded:'元婴下限保护' };
+    const names = { dao_collapse:'道果崩解', major_fall:'大境跌落', minor_fall:'小境跌落', stage_reset:'道基受挫', stage_half:'灵力溃散', no_loss:'有惊无险', low_realm_no_penalty:'天道护持', major_fall_guarded:'大跌境保护', minor_fall_guarded:'小跌境保护', realm_floor_guarded:'普通跌境保护' };
     return names[code] || '冲关未成';
   }
 
@@ -2285,22 +2417,58 @@
     return accepted;
   }
 
+  function updateBreakthroughPillPreview() {
+    const status = state.breakthroughStatus || {};
+    const normalRate = Math.max(0, Math.min(1, Number(status.success_rate || 0)));
+    const stock = Math.max(0, Math.floor(Number(status.breakthrough_pill_quantity || 0)));
+    const maxUseful = Math.min(stock, Math.max(0, Math.floor(Number(status.max_useful_pills ?? Math.ceil(Math.max(0, 1 - normalRate) / 0.05)))));
+    state.breakthroughPillQuantity = Math.max(0, Math.min(maxUseful, Math.floor(Number(state.breakthroughPillQuantity || 0))));
+    const quantity = state.breakthroughPillQuantity;
+    const finalRate = Math.min(1, normalRate + quantity * 0.05);
+    const quantityNode = document.getElementById('breakthroughPillQuantity');
+    const chanceNode = document.getElementById('breakthroughChanceValue');
+    const previewNode = document.getElementById('breakthroughPillPreview');
+    if (quantityNode) quantityNode.textContent = formatNumber(quantity);
+    if (chanceNode) chanceNode.textContent = `${formatNumber(finalRate * 100, 1)}%`;
+    if (previewNode) previewNode.textContent = quantity > 0
+      ? `本次使用 ${formatNumber(quantity)} 枚：${formatNumber(normalRate * 100, 1)}% → ${formatNumber(finalRate * 100, 1)}%`
+      : stock > 0 ? `当前不使用：${formatNumber(normalRate * 100, 1)}%` : '当前没有渡境清元丹';
+    document.querySelectorAll('[data-breakthrough-pill-delta]').forEach(button => {
+      const delta = Number(button.dataset.breakthroughPillDelta || 0);
+      button.disabled = delta < 0 ? quantity <= 0 : quantity >= maxUseful;
+    });
+  }
+
   function bindProgressionActions() {
+    document.querySelectorAll('[data-breakthrough-pill-delta]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        state.breakthroughPillQuantity += Number(button.dataset.breakthroughPillDelta || 0);
+        updateBreakthroughPillPreview();
+      });
+    });
     const breakthroughButton = document.getElementById('attemptBreakthroughBtn');
     if (breakthroughButton && breakthroughButton.dataset.bound !== '1') {
       breakthroughButton.dataset.bound = '1';
       breakthroughButton.addEventListener('click', async () => {
+        const pillQuantity = Math.max(0, Math.floor(Number(state.breakthroughPillQuantity || 0)));
         setBusy(breakthroughButton, true, '正在冲关……');
         try {
-          const result = await rpcAttemptBreakthrough();
+          const result = await rpcAttemptBreakthrough(pillQuantity, createUuid());
+          state.breakthroughPillQuantity = 0;
+          const pillText = Number(result?.pill_quantity_used || pillQuantity) > 0
+            ? ` 渡境清元丹消耗 ${formatNumber(result?.pill_quantity_used || pillQuantity)} 枚，丹药加成 +${formatNumber(Number(result?.pill_bonus || pillQuantity * 0.05) * 100, 0)} 个百分点。`
+            : '';
           showResultModal({
             seal: result?.success ? '破' : '劫',
             title: result?.success ? `突破成功 · ${result.target_stage_name}` : `突破失败 · ${breakthroughOutcomeName(result?.outcome_code)}`,
             message: result?.message || (result?.success ? '道关已开。' : '此番冲关未成。'),
-            detail: result?.success
-              ? `${Number(result.lifespan_bonus || 0) > 0 ? `寿元增加 ${formatNumber(result.lifespan_bonus)} 年。` : ''}${result.affliction_name ? ` 当前状态：${result.affliction_name}。` : ''} 天劫感悟与百折层数已经清空。`
-              : `${Number(result.cultivation_lost || 0) > 0 ? `修为损失 ${formatNumber(result.cultivation_lost)}，当前修为 ${formatNumber(result.cultivation_after)}。` : '境界与修为没有额外损失。'}${result.affliction_name ? ` 状态：${result.affliction_name}。` : ''}${result.insight_gained ? ` 天劫感悟 +1丝；当前共 ${formatNumber(result.heavenly_insight_count || 0)} 丝，突破率累计 +${formatNumber(Number(result.compensation_bonus || 0) * 100, 0)} 个百分点，总修炼速度累计 +${formatNumber(Number(result.heavenly_insight_count || 0) * 10, 0)}%。` : ' 本次不增加天劫感悟与突破成功率。'}最终成功率最高95%。`,
-            success: Boolean(result?.success)
+            detail: (result?.success
+              ? `${Number(result.lifespan_bonus || 0) > 0 ? `寿元增加 ${formatNumber(result.lifespan_bonus)} 年。` : ''}${result.affliction_name ? ` 当前状态：${result.affliction_name}。` : ''}${result.original_target_stage_name ? ` 恢复目标仍为${result.original_target_stage_name}，天劫感悟与百折继续保留。` : ' 本轮恢复目标已达成或当前没有恢复周期，天劫感悟与百折已按规则结算。'}`
+              : `${Number(result.cultivation_lost || 0) > 0 ? `修为损失 ${formatNumber(result.cultivation_lost)}，当前修为 ${formatNumber(result.cultivation_after)}。` : '境界与修为没有额外损失。'}${result.affliction_name ? ` 状态：${result.affliction_name}。` : ''}${result.insight_gained ? ` 天劫感悟 +1丝；当前共 ${formatNumber(result.heavenly_insight_count || 0)} 丝。` : ' 本次不增加天劫感悟。'}${result.original_target_stage_name ? ` 恢复目标：${result.original_target_stage_name}。` : ''}`) + pillText,
+            success: Boolean(result?.success),
+            onContinue: () => enterGame({ silent: true })
           });
         } catch (error) {
           showToast(translateError(error), 'error');
@@ -2308,7 +2476,6 @@
         }
       });
     }
-
   }
 
 
@@ -2494,8 +2661,9 @@
     }
   }
 
-  async function refreshTechniqueSystem(rebind = false) {
+  async function refreshTechniqueSystem(rebind = false, force = false) {
     if (!state.character || state.techniqueSyncing) return state.techniqueSystem;
+    if (!force && (state.techniqueUpgradeProcessing || state.techniqueUpgradeQueue.length)) return state.techniqueSystem;
     state.techniqueSyncing = true;
     try {
       const system = await rpcGetTechniqueSystemV2();
@@ -2505,8 +2673,7 @@
       const root = document.getElementById('techniqueV2Root');
       if (root && state.details) {
         root.outerHTML = techniquePanelHtml(system, state.details.inventory || []);
-        if (rebind) bindInventoryTechniqueActions();
-        else bindInventoryTechniqueActions();
+        bindInventoryTechniqueActions();
       }
       return system;
     } catch (error) {
@@ -2518,8 +2685,9 @@
   }
 
 
-  async function refreshExclusiveTechniqueSystem(rebind = false) {
+  async function refreshExclusiveTechniqueSystem(rebind = false, force = false) {
     if (!state.character) return state.exclusiveTechniqueSystem;
+    if (!force && (state.techniqueUpgradeProcessing || state.techniqueUpgradeQueue.length)) return state.exclusiveTechniqueSystem;
     try {
       const system = await rpcGetExclusiveTechniqueSystemV1();
       if (!system || system.status !== 'ok') return system;
@@ -2528,8 +2696,7 @@
       const root = document.getElementById('exclusiveTechniqueRoot');
       if (root && state.details) {
         root.outerHTML = exclusiveTechniquePanelHtml(system, state.details.inventory || []);
-        if (rebind) bindExclusiveTechniqueActions();
-        else bindExclusiveTechniqueActions();
+        bindExclusiveTechniqueActions();
       }
       return system;
     } catch (error) {
@@ -2617,6 +2784,7 @@
     if (useType === 'instant_cultivation') return `使用后立即修为 +${formatNumber(effects.instant_cultivation || 0)}。`;
     if (useType === 'timed_rate') return '使用后获得限时自动修炼速度加成。';
     if (useType === 'comprehension') return `使用后永久悟性 +${formatNumber(effects.comprehension || 0)}。`;
+    if (useType === 'spirit_root_reroll') return '按角色初生时完全相同的概率重新随机并替换当前灵根，结果可能更好、相同或更差。';
     return definition.description || '暂未开放直接使用。';
   }
 
@@ -2738,6 +2906,148 @@
       growth
     };
   }
+
+  function techniqueGradeRulesLocalV0154(grade) {
+    const rules = {
+      exclusive: { maxLevel: 36, factor: 1.00 }, immortal: { maxLevel: 30, factor: 0.95 },
+      heaven: { maxLevel: 24, factor: 0.90 }, earth: { maxLevel: 18, factor: 0.85 },
+      mystic: { maxLevel: 12, factor: 0.80 }, yellow: { maxLevel: 6, factor: 0.75 }
+    };
+    return rules[grade] || rules.yellow;
+  }
+
+  function techniqueCostLocalV0154(grade, level, mastery = false) {
+    const rule = techniqueGradeRulesLocalV0154(grade);
+    return mastery
+      ? Math.ceil(1049 * Math.pow(Math.max(1, rule.maxLevel - 1), 2) * rule.factor * 1.5)
+      : Math.ceil(1049 * Math.pow(Math.max(1, Number(level || 1)), 2) * rule.factor);
+  }
+
+  function localTechniqueContributionV0154() {
+    let flat = 0;
+    let multiplier = 0;
+    const ordinary = Array.isArray(state.techniqueSystem?.techniques) ? state.techniqueSystem.techniques : [];
+    ordinary.forEach(row => {
+      const slot = Number(row?.slot_multiplier ?? techniqueSlotMultiplier(row?.equipped_slot));
+      if (!row?.equipped_slot || slot <= 0) return;
+      const values = techniqueV2EffectValues(row);
+      const mastery = row?.is_mastered ? 1.2 : 1;
+      flat += values.flat * slot * mastery;
+      multiplier += values.multiplier * slot * mastery;
+    });
+    const exclusive = Array.isArray(state.exclusiveTechniqueSystem?.techniques) ? state.exclusiveTechniqueSystem.techniques : [];
+    exclusive.forEach(row => {
+      if (row?.equipped) multiplier += Math.max(0, Number(row.effect_multiplier_bonus || 0));
+    });
+    return { flat, multiplier };
+  }
+
+  function recalculateCultivationRateLocalV0154() {
+    if (!state.cultivationStatus) return;
+    const currentCultivation = currentDisplayedCultivation();
+    state.liveCultivationBase = currentCultivation;
+    state.liveCultivationStartedAt = Date.now();
+    const contribution = localTechniqueContributionV0154();
+    const cultivation = state.cultivationStatus;
+    cultivation.technique_flat_rate = contribution.flat;
+    cultivation.technique_multiplier_bonus = contribution.multiplier;
+    const fixed = Number(cultivation.base_rate_per_second || 0) + contribution.flat + Number(cultivation.effect_flat_rate || 0);
+    const additive = Math.max(0, 1 + Number(cultivation.fate_bonus || 0) + contribution.multiplier + Number(cultivation.effect_multiplier_bonus || 0));
+    const insightMultiplier = 1 + Math.max(0, Number(state.breakthroughStatus?.heavenly_insight_count || 0)) * 0.10;
+    const cap = Number(state.breakthroughStatus?.cultivation_cap || state.breakthroughStatus?.cultivation_required || 0);
+    cultivation.current_rate_per_second = cap > 0 && currentCultivation >= cap
+      ? 0
+      : Math.max(0, fixed * Number(cultivation.root_multiplier || 1) * additive * Number(cultivation.qi_multiplier || 1) * insightMultiplier);
+    const rateText = formatRate(cultivation.current_rate_per_second);
+    const live = document.getElementById('liveRateValue');
+    const hud = document.getElementById('cultivationRateText');
+    const flatNode = document.getElementById('techniqueFlatRateSummary');
+    const multiplierNode = document.getElementById('techniqueMultiplierSummary');
+    if (live) live.textContent = rateText;
+    if (hud) hud.textContent = rateText;
+    if (flatNode) flatNode.textContent = `+${formatNumber(contribution.flat, 3)}/秒`;
+    if (multiplierNode) multiplierNode.textContent = `+${formatNumber(contribution.multiplier * 100, 2)}%`;
+  }
+
+  function renderTechniqueSystemsFromStateV0154() {
+    const inventory = state.details?.inventory || [];
+    const ordinaryRoot = document.getElementById('techniqueV2Root');
+    if (ordinaryRoot) ordinaryRoot.outerHTML = techniquePanelHtml(state.techniqueSystem || {}, inventory);
+    const exclusiveRoot = document.getElementById('exclusiveTechniqueRoot');
+    if (exclusiveRoot) exclusiveRoot.outerHTML = exclusiveTechniquePanelHtml(state.exclusiveTechniqueSystem || {}, inventory);
+    bindInventoryTechniqueActions();
+    bindExclusiveTechniqueActions();
+  }
+
+  function optimisticTechniqueUpgradeV0154(kind, id) {
+    const ordinary = kind === 'ordinary';
+    const rows = ordinary ? state.techniqueSystem?.techniques : state.exclusiveTechniqueSystem?.techniques;
+    const row = Array.isArray(rows) ? rows.find(item => String(ordinary ? item.character_technique_id : item.id) === String(id)) : null;
+    if (!row || row.is_mastered) {
+      showToast('这门功法已经圆满。', 'error');
+      return;
+    }
+    const grade = ordinary ? (row.grade_code || row.raw_grade || 'yellow') : 'exclusive';
+    const level = Math.max(1, Number(row.level || 1));
+    const maxLevel = Math.max(level, Number(row.max_level || techniqueGradeRulesLocalV0154(grade).maxLevel));
+    const mastery = level >= maxLevel;
+    const cost = Math.max(0, Number(ordinary ? row.upgrade_cost : row.next_upgrade_cost) || techniqueCostLocalV0154(grade, level, mastery));
+    const balance = currentSpiritStoneBalance();
+    if (balance < cost) {
+      showToast(`灵石不足，尚缺 ${formatNumber(cost - balance)}。`, 'error');
+      return;
+    }
+    const currentCultivation = currentDisplayedCultivation();
+    state.liveCultivationBase = currentCultivation;
+    state.liveCultivationStartedAt = Date.now();
+    setLocalSpiritStoneBalance(balance - cost);
+    if (mastery) row.is_mastered = true;
+    else row.level = level + 1;
+    const newLevel = Number(row.level || level);
+    if (ordinary) {
+      row.can_upgrade = !row.is_mastered;
+      row.can_master = newLevel >= maxLevel && !row.is_mastered;
+      row.upgrade_cost = row.is_mastered ? 0 : techniqueCostLocalV0154(grade, newLevel, newLevel >= maxLevel);
+    } else {
+      const base = Math.max(0, Number(row.base_cultivation_multiplier || 0));
+      row.effect_multiplier_bonus = base * (1 + Math.max(0, newLevel - 1) * 0.10) * (row.is_mastered ? 1.2 : 1);
+      row.next_upgrade_cost = row.is_mastered ? 0 : techniqueCostLocalV0154('exclusive', newLevel, newLevel >= maxLevel);
+    }
+    renderTechniqueSystemsFromStateV0154();
+    recalculateCultivationRateLocalV0154();
+    state.techniqueUpgradeQueue.push({ kind, id, requestId: createUuid() });
+    processTechniqueUpgradeQueueV0154();
+  }
+
+  async function processTechniqueUpgradeQueueV0154() {
+    if (state.techniqueUpgradeProcessing) return;
+    state.techniqueUpgradeProcessing = true;
+    let failure = null;
+    try {
+      while (state.techniqueUpgradeQueue.length) {
+        const operation = state.techniqueUpgradeQueue.shift();
+        const result = operation.kind === 'ordinary'
+          ? await rpcUpgradeTechniqueV0154(operation.id, operation.requestId)
+          : await rpcUpgradeExclusiveTechniqueV0154(operation.id, operation.requestId);
+        const remaining = Number(result?.spirit_stones_after ?? result?.spirit_stones_remaining);
+        if (Number.isFinite(remaining)) setLocalSpiritStoneBalance(remaining);
+      }
+    } catch (error) {
+      failure = error;
+      state.techniqueUpgradeQueue.length = 0;
+    } finally {
+      state.techniqueUpgradeProcessing = false;
+    }
+    await Promise.all([
+      refreshTechniqueSystem(true, true),
+      refreshExclusiveTechniqueSystem(true, true),
+      refreshSpiritStoneBalanceV0141(true),
+      refreshCultivationEffectsV0154(),
+      syncCultivation(true)
+    ]).catch(() => {});
+    if (failure) showToast(`功法状态已按云端结果校正：${translateError(failure)}`, 'error');
+  }
+
 
   function techniqueV2EffectText(row) {
     const fixed = row?.fixed_effects || row?.definition?.fixed_effects || {};
@@ -3011,6 +3321,7 @@
         ${items.length ? items.map(row => {
           const definition = row.definition || {};
           const effects = definition.effects || {};
+          const washPill = definition.code === 'spirit_washing_pill_v0154' || effects.use_type === 'spirit_root_reroll';
           const usable = ['instant_cultivation','timed_rate','comprehension'].includes(effects.use_type);
           const quantityAttr = definition.code === 'spirit_stone' ? ' data-spirit-stone-balance' : '';
           return `
@@ -3021,7 +3332,7 @@
                 <strong>${escapeHtml(definition.name || '未知物品')} <small>× <span${quantityAttr}>${formatNumber(row.quantity)}</span></small></strong>
                 <p>${escapeHtml(itemEffectText(row))}</p>
               </div>
-              ${usable ? `<button class="primary-btn inventory-use-btn" type="button" data-use-item="${escapeHtml(row.id)}" data-use-item-name="${escapeHtml(definition.name || '储物')}" data-use-item-quantity="${escapeHtml(Math.max(1, Number(row.quantity || 1)))}" data-use-item-effect="${escapeHtml(itemEffectText(row))}">选择数量</button>` : ''}
+              ${washPill ? `<button class="primary-btn inventory-use-btn" type="button" data-use-spirit-washing-pill="${escapeHtml(row.id)}">重塑灵根</button>` : usable ? `<button class="primary-btn inventory-use-btn" type="button" data-use-item="${escapeHtml(row.id)}" data-use-item-name="${escapeHtml(definition.name || '储物')}" data-use-item-quantity="${escapeHtml(Math.max(1, Number(row.quantity || 1)))}" data-use-item-effect="${escapeHtml(itemEffectText(row))}">选择数量</button>` : ''}
             </article>
           `;
         }).join('') : '<div class="empty-state">储物袋空空如也。</div>'}
@@ -3189,25 +3500,69 @@
     input?.addEventListener('input', () => update(input.value));
     document.querySelectorAll('[data-inventory-quantity-delta]').forEach(button => button.addEventListener('click', () => update(Number(input.value || 1) + Number(button.dataset.inventoryQuantityDelta || 0))));
     document.querySelectorAll('[data-inventory-quantity-value]').forEach(button => button.addEventListener('click', () => update(button.dataset.inventoryQuantityValue)));
-    confirm?.addEventListener('click', async () => {
+    confirm?.addEventListener('click', () => {
       const useQuantity = update(input.value);
-      setBusy(confirm, true, '炼化中……');
-      try {
-        state.activeMobileTab = 'cave';
-        const result = await rpcUseInventoryItemQuantityV0147(inventoryId, useQuantity);
-        await Promise.all([refreshInventoryV0147(), refreshCaveSystem(false), syncCultivation(true)]);
+      const row = findInventoryRow(inventoryId);
+      if (!row || Number(row.quantity || 0) < useQuantity) {
         close();
-        showResultModal({
-          seal: '物',
-          title: `使用 · ${result?.item_name || itemName}`,
-          message: result?.reward_text || `已使用 ${formatNumber(result?.quantity_used || useQuantity)} 个。`,
-          detail: Number(result?.quantity_remaining || 0) > 0 ? `剩余数量：${formatNumber(result.quantity_remaining)}` : '该物品已经用尽。',
-          success: true
-        });
-      } catch (error) {
-        showToast(translateError(error), 'error');
-        setBusy(confirm, false);
+        showToast('该物品数量不足。', 'error');
+        return;
       }
+      setLocalInventoryQuantity(inventoryId, Number(row.quantity || 0) - useQuantity);
+      close();
+      renderCaveSystemFromState();
+      (async () => {
+        try {
+          const result = await rpcUseInventoryItemQuantityV0154(inventoryId, useQuantity, createUuid());
+          await Promise.all([refreshInventoryV0147(), refreshCaveSystem(false), refreshCultivationEffectsV0154(), syncCultivation(true)]);
+          showToast(result?.reward_text || `${result?.item_name || itemName}已生效。`);
+        } catch (error) {
+          await Promise.all([refreshInventoryV0147(), refreshCaveSystem(false), syncCultivation(true)]).catch(() => {});
+          renderCaveSystemFromState();
+          showToast(`物品状态已按云端校正：${translateError(error)}`, 'error');
+        }
+      })();
+    });
+  }
+
+  function openSpiritWashingPillModal(inventoryId) {
+    const currentRoot = state.details?.spiritRoot || {};
+    modalRoot.innerHTML = `
+      <div id="spiritWashingBackdrop" class="modal-backdrop">
+        <section class="modal spirit-washing-modal" role="dialog" aria-modal="true" aria-labelledby="spiritWashingTitle">
+          <button id="closeSpiritWashingBtn" class="modal-close-button" type="button" aria-label="关闭">×</button>
+          <div class="modal-seal">灵</div>
+          <h2 id="spiritWashingTitle">服用洗灵丹</h2>
+          <p>当前灵根：<strong>${escapeHtml(currentRoot.name || '未知灵根')}</strong></p>
+          <div class="result-detail">将按创建角色时完全相同的概率重新抽取灵根。结果可能更好、相同或更差，且会直接替换当前灵根。</div>
+          <button id="confirmSpiritWashingBtn" class="primary-btn full" type="button">确认重塑灵根</button>
+        </section>
+      </div>`;
+    const close = () => { modalRoot.innerHTML = ''; };
+    document.getElementById('closeSpiritWashingBtn')?.addEventListener('click', close);
+    document.getElementById('spiritWashingBackdrop')?.addEventListener('click', event => { if (event.target?.id === 'spiritWashingBackdrop') close(); });
+    document.getElementById('confirmSpiritWashingBtn')?.addEventListener('click', () => {
+      const row = findInventoryRow(inventoryId);
+      if (!row || Number(row.quantity || 0) < 1) { close(); showToast('洗灵丹数量不足。', 'error'); return; }
+      setLocalInventoryQuantity(inventoryId, Number(row.quantity || 0) - 1);
+      close();
+      renderCaveSystemFromState();
+      (async () => {
+        try {
+          const result = await rpcUseSpiritWashingPillV0154(createUuid());
+          await enterGame({ silent: true });
+          showResultModal({
+            seal: '灵', title: '灵根重塑',
+            message: `${result?.old_root_name || currentRoot.name || '原灵根'} → ${result?.new_root_name || '新灵根'}`,
+            detail: `修炼系数 ×${formatNumber(result?.old_cultivation_multiplier || currentRoot.cultivation_multiplier || 1, 2)} → ×${formatNumber(result?.new_cultivation_multiplier || 1, 2)}${Number.isFinite(Number(result?.current_rate_per_second)) ? `；当前修炼速度 ${formatRate(result.current_rate_per_second)}` : ''}`,
+            success: true
+          });
+        } catch (error) {
+          await Promise.all([refreshInventoryV0147(), refreshCaveSystem(false)]).catch(() => {});
+          renderCaveSystemFromState();
+          showToast(`洗灵结果未成立：${translateError(error)}`, 'error');
+        }
+      })();
     });
   }
 
@@ -3236,7 +3591,7 @@
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
       button.addEventListener('click', async () => {
-        setBusy(button, true, button.textContent.trim() === '参悟' ? '参悟中……' : '研习中……');
+        button.disabled = true;
         try {
           state.activeMobileTab = 'cave';
           const result = await rpcUseTechniqueBookV1(button.dataset.useTechniqueBook);
@@ -3247,18 +3602,11 @@
             refreshSpiritStoneBalanceV0141(true)
           ]);
           const learned = result?.action === 'learn';
-          const exclusive = result?.book_kind === 'exclusive';
-          showResultModal({
-            seal: exclusive ? '专' : '卷',
-            title: `${learned ? '研习' : '参悟'} · 《${result?.technique_name || '功法'}》`,
-            message: result?.message || (learned ? '功法已收入识海，但尚未自动装备。' : `同名功法书已化为 ${formatNumber(result?.mastery_points_gained || 0)} 点传承点。`),
-            detail: `${result?.reward_text ? `${result.reward_text} ` : ''}剩余道卷：${formatNumber(result?.quantity_remaining || 0)}。`,
-            success: true
-          });
+          showToast(result?.message || (learned ? `《${result?.technique_name || '功法'}》已收入识海。` : `参悟完成，传承点 +${formatNumber(result?.mastery_points_gained || 0)}。`));
           await syncCultivation(true);
         } catch (error) {
           showToast(translateError(error), 'error');
-          setBusy(button, false);
+          button.disabled = false;
         }
       });
     });
@@ -3336,6 +3684,12 @@
       });
     }
 
+    document.querySelectorAll('[data-use-spirit-washing-pill]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => openSpiritWashingPillModal(button.dataset.useSpiritWashingPill));
+    });
+
     document.querySelectorAll('[data-use-item]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
@@ -3372,27 +3726,9 @@
     document.querySelectorAll('[data-upgrade-technique-v2]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button, true, '参悟中……');
-        try {
-          state.activeMobileTab = 'techniques';
-          const result = await rpcUpgradeTechniqueV2(button.dataset.upgradeTechniqueV2);
-          if (Number.isFinite(Number(result?.spirit_stones_remaining))) {
-            setLocalSpiritStoneBalance(Number(result.spirit_stones_remaining));
-          }
-          await refreshTechniqueSystem(true);
-          showResultModal({
-            seal: '法',
-            title: `功法精进 · 第 ${formatNumber(result?.level || 0)} 层`,
-            message: result?.mastered ? `${result?.technique_name || '功法'}已臻圆满。` : `${result?.technique_name || '功法'}已突破本层桎梏。`,
-            detail: `消耗灵石 ${formatNumber(result?.cost || 0)}。${result?.mastered ? ' 功法已圆满，数值型效果额外提升20%。' : ''}`,
-            success: true
-          });
-          await syncCultivation(true);
-        } catch (error) {
-          showToast(translateError(error), 'error');
-          setBusy(button, false);
-        }
+      button.addEventListener('click', () => {
+        state.activeMobileTab = 'techniques';
+        optimisticTechniqueUpgradeV0154('ordinary', button.dataset.upgradeTechniqueV2);
       });
     });
   }
@@ -3420,27 +3756,9 @@
     document.querySelectorAll('[data-upgrade-exclusive-technique]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button, true, '参悟中……');
-        try {
-          state.activeMobileTab = 'techniques';
-          const result = await rpcUpgradeExclusiveTechniqueV1(button.dataset.upgradeExclusiveTechnique);
-          if (Number.isFinite(Number(result?.spirit_stones_remaining))) {
-            setLocalSpiritStoneBalance(Number(result.spirit_stones_remaining));
-          }
-          await refreshExclusiveTechniqueSystem(true);
-          showResultModal({
-            seal: '专',
-            title: `专属精进 · 第 ${formatNumber(result?.level || 0)} 层`,
-            message: `${result?.technique_name || '专属功法'}已完成本层淬炼。`,
-            detail: `消耗灵石 ${formatNumber(result?.cost || 0)}，当前加成 +${formatNumber(Number(result?.effect_multiplier_bonus || 0) * 100, 2)}%。`,
-            success: true
-          });
-          await syncCultivation(true);
-        } catch (error) {
-          showToast(translateError(error), 'error');
-          setBusy(button, false);
-        }
+      button.addEventListener('click', () => {
+        state.activeMobileTab = 'techniques';
+        optimisticTechniqueUpgradeV0154('exclusive', button.dataset.upgradeExclusiveTechnique);
       });
     });
   }
@@ -4089,68 +4407,47 @@
     bindBazaarActions();
   }
 
-  function bazaarPanelHtml(view = 'home', marketSystem = {}, ranking = {}, worldEvents = {}) {
+
+  function treasureShopPanelHtmlV0154(shop = {}) {
+    const rows = Array.isArray(shop?.items) ? shop.items : [];
+    if (shop?.status === 'loading' || (!rows.length && !shop?.error)) return '<div class="empty-state">珍宝阁正在核对库存……</div>';
+    if (!rows.length) return `<div class="empty-state">${escapeHtml(shop?.error || '珍宝阁暂未开放。')}</div>`;
+    return `
+      <div class="treasure-shop-head"><div><span>珍宝阁现货</span><strong>丹药均收入洞府储物袋</strong></div><div class="resource-inline"><span>可用灵石</span><strong data-spirit-stone-balance>${formatNumber(shop.spirit_stones ?? currentSpiritStoneBalance())}</strong></div></div>
+      <div class="treasure-shop-grid">
+        ${rows.map(row => `<article class="treasure-item-card rarity-${escapeHtml(row.rarity || 'rare')}">
+          <div class="treasure-item-seal">${escapeHtml(String(row.name || '丹').slice(0, 1))}</div>
+          <div class="treasure-item-copy"><span>${escapeHtml(row.category_name || '珍宝阁丹药')}</span><strong>${escapeHtml(row.name || '未知丹药')}</strong><p>${escapeHtml(row.description || '')}</p><small>当前持有：${formatNumber(row.owned_quantity || 0)} 枚</small></div>
+          <div class="treasure-purchase"><strong>${formatNumber(row.price || 0)} 灵石 / 枚</strong><div class="treasure-quantity-stepper"><button type="button" data-treasure-quantity-delta="-1" data-treasure-code="${escapeHtml(row.code)}">−</button><input type="number" min="1" max="99" step="1" value="1" inputmode="numeric" data-treasure-quantity="${escapeHtml(row.code)}"><button type="button" data-treasure-quantity-delta="1" data-treasure-code="${escapeHtml(row.code)}">＋</button></div><button class="primary-btn" type="button" data-purchase-treasure="${escapeHtml(row.code)}">购买</button></div>
+        </article>`).join('')}
+      </div>`;
+  }
+
+  function bazaarPanelHtml(view = 'home', marketSystem = {}, ranking = {}, worldEvents = {}, treasureShop = {}) {
     const safeView = ['home', 'ranking', 'casino', 'treasure'].includes(view) ? view : 'home';
     if (safeView === 'home') {
       return `
         <div class="bazaar-root" data-bazaar-view="home">
           <div class="bazaar-entry-grid" aria-label="市坊功能入口">
-            <button class="bazaar-entry-button" type="button" data-bazaar-target="ranking">
-              <span aria-hidden="true">榜</span><strong>天命榜</strong><small>修为 · 财富 · 战力</small>
-            </button>
-            <button class="bazaar-entry-button" type="button" data-bazaar-target="casino">
-              <span aria-hidden="true">赌</span><strong>赌坊</strong><small>一筹问造化</small>
-            </button>
-            <button class="bazaar-entry-button" type="button" data-bazaar-target="treasure">
-              <span aria-hidden="true">珍</span><strong>珍宝阁</strong><small>候天地奇珍</small>
-            </button>
+            <button class="bazaar-entry-button" type="button" data-bazaar-target="ranking"><span aria-hidden="true">榜</span><strong>天命榜</strong><small>修为 · 财富 · 战力</small></button>
+            <button class="bazaar-entry-button" type="button" data-bazaar-target="casino"><span aria-hidden="true">赌</span><strong>赌坊</strong><small>一筹问造化</small></button>
+            <button class="bazaar-entry-button" type="button" data-bazaar-target="treasure"><span aria-hidden="true">珍</span><strong>珍宝阁</strong><small>渡境 · 洗灵</small></button>
           </div>
-          <section class="bazaar-world-section" aria-labelledby="worldEventsHeading">
-            <div class="bazaar-world-heading">
-              <div><span>天道传音</span><h4 id="worldEventsHeading">九霄界闻</h4></div>
-              <small>突破 · 机缘 · 赌坊 · 天道裁决</small>
-            </div>
-            ${worldEventsPanelHtml(worldEvents || { status: 'loading', entries: [] })}
-          </section>
-        </div>
-      `;
+          <section class="bazaar-world-section" aria-labelledby="worldEventsHeading"><div class="bazaar-world-heading"><div><span>天道传音</span><h4 id="worldEventsHeading">九霄界闻</h4></div><small>突破 · 机缘 · 赌坊 · 天道裁决</small></div>${worldEventsPanelHtml(worldEvents || { status: 'loading', entries: [] })}</section>
+        </div>`;
     }
-
-    const pageMeta = {
-      ranking: ['天命榜', '修为、财富与战力总览'],
-      casino: ['赌坊 · 万运博弈楼', '灵石 · 修为 · 造化彩池'],
-      treasure: ['珍宝阁', '奇珍万象，静候机缘']
-    }[safeView];
+    const pageMeta = { ranking: ['天命榜', '修为、财富与战力总览'], casino: ['赌坊 · 万运博弈楼', '灵石 · 修为 · 造化彩池'], treasure: ['珍宝阁', '渡境清元丹 · 洗灵丹'] }[safeView];
     let body = '';
     if (safeView === 'ranking') body = destinyRankingPanelHtml(ranking || { status: 'loading', entries: [] });
     if (safeView === 'casino') body = `<div id="marketPanelHost">${marketPanelHtml(marketSystem || {}, state.casinoView || 'lobby')}</div>`;
-    if (safeView === 'treasure') body = `
-      <div class="treasure-placeholder">
-        <div class="treasure-seal" aria-hidden="true">珍</div>
-        <strong>珍宝阁尚在筹备</strong>
-        <p>掌柜正在清点各域奇珍、灵材与丹药。待交易规则与物品体系完备后，此阁再正式开门迎客。</p>
-      </div>
-    `;
-    return `
-      <div class="bazaar-root bazaar-subpage" data-bazaar-view="${safeView}">
-        <div class="bazaar-subpage-head">
-          <button class="ghost-btn" type="button" data-bazaar-back>返回市坊</button>
-          <div><strong>${escapeHtml(pageMeta[0])}</strong><small>${escapeHtml(pageMeta[1])}</small></div>
-        </div>
-        ${body}
-      </div>
-    `;
+    if (safeView === 'treasure') body = treasureShopPanelHtmlV0154(treasureShop || { status: 'loading', items: [] });
+    return `<div class="bazaar-root bazaar-subpage" data-bazaar-view="${safeView}"><div class="bazaar-subpage-head"><button class="ghost-btn" type="button" data-bazaar-back>返回市坊</button><div><strong>${escapeHtml(pageMeta[0])}</strong><small>${escapeHtml(pageMeta[1])}</small></div></div>${body}</div>`;
   }
 
   function updateBazaarPanel() {
     const host = document.getElementById('bazaarPanelHost');
     if (!host) return;
-    host.innerHTML = bazaarPanelHtml(
-      state.marketView || 'home',
-      state.marketSystem || {},
-      state.destinyRanking || {},
-      state.worldEvents || { status: 'loading', entries: [] }
-    );
+    host.innerHTML = bazaarPanelHtml(state.marketView || 'home', state.marketSystem || {}, state.destinyRanking || {}, state.worldEvents || { status: 'loading', entries: [] }, state.treasureShop || {});
     bindBazaarActions();
   }
 
@@ -4161,13 +4458,10 @@
     if (safeView === 'casino' && previousView !== 'casino') state.casinoView = 'lobby';
     if (safeView === 'ranking' && previousView !== 'ranking') state.rankingBoard = 'cultivation';
     updateBazaarPanel();
-    if (pushHistory && safeView !== 'home') {
-      window.history.pushState({ nineCloudBazaarView: safeView }, '', '#marketSection');
-    }
-    if (safeView === 'ranking' && previousView !== 'ranking') {
-      refreshRankingBoard('cultivation', false, true);
-    }
+    if (pushHistory && safeView !== 'home') window.history.pushState({ nineCloudBazaarView: safeView }, '', '#marketSection');
+    if (safeView === 'ranking' && previousView !== 'ranking') refreshRankingBoard('cultivation', false, true);
     if (safeView === 'casino') refreshMarketSystem(true);
+    if (safeView === 'treasure' && Date.now() - Number(state.treasureShopFetchedAt || 0) > 15000) refreshTreasureShopV0154(false);
     if (safeView === 'home' && Date.now() - Number(state.worldEventsFetchedAt || 0) > 15000) refreshWorldEvents(true);
   }
 
@@ -4180,28 +4474,46 @@
     document.querySelectorAll('[data-bazaar-back]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        if (window.history.state?.nineCloudBazaarView) window.history.back();
-        else setBazaarView('home', false);
-      });
+      button.addEventListener('click', () => { if (window.history.state?.nineCloudBazaarView) window.history.back(); else setBazaarView('home', false); });
     });
     document.querySelectorAll('[data-world-events-refresh]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
+      button.addEventListener('click', async () => { setBusy(button, true, '聆听中……'); await refreshWorldEvents(false); setBusy(button, false); });
+    });
+    document.querySelectorAll('[data-treasure-quantity-delta]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        const input = document.querySelector(`[data-treasure-quantity="${CSS.escape(button.dataset.treasureCode || '')}"]`);
+        if (!input) return;
+        input.value = String(Math.max(1, Math.min(99, Math.floor(Number(input.value || 1) + Number(button.dataset.treasureQuantityDelta || 0)))));
+      });
+    });
+    document.querySelectorAll('[data-purchase-treasure]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
       button.addEventListener('click', async () => {
-        setBusy(button, true, '聆听中……');
-        await refreshWorldEvents(false);
-        setBusy(button, false);
+        const code = button.dataset.purchaseTreasure;
+        const input = document.querySelector(`[data-treasure-quantity="${CSS.escape(code || '')}"]`);
+        const quantity = Math.max(1, Math.min(99, Math.floor(Number(input?.value || 1))));
+        setBusy(button, true, '成交中……');
+        try {
+          const result = await rpcPurchaseTreasureItemV0154(code, quantity, createUuid());
+          if (Number.isFinite(Number(result?.spirit_stones_after))) setLocalSpiritStoneBalance(Number(result.spirit_stones_after));
+          await Promise.all([refreshTreasureShopV0154(true), refreshInventoryV0147(), refreshCaveSystem(false)]);
+          showToast(`已购得${result?.item_name || '丹药'} ×${formatNumber(result?.quantity || quantity)}。`);
+        } catch (error) {
+          showToast(translateError(error), 'error');
+          setBusy(button, false);
+        }
       });
     });
     bindMarketActions();
     bindDestinyRankingActions();
-
     if (!bindBazaarActions.historyBound) {
       bindBazaarActions.historyBound = true;
-      window.addEventListener('popstate', () => {
-        if (state.marketView !== 'home') setBazaarView('home', false);
-      });
+      window.addEventListener('popstate', () => { if (state.marketView !== 'home') setBazaarView('home', false); });
     }
   }
 
@@ -5499,6 +5811,101 @@
     return `<p><b>基础效果：</b>修炼速度 +${formatNumber(base, 2)}%</p><p><b>${escapeHtml(status.special_name || '专属效果')}：</b>${escapeHtml(status.special_description || '')}</p>${current}`;
   }
 
+
+  function cultivationEffectGroupsV0154() {
+    const now = Date.now();
+    const rows = (state.details?.cultivationEffects || []).filter(row => row?.is_active !== false && (!row.expires_at || new Date(row.expires_at).getTime() > now));
+    const groups = { opportunity: [], item: [], other: [] };
+    rows.forEach(row => {
+      const key = String(row.source_key || '');
+      if (key.startsWith('opptech:') || key.startsWith('exclusive:')) return;
+      const source = String(row.source_type || '').toLowerCase();
+      if (source.includes('opportunity') || key.startsWith('opp:') || key.startsWith('opportunity:')) groups.opportunity.push(row);
+      else if (source.includes('item') || source.includes('inventory') || key.startsWith('item:')) groups.item.push(row);
+      else groups.other.push(row);
+    });
+    return groups;
+  }
+
+  function effectGroupTotalsV0154(rows = []) {
+    return rows.reduce((sum, row) => ({
+      flat: sum.flat + Number(row?.flat_rate_per_second || 0),
+      multiplier: sum.multiplier + Number(row?.multiplier_bonus || 0)
+    }), { flat: 0, multiplier: 0 });
+  }
+
+  function cultivationRateBreakdownModalHtmlV0154() {
+    const c = state.cultivationStatus || {};
+    const technique = localTechniqueContributionV0154();
+    const ordinary = (state.techniqueSystem?.techniques || []).filter(row => row?.equipped_slot);
+    const exclusive = (state.exclusiveTechniqueSystem?.techniques || []).filter(row => row?.equipped);
+    const groups = cultivationEffectGroupsV0154();
+    const opportunity = effectGroupTotalsV0154(groups.opportunity);
+    const items = effectGroupTotalsV0154(groups.item);
+    const other = effectGroupTotalsV0154(groups.other);
+    const base = Number(c.base_rate_per_second || 0);
+    const effectFlat = Number(c.effect_flat_rate || 0);
+    const effectMultiplier = Number(c.effect_multiplier_bonus || 0);
+    const fixedSubtotal = base + technique.flat + effectFlat;
+    const additive = Math.max(0, 1 + Number(c.fate_bonus || 0) + technique.multiplier + effectMultiplier);
+    const insightCount = Math.max(0, Number(state.breakthroughStatus?.heavenly_insight_count || 0));
+    const insightMultiplier = 1 + insightCount * 0.10;
+    const finalRate = Number(c.current_rate_per_second || 0);
+    const effectRows = rows => rows.length ? rows.map(row => `<div class="rate-detail-row"><span>${escapeHtml(row.display_name || row.source_key || '未名效果')}<small>${escapeHtml(effectRemainingText(row))}</small></span><strong>${Number(row.flat_rate_per_second || 0) ? `+${formatNumber(row.flat_rate_per_second, 3)}/秒` : ''}${Number(row.flat_rate_per_second || 0) && Number(row.multiplier_bonus || 0) ? ' · ' : ''}${Number(row.multiplier_bonus || 0) ? `+${formatNumber(Number(row.multiplier_bonus) * 100, 2)}%` : ''}</strong></div>`).join('') : '<div class="rate-detail-empty">当前无此类加成</div>';
+    const ordinaryRows = ordinary.length ? ordinary.map(row => {
+      const values = techniqueV2EffectValues(row);
+      const slot = Number(row.slot_multiplier ?? techniqueSlotMultiplier(row.equipped_slot));
+      const mastery = row.is_mastered ? 1.2 : 1;
+      const flat = values.flat * slot * mastery;
+      const mult = values.multiplier * slot * mastery;
+      return `<div class="rate-detail-row"><span>《${escapeHtml(row.name || '功法')}》<small>第${formatNumber(row.level)}层 · ${escapeHtml(techniqueSlotName(row.equipped_slot))}${row.is_mastered ? ' · 圆满×1.20' : ''}</small></span><strong>${flat ? `+${formatNumber(flat, 3)}/秒` : ''}${flat && mult ? ' · ' : ''}${mult ? `+${formatNumber(mult * 100, 2)}%` : ''}</strong></div>`;
+    }).join('') : '<div class="rate-detail-empty">当前没有运转普通功法</div>';
+    const exclusiveRows = exclusive.length ? exclusive.map(row => `<div class="rate-detail-row"><span>《${escapeHtml(row.name || '专属功法')}》<small>专属槽 · 第${formatNumber(row.level)}层${row.is_mastered ? ' · 圆满×1.20' : ''}</small></span><strong>+${formatNumber(Number(row.effect_multiplier_bonus || 0) * 100, 2)}%</strong></div>`).join('') : '<div class="rate-detail-empty">当前没有运转专属功法</div>';
+    return `
+      <div id="cultivationRateBackdrop" class="modal-backdrop rate-detail-backdrop">
+        <section class="modal rate-detail-modal" role="dialog" aria-modal="true" aria-labelledby="cultivationRateDetailTitle">
+          <button id="closeCultivationRateDetailBtn" class="modal-close-button" type="button" aria-label="关闭">×</button>
+          <span class="eyebrow">云端命书 · 当前快照</span>
+          <h2 id="cultivationRateDetailTitle">修炼速度构成</h2>
+          <div class="rate-detail-total"><span>当前自动修炼速度</span><strong>${formatRate(finalRate)}</strong></div>
+          <section class="rate-detail-section"><h3>固定速度</h3>
+            <div class="rate-detail-row"><span>基础吐纳</span><strong>+${formatNumber(base, 3)}/秒</strong></div>
+            <div class="rate-detail-row"><span>功法固定贡献</span><strong>+${formatNumber(technique.flat, 3)}/秒</strong></div>
+            <div class="rate-detail-row"><span>机缘、道具与其他固定贡献</span><strong>+${formatNumber(effectFlat, 3)}/秒</strong></div>
+            <div class="rate-detail-row subtotal"><span>固定速度小计</span><strong>+${formatNumber(fixedSubtotal, 3)}/秒</strong></div>
+          </section>
+          <details class="rate-detail-section" open><summary>普通功法明细</summary>${ordinaryRows}</details>
+          <details class="rate-detail-section" open><summary>专属功法明细</summary>${exclusiveRows}</details>
+          <details class="rate-detail-section"><summary>持续机缘（固定 ${opportunity.flat >= 0 ? '+' : ''}${formatNumber(opportunity.flat, 3)}/秒 · 倍率 ${opportunity.multiplier >= 0 ? '+' : ''}${formatNumber(opportunity.multiplier * 100, 2)}%）</summary>${effectRows(groups.opportunity)}</details>
+          <details class="rate-detail-section"><summary>道具效果（固定 ${items.flat >= 0 ? '+' : ''}${formatNumber(items.flat, 3)}/秒 · 倍率 ${items.multiplier >= 0 ? '+' : ''}${formatNumber(items.multiplier * 100, 2)}%）</summary>${effectRows(groups.item)}</details>
+          ${groups.other.length ? `<details class="rate-detail-section"><summary>其他效果（固定 ${other.flat >= 0 ? '+' : ''}${formatNumber(other.flat, 3)}/秒 · 倍率 ${other.multiplier >= 0 ? '+' : ''}${formatNumber(other.multiplier * 100, 2)}%）</summary>${effectRows(groups.other)}</details>` : ''}
+          <section class="rate-detail-section"><h3>倍率修正</h3>
+            <div class="rate-detail-row"><span>灵根修炼</span><strong>×${formatNumber(c.root_multiplier || 1, 3)}</strong></div>
+            <div class="rate-detail-row"><span>命格修正</span><strong>${Number(c.fate_bonus || 0) >= 0 ? '+' : ''}${formatNumber(Number(c.fate_bonus || 0) * 100, 2)}%</strong></div>
+            <div class="rate-detail-row"><span>功法倍率</span><strong>+${formatNumber(technique.multiplier * 100, 2)}%</strong></div>
+            <div class="rate-detail-row"><span>机缘、道具与其他倍率</span><strong>${effectMultiplier >= 0 ? '+' : ''}${formatNumber(effectMultiplier * 100, 2)}%</strong></div>
+            <div class="rate-detail-row"><span>灵气环境</span><strong>×${formatNumber(c.qi_multiplier || 1, 3)}</strong></div>
+            <div class="rate-detail-row"><span>天劫感悟 ${formatNumber(insightCount)} 丝</span><strong>×${formatNumber(insightMultiplier, 2)}</strong></div>
+          </section>
+          <div class="rate-detail-formula">(${formatNumber(fixedSubtotal, 3)} × ${formatNumber(c.root_multiplier || 1, 3)} × ${formatNumber(additive, 3)}) × ${formatNumber(c.qi_multiplier || 1, 3)} × ${formatNumber(insightMultiplier, 2)} = <strong>${formatRate(finalRate)}</strong></div>
+        </section>
+      </div>`;
+  }
+
+  function openCultivationRateBreakdownV0154() {
+    modalRoot.innerHTML = cultivationRateBreakdownModalHtmlV0154();
+    const close = () => { modalRoot.innerHTML = ''; };
+    document.getElementById('closeCultivationRateDetailBtn')?.addEventListener('click', close);
+    document.getElementById('cultivationRateBackdrop')?.addEventListener('click', event => { if (event.target?.id === 'cultivationRateBackdrop') close(); });
+  }
+
+  function bindCultivationRateBreakdownV0154() {
+    const button = document.getElementById('cultivationRateBreakdownBtn');
+    if (!button || button.dataset.bound === '1') return;
+    button.dataset.bound = '1';
+    button.addEventListener('click', openCultivationRateBreakdownV0154);
+  }
+
   function renderDashboard(bundle) {
     renderAccount();
     const c = bundle.character;
@@ -5607,11 +6014,11 @@
               ${opportunityEntryContentHtml(opportunity)}
             </button>
             <div class="cultivation-focus-main">
-              <div class="focus-stat">
-                <span>当前自动修炼速度</span>
+              <button id="cultivationRateBreakdownBtn" class="focus-stat focus-stat-button" type="button" aria-label="查看修炼速度构成">
+                <span>当前自动修炼速度 · 点击查看构成</span>
                 <strong id="liveRateValue">${formatRate(rate)}</strong>
                 <small>${cultivationFull ? '丹田已至当前境界极限，请先突破。' : requiredForNext > 0 ? `距下一境还差 ${formatNumber(toNext)} 修为` : '当前版本已达可读取的道关上限。'}</small>
-              </div>
+              </button>
               <div class="progress-label compact"><span>破境进度</span><strong id="breakthroughProgressTextCompact">${requiredForNext > 0 ? `${formatNumber(currentCultivation)} / ${formatNumber(requiredForNext)}` : '已满'}</strong></div>
               <div class="progress-track compact"><div id="breakthroughProgressFillCompact" class="progress-fill" style="width:${nextPercent}%"></div></div>
               ${cultivationFull ? '<div class="cultivation-full-inline">修为已至圆满，继续吐纳不会获得修为。请完成突破后再继续修行。</div>' : ''}
@@ -5623,11 +6030,13 @@
               ` : ''}
               <div class="rate-breakdown mobile-tight">
                 <div><span>基础吐纳</span><strong>+${formatNumber(cultivation.base_rate_per_second, 3)}/秒</strong></div>
-                <div><span>功法加成</span><strong>+${formatNumber(cultivation.technique_flat_rate, 3)}/秒</strong></div>
+                <div><span>功法固定</span><strong id="techniqueFlatRateSummary">+${formatNumber(cultivation.technique_flat_rate, 3)}/秒</strong></div>
+                <div><span>功法倍率</span><strong id="techniqueMultiplierSummary">+${formatNumber(Number(cultivation.technique_multiplier_bonus || 0) * 100, 2)}%</strong></div>
                 <div><span>灵根修炼</span><strong>×${formatNumber(cultivation.root_multiplier || 1, 2)}</strong></div>
                 <button id="heavenBalanceBtn" class="heaven-balance-entry" type="button" aria-label="查看${escapeHtml(heavenBalance.status_name || '大道均衡')}规则"><span class="heaven-balance-entry-text">灵气环境（${escapeHtml(heavenBalance.status_name || '大道均衡')}）x${formatHeavenCoefficient(heavenBalance.coefficient || 1)}</span></button>
                 <div><span>命格修正</span><strong>${Number(cultivation.fate_bonus || 0) >= 0 ? '+' : ''}${formatNumber(Number(cultivation.fate_bonus || 0) * 100, 2)}%</strong></div>
-                <div><span>持续机缘</span><strong>+${formatNumber(cultivation.effect_flat_rate, 3)}/秒</strong></div>
+                <div><span>机缘/道具固定</span><strong>+${formatNumber(cultivation.effect_flat_rate, 3)}/秒</strong></div>
+                <div><span>机缘/道具倍率</span><strong>${Number(cultivation.effect_multiplier_bonus || 0) >= 0 ? '+' : ''}${formatNumber(Number(cultivation.effect_multiplier_bonus || 0) * 100, 2)}%</strong></div>
               </div>
             </div>
           </div>
@@ -5681,7 +6090,7 @@
 
         <section id="marketSection" class="panel" data-mobile-screen="market">
           <div class="panel-title"><h3>市坊</h3><span class="badge">天命 · 赌坊 · 珍宝 · 界闻</span></div>
-          <div id="bazaarPanelHost">${bazaarPanelHtml(state.marketView || 'home', marketSystem, destinyRanking, worldEvents)}</div>
+          <div id="bazaarPanelHost">${bazaarPanelHtml(state.marketView || 'home', marketSystem, destinyRanking, worldEvents, state.treasureShop || {})}</div>
         </section>
 
         <section id="npcSocialSection" class="panel" data-mobile-screen="social">
@@ -5716,6 +6125,7 @@
     bindProgressionActions();
     bindOpportunityEntryActions();
     bindHeavenBalanceActions();
+    bindCultivationRateBreakdownV0154();
     bindInventoryTechniqueActions();
     bindExclusiveTechniqueActions();
     bindNpcSocialActions();
@@ -5928,8 +6338,9 @@
     }).join('')}</div>`;
   }
 
-  async function enterGame() {
-    app.innerHTML = '<section class="loading-screen"><div class="loader-ring"></div><p>正在校准仙历与云端命书……</p></section>';
+  async function enterGame(options = {}) {
+    const silent = Boolean(options?.silent);
+    if (!silent) app.innerHTML = '<section class="loading-screen"><div class="loader-ring"></div><p>正在校准仙历与云端命书……</p></section>';
     try {
       state.user = await getCurrentUser();
       if (!state.user) {
@@ -5971,7 +6382,7 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, fateStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, techniqueLibrary, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents] = await Promise.all([
+      const [breakthroughStatus, fateStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, techniqueLibrary, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents, treasureShop] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetFateStatusB01().catch(() => null),
         rpcGetTechniqueSystemV2(),
@@ -5999,7 +6410,8 @@
         })),
         rpcGetWorldEventsV1(30).catch(error => ({
           status: 'unavailable', entries: [], error: translateError(error)
-        }))
+        })),
+        rpcGetTreasureShopV0154().catch(error => ({ status: 'unavailable', items: [], error: translateError(error) }))
       ]);
       bundle.breakthroughStatus = breakthroughStatus;
       bundle.fateStatus = fateStatus;
@@ -6014,6 +6426,7 @@
       bundle.sectSystem = sectSystem;
       bundle.marketSystem = marketSystem;
       bundle.worldEvents = worldEvents;
+      bundle.treasureShop = treasureShop;
       state.cultivationStatus = cultivationStatus;
       state.breakthroughStatus = breakthroughStatus;
       state.fateStatus = fateStatus;
@@ -6032,6 +6445,8 @@
       state.marketSystem = marketSystem;
       state.worldEvents = worldEvents;
       state.worldEventsFetchedAt = Date.now();
+      state.treasureShop = treasureShop;
+      state.treasureShopFetchedAt = Date.now();
       if (Number(opportunitySettlement?.events_resolved || 0) > 0) {
         const opportunityHistory = await rpcGetOpportunityHistoryV0147(100).catch(() => ({ entries: [] }));
         bundle.history = mergeHistoryWithOpportunityResults(bundle.history, opportunityHistory?.entries);
@@ -6051,6 +6466,10 @@
         showToast('登录状态已失效，请重新登录。', 'error');
         return;
       }
+      if (silent) {
+        showToast(`云端同步失败：${translateError(error)}`, 'error');
+        return;
+      }
       app.innerHTML = `
         <section class="notice-card">
           <div class="notice-icon">!</div>
@@ -6059,7 +6478,7 @@
           <button id="retryBtn" class="primary-btn" type="button">重新连接</button>
         </section>
       `;
-      document.getElementById('retryBtn').addEventListener('click', enterGame);
+      document.getElementById('retryBtn').addEventListener('click', () => enterGame());
     }
   }
 

@@ -11,7 +11,7 @@ const checks=[
  ['history grade/title/story/result',app.includes('opportunity-history-result')&&app.includes('opportunity-grade-badge')&&sql.includes('get_opportunity_history_v0147')],
  ['high-tier shared color',css.includes('.opportunity-grade-badge.high-tier')&&app.includes("opportunityHighTier")],
  ['quantity modal',app.includes('inventoryQuantityBackdrop')&&app.includes('data-inventory-quantity-value="10"')],
- ['quantity rpc',app.includes('rpcUseInventoryItemQuantityV0147')&&sql.includes('use_inventory_item_quantity_v0147')],
+ ['quantity rpc',(app.includes('rpcUseInventoryItemQuantityV0147')||app.includes('rpcUseInventoryItemQuantityV0154'))&&sql.includes('use_inventory_item_quantity_v0147')],
  ['system player switch',app.includes('data-house-mode="system"')&&app.includes('data-house-mode="player"')],
  ['five million only',app.includes('统一灵石达到500万即可申请上庄')&&sql.includes('v_min_wealth bigint:=5000000')],
  ['two hour term',app.includes('最多坐庄2小时')&&sql.includes("interval '2 hours'")],

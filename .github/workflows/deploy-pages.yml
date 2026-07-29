@@ -32,8 +32,8 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Verify and build V0.15.3
-        run: python3 tools/ci_v0153.py .
+      - name: Verify and build V0.15.4
+        run: python3 tools/ci_v0154.py .
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

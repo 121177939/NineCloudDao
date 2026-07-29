@@ -1,9 +1,9 @@
 {
-  "version": "V0.15.3",
-  "release": "FIX2 CACHE22",
-  "baseline": "V0.15.3_FIX2_AB10_CACHE22",
-  "sourcePackage": "九霄问道_V0.15.3_FIX2_CACHE22_完整部署包.zip",
-  "sourceSha256": "见SHA256SUMS.txt",
+  "version": "V0.15.4",
+  "release": "CACHE23",
+  "baseline": "V0.15.4_AB11_CACHE23",
+  "sourcePackage": "九霄问道_V0.15.4_CACHE23_完整部署包.zip",
+  "sourceSha256": "见压缩包外部SHA256及包内SHA256SUMS.txt",
   "timing": {
     "round": 40,
     "betting": 30,
@@ -11,5 +11,7 @@
     "reveal": 5,
     "settlement": 3,
     "next": 0
-  }
+  },
+  "deliveryPolicy": "完整包即部署包、接入基线和B线开发基线；禁止以旧升级包作为源基线。",
+  "updatedAt": "2026-07-29T06:45:00+00:00"
 }
