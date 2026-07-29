@@ -274,3 +274,12 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 - 可从 V0.15.4 FIX5 CACHE25 直接升级，不要求先执行 CACHE26。
 - 不新增表、字段、RPC、触发器或RLS；不修改玩家资产、洞府结算、突破或渡劫规则。
 
+
+
+## V1.0 CACHE30
+- `database/V1.0/202607291700_v1_precheck.sql`：只读升级前检查，可从 CACHE25 直接升级。
+- `database/V1.0/202607291710_v1_bcombat01.sql`：B-COMBAT01 正式迁移。
+- `database/V1.0/202607291720_v1_cache30_release.sql`：V1.0 CACHE30 发布门禁。
+- `database/V1.0/202607291730_v1_check.sql`：只读升级后检查。
+- `database/V1.0/202607291740_v1_emergency_disable.sql`：紧急停用挑战。
+- `database/V1.0/202607291750_v1_rollback.sql`：完整回滚（破坏性）。

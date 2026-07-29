@@ -1,44 +1,45 @@
 {
-  "version": "0.15.5",
-  "releaseLabel": "Web Alpha V0.15.5 FIX1 CACHE27",
-  "sourceBaseline": "V0.15.4 FIX5 CACHE25",
-  "databaseBaseline": "V0.15.4 FIX5 CACHE25（既有命格、功法、洞府、库存、突破与全局80%渡劫上限）",
-  "databaseChange": "V0.15.5_FIX1_CACHE27_FRONTEND_RELEASE_GATE",
-  "databaseMigration": "database/V0.15.5_FIX1/202607291510_v0155_fix1_cache27_cave_visual_release.sql",
+  "version": "1.0",
+  "releaseLabel": "九霄问道 V1.0 CACHE30",
+  "sourceBaseline": "V0.15.5 FIX1 CACHE27（代码母包）",
+  "minimumDatabaseBaseline": "V0.15.4 FIX5 CACHE25",
+  "databaseChange": "V1.0_BCOMBAT01_CACHE30",
+  "databaseMigration": "database/V1.0/202607291710_v1_bcombat01.sql",
+  "databaseReleaseGate": "database/V1.0/202607291720_v1_cache30_release.sql",
   "deploymentStatus": "authoritative_complete_deployment_package",
   "deploymentPipeline": {
     "runner": "ubuntu-latest",
-    "python": "runner python3",
-    "node": "runner node",
+    "python": "3.12",
+    "node": "20",
     "pagesStagingDirectory": ".pages-site",
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "completePackage": "九霄问道_V0.15.5_FIX1_CACHE27_完整部署包.zip",
-    "sqlPackage": "九霄问道_V0.15.5_FIX1_CACHE27_SQL.zip"
+    "completePackage": "九霄问道_V1.0_CACHE30_完整部署包.zip",
+    "sqlPackage": "九霄问道_V1.0_CACHE30_SQL.zip"
   },
   "notes": [
-    "正式接入 B-CAVE01：洞府主景、六建筑环位、真实库存30格分页与物品详情",
-    "洞府主景改为幽静洞窟、灵脉暗流、石台坐镇与仙府隐修风格，移除元神式大型法阵背景",
-    "新增元神导航，位于修炼与功法之间，并保留人物浮动、法阵旋转、光晕呼吸、经脉流转与灵气粒子动画",
-    "道攻、道御、生机、身法、战力与加成尚未建立正式计算模型，全部明确显示接入中",
-    "CACHE27 强制旧 PWA 客户端载入洞府视觉修正版 app.js 与 styles.css",
-    "保留 V0.15.4 FIX5 的全局渡劫成功率80%硬上限"
+    "正式接入 B-COMBAT01：44阶段战斗四属性、五行、战力榜、越阶挑战、逐回合战报与1%修为转移",
+    "元神页读取服务端权威道攻、道御、生机、身法与战力；手机端按3列2行展示：道攻/道御/生机、身法/加成/战力",
+    "洞府主景升级为幽静洞窟、灵脉暗流、中央石台、仙府灯影、薄雾、瀑流与灵气粒子动画",
+    "洞府储物格直接展示物品名称与类型；未研习功法以玉简/道卷形象进入洞府格子",
+    "保留洞府真实库存30格分页、统一灵石账户以及全局渡劫成功率80%硬上限",
+    "CACHE30 强制旧 PWA 客户端载入 V1.0 前端与战斗接口"
   ],
-  "gameplayBaseline": "V0.15.4 FIX5 + B-CAVE01 + 元神界面V1 + 洞府视觉FIX1",
-  "worldFeedBaseline": "V0.14.2 + V0.15.1赌场庄家与鱼虾结算播报",
-  "rankingBaseline": "V0.14.3",
-  "adminBaseline": "V0.14.4 ADMIN2",
-  "clientHotfix": "V0.15.5_FIX1_CACHE27",
-  "developmentBaseline": "V0.15.5_AB14_CACHE27",
+  "integratedModules": [
+    "B-CAVE01",
+    "B-CAVE01-FIX1",
+    "B-COMBAT01"
+  ],
+  "clientHotfix": "V1.0_CACHE30",
+  "developmentBaseline": "V1.0_AB15_CACHE30",
   "packagePolicy": {
     "delivery": "正式交付提供完整部署包与SQL包",
     "deployment": "完整包解压后全部覆盖到GitHub仓库根目录",
     "database": "按SQL包00执行说明顺序运行"
   },
-  "handoffUpdatedAt": "2026-07-29T14:00:00Z",
-  "sqlRevision": "V0.15.5_FIX1_CACHE27",
-  "databaseHotfix": "database/V0.15.5_FIX1/202607291510_v0155_fix1_cache27_cave_visual_release.sql",
-  "databaseFinalCheck": "database/V0.15.5_FIX1/202607291520_v0155_fix1_check.sql",
-  "cacheEpoch": 27
+  "handoffUpdatedAt": "2026-07-29T16:50:00Z",
+  "sqlRevision": "V1.0_CACHE30",
+  "databaseFinalCheck": "database/V1.0/202607291730_v1_check.sql",
+  "cacheEpoch": 30
 }

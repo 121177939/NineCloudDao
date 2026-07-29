@@ -16,12 +16,20 @@ for(const token of ['修为榜','财富榜','战力榜','67000000 修为','修�
 if(c.includes('刷新天命')||c.includes('data-ranking-refresh')) throw new Error('manual refresh remains');
 const w=f.rankingCenterPanelHtml('wealth',cultivation,wealth);
 for(const token of ['财富榜首','唐枫','1,234,567 灵石','本尊']) if(!w.includes(token)) throw new Error('wealth missing '+token);
-const b=f.rankingCenterPanelHtml('battle',cultivation,wealth);
-for(const token of ['战力榜暂未开放','战斗体系与统一战力算法仍在推演中']) if(!b.includes(token)) throw new Error('battle placeholder missing '+token);
+const hasBCombat01=source.includes('rpcGetBattlePowerRankingBCombat01');
+if(hasBCombat01){
+  const battle={status:'ok',total_count:1,has_more:false,ranking_rule:'四项战力',entries:[{rank:1,character_id:'22222222-2222-4222-8222-222222222222',name:'顾长歌',realm:'金丹 · 后期',fate:'天生剑心',generation:1,element:'fire',element_name:'火',power:9760,dao_attack:360,dao_defense:220,vitality:2200,agility:220,is_self:false,can_challenge:true}]};
+  const b=f.rankingCenterPanelHtml('battle',cultivation,wealth,battle);
+  for(const token of ['战力榜首','顾长歌','9,760 战力','火','道攻 360','data-battle-challenge-target']) if(!b.includes(token)) throw new Error('battle module missing '+token);
+  if(!source.includes("battle: ['battleRankingSyncing', 'battleRanking', rpcGetBattlePowerRankingBCombat01]")) throw new Error('battle refresh mapping missing');
+}else{
+  const b=f.rankingCenterPanelHtml('battle',cultivation,wealth);
+  for(const token of ['战力榜暂未开放','战斗体系与统一战力算法仍在推演中']) if(!b.includes(token)) throw new Error('battle placeholder missing '+token);
+  if(!source.includes("if (safeBoard !== 'battle') refreshRankingBoard(safeBoard, false, true);")) throw new Error('switch refresh missing');
+}
 if(!source.includes("if (safeView === 'ranking' && previousView !== 'ranking')")) throw new Error('entry auto refresh trigger missing');
 if(!source.includes("refreshRankingBoard('cultivation', false, true)")) throw new Error('entry cultivation refresh missing');
-if(!source.includes("if (safeBoard !== 'battle') refreshRankingBoard(safeBoard, false, true);")) throw new Error('switch refresh missing');
 if(source.includes('state.destinyRankingSyncTimer = setInterval')) throw new Error('ranking periodic refresh remains');
 const css=fs.readFileSync(path.join(root,'styles.css'),'utf8');
 for(const token of ['.ranking-board-tabs','.ranking-board-tab.active','.ranking-unopened']) if(!css.includes(token)) throw new Error('css missing '+token);
-console.log(JSON.stringify({ok:true,checks:16}));
+console.log(JSON.stringify({ok:true,checks:hasBCombat01?21:16,module:hasBCombat01?'B-COMBAT01':'baseline'}));

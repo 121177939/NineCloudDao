@@ -98,6 +98,11 @@
     rankingBoard: 'cultivation',
     wealthRanking: null,
     wealthRankingSyncing: false,
+    battleRanking: null,
+    battleRankingSyncing: false,
+    battleSnapshotV1: null,
+    battleSnapshotSyncingV1: false,
+    battlePlaybackTimer: null,
     npcSocial: null,
     npcSocialSyncTimer: null,
     npcSocialSyncing: false,
@@ -289,6 +294,17 @@
     if (raw.includes('BREAKTHROUGH_PILL_INSUFFICIENT')) return '渡境清元丹数量不足。';
     if (raw.includes('BREAKTHROUGH_PILL_QUANTITY_EXCESS')) return '所选丹药数量超过本次提升到80%上限所需数量。';
     if (raw.includes('SPIRIT_WASHING_PILL_INSUFFICIENT')) return '洗灵丹数量不足。';
+    if (raw.includes('BATTLE_CHALLENGE_DISABLED')) return '战力榜挑战目前处于维护状态。';
+    if (raw.includes('INVALID_CHALLENGE_TARGET')) return '挑战目标无效。';
+    if (raw.includes('CHALLENGE_TARGET_NOT_FOUND')) return '对方当前无法接受挑战。';
+    if (raw.includes('CHALLENGE_WORLD_MISMATCH')) return '只能挑战同一九霄世界中的角色。';
+    if (raw.includes('TARGET_POWER_NOT_HIGHER')) return '只能挑战战力高于自己的角色。';
+    if (raw.includes('ACTIVE_CHALLENGE_DAILY_LIMIT')) return '你今日的5次主动挑战已经用尽。';
+    if (raw.includes('TARGET_CHALLENGED_DAILY_LIMIT')) return '对方今日已经被有效挑战10次。';
+    if (raw.includes('PAIR_CHALLENGE_DAILY_LIMIT')) return '你与这名对手今日已经产生过一次修为转移。';
+    if (raw.includes('TARGET_IN_CHALLENGE_PROTECTION')) return '对方战败后正处于30分钟挑战保护期。';
+    if (raw.includes('COMBAT_STATS_NOT_CONFIGURED')) return '该境界的战斗四属性尚未配置。';
+    if (raw.includes('INVALID_REQUEST_ID')) return '挑战请求编号无效，请重新发起。';
     if (raw.includes('INVALID_RANKING_PAGE')) return '榜单分页参数无效，请重新进入榜单。';
     if (raw.includes('V091_REQUIRED')) return 'V0.9.1修为榜基础尚未完成，请先部署并检查。';
     if (raw.includes('NPC_SOCIAL_SETTINGS_MISSING')) return '红尘录配置缺失，请执行V0.10.0数据库升级。';
@@ -446,6 +462,12 @@
     state.rankingBoard = 'cultivation';
     state.wealthRanking = null;
     state.wealthRankingSyncing = false;
+    state.battleRanking = null;
+    state.battleRankingSyncing = false;
+    state.battleSnapshotV1 = null;
+    state.battleSnapshotSyncingV1 = false;
+    if (state.battlePlaybackTimer) clearTimeout(state.battlePlaybackTimer);
+    state.battlePlaybackTimer = null;
     state.npcSocial = null;
     state.npcSocialFetchedAt = 0;
     state.sectSystem = null;
@@ -1201,6 +1223,43 @@
         p_limit: Math.max(1, Math.min(100, Number(limit || 50))),
         p_offset: Math.max(0, Number(offset || 0))
       }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetBattlePowerRankingBCombat01(limit = 50, offset = 0) {
+    const result = await restFetch('rpc/get_battle_power_ranking_bcombat01', {
+      method: 'POST',
+      body: {
+        p_limit: Math.max(1, Math.min(100, Number(limit || 50))),
+        p_offset: Math.max(0, Number(offset || 0))
+      }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetMyBattleSnapshotV1() {
+    const result = await restFetch('rpc/get_my_battle_snapshot_v1', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcClaimBattleCultivationEscrowBCombat01() {
+    const result = await restFetch('rpc/claim_battle_cultivation_escrow_bcombat01', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcGetBattleChallengePreviewBCombat01(targetCharacterId) {
+    const result = await restFetch('rpc/get_battle_challenge_preview_bcombat01', {
+      method: 'POST',
+      body: { p_target_character_id: targetCharacterId }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  async function rpcChallengeBattlePowerBCombat01(targetCharacterId, requestId = createUuid()) {
+    const result = await restFetch('rpc/challenge_battle_power_bcombat01', {
+      method: 'POST',
+      body: { p_target_character_id: targetCharacterId, p_request_id: requestId }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -3394,12 +3453,39 @@
 
   const CAVE_STORAGE_SLOT_COUNT_B01 = 30;
 
-  function caveStorageItemsB01(inventory) {
+  function caveTechniqueBookRarityV1(grade) {
+    const map = { exclusive: 'legendary', immortal: 'legendary', heaven: 'epic', earth: 'rare', mystic: 'uncommon', yellow: 'common' };
+    return map[String(grade || '').toLowerCase()] || 'uncommon';
+  }
+
+  function caveTechniqueBookStorageItemsV1(techniqueLibrary = {}) {
+    return (Array.isArray(techniqueLibrary?.books) ? techniqueLibrary.books : [])
+      .filter(row => row && Number(row.quantity || 0) > 0 && !row.is_learned)
+      .map(row => ({
+        id: `technique-book:${row.book_id}`,
+        quantity: Number(row.quantity || 0),
+        is_bound: true,
+        is_technique_book_v1: true,
+        technique_book_v1: row,
+        definition: {
+          code: `technique_book_${row.technique_code || row.book_id}`,
+          name: `《${row.name || '未知道卷'}》`,
+          category: 'technique',
+          rarity: caveTechniqueBookRarityV1(row.grade_code || row.grade_name),
+          stack_limit: Math.max(1, Number(row.quantity || 1)),
+          description: row.description || '尚未研习的功法道卷，已收入洞府藏经架。',
+          effects: { use_type: 'learn_technique' }
+        }
+      }));
+  }
+
+  function caveStorageItemsB01(inventory, techniqueLibrary = state.techniqueLibrary || { books: [] }) {
     const items = (Array.isArray(inventory) ? inventory : [])
       .filter(row => row?.definition && Number(row.quantity || 0) > 0);
-    if (state.caveInventorySortMode !== 'tidy') return items;
+    const combined = [...items, ...caveTechniqueBookStorageItemsV1(techniqueLibrary)];
+    if (state.caveInventorySortMode !== 'tidy') return combined;
     const rarityOrder = { legendary: 0, epic: 1, rare: 2, uncommon: 3, common: 4 };
-    return [...items].sort((left, right) => {
+    return [...combined].sort((left, right) => {
       const leftDefinition = left.definition || {};
       const rightDefinition = right.definition || {};
       const rarity = Number(rarityOrder[leftDefinition.rarity] ?? 9) - Number(rarityOrder[rightDefinition.rarity] ?? 9);
@@ -3410,11 +3496,30 @@
     });
   }
 
+  function caveItemTypeLabelV1(row = {}) {
+    if (row.is_technique_book_v1) return '功法';
+    const definition = row.definition || {};
+    const code = String(definition.code || '').toLowerCase();
+    const name = String(definition.name || '');
+    const category = String(definition.category || '').toLowerCase();
+    const useType = String(definition.effects?.use_type || '').toLowerCase();
+    if (code === 'spirit_stone' || name.includes('灵石')) return '灵石';
+    if (category.includes('pill') || category.includes('medicine') || useType || name.includes('丹')) return '丹药';
+    if (category.includes('herb') || name.includes('草') || name.includes('药材')) return '灵草';
+    if (category.includes('ore') || name.includes('矿') || name.includes('铁')) return '灵矿';
+    if (category.includes('incense') || name.includes('香')) return '香品';
+    if (category.includes('tea') || name.includes('茶')) return '灵茶';
+    if (category.includes('quest') || name.includes('符') || name.includes('令')) return '信物';
+    if (category.includes('book') || category.includes('scroll') || name.includes('卷') || name.includes('经')) return '典籍';
+    return '物品';
+  }
+
   function caveItemRarityClassB01(value) {
     return ['common', 'uncommon', 'rare', 'epic', 'legendary'].includes(value) ? value : 'common';
   }
 
   function caveItemCornerMarkB01(row = {}) {
+    if (row.is_technique_book_v1) return ['功', 'rare'];
     const definition = row.definition || {};
     const category = String(definition.category || '').toLowerCase();
     if (row.is_bound) return ['绑', 'bound'];
@@ -3425,6 +3530,7 @@
   }
 
   function caveItemIconKindB01(row = {}) {
+    if (row.is_technique_book_v1) return 'scroll';
     const definition = row.definition || {};
     const code = String(definition.code || '').toLowerCase();
     const name = String(definition.name || '');
@@ -3479,8 +3585,8 @@
     return 'buildings';
   }
 
-  function inventoryGridHtml(inventory) {
-    const items = caveStorageItemsB01(inventory);
+  function inventoryGridHtml(inventory, techniqueLibrary = state.techniqueLibrary || { books: [] }) {
+    const items = caveStorageItemsB01(inventory, techniqueLibrary);
     const pageCount = Math.max(1, Math.ceil(items.length / CAVE_STORAGE_SLOT_COUNT_B01));
     const requestedPage = Math.max(0, Math.floor(Number(state.caveInventoryPageB01 || 0)));
     const page = Math.min(pageCount - 1, requestedPage);
@@ -3489,10 +3595,10 @@
     const visibleItems = items.slice(pageStart, pageStart + CAVE_STORAGE_SLOT_COUNT_B01);
     const emptyCount = Math.max(0, CAVE_STORAGE_SLOT_COUNT_B01 - visibleItems.length);
     return `
-      <section id="caveStorageB01" class="cave-storage-b01" aria-label="洞府储物，直接显示当前玩家已有物品">
+      <section id="caveStorageB01" class="cave-storage-b01" aria-label="洞府储物，直接显示当前玩家物品与未研习功法">
         <div class="cave-storage-head-b01">
           <strong>洞府储物</strong>
-          <span>${items.length ? `${formatNumber(pageStart + 1)}–${formatNumber(pageStart + visibleItems.length)} / ${formatNumber(items.length)}` : `0 / ${formatNumber(CAVE_STORAGE_SLOT_COUNT_B01)}`} · 当前玩家已有物品直接入格</span>
+          <span>${items.length ? `${formatNumber(pageStart + 1)}–${formatNumber(pageStart + visibleItems.length)} / ${formatNumber(items.length)}` : `0 / ${formatNumber(CAVE_STORAGE_SLOT_COUNT_B01)}`} · 物品与未研习功法直接入格</span>
         </div>
         <div class="cave-storage-grid-b01">
           ${visibleItems.map(row => {
@@ -3500,11 +3606,16 @@
             const rarity = caveItemRarityClassB01(definition.rarity);
             const [cornerMark, cornerClass] = caveItemCornerMarkB01(row);
             const quantityAttr = definition.code === 'spirit_stone' ? ' data-spirit-stone-balance' : '';
-            return `<button class="cave-item-slot-b01 rarity-${escapeHtml(rarity)}" type="button" data-open-cave-item="${escapeHtml(row.id)}" aria-label="${escapeHtml(definition.name || '未知物品')}，数量${formatNumber(row.quantity)}">
+            const typeLabel = caveItemTypeLabelV1(row);
+            const dataAttr = row.is_technique_book_v1
+              ? `data-open-cave-technique-book="${escapeHtml(row.technique_book_v1?.book_id || '')}"`
+              : `data-open-cave-item="${escapeHtml(row.id)}"`;
+            return `<button class="cave-item-slot-b01 rarity-${escapeHtml(rarity)}${row.is_technique_book_v1 ? ' technique-book-slot-v1' : ''}" type="button" ${dataAttr} aria-label="${escapeHtml(definition.name || '未知物品')}，${escapeHtml(typeLabel)}，数量${formatNumber(row.quantity)}">
               <span class="cave-item-aura-b01" aria-hidden="true"></span>
               ${cornerMark ? `<span class="cave-item-corner-b01 ${escapeHtml(cornerClass)}">${escapeHtml(cornerMark)}</span>` : ''}
               ${caveItemIconHtmlB01(row)}
               <span class="cave-item-name-b01">${escapeHtml(definition.name || '未知物品')}</span>
+              <span class="cave-item-type-b01">${escapeHtml(typeLabel)}${row.is_technique_book_v1 ? ' · 未研习' : ''}</span>
               <strong class="cave-item-quantity-b01">×<span${quantityAttr}>${formatNumber(row.quantity)}</span></strong>
             </button>`;
           }).join('')}
@@ -3573,11 +3684,18 @@
     ].slice(0, 4);
     return `
       <div id="caveSystemRoot" class="cave-system-root cave-system-b01">
-        <section class="cave-scene-b01" aria-label="幽静洞府主景与建筑">
+        <section class="cave-scene-b01" aria-label="幽静洞窟、灵脉石台与仙府经营主景">
           <div class="cave-rock-arch-b01" aria-hidden="true"></div>
           <div class="cave-stalactites-b01" aria-hidden="true"></div>
-          <div class="cave-spirit-veins-b01" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="cave-depth-shrine-v1" aria-hidden="true"><span>洞天幽居</span></div>
+          <div class="cave-waterfall-v1" aria-hidden="true"><i></i></div>
+          <div class="cave-spirit-veins-b01" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="cave-qi-wisps-v1" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="cave-fireflies-v1" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <div class="cave-scene-mist-b01" aria-hidden="true"></div>
+          <div class="cave-pond-v1" aria-hidden="true"></div>
+          <div class="cave-stairs-v1" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="cave-bonsai-v1" aria-hidden="true"><i></i><b></b></div>
           <div class="cave-scene-lines-b01" aria-hidden="true"></div>
           <div class="cave-lantern-b01 left" aria-hidden="true"><i></i></div>
           <div class="cave-lantern-b01 right" aria-hidden="true"><i></i></div>
@@ -3603,7 +3721,7 @@
           }).join('')}
         </section>
 
-        ${inventoryGridHtml(inventory)}
+        ${inventoryGridHtml(inventory, techniqueLibrary)}
 
         <div class="cave-action-bar-b01">
           <button class="ghost-btn" type="button" data-cave-open-panel="buildings">洞府扩建</button>
@@ -3624,6 +3742,34 @@
         </section>
       </div>
     `;
+  }
+
+  function openCaveTechniqueBookDetailV1(bookId) {
+    const row = (state.techniqueLibrary?.books || []).find(item => String(item.book_id) === String(bookId));
+    if (!row || row.is_learned) { showToast('该功法道卷已不在未研习藏书中。', 'error'); return; }
+    const virtual = caveTechniqueBookStorageItemsV1({ books: [row] })[0];
+    modalRoot.innerHTML = `<div id="caveTechniqueBookBackdropV1" class="modal-backdrop cave-item-detail-backdrop-b01">
+      <section class="modal cave-item-detail-modal-b01" role="dialog" aria-modal="true" aria-labelledby="caveTechniqueBookTitleV1">
+        <button id="closeCaveTechniqueBookV1" class="modal-close-button" type="button" aria-label="关闭">×</button>
+        <div class="cave-item-detail-head-b01">
+          <div class="cave-item-detail-icon-b01 rarity-${escapeHtml(caveItemRarityClassB01(virtual?.definition?.rarity))}">${caveItemIconHtmlB01(virtual, true)}</div>
+          <div><span>${escapeHtml(row.grade_name || row.grade_code || '功法')} · 未研习</span><h3 id="caveTechniqueBookTitleV1">《${escapeHtml(row.name || '未知道卷')}》</h3><strong>藏有 × ${formatNumber(row.quantity || 0)}</strong></div>
+        </div>
+        <div class="cave-item-detail-tags-b01"><span>功法</span><span>${escapeHtml(row.book_kind === 'exclusive' ? '专属道卷' : '普通道卷')}</span><span>洞府藏经</span></div>
+        <p class="cave-item-detail-description-b01">${escapeHtml(row.description || '道纹沉静，等待有缘人展开研习。')}</p>
+        <div class="cave-item-detail-effect-b01"><strong>研习效果</strong><p>${escapeHtml(techniqueBookEffectText(row))}</p></div>
+        <small class="cave-item-detail-source-b01">当前状态：${escapeHtml(row.can_learn ? '可以研习' : row.locked_reason || '暂不可研习')}</small>
+        <div class="cave-item-detail-actions-b01"><button id="openCaveLibraryV1" class="primary-btn" type="button">前往藏经架</button><button id="closeCaveTechniqueBookActionV1" class="ghost-btn" type="button">关闭</button></div>
+      </section>
+    </div>`;
+    const close = () => { modalRoot.innerHTML = ''; };
+    document.getElementById('closeCaveTechniqueBookV1')?.addEventListener('click', close);
+    document.getElementById('closeCaveTechniqueBookActionV1')?.addEventListener('click', close);
+    document.getElementById('caveTechniqueBookBackdropV1')?.addEventListener('click', event => { if (event.target?.id === 'caveTechniqueBookBackdropV1') close(); });
+    document.getElementById('openCaveLibraryV1')?.addEventListener('click', () => {
+      close();
+      document.querySelector('#caveSystemRoot [data-cave-open-panel="library"]')?.click();
+    });
   }
 
   function openCaveInventoryDetailB01(inventoryId) {
@@ -3797,6 +3943,12 @@
   }
 
   function bindInventoryTechniqueActions() {
+    document.querySelectorAll('[data-open-cave-technique-book]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => openCaveTechniqueBookDetailV1(button.dataset.openCaveTechniqueBook));
+    });
+
     document.querySelectorAll('[data-open-cave-item]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
@@ -4091,10 +4243,10 @@
       battle: {
         label: '战力榜',
         champion: '战力榜首',
-        empty: '',
-        unavailable: '战力榜暂未开放',
-        loading: '',
-        fallbackRule: ''
+        empty: '九霄界尚无已凝聚战斗四属性的修士。',
+        unavailable: '战力榜尚未开启',
+        loading: '正在推演众修战力……',
+        fallbackRule: '道攻×10＋道御×8＋生机×1.5＋身法×5'
       }
     }[board] || null;
   }
@@ -4105,7 +4257,7 @@
         ${['cultivation', 'wealth', 'battle'].map(board => {
           const meta = rankingBoardMeta(board);
           const active = board === activeBoard;
-          return `<button class="ranking-board-tab${active ? ' active' : ''}${board === 'battle' ? ' pending' : ''}" type="button" role="tab" aria-selected="${active ? 'true' : 'false'}" data-ranking-board="${board}"><strong>${meta.label}</strong>${board === 'battle' ? '<small>未开放</small>' : ''}</button>`;
+          return `<button class="ranking-board-tab${active ? ' active' : ''}" type="button" role="tab" aria-selected="${active ? 'true' : 'false'}" data-ranking-board="${board}"><strong>${meta.label}</strong></button>`;
         }).join('')}
       </div>
     `;
@@ -4113,26 +4265,21 @@
 
   function rankingEntryMetric(board, row) {
     if (board === 'wealth') return `${formatNumber(row.wealth || 0)} 灵石`;
+    if (board === 'battle') return `${formatNumber(row.power || 0)} 战力`;
     return `${formatNumber(row.cultivation || 0)} 修为`;
   }
 
-  function rankingCenterPanelHtml(board = 'cultivation', cultivationRanking = null, wealthRanking = null) {
+  function rankingResultForBoard(board, cultivationRanking, wealthRanking, battleRanking) {
+    if (board === 'wealth') return wealthRanking;
+    if (board === 'battle') return battleRanking;
+    return cultivationRanking;
+  }
+
+  function rankingCenterPanelHtml(board = 'cultivation', cultivationRanking = null, wealthRanking = null, battleRanking = null) {
     const safeBoard = ['cultivation', 'wealth', 'battle'].includes(board) ? board : 'cultivation';
     const meta = rankingBoardMeta(safeBoard);
-    if (safeBoard === 'battle') {
-      return `
-        <div id="destinyRankingRoot" class="destiny-ranking-root" data-ranking-active="battle">
-          ${rankingBoardTabsHtml('battle')}
-          <div class="ranking-unopened">
-            <div class="ranking-unopened-seal" aria-hidden="true">战</div>
-            <strong>战力榜暂未开放</strong>
-            <p>战斗体系与统一战力算法仍在推演中，待规则完备后再正式开榜。</p>
-          </div>
-        </div>
-      `;
-    }
-
-    const result = (safeBoard === 'wealth' ? wealthRanking : cultivationRanking) || { status: 'loading', entries: [], total_count: 0 };
+    const result = rankingResultForBoard(safeBoard, cultivationRanking, wealthRanking, battleRanking)
+      || { status: 'loading', entries: [], total_count: 0 };
     const entries = Array.isArray(result.entries) ? result.entries : [];
     const total = Math.max(entries.length, Number(result.total_count || 0));
     if (result.status === 'unavailable') {
@@ -4141,7 +4288,7 @@
           ${rankingBoardTabsHtml(safeBoard)}
           <div class="ranking-notice">
             <strong>${meta.unavailable}</strong>
-            <p>${escapeHtml(result.error || (safeBoard === 'wealth' ? '请先执行 V0.14.3 财富榜数据库升级。' : '请先检查修为榜数据库函数。'))}</p>
+            <p>${escapeHtml(result.error || '对应数据库候选模块尚未接入。')}</p>
           </div>
         </div>
       `;
@@ -4153,13 +4300,27 @@
     return `
       <div id="destinyRankingRoot" class="destiny-ranking-root" data-ranking-active="${safeBoard}">
         ${rankingBoardTabsHtml(safeBoard)}
+        ${safeBoard === 'battle' ? `
+          ${result.self ? `
+            <div class="battle-self-summary-bcombat01">
+              <div><span>本尊战力</span><strong>${formatNumber(result.self.power || result.self_power || 0)}</strong></div>
+              <div><span>本命五行</span><strong>${escapeHtml(result.self.element_name || '未定')}</strong></div>
+              <div><span>当前境界</span><strong>${escapeHtml(result.self.realm || '未知境界')}</strong></div>
+              <div><span>当前命格</span><strong>${escapeHtml(result.self.fate_name || '未定命格')}</strong></div>
+            </div>
+          ` : ''}
+          <div class="battle-ranking-rule-bcombat01">
+            <strong>战力只作综合评分，不直接决定胜负</strong>
+            <span>只能挑战战力高于本尊的角色；五行、命格条件与技能组合在开战时单独结算。</span>
+          </div>
+        ` : ''}
         ${champion ? `
           <article class="destiny-champion ${champion.is_self ? 'self' : ''}">
             <div class="destiny-champion-seal">天</div>
             <div>
               <span>${meta.champion}${champion.is_self ? ' · 本尊' : ''}</span>
               <strong>${escapeHtml(champion.name || '无名修士')}</strong>
-              <p>${escapeHtml(champion.realm || '未知境界')} · 命格「${escapeHtml(champion.fate || '未定命格')}」 · ${escapeHtml(rankingEntryMetric(safeBoard, champion))}</p>
+              <p>${escapeHtml(champion.realm || '未知境界')} · 命格「${escapeHtml(champion.fate || '未定命格')}」${safeBoard === 'battle' ? ` · 五行「${escapeHtml(champion.element_name || '未定')}」` : ''} · ${escapeHtml(rankingEntryMetric(safeBoard, champion))}</p>
             </div>
           </article>
         ` : ''}
@@ -4167,15 +4328,29 @@
           ${entries.map(row => {
             const rank = Number(row.rank || 0);
             return `
-              <article class="destiny-ranking-row rank-${Math.min(4, rank)} ${row.is_self ? 'self' : ''}">
+              <article class="destiny-ranking-row rank-${Math.min(4, rank)} ${row.is_self ? 'self' : ''} ${safeBoard === 'battle' ? 'battle-ranking-row-bcombat01' : ''}">
                 <div class="destiny-rank-medal">${escapeHtml(destinyRankMedal(rank))}</div>
                 <div class="destiny-rank-main">
-                  <div><strong>${escapeHtml(row.name || '无名修士')}</strong>${row.is_self ? '<span class="self-mark">本尊</span>' : ''}</div>
+                  <div><strong>${escapeHtml(row.name || '无名修士')}</strong>${row.is_self ? '<span class="self-mark">本尊</span>' : ''}${safeBoard === 'battle' ? `<span class="battle-element-mark-bcombat01 element-${escapeHtml(row.element || 'none')}">${escapeHtml(row.element_name || '未定')}</span>` : ''}</div>
                   <p>${escapeHtml(row.realm || '未知境界')} · 命格「${escapeHtml(row.fate || '未定命格')}」</p>
+                  ${safeBoard === 'battle' ? `
+                    <div class="battle-rank-stats-bcombat01">
+                      <span>道攻 ${formatNumber(row.dao_attack || 0)}</span>
+                      <span>道御 ${formatNumber(row.dao_defense || 0)}</span>
+                      <span>生机 ${formatNumber(row.vitality || 0)}</span>
+                      <span>身法 ${formatNumber(row.agility || 0)}</span>
+                    </div>
+                  ` : ''}
                 </div>
                 <div class="destiny-rank-side">
                   <span>第 ${formatNumber(row.generation || 1)} 世</span>
                   <strong>${escapeHtml(rankingEntryMetric(safeBoard, row))}</strong>
+                  ${safeBoard === 'battle' && !row.is_self ? `
+                    <button class="${row.can_challenge ? 'primary-btn' : 'ghost-btn'} battle-rank-challenge-bcombat01" type="button"
+                      data-battle-challenge-target="${escapeHtml(row.character_id || '')}" ${row.can_challenge ? '' : 'disabled'}>
+                      ${row.can_challenge ? '挑战' : '战力较低'}
+                    </button>
+                  ` : ''}
                 </div>
               </article>
             `;
@@ -4193,25 +4368,28 @@
     return rankingCenterPanelHtml(
       state.rankingBoard || 'cultivation',
       ranking || state.destinyRanking,
-      state.wealthRanking
+      state.wealthRanking,
+      state.battleRanking
     );
   }
 
   function updateDestinyRankingPanel() {
     const root = document.getElementById('destinyRankingRoot');
     if (!root) return;
-    root.outerHTML = rankingCenterPanelHtml(state.rankingBoard, state.destinyRanking, state.wealthRanking);
+    root.outerHTML = rankingCenterPanelHtml(state.rankingBoard, state.destinyRanking, state.wealthRanking, state.battleRanking);
     bindDestinyRankingActions();
   }
 
   async function refreshRankingBoard(board = state.rankingBoard, append = false, silent = true) {
-    const safeBoard = ['cultivation', 'wealth'].includes(board) ? board : null;
+    const safeBoard = ['cultivation', 'wealth', 'battle'].includes(board) ? board : null;
     if (!safeBoard || !state.character) return;
-    const isCultivation = safeBoard === 'cultivation';
-    const syncingKey = isCultivation ? 'destinyRankingSyncing' : 'wealthRankingSyncing';
-    const dataKey = isCultivation ? 'destinyRanking' : 'wealthRanking';
+    const configMap = {
+      cultivation: ['destinyRankingSyncing', 'destinyRanking', rpcGetDestinyRankingV1],
+      wealth: ['wealthRankingSyncing', 'wealthRanking', rpcGetWealthRankingV1],
+      battle: ['battleRankingSyncing', 'battleRanking', rpcGetBattlePowerRankingBCombat01]
+    };
+    const [syncingKey, dataKey, fetcher] = configMap[safeBoard];
     if (state[syncingKey]) return;
-
     const currentEntries = append && Array.isArray(state[dataKey]?.entries) ? state[dataKey].entries : [];
     state[syncingKey] = true;
     if (!append) {
@@ -4219,25 +4397,18 @@
       if (state.rankingBoard === safeBoard) updateDestinyRankingPanel();
     }
     try {
-      const result = isCultivation
-        ? await rpcGetDestinyRankingV1(50, append ? currentEntries.length : 0)
-        : await rpcGetWealthRankingV1(50, append ? currentEntries.length : 0);
+      const result = await fetcher(50, append ? currentEntries.length : 0);
       if (append) {
         const nextEntries = Array.isArray(result?.entries) ? result.entries : [];
         state[dataKey] = { ...result, entries: [...currentEntries, ...nextEntries], offset: 0 };
       } else {
         state[dataKey] = result || { status: 'ok', entries: [], total_count: 0 };
       }
-      if (isCultivation) state.destinyRankingFetchedAt = Date.now();
+      if (safeBoard === 'cultivation') state.destinyRankingFetchedAt = Date.now();
       if (state.rankingBoard === safeBoard) updateDestinyRankingPanel();
       if (!silent) showToast(append ? `${rankingBoardMeta(safeBoard).label}已继续展开。` : `${rankingBoardMeta(safeBoard).label}已更新。`);
     } catch (error) {
-      state[dataKey] = {
-        status: 'unavailable',
-        entries: [],
-        total_count: 0,
-        error: translateError(error)
-      };
+      state[dataKey] = { status: 'unavailable', entries: [], total_count: 0, error: translateError(error) };
       if (state.rankingBoard === safeBoard) updateDestinyRankingPanel();
       if (!silent) showToast(translateError(error), 'error');
     } finally {
@@ -4254,7 +4425,311 @@
     if (state.rankingBoard === safeBoard) return;
     state.rankingBoard = safeBoard;
     updateDestinyRankingPanel();
-    if (safeBoard !== 'battle') refreshRankingBoard(safeBoard, false, true);
+    refreshRankingBoard(safeBoard, false, true);
+  }
+
+  function battleElementOvercomes(attacker, defender) {
+    return [['metal','wood'],['wood','earth'],['earth','water'],['water','fire'],['fire','metal']]
+      .some(([left, right]) => left === attacker && right === defender);
+  }
+
+  function battleElementRelationHtml(left, right) {
+    if (!left || !right || left.element === right.element) return '<strong>五行相安</strong><span>双方不存在直接克制，伤害倍率为1.00。</span>';
+    if (battleElementOvercomes(left.element, right.element)) {
+      return `<strong>${escapeHtml(left.element_name)}克${escapeHtml(right.element_name)}</strong><span>${escapeHtml(left.name)}占据五行之利。</span>`;
+    }
+    if (battleElementOvercomes(right.element, left.element)) {
+      return `<strong>${escapeHtml(right.element_name)}克${escapeHtml(left.element_name)}</strong><span>${escapeHtml(right.name)}占据五行之利。</span>`;
+    }
+    return '<strong>五行并行</strong><span>双方不存在直接克制，伤害倍率为1.00。</span>';
+  }
+
+  function battleTechniqueLabelBCombat01(name, fallback) {
+    const raw = String(name || '').trim();
+    if (!raw || raw === fallback) return fallback;
+    return `《${escapeHtml(raw)}》`;
+  }
+
+  function battleCombatantCardHtml(row, label) {
+    const attackTechnique = battleTechniqueLabelBCombat01(row?.attack_technique_name, '未修攻伐功法');
+    const defenseTechnique = battleTechniqueLabelBCombat01(row?.defense_technique_name, '未修护体功法');
+    return `
+      <article class="battle-combatant-card-bcombat01">
+        <span>${escapeHtml(label)}</span>
+        <strong>${escapeHtml(row?.name || '无名修士')}</strong>
+        <small>${escapeHtml(row?.realm || '未知境界')} · 战力 ${formatNumber(row?.power || 0)} · ${escapeHtml(row?.element_name || '未定')}行</small>
+        <div class="battle-combatant-stats-bcombat01">
+          <i>道攻 ${formatNumber(row?.attack || 0)}</i><i>道御 ${formatNumber(row?.defense || 0)}</i>
+          <i>生机 ${formatNumber(row?.vitality || 0)}</i><i>身法 ${formatNumber(row?.agility || 0)}</i>
+        </div>
+        <p>武器：${escapeHtml(row?.weapon_name || '赤手空拳')}<br>法衣：${escapeHtml(row?.armor_name || '赤裸')}<br>攻法：${attackTechnique}<br>护法：${defenseTechnique}</p>
+      </article>
+    `;
+  }
+
+  function closeBattleChallengeModalBCombat01() {
+    if (state.battlePlaybackTimer) clearTimeout(state.battlePlaybackTimer);
+    state.battlePlaybackTimer = null;
+    modalRoot.innerHTML = '';
+  }
+
+  async function openBattleChallengeModalBCombat01(targetCharacterId) {
+    if (!targetCharacterId) return;
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop battle-challenge-backdrop-bcombat01">
+        <section class="modal battle-challenge-modal-bcombat01" role="dialog" aria-modal="true">
+          <button class="modal-close-button" type="button" data-close-battle-challenge aria-label="关闭">×</button>
+          <div class="empty-state">正在读取双方战斗快照……</div>
+        </section>
+      </div>
+    `;
+    modalRoot.querySelector('[data-close-battle-challenge]')?.addEventListener('click', closeBattleChallengeModalBCombat01);
+    try {
+      const preview = await rpcGetBattleChallengePreviewBCombat01(targetCharacterId);
+      const canStart = Boolean(preview?.can_start);
+      modalRoot.innerHTML = `
+        <div class="modal-backdrop battle-challenge-backdrop-bcombat01">
+          <section class="modal battle-challenge-modal-bcombat01" role="dialog" aria-modal="true" aria-labelledby="battleChallengeTitleBCombat01">
+            <button class="modal-close-button" type="button" data-close-battle-challenge aria-label="关闭">×</button>
+            <div class="modal-seal">战</div>
+            <h3 id="battleChallengeTitleBCombat01">天命榜挑战</h3>
+            <div class="battle-versus-grid-bcombat01">
+              ${battleCombatantCardHtml(preview?.challenger, '挑战者')}
+              <div class="battle-versus-mark-bcombat01">VS</div>
+              ${battleCombatantCardHtml(preview?.target, '守榜者')}
+            </div>
+            <div class="battle-element-relation-bcombat01">${battleElementRelationHtml(preview?.challenger, preview?.target)}</div>
+            <div class="battle-risk-note-bcombat01">
+              <strong>胜负皆有修为代价</strong>
+              <p>挑战失败：本尊损失 ${formatNumber(preview?.challenger_potential_loss || 0)} 修为。<br>
+              挑战成功：获得对方损失的 ${formatNumber(preview?.target_potential_loss || 0)} 修为。</p>
+              <small>今日主动挑战 ${formatNumber(preview?.active_challenges_used || 0)} / ${formatNumber(preview?.active_challenges_limit || 5)} ·
+              对方今日被挑战 ${formatNumber(preview?.target_challenged_count || 0)} / ${formatNumber(preview?.target_challenged_limit || 10)} ·
+              同一对手每日最多一次修为转移 · 战败保护30分钟。</small>
+              ${!canStart && preview?.blocked_reason ? `<small class="battle-blocked-reason-bcombat01">当前不可挑战：${escapeHtml(preview.blocked_reason)}</small>` : ''}
+              <small>${escapeHtml(preview?.escrow_note || '')}</small>
+            </div>
+            <div class="modal-actions">
+              <button class="ghost-btn" type="button" data-close-battle-challenge>取消</button>
+              <button class="primary-btn" type="button" data-confirm-battle-challenge ${canStart ? '' : 'disabled'}>${canStart ? '确认挑战' : '当前不可挑战'}</button>
+            </div>
+          </section>
+        </div>
+      `;
+      modalRoot.querySelectorAll('[data-close-battle-challenge]').forEach(button => button.addEventListener('click', closeBattleChallengeModalBCombat01));
+      modalRoot.querySelector('[data-confirm-battle-challenge]')?.addEventListener('click', async event => {
+        const button = event.currentTarget;
+        setBusy(button, true, '交锋中……');
+        try {
+          const result = await rpcChallengeBattlePowerBCombat01(targetCharacterId, createUuid());
+          showBattlePlaybackBCombat01(result);
+          if (state.character && result?.self_cultivation_after !== undefined) {
+            state.character.cultivation = Number(result.self_cultivation_after || 0);
+            state.liveCultivationBase = Number(result.self_cultivation_after || 0);
+            state.liveCultivationStartedAt = Date.now();
+          }
+          refreshRankingBoard('battle', false, true).catch(() => {});
+          refreshWorldEvents(true).catch(() => {});
+        } catch (error) {
+          showToast(translateError(error), 'error');
+          setBusy(button, false);
+        }
+      });
+    } catch (error) {
+      modalRoot.innerHTML = `
+        <div class="modal-backdrop">
+          <section class="modal" role="dialog" aria-modal="true">
+            <div class="modal-seal failure-seal">止</div>
+            <h3>无法发起挑战</h3>
+            <p>${escapeHtml(translateError(error))}</p>
+            <button class="primary-btn" type="button" data-close-battle-challenge>确定</button>
+          </section>
+        </div>
+      `;
+      modalRoot.querySelector('[data-close-battle-challenge]')?.addEventListener('click', closeBattleChallengeModalBCombat01);
+    }
+  }
+
+  function battleAttackCopyBCombat01(action) {
+    const attacker = escapeHtml(action?.attacker_name || '无名修士');
+    const defender = escapeHtml(action?.defender_name || '对手');
+    const weapon = escapeHtml(action?.weapon_name || '赤手空拳');
+    const rawTechnique = String(action?.attack_technique_name || '').trim();
+    const hasTechnique = Boolean(rawTechnique && rawTechnique !== '未修攻伐功法');
+    const technique = escapeHtml(hasTechnique ? rawTechnique : '未修攻伐功法');
+    const style = Math.max(1, Math.min(5, Number(action?.attack_style || 1)));
+    if (action?.is_unarmed) {
+      return hasTechnique ? [
+        `${attacker}赤手空拳，运转《${technique}》，一掌卷起狂暴灵气直逼${defender}。`,
+        `${attacker}虽无兵刃，却以《${technique}》催动双拳，撼动四周灵机。`,
+        `${attacker}五指成爪，《${technique}》随掌势向${defender}压去。`,
+        `${attacker}未携寸铁，只凭《${technique}》强行破阵。`,
+        `${attacker}踏地借势，拳锋裹着《${technique}》的灵光轰向${defender}。`
+      ][style - 1] : [
+        `${attacker}赤手空拳，未修攻伐功法，只凭本能一掌攻向${defender}。`,
+        `${attacker}虽无兵刃也无攻伐功法，仍以双拳撼动四周灵机。`,
+        `${attacker}五指成爪，赤手向${defender}攻去。`,
+        `${attacker}未携寸铁，只凭一身修为强行破阵。`,
+        `${attacker}踏地借势，拳锋裹着灵光轰向${defender}。`
+      ][style - 1];
+    }
+    if (!hasTechnique) {
+      return [
+        `${attacker}手持【${weapon}】，未修攻伐功法，只凭本能挥向${defender}。`,
+        `${attacker}催动【${weapon}】，没有功法相助，仍向${defender}强攻。`,
+        `${attacker}踏罡而行，以【${weapon}】直逼${defender}。`,
+        `${attacker}将灵力灌入【${weapon}】，凭朴素招式破空而出。`,
+        `${attacker}身形一闪，手中【${weapon}】杀向${defender}。`
+      ][style - 1];
+    }
+    return [
+      `${attacker}挥动【${weapon}】，运转《${technique}》，攻势直取${defender}。`,
+      `${attacker}催动【${weapon}】，灵光骤起，《${technique}》随势而发。`,
+      `${attacker}踏罡而行，【${weapon}】承载《${technique}》破空直逼${defender}。`,
+      `${attacker}将《${technique}》运至极处，【${weapon}】卷起层层灵潮。`,
+      `${attacker}身形一闪，以【${weapon}】引动《${technique}》杀向${defender}。`
+    ][style - 1];
+  }
+
+  function battleDefenseCopyBCombat01(action) {
+    const defender = escapeHtml(action?.defender_name || '对手');
+    const armor = escapeHtml(action?.armor_name || '赤裸');
+    const rawTechnique = String(action?.defense_technique_name || '').trim();
+    const hasTechnique = Boolean(rawTechnique && rawTechnique !== '未修护体功法');
+    const technique = escapeHtml(hasTechnique ? rawTechnique : '未修护体功法');
+    const style = Math.max(1, Math.min(5, Number(action?.defense_style || 1)));
+    if (action?.is_naked) {
+      if (hasTechnique) return [
+        `${defender}赤裸迎敌，只以肉身和《${technique}》硬抗来袭。`,
+        `${defender}身无寸甲，《${technique}》化作护体灵光覆于肌肤。`,
+        `${defender}未着法衣，却运转《${technique}》毫无退意。`,
+        `${defender}赤裸立于战场，以《${technique}》承受锋芒。`,
+        `${defender}无衣甲可凭，只能运转《${technique}》强行卸力。`
+      ][style - 1];
+      return [
+        `${defender}赤裸迎敌，也未修护体功法，只以肉身和道御硬抗来袭。`,
+        `${defender}身无寸甲，护体灵气在肌肤表面骤然亮起。`,
+        `${defender}未着法衣，面对攻势却毫无退意。`,
+        `${defender}赤裸立于战场，以血肉之躯承受锋芒。`,
+        `${defender}无衣甲和护体功法可凭，只能强行卸力。`
+      ][style - 1];
+    }
+    if (!hasTechnique) return [
+      `${defender}催动【${armor}】，未修护体功法，只凭法衣符纹抵挡。`,
+      `${defender}身着【${armor}】，没有护体功法相助，仍横身挡在攻势之前。`,
+      `${defender}气沉丹田，【${armor}】上的符纹同时震动。`,
+      `${defender}横移半步，以【${armor}】卸去部分攻势。`,
+      `${defender}不退反进，只凭【${armor}】和自身道御承下这一击。`
+    ][style - 1];
+    return [
+      `${defender}催动【${armor}】，衣上符纹随《${technique}》次第亮起。`,
+      `${defender}身着【${armor}】，运转《${technique}》挡在身前。`,
+      `${defender}气沉丹田，【${armor}】与《${technique}》的护体灵光同时震动。`,
+      `${defender}横移半步，以【${armor}】和《${technique}》卸去部分攻势。`,
+      `${defender}不退反进，凭【${armor}】和《${technique}》承下这一击。`
+    ][style - 1];
+  }
+
+  function battleActionHtmlBCombat01(action, result) {
+    const challenger = result?.challenger || {};
+    const target = result?.target || {};
+    const attacker = action?.attacker_id === challenger.character_id ? challenger : target;
+    const defender = action?.defender_id === challenger.character_id ? challenger : target;
+    const multiplier = Number(action?.element_multiplier || 1);
+    const elementLine = multiplier > 1
+      ? `${escapeHtml(attacker.element_name || '')}行压制${escapeHtml(defender.element_name || '')}行，伤害提高${formatNumber((multiplier - 1) * 100, 0)}%。`
+      : multiplier < 1
+        ? `${escapeHtml(attacker.element_name || '')}行受${escapeHtml(defender.element_name || '')}行压制，伤害降低${formatNumber((1 - multiplier) * 100, 0)}%。`
+        : '五行未形成直接克制，本次伤害不作修正。';
+    return `
+      <article class="battle-action-bcombat01 ${action?.defeated ? 'is-finisher' : ''}">
+        <header><span>第 ${formatNumber(action?.round || 1)} 回合</span><strong>${escapeHtml(action?.attacker_name || '')} 出手</strong></header>
+        <p>${battleAttackCopyBCombat01(action)}</p>
+        <p>${battleDefenseCopyBCombat01(action)}</p>
+        <p class="battle-element-line-bcombat01">${elementLine}</p>
+        <div class="battle-damage-line-bcombat01">
+          <strong>造成 ${formatNumber(action?.damage || 0)} 点伤害</strong>
+          <span>道御与护体共化去 ${formatNumber(Number(action?.defense_reduction || 0) * 100, 2)}%</span>
+        </div>
+        <div class="battle-hp-line-bcombat01"><span>${escapeHtml(action?.defender_name || '')} 生机</span><strong>${formatNumber(action?.hp_after || 0)} / ${formatNumber(action?.max_hp || 0)}</strong></div>
+        ${action?.low_health ? `<small class="battle-low-health-bcombat01">${escapeHtml(action?.defender_name || '')}气息紊乱，已经显露败象。</small>` : ''}
+        ${action?.defeated ? `<small class="battle-defeated-bcombat01">最后一击落下，${escapeHtml(action?.defender_name || '')}生机归零，此战胜负已定。</small>` : ''}
+      </article>
+    `;
+  }
+
+  function battleSettlementHtmlBCombat01(result) {
+    const won = Boolean(result?.challenger_won);
+    const escrow = Number(result?.cultivation_escrowed || 0);
+    return `
+      <section class="battle-settlement-bcombat01 ${won ? 'is-win' : 'is-loss'}">
+        <div class="modal-seal ${won ? '' : 'failure-seal'}">${won ? '胜' : '败'}</div>
+        <h3>${won ? '挑战成功' : '挑战失败'}</h3>
+        <p><strong>${escapeHtml(result?.winner_name || '')}</strong> 击败 <strong>${escapeHtml(result?.loser_name || '')}</strong>，共战 ${formatNumber(result?.battle_rounds || 0)} 回合。</p>
+        <div class="battle-reward-grid-bcombat01">
+          <div><span>败者损失</span><strong>${formatNumber(result?.cultivation_transferred || 0)} 修为</strong></div>
+          <div><span>胜者即时获得</span><strong>${formatNumber(result?.cultivation_granted_now || 0)} 修为</strong></div>
+          ${escrow > 0 ? `<div><span>战利修为暂存</span><strong>${formatNumber(escrow)} 修为</strong></div>` : ''}
+        </div>
+        <small>战报已同步至九霄界闻。${Number(result?.protection_minutes || 0) > 0 ? `守榜者进入${formatNumber(result.protection_minutes)}分钟挑战保护。` : ''}</small>
+        <button class="primary-btn" type="button" data-close-battle-challenge>收起战报</button>
+      </section>
+    `;
+  }
+
+  function showBattlePlaybackBCombat01(result) {
+    if (state.battlePlaybackTimer) clearTimeout(state.battlePlaybackTimer);
+    const actions = Array.isArray(result?.actions) ? result.actions : [];
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop battle-challenge-backdrop-bcombat01">
+        <section class="modal battle-challenge-modal-bcombat01 battle-playback-modal-bcombat01" role="dialog" aria-modal="true">
+          <button class="modal-close-button" type="button" data-close-battle-challenge aria-label="关闭">×</button>
+          <div class="battle-playback-head-bcombat01">
+            ${battleCombatantCardHtml(result?.challenger, '挑战者')}
+            <div class="battle-versus-mark-bcombat01">战</div>
+            ${battleCombatantCardHtml(result?.target, '守榜者')}
+          </div>
+          <div class="battle-playback-controls-bcombat01">
+            <button class="ghost-btn active" type="button" data-battle-speed="1">1倍</button>
+            <button class="ghost-btn" type="button" data-battle-speed="2">2倍</button>
+            <button class="primary-btn" type="button" data-battle-skip>直接看结果</button>
+          </div>
+          <div class="battle-log-bcombat01" data-battle-log aria-live="polite"></div>
+        </section>
+      </div>
+    `;
+    let index = 0;
+    let speed = 1;
+    const log = modalRoot.querySelector('[data-battle-log]');
+    const finish = () => {
+      if (!log || log.dataset.finished === '1') return;
+      log.dataset.finished = '1';
+      log.insertAdjacentHTML('beforeend', battleSettlementHtmlBCombat01(result));
+      log.querySelector('[data-close-battle-challenge]')?.addEventListener('click', closeBattleChallengeModalBCombat01);
+      log.scrollTop = log.scrollHeight;
+    };
+    const step = () => {
+      if (!log) return;
+      if (index >= actions.length) return finish();
+      log.insertAdjacentHTML('beforeend', battleActionHtmlBCombat01(actions[index], result));
+      index += 1;
+      log.scrollTop = log.scrollHeight;
+      state.battlePlaybackTimer = setTimeout(step, Math.max(180, 850 / speed));
+    };
+    modalRoot.querySelector('[data-close-battle-challenge]')?.addEventListener('click', closeBattleChallengeModalBCombat01);
+    modalRoot.querySelectorAll('[data-battle-speed]').forEach(button => button.addEventListener('click', () => {
+      speed = Number(button.dataset.battleSpeed || 1);
+      modalRoot.querySelectorAll('[data-battle-speed]').forEach(item => item.classList.toggle('active', item === button));
+    }));
+    modalRoot.querySelector('[data-battle-skip]')?.addEventListener('click', () => {
+      if (state.battlePlaybackTimer) clearTimeout(state.battlePlaybackTimer);
+      while (index < actions.length) {
+        log?.insertAdjacentHTML('beforeend', battleActionHtmlBCombat01(actions[index], result));
+        index += 1;
+      }
+      finish();
+    });
+    step();
   }
 
   function bindDestinyRankingActions() {
@@ -4272,6 +4747,11 @@
         await refreshRankingBoard(board, true, false);
         setBusy(button, false);
       });
+    });
+    document.querySelectorAll('[data-battle-challenge-target]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => openBattleChallengeModalBCombat01(button.dataset.battleChallengeTarget));
     });
   }
 
@@ -6071,26 +6551,32 @@
   }
 
 
-  // V0.15.5 FIX1 CACHE27 · 元神战斗属性界面（数值系统尚未接入）
-  function primordialSpiritPanelHtmlV0155(root = {}, fate = {}) {
-    const rootName = escapeHtml(root.name || '未测灵根');
-    const fateName = escapeHtml(fate.name || '未定命格');
-    const card = (position, icon, name, detail) => `
+
+  // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
+  function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
+    const rootName = root.name || '未测灵根';
+    const fateName = fate.name || snapshot?.fate_name || '未定命格';
+    const ready = snapshot && snapshot.status !== 'unavailable' && Number.isFinite(Number(snapshot.attack));
+    const value = key => ready ? formatNumber(snapshot[key] || 0) : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
+    const bonusValue = ready
+      ? (snapshot.sword_heart_active ? '剑心 +8%' : `五行 · ${snapshot.element_name || '未定'}`)
+      : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
+    const card = (position, icon, name, displayValue, detail) => `
       <button class="yuanshen-stat-card-v0155 ${position}" type="button" data-yuanshen-stat="${escapeHtml(name)}" data-yuanshen-detail="${escapeHtml(detail)}">
         <span class="yuanshen-sigil-v0155" aria-hidden="true">${escapeHtml(icon)}</span>
         <span class="yuanshen-stat-copy-v0155">
           <strong>${escapeHtml(name)}</strong>
           <i aria-hidden="true"></i>
-          <small>数值 · <b>接入中</b></small>
+          <small>当前 · <b>${escapeHtml(displayValue)}</b></small>
         </span>
       </button>`;
     return `
-      <div class="yuanshen-shell-v0155">
+      <div id="primordialSpiritRootV1" class="yuanshen-shell-v0155">
         <div class="yuanshen-stage-v0155" aria-label="元神战斗属性总览">
           <div class="yuanshen-beam-field-v0155" aria-hidden="true"></div>
-          ${card('left-1', '攻', '道攻', '决定角色造成的基础伤害；正式数值将在战斗属性计算服务接入后显示。')}
-          ${card('left-2', '御', '道御', '决定角色承受攻击时的防护与减伤；正式数值正在接入。')}
-          ${card('left-3', '战', '战力', '综合道攻、道御、生机、身法与额外加成的总评；当前不生成临时战力。')}
+          ${card('left-1', '攻', '道攻', value('attack'), ready ? `境界基础 ${formatNumber(snapshot.base_attack || 0)}，武器有效加成 ${formatNumber(snapshot.effective_weapon_attack || 0)}。` : '正在读取服务端权威战斗快照。')}
+          ${card('left-2', '御', '道御', value('defense'), ready ? `境界基础 ${formatNumber(snapshot.base_defense || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_defense || 0)}。` : '正在读取服务端权威战斗快照。')}
+          ${card('left-3', '战', '战力', value('power'), '战力 = 道攻×10 + 道御×8 + 生机×1.5 + 身法×5；综合评分不直接决定胜负。')}
 
           <section class="yuanshen-core-v0155" aria-label="元神运转功法动画">
             <div class="yuanshen-mandala-v0155" aria-hidden="true">
@@ -6100,44 +6586,56 @@
               <div class="yuanshen-ring-v0155 outer"></div>
               <div class="yuanshen-ring-v0155 middle"></div>
               <div class="yuanshen-ring-v0155 inner"></div>
-              <span class="yuanshen-particle-v0155 p1"></span>
-              <span class="yuanshen-particle-v0155 p2"></span>
-              <span class="yuanshen-particle-v0155 p3"></span>
-              <span class="yuanshen-particle-v0155 p4"></span>
-              <span class="yuanshen-particle-v0155 p5"></span>
+              <span class="yuanshen-particle-v0155 p1"></span><span class="yuanshen-particle-v0155 p2"></span><span class="yuanshen-particle-v0155 p3"></span><span class="yuanshen-particle-v0155 p4"></span><span class="yuanshen-particle-v0155 p5"></span>
               <div class="yuanshen-cultivator-wrap-v0155">
                 <svg class="yuanshen-cultivator-v0155" viewBox="0 0 360 360" role="img" aria-label="正在运转功法的元神剪影">
-                  <defs>
-                    <radialGradient id="yuanshenInnerGlowV0155" cx="50%" cy="50%" r="50%">
-                      <stop offset="0" stop-color="#f2d98b" stop-opacity=".42"/>
-                      <stop offset=".5" stop-color="#d7b764" stop-opacity=".12"/>
-                      <stop offset="1" stop-color="#d7b764" stop-opacity="0"/>
-                    </radialGradient>
-                  </defs>
-                  <circle cx="180" cy="178" r="100" fill="url(#yuanshenInnerGlowV0155)"/>
+                  <defs><radialGradient id="yuanshenInnerGlowV1" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f2d98b" stop-opacity=".42"/><stop offset=".5" stop-color="#d7b764" stop-opacity=".12"/><stop offset="1" stop-color="#d7b764" stop-opacity="0"/></radialGradient></defs>
+                  <circle cx="180" cy="178" r="100" fill="url(#yuanshenInnerGlowV1)"/>
                   <path class="body" d="M180 58c-18 0-31 14-31 33 0 8 3 16 8 22-15 8-25 24-25 42 0 11 3 21 8 29-26 11-54 33-74 56l51 31-31 31h188l-31-31 51-31c-20-23-48-45-74-56 5-8 8-18 8-29 0-18-10-34-25-42 5-6 8-14 8-22 0-19-13-33-31-33Z"/>
                   <path class="body" d="M116 257 72 293l71 4 37 39 37-39 71-4-44-36-45 22h-38Z"/>
-                  <path class="meridian" d="M180 103 C160 137 205 158 180 191 C156 223 199 240 180 281"/>
-                  <path class="meridian" d="M180 150 C144 164 137 191 112 217" opacity=".65"/>
-                  <path class="meridian" d="M180 150 C216 164 223 191 248 217" opacity=".65"/>
-                  <circle class="dantian" cx="180" cy="210" r="7"/>
+                  <path class="meridian" d="M180 103 C160 137 205 158 180 191 C156 223 199 240 180 281"/><path class="meridian" d="M180 150 C144 164 137 191 112 217" opacity=".65"/><path class="meridian" d="M180 150 C216 164 223 191 248 217" opacity=".65"/><circle class="dantian" cx="180" cy="210" r="7"/>
                 </svg>
               </div>
             </div>
             <div class="yuanshen-core-copy-v0155">
               <h4>元神显化 · 战意流转</h4>
-              <p>神识内守，周天自转</p>
+              <p>${ready ? `${escapeHtml(snapshot.realm || '未知境界')} · 本命${escapeHtml(snapshot.element_name || '未定')}行` : '神识内守，周天自转'}</p>
               <span>道攻 / 道御 / 生机 / 身法</span>
-              <em>战斗属性数值系统接入中</em>
+              <em>${ready ? `常驻战力 ${formatNumber(snapshot.power || 0)}` : '战斗属性正在与云端同步'}</em>
             </div>
           </section>
 
-          ${card('right-1', '生', '生机', '决定角色最大生命值；当前生机与负伤联动将在战斗系统阶段接入。')}
-          ${card('right-2', '身', '身法', '决定出手顺序、闪避与追击相关能力；正式数值正在接入。')}
-          ${card('right-3', '元', '加成', `灵根“${rootName}”、命格“${fateName}”的战斗加成接口尚未启用。`)}
+          ${card('right-1', '生', '生机', value('vitality'), ready ? `境界基础 ${formatNumber(snapshot.base_vitality || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_vitality || 0)}。` : '正在读取服务端权威战斗快照。')}
+          ${card('right-2', '身', '身法', value('agility'), ready ? `境界基础 ${formatNumber(snapshot.base_agility || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_agility || 0)}；第一版用于决定先手。` : '正在读取服务端权威战斗快照。')}
+          ${card('right-3', '元', '加成', bonusValue, ready ? `灵根“${rootName}”只影响修炼速度；本命五行为“${snapshot.element_name || '未定'}”。命格“${fateName}”${snapshot.sword_heart_active ? '已满足剑类武器与剑系功法条件，最终剑伤 +8%。' : '当前没有常驻四属性加成。'}` : '正在读取五行、命格、装备与功法加成。')}
         </div>
-        <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">界面已开放；道攻、道御、生机、身法与战力数值统一显示“接入中”，不会生成伪造数据。</div>
+        <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；当前武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
       </div>`;
+  }
+
+  function renderPrimordialSpiritFromStateV1() {
+    const root = document.getElementById('primordialSpiritRootV1');
+    if (!root) return;
+    const spiritRoot = state.details?.spiritRoot || {};
+    const fate = state.details?.fate || {};
+    root.outerHTML = primordialSpiritPanelHtmlV1(spiritRoot, fate, state.battleSnapshotV1);
+    bindPrimordialSpiritPanelV0155();
+  }
+
+  async function refreshMyBattleSnapshotV1(force = false) {
+    if (!state.character || state.battleSnapshotSyncingV1) return state.battleSnapshotV1;
+    if (!force && state.battleSnapshotV1 && state.battleSnapshotV1.status !== 'unavailable') return state.battleSnapshotV1;
+    state.battleSnapshotSyncingV1 = true;
+    try {
+      const snapshot = await rpcGetMyBattleSnapshotV1();
+      state.battleSnapshotV1 = snapshot ? { ...snapshot, status: 'ok' } : { status: 'unavailable', error: '未找到当前角色战斗快照。' };
+    } catch (error) {
+      state.battleSnapshotV1 = { status: 'unavailable', error: translateError(error) };
+    } finally {
+      state.battleSnapshotSyncingV1 = false;
+      renderPrimordialSpiritFromStateV1();
+    }
+    return state.battleSnapshotV1;
   }
 
   function bindPrimordialSpiritPanelV0155() {
@@ -6443,8 +6941,8 @@
         </section>
 
         <section id="primordialSpiritSection" class="panel info-section primordial-spirit-panel-v0155" data-mobile-screen="primordial">
-          <div class="panel-title"><h3>元神</h3><span class="badge">战斗属性 · 接入中</span></div>
-          ${primordialSpiritPanelHtmlV0155(root, fate)}
+          <div class="panel-title"><h3>元神</h3><span class="badge">五行战斗 · 已接入</span></div>
+          ${primordialSpiritPanelHtmlV1(root, fate, state.battleSnapshotV1)}
         </section>
 
         <section id="talentSection" class="panel info-section" data-mobile-screen="techniques">
@@ -6453,7 +6951,7 @@
             <article class="path-card">
               <span>先天灵根 · ${escapeHtml(root.rarity || '未知')}</span>
               <strong>${escapeHtml(root.name || '未测')}</strong>
-              <p>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)} · 全部战斗属性系数 ×${formatNumber(root.combat_multiplier || 1, 2)}。灵根不影响资源收益。${escapeHtml(root.description || '')}</p>
+              <p>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)}。灵根只影响修炼速度，不参与五行战斗克制，也不影响资源收益。${escapeHtml(root.description || '')}</p>
             </article>
             <article class="path-card">
               <span>降生命格 · ${escapeHtml(fate.rarity || '未知')}</span>
@@ -6526,6 +7024,7 @@
     bindHeavenBalanceActions();
     bindCultivationRateBreakdownV0154();
     bindPrimordialSpiritPanelV0155();
+    refreshMyBattleSnapshotV1(false);
     bindInventoryTechniqueActions();
     bindExclusiveTechniqueActions();
     bindNpcSocialActions();
@@ -6540,7 +7039,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshWorldEvents(true)]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -6757,6 +7256,9 @@
       }
       applyTimeStatus(timeStatus);
 
+      // V1.0：登录/突破后尝试承接战利修为暂存；RPC未部署时静默兼容旧库。
+      const battleEscrowSettlement = await rpcClaimBattleCultivationEscrowBCombat01().catch(() => null);
+
       const bundle = await loadCharacterBundle();
       if (!bundle) {
         state.character = null;
@@ -6768,6 +7270,7 @@
       state.character = bundle.character;
       state.details = bundle;
       state.history = bundle.history;
+      state.battleSnapshotV1 = null;
       applyTimeStatus(timeStatus);
 
       if (bundle.character.status === 'dead' || timeStatus?.status === 'dead' || timeStatus?.status === 'awaiting_reincarnation') {
@@ -6838,6 +7341,8 @@
       state.techniqueLibrary = techniqueLibrary;
       state.destinyRanking = destinyRanking;
       state.destinyRankingFetchedAt = Date.now();
+      state.battleRanking = { status: 'idle', entries: [], total_count: 0 };
+      state.battleRankingSyncing = false;
       state.npcSocial = npcSocial;
       state.npcSocialFetchedAt = Date.now();
       state.sectSystem = sectSystem;
@@ -6853,6 +7358,9 @@
         state.history = bundle.history;
       }
       renderDashboard(bundle);
+      if (Number(battleEscrowSettlement?.granted || 0) > 0) {
+        setTimeout(() => showToast(`战利修为暂存已承接 ${formatNumber(battleEscrowSettlement.granted)} 点。`, 'success'), 180);
+      }
       if (opportunitySettlement?.offline_summary) setTimeout(() => showOpportunityOfflineSummary(opportunitySettlement.offline_summary), 120);
     } catch (error) {
       console.error(error);
@@ -6902,7 +7410,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshWorldEvents(true)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
           checkDivineNotice(true);
         }
       }
@@ -6919,7 +7427,7 @@
       if (state.character) {
         const alive = await syncCultivation(true);
         if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshWorldEvents(true)]);
+          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
           checkDivineNotice(true);
         }
       }

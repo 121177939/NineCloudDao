@@ -1,0 +1,13 @@
+{
+  "module": "B-COMBAT01",
+  "title": "五行战力榜与越阶挑战战报",
+  "status": "B_CANDIDATE_ONLY",
+  "baseline": "V0.15.5_FIX1_CACHE27",
+  "developmentBaseline": "V0.15.5_AB14_CACHE27",
+  "cacheEpoch": 27,
+  "sourcePackageSha256": "a7c09082e484add3e62de219361cfa5476f86c30e610547b8c122d239b002ffa",
+  "databaseExecuted": false,
+  "productionDeployed": false,
+  "versionChanged": false,
+  "cacheChanged": false
+}

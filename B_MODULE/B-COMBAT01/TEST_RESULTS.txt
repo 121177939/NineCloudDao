@@ -1,0 +1,54 @@
+B-COMBAT01 TEST RESULTS
+=======================
+
+Baseline: V0.15.5_FIX1_CACHE27
+Development baseline: V0.15.5_AB14_CACHE27
+Baseline package SHA-256: a7c09082e484add3e62de219361cfa5476f86c30e610547b8c122d239b002ffa
+
+1. JavaScript syntax
+   PASS: node --check app.js
+
+2. B-COMBAT01 client rendering
+   PASS: 23/23
+   Covers battle ranking, five-element relation, unarmed/naked fallbacks,
+   attack/defense copy, damage, HP, settlement, cultivation and world-feed copy.
+
+3. B-COMBAT01 static audit
+   PASS: 27/27
+   Covers 44 stages, power formula, five elements, balanced assignment,
+   daily limits, Sword Heart 8%, defense caps, cultivation 1%, hard-cap escrow,
+   request idempotency, RLS, permissions, rollback and no version/cache writes.
+
+4. Balance simulation
+   PASS: 90/90
+   - Adjacent same-major lower stage + strong element advantage: 33/33 lower stage wins.
+   - Two-stage gap + weak element advantage: 24/24 lower stage loses.
+   - One-major gap + weak element advantage: 9/9 lower stage loses.
+   - One-major gap + weak advantage + Sword Heart 8%: 9/9 lower stage still loses.
+
+   Key anchors:
+   - Golden Core initial beats middle with strong element: wins with 80 HP, 8 rounds.
+   - Golden Core initial loses to late with weak element: late remains 754 HP, 7 rounds.
+   - Golden Core late beats perfect with strong element: wins with 176 HP, 8 rounds.
+   - Golden Core perfect loses to Nascent Soul initial: Nascent remains 837 HP, 8 rounds.
+   - Same battle with Sword Heart 8%: Nascent still remains 662 HP, 8 rounds.
+
+5. Ranking regression test
+   PASS: 21/21
+   The legacy V0.14.3 test now supports both the historical placeholder mode and
+   the B-COMBAT01 opened battle-ranking mode.
+
+6. Complete V0.15.5 FIX1 baseline CI
+   PASS: release checks 61/61
+   PASS: all existing SQL static audits
+   PASS: all existing rendering and feature tests
+   PASS: Pages build
+   PASS: Pages verification 42/42
+   FINAL: V0.15.5 FIX1 CI PASS
+
+LIMITATION
+----------
+No production or test Supabase connection was available. Candidate SQL has not
+been executed against a live PostgreSQL database. A-line must run PRECHECK,
+MAIN and CHECK in a disposable/test project and verify concurrency, triggers,
+RLS, PostgREST RPC shapes, cultivation transactions and world-feed insertion.

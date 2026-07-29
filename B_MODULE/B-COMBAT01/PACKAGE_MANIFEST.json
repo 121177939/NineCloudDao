@@ -1,0 +1,147 @@
+{
+  "module": "B-COMBAT01",
+  "name": "五行战力榜与越阶挑战战报",
+  "status": "B-line candidate; not deployed",
+  "baseline": "V0.15.5_FIX1_CACHE27",
+  "developmentBaseline": "V0.15.5_AB14_CACHE27",
+  "baselinePackageSha256": "a7c09082e484add3e62de219361cfa5476f86c30e610547b8c122d239b002ffa",
+  "generatedAt": "2026-07-29T08:27:00-07:00",
+  "fileCount": 27,
+  "files": [
+    {
+      "path": "00_MODULE_README.md",
+      "size": 3609,
+      "sha256": "c81bd654659ff6d2f799776e802c76979d72712b21f733cee327c2b88e01c5d8"
+    },
+    {
+      "path": "ACCEPTANCE_SCENARIOS.md",
+      "size": 1826,
+      "sha256": "32ed8be57babe6bfe0e4d8cc53c51244f2a736b13a5c6191d8e1ebec63cf580f"
+    },
+    {
+      "path": "BALANCE_TABLE.md",
+      "size": 4277,
+      "sha256": "f66850d01153d50db4d2616da3ff3176208b166455d0e31cb7ff6254eeb533fb"
+    },
+    {
+      "path": "BASELINE_REFERENCE.json",
+      "size": 424,
+      "sha256": "69981bd393efe07cbdfa1842195cf79773cd11baa87fc99ab838ae30ab9719eb"
+    },
+    {
+      "path": "CHANGE_LIST.md",
+      "size": 1287,
+      "sha256": "63b96da3b290131ab21af1535d576639346f993e9861a4f4b1d11329b6fd1efa"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/app.js",
+      "size": 414852,
+      "sha256": "d12305ed42897ba57f69a337e0d3d7c5e4de9cbae0a12d7a0fe6639a6ca72950"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/app.js.patch",
+      "size": 35419,
+      "sha256": "75ce17c349f3f9a6306a6ca1267c4e9aa2f1ca94b926391397e432d3388b58d5"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/styles.css",
+      "size": 212093,
+      "sha256": "7f750e13866a34a9d4b69fc0e7bb68c175f0352ff1111eca8302f66fa1143b3b"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/styles.css.patch",
+      "size": 9218,
+      "sha256": "9fb46b786a20788f9b05cab0913a3ce4eff60e5439d97a26115179f5bfb7223d"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/test_ranking_render_v0143.js",
+      "size": 4628,
+      "sha256": "e6411bb02d0b4702cb3d3bbfc19d9c26f8eb7f28a54b7cecdf9d23a5f4a3068f"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/test_ranking_render_v0143.js.patch",
+      "size": 2851,
+      "sha256": "8bad04cde41b38cae16473de1d1a438499fb99efc23b64bb0d826e164953204e"
+    },
+    {
+      "path": "CONFLICT_NOTES.md",
+      "size": 2271,
+      "sha256": "2a9e5686cbd375ef127f66f340f4364dd827a0c5094117b4c41da756d8d17fee"
+    },
+    {
+      "path": "DESIGN_SPEC.md",
+      "size": 4239,
+      "sha256": "37cc2db3500f132d22abc2a95e9dda20b60fe689e941d7c63c0236c9ba1a398b"
+    },
+    {
+      "path": "FULL_BASELINE_CI.log",
+      "size": 12827,
+      "sha256": "d905b4661c2a9458c2fd936050e2f499fd0021a6a5c6462df7aa69c3df81588a"
+    },
+    {
+      "path": "LOADOUT_ADAPTER_SPEC.md",
+      "size": 1260,
+      "sha256": "18c287861edc3c23752bb20ee68bef02a1c045d6e497d02b35c452fbada58bc3"
+    },
+    {
+      "path": "MODULE_CI.log",
+      "size": 1799,
+      "sha256": "cad92aad9d61fa31362538e9ba59e7f7884cf37ec0d5b0a1443662598e53d366"
+    },
+    {
+      "path": "RPC_CONTRACT.md",
+      "size": 1537,
+      "sha256": "3ba505584d5c1605d84ccbbd6178662c8a05c160a9daa1133deffffd66596bc7"
+    },
+    {
+      "path": "SQL_CANDIDATE/00_PRECHECK.sql",
+      "size": 1502,
+      "sha256": "16b38f9f0e8dbd38dd2380ebd5bd928f4ea7b808a3fff12c44d81ad5c2421e9a"
+    },
+    {
+      "path": "SQL_CANDIDATE/10_B_COMBAT01_MAIN.sql",
+      "size": 45468,
+      "sha256": "9543749a39354dc30de2a555cc73ea232e0049fabf22980cde6ff7b038c0e8d8"
+    },
+    {
+      "path": "SQL_CANDIDATE/20_CHECK.sql",
+      "size": 4155,
+      "sha256": "46b6f260eb6dafb14ef7d8266989d85c9e600acc138896c8b4984ac08e363fcd"
+    },
+    {
+      "path": "SQL_CANDIDATE/90_EMERGENCY_DISABLE.sql",
+      "size": 191,
+      "sha256": "47766b130fee6b3435eb71a08a32fdd0df43ca2edd55371a91004f0018220916"
+    },
+    {
+      "path": "SQL_CANDIDATE/99_ROLLBACK.sql",
+      "size": 1734,
+      "sha256": "0f8976dd58b95e84217fc3a6d3f45133a43ec902248a4659db0b66d24e5d51f8"
+    },
+    {
+      "path": "TEST_RESULTS.txt",
+      "size": 2283,
+      "sha256": "1da2301cd1721dc180e105c95dec3a95da6d1b32738b4b361e620d278a2523cb"
+    },
+    {
+      "path": "tools/ci_bcombat01.py",
+      "size": 579,
+      "sha256": "bf04d17a3eb4322f91d68ca7f237824bd6cc72a60a159671a97cea096c541555"
+    },
+    {
+      "path": "tools/static_audit_bcombat01.py",
+      "size": 3834,
+      "sha256": "1fe78a8147b491f5029b4790cca6ab878e20e99e82efa729e2cce12e4f54618c"
+    },
+    {
+      "path": "tools/test_balance_bcombat01.py",
+      "size": 4744,
+      "sha256": "a7ab7f877ba73e0ecc4b3eb8f12b0cf8d0c1c4bead70ac7ebfb7777d572d1ce5"
+    },
+    {
+      "path": "tools/test_client_bcombat01.js",
+      "size": 4308,
+      "sha256": "bc8f41315dcbf7b91431878e864d18f94689cf7738d8575044f9bd1a94be0c80"
+    }
+  ]
+}
