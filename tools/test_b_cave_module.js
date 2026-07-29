@@ -10,7 +10,7 @@ const tests = {
   'meditation figure exists': app.includes('cave-meditation-figure-b01') && css.includes('.cave-meditation-figure-b01'),
   'resource strip exists': app.includes('cave-resource-strip-b01') && css.includes('.cave-resource-strip-b01'),
   'storage uses live inventory': app.includes('caveStorageItemsB01(inventory') && app.includes('data-open-cave-item'),
-  'storage 30 slots per layer': app.includes('CAVE_STORAGE_SLOT_COUNT_B01 = 30'),
+  'storage 36 slots per layer': app.includes('CAVE_STORAGE_SLOT_COUNT_B01 = 36'),
   'storage pagination keeps all items accessible': app.includes('data-cave-storage-page') && app.includes('pageCount'),
   'no player bag tab': !app.includes('玩家储物袋'),
   'cultivation icons present': ['jade-gourd','incense-burner','tea-bowl','spirit-stone','talisman','ore'].every(x => app.includes(`'${x}'`)),

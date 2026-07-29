@@ -1,6 +1,6 @@
 {
-  "baseline": "V1.0_AB15_CACHE30",
-  "sourcePackage": "九霄问道_V1.0_CACHE30_完整部署包.zip",
+  "baseline": "V1.0_FIX1_AB16_CACHE31",
+  "sourcePackage": "九霄问道_V1.0_FIX1_CACHE31_完整部署包.zip",
   "status": "B_READY",
   "integratedModules": [
     "B-CAVE01",
@@ -11,5 +11,5 @@
     "装备正式掉落与锻造系统",
     "更多PVE/PVP玩法"
   ],
-  "cacheEpoch": 30
+  "cacheEpoch": 31
 }

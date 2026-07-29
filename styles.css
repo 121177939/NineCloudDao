@@ -3732,12 +3732,12 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
   .cave-resource-card-b01 { padding: 7px 5px; }
   .cave-resource-card-b01 > span { font-size: 7px; }
   .cave-resource-card-b01 > strong { font-size: 9px; }
-  .cave-storage-grid-b01 { grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; padding:6px; }
-  .cave-item-slot-b01 { min-height:92px; aspect-ratio:1; }
-  .cave-item-name-b01 { display:block; bottom:25px; font-size:8px; }
-  .cave-item-type-b01 { bottom:14px; font-size:7px; }
-  .cave-item-quantity-b01 { font-size:8px; }
-  .cave-item-corner-b01 { min-width: 13px; height: 13px; font-size: 6px; }
+  .cave-storage-grid-b01 { grid-template-columns:repeat(6,minmax(0,1fr)); gap:3px; padding:4px; }
+  .cave-item-slot-b01 { min-height:0; aspect-ratio:1; }
+  .cave-item-name-b01 { display:block; left:2px; right:2px; bottom:17px; font-size:6px; }
+  .cave-item-type-b01 { left:2px; right:2px; bottom:9px; font-size:5px; }
+  .cave-item-quantity-b01 { right:2px; font-size:7px; }
+  .cave-item-corner-b01 { left:1px; top:1px; min-width:10px; height:10px; padding:0 2px; font-size:5px; }
   .cave-action-bar-b01 { gap: 5px; }
   .cave-action-bar-b01 button { min-height: 38px; padding-left: 4px; padding-right: 4px; font-size: 10px; }
 }
@@ -4004,7 +4004,7 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
 @keyframes yuanshen-dantian-v0155 { 0%,100%{opacity:.7;transform:scale(.78)}50%{opacity:1;transform:scale(1.25)} }
 @media (max-width: 620px) {
   .yuanshen-stage-v0155 { min-height:0; grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:auto; gap:6px; padding:10px 7px 58px; }
-  .yuanshen-core-v0155 { grid-column:1 / 4; grid-row:auto; order:1; min-height:326px; }
+  .yuanshen-core-v0155 { grid-column:1 / 4; grid-row:auto; order:1; min-height:294px; }
   .yuanshen-stat-card-v0155.left-1,
   .yuanshen-stat-card-v0155.left-2,
   .yuanshen-stat-card-v0155.left-3,
@@ -4024,10 +4024,10 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
   .yuanshen-stat-copy-v0155 i { width:74%;background:linear-gradient(90deg,transparent,rgba(206,182,126,.42),transparent); }
   .yuanshen-stat-copy-v0155 small { max-width:100%;overflow:hidden;font-size:8px;text-overflow:ellipsis;white-space:nowrap; }
   .yuanshen-stat-copy-v0155 b { font-size:9px; }
-  .yuanshen-mandala-v0155 { width:min(100%,285px); }
-  .yuanshen-core-copy-v0155 h4 { font-size:18px; }
-  .yuanshen-core-copy-v0155 p { font-size:11px; }
-  .yuanshen-core-copy-v0155 span { font-size:10px; }
+  .yuanshen-mandala-v0155 { width:min(100%,257px); }
+  .yuanshen-core-copy-v0155 h4 { font-size:16px; }
+  .yuanshen-core-copy-v0155 p { margin-top:7px; font-size:10px; }
+  .yuanshen-core-copy-v0155 span { font-size:9px; }
   .yuanshen-detail-v0155 { left:8px;right:8px;bottom:7px;font-size:9px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -4077,6 +4077,15 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
 .battle-element-mark-bcombat01.element-water { color:#94bdd7; border-color:rgba(86,141,177,.58); }
 .battle-element-mark-bcombat01.element-fire { color:#e6a18e; border-color:rgba(183,79,61,.62); }
 .battle-element-mark-bcombat01.element-earth { color:#d3b47b; border-color:rgba(167,125,65,.62); }
+
+.spirit-root-chip-v1 { white-space: nowrap; }
+.hero-spirit-element-v1 { margin-left:1px; font-weight:500; }
+.hero-spirit-element-v1.element-none { color:#bdaF8c; }
+.hero-spirit-element-v1.element-metal { color:#e4dfcf; }
+.hero-spirit-element-v1.element-wood { color:#79b78b; }
+.hero-spirit-element-v1.element-water { color:#79add1; }
+.hero-spirit-element-v1.element-fire { color:#e06f5f; text-shadow:0 0 7px rgba(194,64,49,.22); }
+.hero-spirit-element-v1.element-earth { color:#d0aa68; }
 .battle-rank-stats-bcombat01 {
   display: flex;
   flex-wrap: wrap;
@@ -4257,4 +4266,6 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
 @media (max-width:620px) { .battle-self-summary-bcombat01 { grid-template-columns:1fr 1fr; } }
 .battle-blocked-reason-bcombat01 { color:#e3a18e !important; font-weight:500; }
 
-@media (max-width:420px){.cave-storage-grid-b01{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media (max-width:420px){.cave-storage-grid-b01{grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:3px}.cave-item-svg{left:18%;top:3%;width:64%;height:55%}.cave-item-name-b01{font-size:5.5px}.cave-item-type-b01{font-size:4.8px}.cave-item-quantity-b01{font-size:6.5px}}
+
+/* V1.0 FIX1: mobile Yuan-shen core reduced to 90%; cave storage restored to 6x6. */

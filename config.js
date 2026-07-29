@@ -1,12 +1,12 @@
-// 《九霄问道》V1.0 CACHE30 正式配置
+// 《九霄问道》V1.0 FIX1 CACHE31 正式配置
 // Publishable key 可以安全放在浏览器客户端；绝对不要在这里填写 Secret key / service_role。
 window.GAME_CONFIG = Object.freeze({
   supabaseUrl: 'https://fyykkqkovccgmamsdeoq.supabase.co',
   supabasePublishableKey: 'sb_publishable_mfCyeW3gVVjQt3fxBV_z7g_mBArNMyw',
   gameName: '九霄问道',
-  version: '1.0',
-  releaseLabel: 'V1.0 CACHE30',
-  buildId: 'v1-cache30',
-  cacheEpoch: 30,
+  version: '1.0-fix1',
+  releaseLabel: 'V1.0 FIX1 CACHE31',
+  buildId: 'v1-fix1-cache31',
+  cacheEpoch: 31,
   worldCode: 'jiuxiao_world_1'
 });

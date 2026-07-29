@@ -9,6 +9,6 @@ const tests={
  'authoritative or explicit placeholder':app.includes('get_my_battle_snapshot_v1')||app.includes('不会生成伪造数据'),
  'cultivation animation':app.includes('yuanshen-cultivator-v0155')&&app.includes('yuanshen-ring-v0155')&&css.includes('@keyframes yuanshen-meridian-v0155'),
  'responsive primordial UI':css.includes('@media (max-width: 620px)')&&css.includes('.yuanshen-stage-v0155'),
- 'B cave integrated':app.includes('cave-scene-b01')&&app.includes('CAVE_STORAGE_SLOT_COUNT_B01 = 30'),
- 'supported release config':config.includes("buildId: 'v1-cache30'")||config.includes("buildId: 'v0155-fix1-cache27'")
+ 'B cave integrated':app.includes('cave-scene-b01')&&app.includes('CAVE_STORAGE_SLOT_COUNT_B01 = 36'),
+ 'supported release config':config.includes("buildId: 'v1-fix1-cache31'")||config.includes("buildId: 'v0155-fix1-cache27'")
 };let failed=0;for(const [name,ok] of Object.entries(tests)){console.log(`${ok?'PASS':'FAIL'} ${name}`);if(!ok)failed++;}console.log(`TOTAL=${Object.keys(tests).length} PASS=${Object.keys(tests).length-failed} FAIL=${failed}`);process.exit(failed?1:0);

@@ -684,11 +684,11 @@ begin
     (v_challenger->>'power')::bigint,(v_target->>'power')::bigint,v_challenger,v_target,v_actions,v_round,
     v_transfer,v_granted,v_escrow,v_winner_before,v_winner_after,v_loser_before,v_loser_after,v_result);
   v_event_id:=public.world_event_publish_v0140(
-    v_challenger_row.world_id,v_world_year,'battle_challenge',case when v_winner_is_challenger then 3 else 2 end,
+    v_challenger_row.world_id,v_world_year,'battle_challenge',(case when v_winner_is_challenger then 3 else 2 end)::smallint,
     v_winner_id,v_winner->>'name',v_title,v_content,'battle_challenges_bcombat01',v_challenge_id::text,
     jsonb_build_object('winner_id',v_winner_id,'loser_id',v_loser_id,'rounds',v_round,
       'cultivation_transferred',v_transfer,'challenger_power',(v_challenger->>'power')::bigint,
-      'target_power',(v_target->>'power')::bigint),false,null);
+      'target_power',(v_target->>'power')::bigint),false,null::timestamptz);
   if v_event_id is not null then
     update public.battle_challenges_bcombat01 set world_event_id=v_event_id,
       result=jsonb_set(result,'{world_event_id}',to_jsonb(v_event_id::text),true)

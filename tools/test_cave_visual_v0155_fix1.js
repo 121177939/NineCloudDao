@@ -9,10 +9,10 @@ const tests={
  'stone platform':app.includes('cave-stone-platform-b01')&&css.includes('.cave-stone-platform-b01'),
  'secluded cave copy':app.includes('洞天幽居 · 灵脉自运')&&app.includes('仙府隐修'),
  'business layout preserved':[1,2,3,4,5,6].every(n=>css.includes(`.cave-scene-building-b01.pos-${n}`)),
- 'real storage preserved':app.includes('CAVE_STORAGE_SLOT_COUNT_B01 = 30')&&app.includes('caveStorageItemsB01(inventory'),
+ 'real storage preserved':app.includes('CAVE_STORAGE_SLOT_COUNT_B01 = 36')&&app.includes('caveStorageItemsB01(inventory'),
  'cave actions preserved':['洞府扩建','一键收取','整理储物'].every(x=>app.includes(x)),
  'no rotating yuanshen mandala in cave':!css.includes('caveRingB01'),
  'yuanshen animation remains separate':css.includes('@keyframes yuanshen-rotate-cw-v0155')&&app.includes('yuanshen-mandala-v0155'),
  'reduced motion supported':css.includes('.cave-scene-b01 *')&&css.includes('@media (prefers-reduced-motion: reduce)'),
- 'supported release build':config.includes("buildId: 'v1-cache30'")||config.includes("buildId: 'v0155-fix1-cache27'")
+ 'supported release build':config.includes("buildId: 'v1-fix1-cache31'")||config.includes("buildId: 'v0155-fix1-cache27'")
 };let failed=0;for(const [name,ok] of Object.entries(tests)){console.log(`${ok?'PASS':'FAIL'} ${name}`);if(!ok)failed++;}console.log(`TOTAL=${Object.keys(tests).length} PASS=${Object.keys(tests).length-failed} FAIL=${failed}`);process.exit(failed?1:0);

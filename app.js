@@ -305,6 +305,7 @@
     if (raw.includes('TARGET_IN_CHALLENGE_PROTECTION')) return '对方战败后正处于30分钟挑战保护期。';
     if (raw.includes('COMBAT_STATS_NOT_CONFIGURED')) return '该境界的战斗四属性尚未配置。';
     if (raw.includes('INVALID_REQUEST_ID')) return '挑战请求编号无效，请重新发起。';
+    if (raw.includes('world_event_publish_v0140') && raw.includes('does not exist')) return '挑战战报发布接口尚未完成兼容修复，请先执行 V1.0 FIX1 SQL。';
     if (raw.includes('INVALID_RANKING_PAGE')) return '榜单分页参数无效，请重新进入榜单。';
     if (raw.includes('V091_REQUIRED')) return 'V0.9.1修为榜基础尚未完成，请先部署并检查。';
     if (raw.includes('NPC_SOCIAL_SETTINGS_MISSING')) return '红尘录配置缺失，请执行V0.10.0数据库升级。';
@@ -3451,7 +3452,7 @@
       .every(code => Number(resources.get(code) || 0) >= Number(costs?.[code] || 0));
   }
 
-  const CAVE_STORAGE_SLOT_COUNT_B01 = 30;
+  const CAVE_STORAGE_SLOT_COUNT_B01 = 36;
 
   function caveTechniqueBookRarityV1(grade) {
     const map = { exclusive: 'legendary', immortal: 'legendary', heaven: 'epic', earth: 'rare', mystic: 'uncommon', yellow: 'common' };
@@ -6634,6 +6635,7 @@
     } finally {
       state.battleSnapshotSyncingV1 = false;
       renderPrimordialSpiritFromStateV1();
+      renderHeroSpiritRootChipV1();
     }
     return state.battleSnapshotV1;
   }
@@ -6797,6 +6799,26 @@
     button.addEventListener('click', openCultivationRateBreakdownV0154);
   }
 
+  function battleElementClassV1(element = '') {
+    const safe = ['metal','wood','water','fire','earth'].includes(String(element || '').toLowerCase())
+      ? String(element).toLowerCase()
+      : 'none';
+    return `element-${safe}`;
+  }
+
+  function heroSpiritRootChipHtmlV1(root = {}, snapshot = state.battleSnapshotV1) {
+    const rootName = escapeHtml(root.name || '未测灵根');
+    const elementName = String(snapshot?.element_name || '').trim();
+    if (!elementName) return rootName;
+    return `${rootName}<b class="hero-spirit-element-v1 ${battleElementClassV1(snapshot?.element)}">（${escapeHtml(elementName)}）</b>`;
+  }
+
+  function renderHeroSpiritRootChipV1() {
+    const chip = document.getElementById('heroSpiritRootChipV1');
+    if (!chip) return;
+    chip.innerHTML = heroSpiritRootChipHtmlV1(state.details?.spiritRoot || {}, state.battleSnapshotV1);
+  }
+
   function renderDashboard(bundle) {
     renderAccount();
     const c = bundle.character;
@@ -6853,7 +6875,7 @@
                   <span class="hero-chip realm">${escapeHtml(realmLabel)}</span>
                   <span class="hero-chip">${escapeHtml(genderName(c.gender))} · <b id="characterAgeValue">${escapeHtml(c.age)}</b> 岁</span>
                   <span class="hero-chip">道统第 ${escapeHtml(c.generation_number || 1)} 世</span>
-                  <span class="hero-chip">${escapeHtml(root.name || '未测灵根')}</span>
+                  <span id="heroSpiritRootChipV1" class="hero-chip spirit-root-chip-v1">${heroSpiritRootChipHtmlV1(root, state.battleSnapshotV1)}</span>
                   <span class="hero-chip">${escapeHtml(fate.name || '未定命格')}</span>
                 </div>
               </div>

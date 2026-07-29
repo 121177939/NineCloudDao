@@ -283,3 +283,10 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 - `database/V1.0/202607291730_v1_check.sql`：只读升级后检查。
 - `database/V1.0/202607291740_v1_emergency_disable.sql`：紧急停用挑战。
 - `database/V1.0/202607291750_v1_rollback.sql`：完整回滚（破坏性）。
+
+
+## V1.0 FIX1 CACHE31
+- `database/V1.0_FIX1/202607291820_v1_fix1_precheck.sql`：已部署CACHE30的只读检查。
+- `database/V1.0_FIX1/202607291830_v1_fix1_challenge_compat.sql`：挑战战报参数兼容重载。
+- `database/V1.0_FIX1/202607291840_v1_fix1_cache31_release.sql`：CACHE31发布门禁。
+- `database/V1.0_FIX1/202607291850_v1_fix1_check.sql`：升级后只读检查。

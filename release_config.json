@@ -1,27 +1,26 @@
 {
-  "version": "V1.0",
-  "release": "bcombat01-cave-yuanshen-cache30",
+  "version": "V1.0 FIX1",
+  "release": "v1-fix1-ui-challenge-cache31",
   "base": "V0.15.4 FIX5 CACHE25",
   "databaseBaseline": "V0.15.4 FIX5 CACHE25（可直接升级；不要求先执行 CACHE26/CACHE27 发布门禁）",
   "databaseMigration": "database/V1.0/202607291710_v1_bcombat01.sql",
-  "databaseReleaseGate": "database/V1.0/202607291720_v1_cache30_release.sql",
-  "databaseFinalCheck": "database/V1.0/202607291730_v1_check.sql",
+  "databaseReleaseGate": "database/V1.0_FIX1/202607291840_v1_fix1_cache31_release.sql",
+  "databaseFinalCheck": "database/V1.0_FIX1/202607291850_v1_fix1_check.sql",
   "pagesStagingDirectory": ".pages-site",
   "features": [
-    "正式接入 B-COMBAT01：44阶段战斗四属性、五行、战力榜、越阶挑战、逐回合战报与1%修为转移",
-    "元神页读取服务端权威道攻、道御、生机、身法与战力；手机端按3列2行展示：道攻/道御/生机、身法/加成/战力",
-    "洞府主景升级为幽静洞窟、灵脉暗流、中央石台、仙府灯影、薄雾、瀑流与灵气粒子动画",
-    "洞府储物格直接展示物品名称与类型；未研习功法以玉简/道卷形象进入洞府格子",
-    "保留洞府真实库存30格分页、统一灵石账户以及全局渡劫成功率80%硬上限",
-    "CACHE30 强制旧 PWA 客户端载入 V1.0 前端与战斗接口"
+    "角色抬头栏在灵根名称后显示当前本命五行，火行为红字，其他五行使用对应识别色",
+    "手机端元神中央运功主景与文案整体压缩约10%，六项属性卡顺序不变",
+    "洞府储物恢复6列×6行，每层36格，物品名称、类型小字与数量仍直接可见",
+    "修复越阶挑战结算调用九霄界闻时integer/smallint参数不兼容导致的事务回滚",
+    "保留V1.0五行战斗、洞府洞天幽居、未研习功法展示与渡劫80%硬上限"
   ],
-  "clientBuild": "v1-cache30",
+  "clientBuild": "v1-fix1-cache31",
   "gameplayBaseline": "V1.0 = V0.15.4 FIX5 + B-CAVE01 + B-COMBAT01 + 元神实时属性 + 洞府洞天幽居",
   "worldFeedBaseline": "V0.14.2 + V0.15.1赌场播报 + V1.0战斗战报",
   "rankingBaseline": "V0.14.3 + B-COMBAT01战力榜",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "databaseChange": "V1.0_BCOMBAT01_CACHE30",
-  "sqlRevision": "V1.0_CACHE30",
-  "clientHotfix": "V1.0_CACHE30",
-  "cacheEpoch": 30
+  "databaseChange": "V1.0_FIX1_CHALLENGE_COMPAT_CACHE31",
+  "sqlRevision": "V1.0_FIX1_CACHE31",
+  "clientHotfix": "V1.0_FIX1_CACHE31",
+  "cacheEpoch": 31
 }
