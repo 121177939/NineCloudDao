@@ -1,5 +1,6 @@
-九霄问道 V1.0 FIX1 CACHE31 部署说明
+九霄问道 V1.0 FIX2 CACHE32 部署说明
 
-已有V1.0 CACHE30：SQL 32 → 33 → 覆盖前端并推送main → SQL 34 → 35。
-从CACHE25全新升级：SQL 26 → 27 → 33 → 覆盖前端并推送main → SQL 34 → 35。
-GitHub Actions运行：python3 tools/ci_v1_fix1.py .
+1. 执行SQL/36升级前检查。
+2. 完整覆盖GitHub仓库根目录并推送main。
+3. Pages成功后执行SQL/37发布门禁。
+4. 执行SQL/38升级后检查。

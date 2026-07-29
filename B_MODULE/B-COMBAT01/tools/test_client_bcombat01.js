@@ -6,39 +6,26 @@ const marker='\n  bootstrap();\n})();';
 if(!source.includes(marker)) throw new Error('bootstrap marker missing');
 source=source.replace(marker,`\n  globalThis.__bcombat01={rankingCenterPanelHtml,battleCombatantCardHtml,battleActionHtmlBCombat01,battleSettlementHtmlBCombat01,battleElementRelationHtml};\n})();`);
 const el=()=>({textContent:'',innerHTML:'',style:{setProperty(){}},addEventListener(){},classList:{toggle(){},add(){},remove(){}}});
-const context={
-  console,URL,Intl,Date,Math,JSON,Number,String,Boolean,Array,Object,RegExp,Promise,
-  setTimeout,clearTimeout,setInterval,clearInterval,
-  requestAnimationFrame:cb=>{cb();return 1},cancelAnimationFrame(){},
-  localStorage:{getItem(){return null},setItem(){},removeItem(){}},
-  document:{
-    hidden:false,
-    documentElement:{clientWidth:390,style:{setProperty(){}}},
-    getElementById:()=>el(),addEventListener(){},querySelectorAll:()=>[]
-  },
-  window:{
-    GAME_CONFIG:{supabaseUrl:'https://example.supabase.co',supabasePublishableKey:'test',version:'0.15.5'},
-    innerWidth:390,addEventListener(){},matchMedia:()=>({matches:true,addEventListener(){}}),
-    history:{replaceState(){}},location:{hash:'',pathname:'/',search:''}
-  },
-  navigator:{},
-  crypto:{randomUUID:()=> '11111111-1111-4111-8111-111111111111'},
-  CSS:{escape:v=>String(v)}
-};
+const context={console,URL,Intl,Date,Math,JSON,Number,String,Boolean,Array,Object,RegExp,Promise,setTimeout,clearTimeout,setInterval,clearInterval,requestAnimationFrame:cb=>{cb();return 1},cancelAnimationFrame(){},localStorage:{getItem(){return null},setItem(){},removeItem(){}},document:{hidden:false,documentElement:{clientWidth:390,style:{setProperty(){}}},getElementById:()=>el(),addEventListener(){},querySelectorAll:()=>[]},window:{GAME_CONFIG:{supabaseUrl:'https://example.supabase.co',supabasePublishableKey:'test',version:'1.0-fix2'},innerWidth:390,addEventListener(){},matchMedia:()=>({matches:true,addEventListener(){}}),history:{replaceState(){}},location:{hash:'',pathname:'/',search:''},setTimeout},navigator:{},crypto:{randomUUID:()=> '11111111-1111-4111-8111-111111111111'},CSS:{escape:v=>String(v)}};
 context.globalThis=context;vm.createContext(context);vm.runInContext(source,context,{filename:'app.js'});
 const f=context.__bcombat01; let checks=0;
 function expect(condition,message){checks++;if(!condition)throw new Error(message)}
 const A={character_id:'a',name:'顾长歌',realm:'金丹后期',power:9760,element:'fire',element_name:'火',attack:360,defense:220,vitality:2200,agility:220,weapon_name:'赤手空拳',armor_name:'赤裸',attack_technique_name:'太玄剑诀',defense_technique_name:'未修护体功法'};
 const B={character_id:'b',name:'沈孤鸿',realm:'金丹圆满',power:10570,element:'metal',element_name:'金',attack:390,defense:240,vitality:2400,agility:230,weapon_name:'寒铁长剑',armor_name:'玄云法袍',attack_technique_name:'庚金剑典',defense_technique_name:'玄龟护体诀'};
 const card=f.battleCombatantCardHtml(A,'挑战者');
-for(const token of ['顾长歌','9,760','赤手空拳','赤裸','太玄剑诀']) expect(card.includes(token),'card missing '+token);
+for(const token of ['顾长歌','等级','金丹后期','战力','9,760','五行','火行']) expect(card.includes(token),'card missing '+token);
+for(const forbidden of ['道攻','道御','生机','身法','赤手空拳','赤裸','太玄剑诀','未修护体功法']) expect(!card.includes(forbidden),'card leaks '+forbidden);
 const relation=f.battleElementRelationHtml(A,B); expect(relation.includes('火克金'),'element relation');
 const action={round:1,attacker_id:'a',defender_id:'b',attacker_name:'顾长歌',defender_name:'沈孤鸿',weapon_name:'赤手空拳',is_unarmed:true,attack_technique_name:'太玄剑诀',armor_name:'玄云法袍',is_naked:false,defense_technique_name:'玄龟护体诀',attack_style:1,defense_style:2,element_multiplier:1.15,defense_reduction:.2353,damage:316,hp_after:2084,max_hp:2400,low_health:false,defeated:false};
 const actionHtml=f.battleActionHtmlBCombat01(action,{challenger:A,target:B});
-for(const token of ['第 1 回合','赤手空拳','玄云法袍','火行压制金行','316 点伤害','2,084 / 2,400','23.53%']) expect(actionHtml.includes(token),'action missing '+token);
+for(const token of ['第 1 回合','火行压制金行','316 点伤害','2,084 / 2,400','23.53%']) expect(actionHtml.includes(token),'action missing '+token);
+for(const forbidden of ['赤手空拳','玄云法袍','太玄剑诀','玄龟护体诀']) expect(!actionHtml.includes(forbidden),'action leaks '+forbidden);
 const settlement=f.battleSettlementHtmlBCombat01({challenger_won:true,winner_name:'顾长歌',loser_name:'沈孤鸿',battle_rounds:8,cultivation_transferred:1586,cultivation_granted_now:1586,cultivation_escrowed:0,protection_minutes:30});
 for(const token of ['挑战成功','顾长歌','1,586 修为','九霄界闻','30分钟']) expect(settlement.includes(token),'settlement missing '+token);
 const ranking={status:'ok',total_count:1,has_more:false,entries:[{rank:1,character_id:'b',name:'沈孤鸿',realm:'金丹圆满',fate:'天生剑心',generation:1,element:'metal',element_name:'金',power:10570,dao_attack:390,dao_defense:240,vitality:2400,agility:230,is_self:false,can_challenge:true}]};
 const rankingHtml=f.rankingCenterPanelHtml('battle',null,null,ranking);
-for(const token of ['战力榜首','10,570 战力','道攻 390','挑战','data-battle-challenge-target']) expect(rankingHtml.includes(token),'ranking missing '+token);
+for(const token of ['沈孤鸿','等级 金丹圆满','10,570 战力','金行','挑战','data-battle-challenge-target']) expect(rankingHtml.includes(token),'ranking missing '+token);
+for(const forbidden of ['战力榜首','道攻 390','道御 240','生机 2,400','身法 230','天生剑心','第 1 世']) expect(!rankingHtml.includes(forbidden),'ranking leaks '+forbidden);
+expect(source.includes('showBattleResolvingModalBCombat01'),'separate resolving popup missing');
+expect(source.includes('battle-report-modal-fix2'),'separate report popup missing');
 console.log(JSON.stringify({ok:true,checks}));

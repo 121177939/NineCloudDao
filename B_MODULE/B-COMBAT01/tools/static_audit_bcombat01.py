@@ -40,7 +40,7 @@ has('client-rpcs', all(x in app for x in ['get_battle_power_ranking_bcombat01','
 has('client-fallbacks', '赤手空拳' in app and '赤裸' in app)
 has('client-battle-modal', all(x in app for x in ['battle-versus-grid-bcombat01','battle-playback-controls-bcombat01','battleSettlementHtmlBCombat01']))
 has('client-world-refresh', "refreshWorldEvents(true)" in app)
-has('client-copy-variety', app.count('赤手空拳') >= 3 and app.count('运转《') >= 3)
+has('client-battle-privacy', 'battle-combatant-card-compact-fix2' in app and 'showBattleResolvingModalBCombat01' in app and '${attacker}赤手空拳，运转' not in app)
 has('client-css', all(x in css for x in ['.battle-ranking-rule-bcombat01','.battle-challenge-modal-bcombat01','.battle-action-bcombat01','.battle-settlement-bcombat01']))
 
 failed = [name for name, ok in checks.items() if not ok]

@@ -1,11 +1,11 @@
 {
-  "version": "1.0-fix1",
-  "releaseLabel": "九霄问道 V1.0 FIX1 CACHE31",
-  "sourceBaseline": "V1.0 CACHE30",
+  "version": "1.0-fix2",
+  "releaseLabel": "九霄问道 V1.0 FIX2 CACHE32",
+  "sourceBaseline": "V1.0 FIX1 CACHE31",
   "minimumDatabaseBaseline": "V0.15.4 FIX5 CACHE25",
-  "databaseChange": "V1.0_FIX1_CHALLENGE_COMPAT_CACHE31",
+  "databaseChange": "V1.0_FIX2_UI_PRIVACY_CACHE32",
   "databaseMigration": "database/V1.0/202607291710_v1_bcombat01.sql",
-  "databaseReleaseGate": "database/V1.0_FIX1/202607291840_v1_fix1_cache31_release.sql",
+  "databaseReleaseGate": "database/V1.0_FIX2/202607291920_v1_fix2_cache32_release.sql",
   "deploymentStatus": "authoritative_complete_deployment_package",
   "deploymentPipeline": {
     "runner": "ubuntu-latest",
@@ -15,30 +15,29 @@
     "workflow": ".github/workflows/deploy-pages.yml"
   },
   "authoritativePackages": {
-    "completePackage": "九霄问道_V1.0_FIX1_CACHE31_完整部署包.zip",
-    "sqlPackage": "九霄问道_V1.0_FIX1_CACHE31_SQL.zip"
+    "completePackage": "九霄问道_V1.0_FIX2_CACHE32_完整部署包.zip",
+    "sqlPackage": "九霄问道_V1.0_FIX2_CACHE32_SQL.zip"
   },
   "notes": [
-    "角色抬头栏在灵根名称后显示当前本命五行，火行为红字，其他五行使用对应识别色",
-    "手机端元神中央运功主景与文案整体压缩约10%，六项属性卡顺序不变",
-    "洞府储物恢复6列×6行，每层36格，物品名称、类型小字与数量仍直接可见",
-    "修复越阶挑战结算调用九霄界闻时integer/smallint参数不兼容导致的事务回滚",
-    "保留V1.0五行战斗、洞府洞天幽居、未研习功法展示与渡劫80%硬上限"
+    "确认挑战后使用独立战报弹窗显示战斗过程与结果",
+    "战力榜和挑战弹窗仅显示姓名、等级、战力、五行，不公开四属性、功法或装备",
+    "修为榜、财富榜、战力榜取消独立榜首展示卡片",
+    "保留V1.0 FIX1挑战兼容、灵根五行、元神布局、洞府6×6储物和渡劫80%硬上限"
   ],
   "integratedModules": [
     "B-CAVE01",
     "B-CAVE01-FIX1",
     "B-COMBAT01"
   ],
-  "clientHotfix": "V1.0_FIX1_CACHE31",
-  "developmentBaseline": "V1.0_FIX1_AB16_CACHE31",
+  "clientHotfix": "V1.0_FIX2_CACHE32",
+  "developmentBaseline": "V1.0_FIX2_AB17_CACHE32",
   "packagePolicy": {
     "delivery": "正式交付提供完整部署包与SQL包",
     "deployment": "完整包解压后全部覆盖到GitHub仓库根目录",
     "database": "按SQL包00执行说明顺序运行"
   },
-  "handoffUpdatedAt": "2026-07-29T18:00:00Z",
-  "sqlRevision": "V1.0_FIX1_CACHE31",
-  "databaseFinalCheck": "database/V1.0_FIX1/202607291850_v1_fix1_check.sql",
-  "cacheEpoch": 31
+  "handoffUpdatedAt": "2026-07-29T18:30:00Z",
+  "sqlRevision": "V1.0_FIX2_CACHE32",
+  "databaseFinalCheck": "database/V1.0_FIX2/202607291930_v1_fix2_check.sql",
+  "cacheEpoch": 32
 }

@@ -1,0 +1,654 @@
+
+=== release metadata ===
+PASS required:index.html
+PASS required:404.html
+PASS required:app.js
+PASS required:styles.css
+PASS required:config.js
+PASS required:update-guard.js
+PASS required:sw.js
+PASS required:manifest.webmanifest
+PASS required:VERSION.txt
+PASS required:CURRENT_BASELINE.json
+PASS required:release_config.json
+PASS required:.github/workflows/deploy-pages.yml
+PASS required:SQL/36_V1.0_FIX2_升级前检查.sql
+PASS required:SQL/37_V1.0_FIX2_CACHE32_正式发布门禁.sql
+PASS required:SQL/38_V1.0_FIX2_升级后检查.sql
+PASS required:database/V1.0_FIX2/202607291920_v1_fix2_cache32_release.sql
+PASS required:tools/test_features_v1_fix2.js
+PASS required:tools/sql_static_audit_v1_fix2.py
+PASS required:tools/ci_v1_fix2.py
+PASS version
+PASS cache32:index.html
+PASS cache32:404.html
+PASS cache32:config.js
+PASS cache32:sw.js
+PASS cache32:manifest.webmanifest
+PASS cache32:update-guard.js
+PASS config
+PASS release-json
+PASS baseline-json
+PASS workflow
+PASS separate-challenge-popup
+PASS battle-public-card
+PASS battle-private-hidden
+PASS champion-removed
+PASS generic-round-copy
+PASS css-fix2
+TOTAL=36 PASS=36 FAIL=0
+
+=== node syntax app.js ===
+
+=== node syntax config.js ===
+
+=== node syntax update-guard.js ===
+
+=== node syntax sw.js ===
+
+=== python syntax tools/prepare_pages_site_v1_fix2.py ===
+
+=== python syntax tools/verify_pages_site_v1_fix2.py ===
+
+=== python syntax tools/verify_release_v1_fix2.py ===
+
+=== python syntax tools/sql_static_audit_v1_fix2.py ===
+
+=== python syntax tools/ci_v1_fix2.py ===
+
+=== SQL audit tools/sql_static_audit_v0141_fix7a.py ===
+{
+  "ok": true,
+  "checks": 22,
+  "expected_value": -0.00999,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0142.py ===
+{
+  "ok": true,
+  "checks": 16,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0143.py ===
+{
+  "ok": true,
+  "checks": 25,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0144.py ===
+{
+  "ok": true,
+  "checks": 31,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0145.py ===
+{
+  "ok": true,
+  "checks": 28,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0146.py ===
+{
+  "ok": true,
+  "checks": 12,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0147.py ===
+{
+  "ok": true,
+  "checks": 25,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0148.py ===
+{
+  "ok": true,
+  "checks": 23,
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0150.py ===
+PASS file:precheck
+PASS file:main
+PASS file:check
+PASS file:rollback
+PASS transaction
+PASS explicit fish guard
+PASS early return after guard
+PASS preserves destiny triple
+PASS preserves existing games
+PASS cache16
+PASS postcheck guard
+PASS rollback available
+PASS no destructive fish data
+TOTAL=13 PASS=13 FAIL=0
+
+=== SQL audit tools/sql_static_audit_v0151.py ===
+PASS file:precheck
+PASS file:main
+PASS file:check
+PASS file:rollback
+PASS file:fix
+PASS file:fixcheck
+PASS file:fixrollback
+PASS transaction
+PASS fish feed restored
+PASS dealer detail
+PASS win loss text
+PASS main 40 second round
+PASS main 30 2 5 3
+PASS main rules
+PASS fix 40 second round
+PASS fix 30 2 5 3
+PASS fix rules
+PASS settled phase 3 seconds
+PASS settle calls feed
+PASS broadcast isolation
+PASS cache18
+PASS postcheck corrected
+PASS fix postcheck
+PASS fix rollback available
+PASS no destructive data
+TOTAL=25 PASS=25 FAIL=0
+
+=== SQL audit tools/sql_static_audit_v0152.py ===
+{
+  "ok": true,
+  "checks": {
+    "grade-return-columns-fixed": true,
+    "grade-no-select-star": true,
+    "slot-index-dropped-before-migration": true,
+    "slot-dedupe-window": true,
+    "slot-index-rebuilt": true,
+    "five-slot-multipliers": true,
+    "exclusive-level-36": true,
+    "realm-guard-helper": true,
+    "check-cte-used": true
+  },
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0153.py ===
+{
+  "ok": true,
+  "checks": {
+    "transaction": true,
+    "release-name": true,
+    "cache-epoch": true,
+    "idempotent-insert": true,
+    "final-check": true,
+    "realm-guard-check": true
+  },
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0153_fix1.py ===
+{
+  "ok": true,
+  "checks": {
+    "transaction": true,
+    "drop-old-slot-check": true,
+    "allow-five-slots": true,
+    "slot-type-null": true,
+    "new-reader": true,
+    "yellow-fallback": true,
+    "cache21-gate": true,
+    "check-constraint": true,
+    "client-five-slots": true,
+    "client-old-rule-removed": true
+  },
+  "failed": []
+}
+
+=== SQL audit tools/sql_static_audit_v0153_fix2.py ===
+PASS transaction
+PASS reader-replaced
+PASS upgrade-replaced
+PASS redeem-replaced
+PASS balance-helper
+PASS atomic-debit
+PASS award-helper
+PASS no-rowtype-field
+PASS no-direct-player-balance-write
+PASS cache22-gate
+PASS schema-reload
+PASS final-check
+TOTAL=12 PASS=12 FAIL=0
+
+=== SQL audit tools/sql_static_audit_v0154.py ===
+PASS atomic-transaction
+PASS dollar-quotes
+PASS security-definer
+PASS idempotency-table
+PASS ordinary-idempotent-rpc
+PASS exclusive-idempotent-rpc
+PASS item-idempotent-rpc
+PASS stone-unified
+PASS technique-bucket
+PASS breakthrough-pill-item
+PASS washing-pill-item
+PASS pill-category-fix
+PASS new-table-rls
+PASS purchase-no-unsupported-on-conflict
+PASS pill-price
+PASS wash-price
+PASS pill-five-percent
+PASS pill-same-transaction
+PASS b02-no-death
+PASS b02-collapse
+PASS b02-thresholds
+PASS permissions
+PASS cache23
+PASS postcheck
+PASS fix4-transaction
+PASS fix4-response-payload
+PASS fix4-no-unique-dependency
+PASS fix4-cache24
+PASS fix4-permissions
+PASS fix4-check
+TOTAL=30 PASS=30 FAIL=0
+
+=== SQL audit tools/sql_static_audit_v0155.py ===
+PASS precheck-readonly
+PASS release-table-check
+PASS upgrade-transaction
+PASS cache26
+PASS no-schema-change
+PASS no-player-stone-write
+PASS postcheck-readonly
+PASS postcheck-cache26
+TOTAL=8 PASS=8 FAIL=0
+
+=== SQL audit tools/sql_static_audit_v0155_fix1.py ===
+PASS precheck-readonly
+PASS precheck-release-table
+PASS precheck-cache25-direct
+PASS upgrade-transaction
+PASS cache27
+PASS direct-from-cache25
+PASS no-schema-change
+PASS no-player-stone-write
+PASS no-gameplay-write
+PASS postcheck-readonly
+PASS postcheck-cache27
+TOTAL=11 PASS=11 FAIL=0
+
+=== SQL audit tools/sql_static_audit_v1.py ===
+PASS precheck-readonly
+PASS precheck-cache25
+PASS main-transaction
+PASS main-44-stats
+PASS main-five-elements
+PASS snapshot-wrapper
+PASS no-anon-snapshot
+PASS challenge-rpcs
+PASS one-percent
+PASS sword-heart-eight
+PASS cap-preserved
+PASS world-feed-reused
+PASS main-no-release-control
+PASS gate-cache30
+PASS post-readonly
+PASS post-wrapper
+PASS emergency-only-setting
+PASS rollback-explicit
+TOTAL=18 PASS=18 FAIL=0
+
+=== SQL audit tools/sql_static_audit_v1_fix1.py ===
+PASS pre-readonly
+PASS compat-transaction
+PASS integer-overload
+PASS compat-private
+PASS main-fresh-cast
+PASS gate-cache31
+PASS post-readonly
+PASS post-permission-check
+TOTAL=8 PASS=8 FAIL=0
+
+=== SQL audit tools/sql_static_audit_v1_fix2.py ===
+PASS pre-readonly
+PASS pre-cache31
+PASS gate-transaction
+PASS gate-cache32
+PASS gate-no-schema-ddl
+PASS gate-rpc-guards
+PASS post-readonly
+PASS post-cache32
+TOTAL=8 PASS=8 FAIL=0
+
+=== test tools/test_casino_render_v0141.js ===
+{"ok":true,"checks":50,"lobby":2419,"house":3470,"duel":3179,"pools":1924}
+
+=== test tools/test_world_events_render_v0142.js ===
+{"ok":true,"checks":4,"order":["breakthrough","casino","old-pinned"]}
+
+=== test tools/test_ranking_render_v0143.js ===
+{"ok":true,"checks":25,"module":"V1.0 FIX2"}
+
+=== test tools/test_features_v0144.js ===
+PASS player-house-rpc
+PASS player-house-toggle
+PASS player-house-copy
+PASS system-dealer-name
+PASS no-wrong-dealer-name
+PASS cultivation-all-in
+PASS minor-stage-copy
+PASS no-twenty-percent
+PASS duel-immediate
+PASS join-immediate
+PASS no-five-minute
+PASS insight-speed
+PASS insight-ten
+PASS notice-rpc
+PASS notice-modal
+PASS notice-ack
+PASS notice-poll
+PASS notice-css
+PASS all-in-css
+TOTAL=19 PASS=19 FAIL=0
+
+=== test tools/test_features_v0145.js ===
+PASS v4-rpc
+PASS ack-rpc
+PASS offline-summary
+PASS mobile-modal
+PASS safe-area
+PASS new-techniques
+PASS mastery
+PASS commission-copy
+PASS system-fix7a
+PASS story-pool
+PASS result-pool
+PASS support-seeds
+PASS five-minute
+PASS 864
+PASS commission-500
+PASS rls
+PASS old-protections
+PASS dealer-name
+TOTAL=18 PASS=18 FAIL=0
+
+=== test tools/test_opportunity_history_v0146.js ===
+PASS RPC
+PASS merge
+PASS initial refresh
+PASS online refresh
+PASS specific result
+PASS history root
+TOTAL=6 PASS=6 FAIL=0
+
+=== test tools/test_features_v0147.js ===
+PASS library rpc
+PASS book study
+PASS specific opportunity result
+PASS history grade/title/story/result
+PASS high-tier shared color
+PASS quantity modal
+PASS quantity rpc
+PASS system player switch
+PASS five million only
+PASS two hour term
+PASS unlimited player stake
+PASS system cover
+PASS commission retained
+PASS fix7a system route
+PASS old client system safe
+PASS no unauthorized loss
+TOTAL=16 PASS=16 FAIL=0
+
+=== test tools/test_features_v0148.js ===
+PASS B summary 2x2
+PASS B primary nav 1x4
+PASS B lobby 2x2
+PASS formal naming
+PASS fish rpc
+PASS fish selector
+PASS compact order
+PASS six symbols
+PASS three columns
+PASS hit glow
+PASS history 20
+PASS dealer label once grouping
+PASS 60 second SQL
+PASS player house rules
+PASS no demo placeholders
+TOTAL=15 PASS=15 FAIL=0
+
+=== test tools/test_fish_render_v0148.js ===
+PASS page renders
+PASS strict order
+PASS compact balances
+PASS quantity multiplier
+PASS three results
+PASS hit only actual winning bet
+PASS dealer once in detail
+PASS history dealer label once
+PASS player switch exists
+TOTAL=9 PASS=9 FAIL=0
+
+=== test tools/test_fish_entry_click_v0148_fix1.js ===
+PASS selector handler exists
+PASS fish branch exists
+PASS draft saved first
+PASS hidden field synced before render
+PASS fix marker exists
+PASS regression model stays fish_shrimp
+TOTAL=6 PASS=6 FAIL=0
+
+=== test tools/test_fish_ui_v0149.js ===
+PASS page renders
+PASS six inline svg seals
+PASS desktop responsive layout
+PASS strict order
+PASS compact balances
+PASS quantity multiplier
+PASS three results
+PASS hit only actual winning bet
+PASS dealer once in detail
+PASS history dealer label once
+PASS player switch exists
+TOTAL=11 PASS=11 FAIL=0
+
+=== test tools/test_fish_continuous_bet_v0150.js ===
+PASS queue helper exists
+PASS button never busy locked
+PASS click enqueues immediately
+PASS queue batches clicks
+PASS queue serial worker
+PASS queue delay window
+PASS pending amount shown
+PASS queue feedback says continue
+PASS refresh guarded during queue
+PASS only phase disables cards
+PASS queued css exists
+PASS five fish clicks merged
+PASS different symbol separate
+PASS render shows pending fish
+TOTAL=14 PASS=14 FAIL=0
+
+=== test tools/test_casino_feed_fish40_v0151.js ===
+PASS 40 second subtitle
+PASS 40 second rules
+PASS progress denominator
+PASS client fallback times
+PASS 30 second SQL timing
+PASS dice stop times
+PASS continuous bet preserved
+PASS fish feed helper
+PASS system dealer wording
+PASS player dealer wording
+PASS net win and loss wording
+PASS fish aggregation
+PASS settlement publish isolated
+PASS 40 second database clock
+TOTAL=14 PASS=14 FAIL=0
+
+=== test tools/test_features_v0154.js ===
+PASS rpc breakthrough status
+PASS rpc breakthrough attempt
+PASS pill selector
+PASS optimistic ordinary
+PASS optimistic exclusive
+PASS background queue
+PASS no upgrade busy label
+PASS result modal no enterGame default
+PASS rate clickable
+PASS rate technique details
+PASS effect excludes techniques
+PASS treasure entry
+PASS washing confirm
+PASS b02 collapse ui
+PASS treasure immediate local inventory
+PASS treasure background correction ordered
+PASS treasure no stale concurrent cave render
+PASS new css
+TOTAL=18 PASS=18 FAIL=0
+
+=== test tools/test_b_cave_module.js ===
+PASS cave main scene exists
+PASS six building orbit positions
+PASS meditation figure exists
+PASS resource strip exists
+PASS storage uses live inventory
+PASS storage 36 slots per layer
+PASS storage pagination keeps all items accessible
+PASS no player bag tab
+PASS cultivation icons present
+PASS item details present
+PASS existing item use preserved
+PASS three cave actions
+PASS no SQL dependency
+PASS responsive storage grid
+TOTAL=14 PASS=14 FAIL=0
+
+=== test tools/test_features_v0155.js ===
+PASS primordial navigation
+PASS desktop primordial navigation
+PASS primordial panel preserved
+PASS four named combat stats
+PASS authoritative or explicit placeholder
+PASS cultivation animation
+PASS responsive primordial UI
+PASS B cave integrated
+PASS supported release config
+TOTAL=9 PASS=9 FAIL=0
+
+=== test tools/test_cave_visual_v0155_fix1.js ===
+PASS quiet cave semantic label
+PASS rock arch layer
+PASS stalactite layer
+PASS spirit vein layer
+PASS stone platform
+PASS secluded cave copy
+PASS business layout preserved
+PASS real storage preserved
+PASS cave actions preserved
+PASS no rotating yuanshen mandala in cave
+PASS yuanshen animation remains separate
+PASS reduced motion supported
+PASS supported release build
+TOTAL=13 PASS=13 FAIL=0
+
+=== test tools/test_features_v1.js ===
+PASS snapshot rpc client
+PASS live primordial panel
+PASS exact mobile order
+PASS three columns mobile
+PASS cave rich layers
+PASS cave animations
+PASS unlearned techniques in storage
+PASS visible item name and type
+PASS 36 slots and paging
+PASS battle ranking and challenge
+PASS 80 percent cap copy preserved
+TOTAL=11 PASS=11 FAIL=0
+
+=== test tools/test_features_v1_fix1.js ===
+PASS root element chip
+PASS fire red
+PASS yuanshen compressed ten percent
+PASS cave six by six
+PASS labels remain visible
+PASS challenge compatibility overload
+PASS friendly production error
+TOTAL=7 PASS=7 FAIL=0
+
+=== test tools/test_features_v1_fix2.js ===
+PASS no champion copy
+PASS no champion render
+PASS battle rank private stats removed
+PASS compact public card
+PASS separate resolving popup
+PASS separate report popup
+PASS generic battle copy
+PASS css compact
+PASS css report
+{"ok":true,"checks":9}
+
+=== B-COMBAT01 integrated audit ===
+
+=== node --check app.js ===
+
+=== node B_MODULE/B-COMBAT01/tools/test_client_bcombat01.js /mnt/data/work_v1_fix2 ===
+{"ok":true,"checks":45}
+
+=== /opt/pyvenv/bin/python B_MODULE/B-COMBAT01/tools/static_audit_bcombat01.py ===
+PASS transaction
+PASS 44-stage-values
+PASS power-formula
+PASS five-elements
+PASS balanced-allocation-lock
+PASS new-character-trigger
+PASS element-rules
+PASS daily-rules
+PASS sword-heart-eight-percent
+PASS sword-heart-no-four-stat-bonus
+PASS defense-caps
+PASS cultivation-floor-one-percent
+PASS cultivation-cap-preserved
+PASS idempotency-lock
+PASS world-feed-reused
+PASS no-release-control-write
+PASS no-version-cache-write
+PASS rls-on-new-tables
+PASS precheck-required-deps
+PASS postcheck-rules
+PASS rollback-restores-sword-heart
+PASS client-rpcs
+PASS client-fallbacks
+PASS client-battle-modal
+PASS client-world-refresh
+PASS client-battle-privacy
+PASS client-css
+TOTAL=27 PASS=27 FAIL=0
+
+=== /opt/pyvenv/bin/python B_MODULE/B-COMBAT01/tools/test_balance_bcombat01.py ===
+B-COMBAT01 BALANCE PASS 90/90
+golden_initial_beats_middle_with_overcome: {'winner': 'attacker', 'attacker_hp': 80, 'defender_hp': 0, 'rounds': 8}
+golden_initial_loses_late_with_weak_overcome: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 754, 'rounds': 7}
+golden_late_beats_perfect_with_overcome: {'winner': 'attacker', 'attacker_hp': 176, 'defender_hp': 0, 'rounds': 8}
+golden_perfect_loses_nascent_initial: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 837, 'rounds': 8}
+golden_perfect_sword_heart_still_loses_nascent_initial: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 662, 'rounds': 8}
+
+=== node tools/test_ranking_render_v0143.js /mnt/data/work_v1_fix2 ===
+{"ok":true,"checks":25,"module":"V1.0 FIX2"}
+
+B-COMBAT01 CI PASS
+
+=== build pages ===
+PAGES_SITE_BUILT 15
+
+=== verify pages ===
+{
+  "ok": true,
+  "checks": 39,
+  "failed": []
+}
+
+V1.0 FIX2 CACHE32 CI PASS

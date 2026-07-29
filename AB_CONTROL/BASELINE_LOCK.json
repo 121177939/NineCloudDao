@@ -1,7 +1,7 @@
 {
-  "baseline": "V1.0_FIX1_CACHE31",
-  "developmentBaseline": "V1.0_FIX1_AB16_CACHE31",
-  "cacheEpoch": 31,
+  "baseline": "V1.0_FIX2_CACHE32",
+  "developmentBaseline": "V1.0_FIX2_AB17_CACHE32",
+  "cacheEpoch": 32,
   "protectedRules": [
     "渡劫最终成功率不超过80%",
     "灵石继续使用统一账户与库存链",

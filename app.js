@@ -4227,7 +4227,6 @@
     return {
       cultivation: {
         label: '修为榜',
-        champion: '修为榜首',
         empty: '九霄界尚无在世修士。',
         unavailable: '修为榜尚未开启',
         loading: '正在推演修为榜……',
@@ -4235,7 +4234,6 @@
       },
       wealth: {
         label: '财富榜',
-        champion: '财富榜首',
         empty: '九霄界尚无可入榜修士。',
         unavailable: '财富榜尚未开启',
         loading: '正在清点九霄财富……',
@@ -4243,7 +4241,6 @@
       },
       battle: {
         label: '战力榜',
-        champion: '战力榜首',
         empty: '九霄界尚无已凝聚战斗四属性的修士。',
         unavailable: '战力榜尚未开启',
         loading: '正在推演众修战力……',
@@ -4297,33 +4294,22 @@
     if (result.status === 'loading' || result.status === 'idle') {
       return `<div id="destinyRankingRoot" class="destiny-ranking-root" data-ranking-active="${safeBoard}">${rankingBoardTabsHtml(safeBoard)}<div class="empty-state">${meta.loading}</div></div>`;
     }
-    const champion = entries[0] || null;
     return `
       <div id="destinyRankingRoot" class="destiny-ranking-root" data-ranking-active="${safeBoard}">
         ${rankingBoardTabsHtml(safeBoard)}
         ${safeBoard === 'battle' ? `
           ${result.self ? `
             <div class="battle-self-summary-bcombat01">
+              <div><span>本尊姓名</span><strong>${escapeHtml(result.self.name || state.character?.name || '本尊')}</strong></div>
+              <div><span>当前等级</span><strong>${escapeHtml(result.self.realm || '未知境界')}</strong></div>
               <div><span>本尊战力</span><strong>${formatNumber(result.self.power || result.self_power || 0)}</strong></div>
               <div><span>本命五行</span><strong>${escapeHtml(result.self.element_name || '未定')}</strong></div>
-              <div><span>当前境界</span><strong>${escapeHtml(result.self.realm || '未知境界')}</strong></div>
-              <div><span>当前命格</span><strong>${escapeHtml(result.self.fate_name || '未定命格')}</strong></div>
             </div>
           ` : ''}
           <div class="battle-ranking-rule-bcombat01">
             <strong>战力只作综合评分，不直接决定胜负</strong>
             <span>只能挑战战力高于本尊的角色；五行、命格条件与技能组合在开战时单独结算。</span>
           </div>
-        ` : ''}
-        ${champion ? `
-          <article class="destiny-champion ${champion.is_self ? 'self' : ''}">
-            <div class="destiny-champion-seal">天</div>
-            <div>
-              <span>${meta.champion}${champion.is_self ? ' · 本尊' : ''}</span>
-              <strong>${escapeHtml(champion.name || '无名修士')}</strong>
-              <p>${escapeHtml(champion.realm || '未知境界')} · 命格「${escapeHtml(champion.fate || '未定命格')}」${safeBoard === 'battle' ? ` · 五行「${escapeHtml(champion.element_name || '未定')}」` : ''} · ${escapeHtml(rankingEntryMetric(safeBoard, champion))}</p>
-            </div>
-          </article>
         ` : ''}
         <div class="destiny-ranking-list">
           ${entries.map(row => {
@@ -4332,19 +4318,13 @@
               <article class="destiny-ranking-row rank-${Math.min(4, rank)} ${row.is_self ? 'self' : ''} ${safeBoard === 'battle' ? 'battle-ranking-row-bcombat01' : ''}">
                 <div class="destiny-rank-medal">${escapeHtml(destinyRankMedal(rank))}</div>
                 <div class="destiny-rank-main">
-                  <div><strong>${escapeHtml(row.name || '无名修士')}</strong>${row.is_self ? '<span class="self-mark">本尊</span>' : ''}${safeBoard === 'battle' ? `<span class="battle-element-mark-bcombat01 element-${escapeHtml(row.element || 'none')}">${escapeHtml(row.element_name || '未定')}</span>` : ''}</div>
-                  <p>${escapeHtml(row.realm || '未知境界')} · 命格「${escapeHtml(row.fate || '未定命格')}」</p>
-                  ${safeBoard === 'battle' ? `
-                    <div class="battle-rank-stats-bcombat01">
-                      <span>道攻 ${formatNumber(row.dao_attack || 0)}</span>
-                      <span>道御 ${formatNumber(row.dao_defense || 0)}</span>
-                      <span>生机 ${formatNumber(row.vitality || 0)}</span>
-                      <span>身法 ${formatNumber(row.agility || 0)}</span>
-                    </div>
-                  ` : ''}
+                  <div><strong>${escapeHtml(row.name || '无名修士')}</strong>${row.is_self ? '<span class="self-mark">本尊</span>' : ''}${safeBoard === 'battle' ? `<span class="battle-element-mark-bcombat01 element-${escapeHtml(row.element || 'none')}">${escapeHtml(row.element_name || '未定')}行</span>` : ''}</div>
+                  <p>${safeBoard === 'battle'
+                    ? `等级 ${escapeHtml(row.realm || '未知境界')}`
+                    : `${escapeHtml(row.realm || '未知境界')} · 命格「${escapeHtml(row.fate || '未定命格')}」`}</p>
                 </div>
                 <div class="destiny-rank-side">
-                  <span>第 ${formatNumber(row.generation || 1)} 世</span>
+                  ${safeBoard === 'battle' ? '' : `<span>第 ${formatNumber(row.generation || 1)} 世</span>`}
                   <strong>${escapeHtml(rankingEntryMetric(safeBoard, row))}</strong>
                   ${safeBoard === 'battle' && !row.is_self ? `
                     <button class="${row.can_challenge ? 'primary-btn' : 'ghost-btn'} battle-rank-challenge-bcombat01" type="button"
@@ -4452,18 +4432,15 @@
   }
 
   function battleCombatantCardHtml(row, label) {
-    const attackTechnique = battleTechniqueLabelBCombat01(row?.attack_technique_name, '未修攻伐功法');
-    const defenseTechnique = battleTechniqueLabelBCombat01(row?.defense_technique_name, '未修护体功法');
     return `
-      <article class="battle-combatant-card-bcombat01">
+      <article class="battle-combatant-card-bcombat01 battle-combatant-card-compact-fix2">
         <span>${escapeHtml(label)}</span>
         <strong>${escapeHtml(row?.name || '无名修士')}</strong>
-        <small>${escapeHtml(row?.realm || '未知境界')} · 战力 ${formatNumber(row?.power || 0)} · ${escapeHtml(row?.element_name || '未定')}行</small>
-        <div class="battle-combatant-stats-bcombat01">
-          <i>道攻 ${formatNumber(row?.attack || 0)}</i><i>道御 ${formatNumber(row?.defense || 0)}</i>
-          <i>生机 ${formatNumber(row?.vitality || 0)}</i><i>身法 ${formatNumber(row?.agility || 0)}</i>
+        <div class="battle-combatant-public-fix2">
+          <i><b>等级</b>${escapeHtml(row?.realm || '未知境界')}</i>
+          <i><b>战力</b>${formatNumber(row?.power || 0)}</i>
+          <i><b>五行</b>${escapeHtml(row?.element_name || '未定')}行</i>
         </div>
-        <p>武器：${escapeHtml(row?.weapon_name || '赤手空拳')}<br>法衣：${escapeHtml(row?.armor_name || '赤裸')}<br>攻法：${attackTechnique}<br>护法：${defenseTechnique}</p>
       </article>
     `;
   }
@@ -4472,6 +4449,35 @@
     if (state.battlePlaybackTimer) clearTimeout(state.battlePlaybackTimer);
     state.battlePlaybackTimer = null;
     modalRoot.innerHTML = '';
+  }
+
+  function showBattleResolvingModalBCombat01() {
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop battle-report-backdrop-fix2">
+        <section class="modal battle-report-modal-fix2" role="dialog" aria-modal="true" aria-labelledby="battleResolvingTitleFix2">
+          <button class="modal-close-button" type="button" data-close-battle-challenge aria-label="关闭">×</button>
+          <div class="modal-seal">战</div>
+          <h3 id="battleResolvingTitleFix2">战局推演中</h3>
+          <div class="empty-state">双方已入战场，正在结算回合与战果……</div>
+        </section>
+      </div>
+    `;
+    modalRoot.querySelector('[data-close-battle-challenge]')?.addEventListener('click', closeBattleChallengeModalBCombat01);
+  }
+
+  function showBattleChallengeErrorModalBCombat01(error) {
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop battle-report-backdrop-fix2">
+        <section class="modal battle-report-modal-fix2" role="dialog" aria-modal="true">
+          <button class="modal-close-button" type="button" data-close-battle-challenge aria-label="关闭">×</button>
+          <div class="modal-seal failure-seal">止</div>
+          <h3>挑战未能结算</h3>
+          <p>${escapeHtml(translateError(error))}</p>
+          <button class="primary-btn" type="button" data-close-battle-challenge>确定</button>
+        </section>
+      </div>
+    `;
+    modalRoot.querySelectorAll('[data-close-battle-challenge]').forEach(button => button.addEventListener('click', closeBattleChallengeModalBCombat01));
   }
 
   async function openBattleChallengeModalBCombat01(targetCharacterId) {
@@ -4521,9 +4527,12 @@
       modalRoot.querySelector('[data-confirm-battle-challenge]')?.addEventListener('click', async event => {
         const button = event.currentTarget;
         setBusy(button, true, '交锋中……');
+        closeBattleChallengeModalBCombat01();
+        showBattleResolvingModalBCombat01();
         try {
           const result = await rpcChallengeBattlePowerBCombat01(targetCharacterId, createUuid());
-          showBattlePlaybackBCombat01(result);
+          closeBattleChallengeModalBCombat01();
+          window.setTimeout(() => showBattlePlaybackBCombat01(result), 80);
           if (state.character && result?.self_cultivation_after !== undefined) {
             state.character.cultivation = Number(result.self_cultivation_after || 0);
             state.liveCultivationBase = Number(result.self_cultivation_after || 0);
@@ -4532,8 +4541,7 @@
           refreshRankingBoard('battle', false, true).catch(() => {});
           refreshWorldEvents(true).catch(() => {});
         } catch (error) {
-          showToast(translateError(error), 'error');
-          setBusy(button, false);
+          showBattleChallengeErrorModalBCombat01(error);
         }
       });
     } catch (error) {
@@ -4554,80 +4562,25 @@
   function battleAttackCopyBCombat01(action) {
     const attacker = escapeHtml(action?.attacker_name || '无名修士');
     const defender = escapeHtml(action?.defender_name || '对手');
-    const weapon = escapeHtml(action?.weapon_name || '赤手空拳');
-    const rawTechnique = String(action?.attack_technique_name || '').trim();
-    const hasTechnique = Boolean(rawTechnique && rawTechnique !== '未修攻伐功法');
-    const technique = escapeHtml(hasTechnique ? rawTechnique : '未修攻伐功法');
     const style = Math.max(1, Math.min(5, Number(action?.attack_style || 1)));
-    if (action?.is_unarmed) {
-      return hasTechnique ? [
-        `${attacker}赤手空拳，运转《${technique}》，一掌卷起狂暴灵气直逼${defender}。`,
-        `${attacker}虽无兵刃，却以《${technique}》催动双拳，撼动四周灵机。`,
-        `${attacker}五指成爪，《${technique}》随掌势向${defender}压去。`,
-        `${attacker}未携寸铁，只凭《${technique}》强行破阵。`,
-        `${attacker}踏地借势，拳锋裹着《${technique}》的灵光轰向${defender}。`
-      ][style - 1] : [
-        `${attacker}赤手空拳，未修攻伐功法，只凭本能一掌攻向${defender}。`,
-        `${attacker}虽无兵刃也无攻伐功法，仍以双拳撼动四周灵机。`,
-        `${attacker}五指成爪，赤手向${defender}攻去。`,
-        `${attacker}未携寸铁，只凭一身修为强行破阵。`,
-        `${attacker}踏地借势，拳锋裹着灵光轰向${defender}。`
-      ][style - 1];
-    }
-    if (!hasTechnique) {
-      return [
-        `${attacker}手持【${weapon}】，未修攻伐功法，只凭本能挥向${defender}。`,
-        `${attacker}催动【${weapon}】，没有功法相助，仍向${defender}强攻。`,
-        `${attacker}踏罡而行，以【${weapon}】直逼${defender}。`,
-        `${attacker}将灵力灌入【${weapon}】，凭朴素招式破空而出。`,
-        `${attacker}身形一闪，手中【${weapon}】杀向${defender}。`
-      ][style - 1];
-    }
     return [
-      `${attacker}挥动【${weapon}】，运转《${technique}》，攻势直取${defender}。`,
-      `${attacker}催动【${weapon}】，灵光骤起，《${technique}》随势而发。`,
-      `${attacker}踏罡而行，【${weapon}】承载《${technique}》破空直逼${defender}。`,
-      `${attacker}将《${technique}》运至极处，【${weapon}】卷起层层灵潮。`,
-      `${attacker}身形一闪，以【${weapon}】引动《${technique}》杀向${defender}。`
+      `${attacker}凝聚灵力，正面攻向${defender}。`,
+      `${attacker}踏步逼近，灵息随攻势压向${defender}。`,
+      `${attacker}引动周身灵机，向${defender}发动一击。`,
+      `${attacker}抓住气机变化，迅速攻向${defender}。`,
+      `${attacker}身形一闪，以灵力攻势直取${defender}。`
     ][style - 1];
   }
 
   function battleDefenseCopyBCombat01(action) {
     const defender = escapeHtml(action?.defender_name || '对手');
-    const armor = escapeHtml(action?.armor_name || '赤裸');
-    const rawTechnique = String(action?.defense_technique_name || '').trim();
-    const hasTechnique = Boolean(rawTechnique && rawTechnique !== '未修护体功法');
-    const technique = escapeHtml(hasTechnique ? rawTechnique : '未修护体功法');
     const style = Math.max(1, Math.min(5, Number(action?.defense_style || 1)));
-    if (action?.is_naked) {
-      if (hasTechnique) return [
-        `${defender}赤裸迎敌，只以肉身和《${technique}》硬抗来袭。`,
-        `${defender}身无寸甲，《${technique}》化作护体灵光覆于肌肤。`,
-        `${defender}未着法衣，却运转《${technique}》毫无退意。`,
-        `${defender}赤裸立于战场，以《${technique}》承受锋芒。`,
-        `${defender}无衣甲可凭，只能运转《${technique}》强行卸力。`
-      ][style - 1];
-      return [
-        `${defender}赤裸迎敌，也未修护体功法，只以肉身和道御硬抗来袭。`,
-        `${defender}身无寸甲，护体灵气在肌肤表面骤然亮起。`,
-        `${defender}未着法衣，面对攻势却毫无退意。`,
-        `${defender}赤裸立于战场，以血肉之躯承受锋芒。`,
-        `${defender}无衣甲和护体功法可凭，只能强行卸力。`
-      ][style - 1];
-    }
-    if (!hasTechnique) return [
-      `${defender}催动【${armor}】，未修护体功法，只凭法衣符纹抵挡。`,
-      `${defender}身着【${armor}】，没有护体功法相助，仍横身挡在攻势之前。`,
-      `${defender}气沉丹田，【${armor}】上的符纹同时震动。`,
-      `${defender}横移半步，以【${armor}】卸去部分攻势。`,
-      `${defender}不退反进，只凭【${armor}】和自身道御承下这一击。`
-    ][style - 1];
     return [
-      `${defender}催动【${armor}】，衣上符纹随《${technique}》次第亮起。`,
-      `${defender}身着【${armor}】，运转《${technique}》挡在身前。`,
-      `${defender}气沉丹田，【${armor}】与《${technique}》的护体灵光同时震动。`,
-      `${defender}横移半步，以【${armor}】和《${technique}》卸去部分攻势。`,
-      `${defender}不退反进，凭【${armor}】和《${technique}》承下这一击。`
+      `${defender}稳住身形，运转道御抵挡来袭。`,
+      `${defender}护住周身要害，承受这一轮攻势。`,
+      `${defender}气沉丹田，以护体灵光化解部分威势。`,
+      `${defender}横移卸力，尽力避开攻势锋芒。`,
+      `${defender}不退反守，以自身道御承下这一击。`
     ][style - 1];
   }
 
@@ -4682,9 +4635,10 @@
     if (state.battlePlaybackTimer) clearTimeout(state.battlePlaybackTimer);
     const actions = Array.isArray(result?.actions) ? result.actions : [];
     modalRoot.innerHTML = `
-      <div class="modal-backdrop battle-challenge-backdrop-bcombat01">
-        <section class="modal battle-challenge-modal-bcombat01 battle-playback-modal-bcombat01" role="dialog" aria-modal="true">
+      <div class="modal-backdrop battle-report-backdrop-fix2">
+        <section class="modal battle-challenge-modal-bcombat01 battle-playback-modal-bcombat01 battle-report-modal-fix2" role="dialog" aria-modal="true" aria-labelledby="battleReportTitleFix2">
           <button class="modal-close-button" type="button" data-close-battle-challenge aria-label="关闭">×</button>
+          <h3 id="battleReportTitleFix2" class="battle-report-title-fix2">挑战战报</h3>
           <div class="battle-playback-head-bcombat01">
             ${battleCombatantCardHtml(result?.challenger, '挑战者')}
             <div class="battle-versus-mark-bcombat01">战</div>

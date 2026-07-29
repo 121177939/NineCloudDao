@@ -1,26 +1,25 @@
 {
-  "version": "V1.0 FIX1",
-  "release": "v1-fix1-ui-challenge-cache31",
+  "version": "V1.0 FIX2",
+  "release": "v1-fix2-ranking-privacy-cache32",
   "base": "V0.15.4 FIX5 CACHE25",
   "databaseBaseline": "V0.15.4 FIX5 CACHE25（可直接升级；不要求先执行 CACHE26/CACHE27 发布门禁）",
   "databaseMigration": "database/V1.0/202607291710_v1_bcombat01.sql",
-  "databaseReleaseGate": "database/V1.0_FIX1/202607291840_v1_fix1_cache31_release.sql",
-  "databaseFinalCheck": "database/V1.0_FIX1/202607291850_v1_fix1_check.sql",
+  "databaseReleaseGate": "database/V1.0_FIX2/202607291920_v1_fix2_cache32_release.sql",
+  "databaseFinalCheck": "database/V1.0_FIX2/202607291930_v1_fix2_check.sql",
   "pagesStagingDirectory": ".pages-site",
   "features": [
-    "角色抬头栏在灵根名称后显示当前本命五行，火行为红字，其他五行使用对应识别色",
-    "手机端元神中央运功主景与文案整体压缩约10%，六项属性卡顺序不变",
-    "洞府储物恢复6列×6行，每层36格，物品名称、类型小字与数量仍直接可见",
-    "修复越阶挑战结算调用九霄界闻时integer/smallint参数不兼容导致的事务回滚",
-    "保留V1.0五行战斗、洞府洞天幽居、未研习功法展示与渡劫80%硬上限"
+    "确认挑战后关闭预览弹层，战局推演与逐回合战报在独立战报弹窗中显示",
+    "战力榜和挑战弹窗仅展示角色姓名、等级、战力与五行，不展示四属性、功法或装备",
+    "修为榜、财富榜与战力榜取消独立榜首卡片，第一名只保留在正常排行列表中",
+    "保留V1.0 FIX1挑战兼容、灵根五行、元神布局、洞府6×6储物和渡劫80%硬上限"
   ],
-  "clientBuild": "v1-fix1-cache31",
+  "clientBuild": "v1-fix2-cache32",
   "gameplayBaseline": "V1.0 = V0.15.4 FIX5 + B-CAVE01 + B-COMBAT01 + 元神实时属性 + 洞府洞天幽居",
   "worldFeedBaseline": "V0.14.2 + V0.15.1赌场播报 + V1.0战斗战报",
   "rankingBaseline": "V0.14.3 + B-COMBAT01战力榜",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "databaseChange": "V1.0_FIX1_CHALLENGE_COMPAT_CACHE31",
-  "sqlRevision": "V1.0_FIX1_CACHE31",
-  "clientHotfix": "V1.0_FIX1_CACHE31",
-  "cacheEpoch": 31
+  "databaseChange": "V1.0_FIX2_UI_PRIVACY_CACHE32",
+  "sqlRevision": "V1.0_FIX2_CACHE32",
+  "clientHotfix": "V1.0_FIX2_CACHE32",
+  "cacheEpoch": 32
 }

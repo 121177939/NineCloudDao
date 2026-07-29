@@ -4269,3 +4269,54 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
 @media (max-width:420px){.cave-storage-grid-b01{grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:3px}.cave-item-svg{left:18%;top:3%;width:64%;height:55%}.cave-item-name-b01{font-size:5.5px}.cave-item-type-b01{font-size:4.8px}.cave-item-quantity-b01{font-size:6.5px}}
 
 /* V1.0 FIX1: mobile Yuan-shen core reduced to 90%; cave storage restored to 6x6. */
+
+/* V1.0 FIX2: ranked-battle privacy and separate battle-report popup. */
+.battle-combatant-card-compact-fix2 {
+  min-height: 0;
+  align-content: start;
+}
+.battle-combatant-public-fix2 {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+.battle-combatant-public-fix2 i {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 6px;
+  border: 1px solid rgba(183,155,88,.28);
+  background: rgba(12,11,9,.34);
+  color: #c6bda8;
+  font-style: normal;
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+.battle-combatant-public-fix2 b {
+  color: #817965;
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: .12em;
+}
+.battle-report-backdrop-fix2 {
+  z-index: 85;
+}
+.battle-report-modal-fix2 {
+  width: min(860px,100%);
+  border-color: rgba(206,182,126,.58);
+  box-shadow: 0 24px 70px rgba(0,0,0,.72), inset 0 0 48px rgba(201,167,95,.035);
+}
+.battle-report-title-fix2 {
+  margin: 0 0 14px;
+  color: var(--gold-bright);
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: .18em;
+}
+@media (max-width:620px) {
+  .battle-combatant-public-fix2 { grid-template-columns: 1fr; gap: 4px; }
+  .battle-combatant-public-fix2 i { padding: 5px 4px; }
+  .battle-report-modal-fix2 { max-height: calc(100vh - 14px); padding: 22px 10px 12px; }
+}
