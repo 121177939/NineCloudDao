@@ -1,17 +1,12 @@
 {
-  "version": "V0.15.4",
-  "release": "CACHE24",
-  "baseline": "V0.15.4_AB12_CACHE24",
-  "sourcePackage": "九霄问道_V0.15.4_FIX4_CACHE24_完整部署包.zip",
-  "sourceSha256": "见压缩包外部SHA256及包内SHA256SUMS.txt",
-  "timing": {
-    "round": 40,
-    "betting": 30,
-    "lock": 2,
-    "reveal": 5,
-    "settlement": 3,
-    "next": 0
-  },
-  "deliveryPolicy": "完整包即部署包、接入基线和B线开发基线；禁止以旧升级包作为源基线。",
-  "updatedAt": "2026-07-29T06:45:00+00:00"
+  "baseline": "V0.15.5_FIX1_CACHE27",
+  "developmentBaseline": "V0.15.5_AB14_CACHE27",
+  "cacheEpoch": 27,
+  "protectedRules": [
+    "渡劫最终成功率不超过80%",
+    "灵石继续使用统一账户与库存链",
+    "元神战斗属性未接入前不得显示伪造数值",
+    "洞府主景保持洞窟、灵脉、石台、仙府隐修风格，不得复用元神大型法阵背景"
+  ],
+  "updatedAt": "2026-07-29T14:00:00Z"
 }

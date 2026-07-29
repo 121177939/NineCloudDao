@@ -1,20 +1,13 @@
 {
-  "baseline": "V0.15.4_AB11_CACHE23",
-  "version": "V0.15.4 CACHE23",
-  "sourcePackage": "九霄问道_V0.15.4_CACHE23_完整部署包.zip",
-  "roleA": [
-    "审核B模块",
-    "解决冲突",
-    "合并源码和SQL",
-    "运行CI",
-    "升版",
-    "发布完整包"
+  "baseline": "V0.15.5_AB14_CACHE27",
+  "sourcePackage": "九霄问道_V0.15.5_FIX1_CACHE27_完整部署包.zip",
+  "status": "B_READY",
+  "integratedModules": [
+    "B-CAVE01",
+    "B-CAVE01-FIX1-洞府视觉修正"
   ],
-  "roleB": [
-    "基于完整包开发独立模块",
-    "提交候选源码和SQL",
-    "不得直接发布或升版"
+  "reservedModules": [
+    "元神战斗属性服务端模型"
   ],
-  "protectedAreas": "见AB_CONTROL/PROTECTED_AREAS.md",
-  "buildAt": "2026-07-29T06:45:00+00:00"
+  "cacheEpoch": 27
 }

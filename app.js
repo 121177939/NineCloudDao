@@ -3392,31 +3392,170 @@
       .every(code => Number(resources.get(code) || 0) >= Number(costs?.[code] || 0));
   }
 
+  const CAVE_STORAGE_SLOT_COUNT_B01 = 30;
+
+  function caveStorageItemsB01(inventory) {
+    const items = (Array.isArray(inventory) ? inventory : [])
+      .filter(row => row?.definition && Number(row.quantity || 0) > 0);
+    if (state.caveInventorySortMode !== 'tidy') return items;
+    const rarityOrder = { legendary: 0, epic: 1, rare: 2, uncommon: 3, common: 4 };
+    return [...items].sort((left, right) => {
+      const leftDefinition = left.definition || {};
+      const rightDefinition = right.definition || {};
+      const rarity = Number(rarityOrder[leftDefinition.rarity] ?? 9) - Number(rarityOrder[rightDefinition.rarity] ?? 9);
+      if (rarity) return rarity;
+      const category = String(leftDefinition.category || '').localeCompare(String(rightDefinition.category || ''), 'zh-CN');
+      if (category) return category;
+      return String(leftDefinition.name || '').localeCompare(String(rightDefinition.name || ''), 'zh-CN');
+    });
+  }
+
+  function caveItemRarityClassB01(value) {
+    return ['common', 'uncommon', 'rare', 'epic', 'legendary'].includes(value) ? value : 'common';
+  }
+
+  function caveItemCornerMarkB01(row = {}) {
+    const definition = row.definition || {};
+    const category = String(definition.category || '').toLowerCase();
+    if (row.is_bound) return ['绑', 'bound'];
+    if (category.includes('quest') || category.includes('任务')) return ['任', 'quest'];
+    if (definition.code === 'spirit_washing_pill_v0154') return ['珍', 'rare'];
+    if (definition.effects?.use_type === 'spirit_root_reroll') return ['珍', 'rare'];
+    return ['', ''];
+  }
+
+  function caveItemIconKindB01(row = {}) {
+    const definition = row.definition || {};
+    const code = String(definition.code || '').toLowerCase();
+    const name = String(definition.name || '');
+    const category = String(definition.category || '').toLowerCase();
+    const useType = String(definition.effects?.use_type || '').toLowerCase();
+    if (code === 'spirit_stone' || name.includes('灵石')) return 'spirit-stone';
+    if (name.includes('香') || category.includes('incense')) return 'incense-burner';
+    if (name.includes('茶') || category.includes('tea')) return 'tea-bowl';
+    if (name.includes('矿') || name.includes('铁') || category.includes('ore')) return 'ore';
+    if (name.includes('草') || name.includes('药材') || category.includes('herb')) return 'herb';
+    if (name.includes('符') || name.includes('令') || category.includes('quest')) return 'talisman';
+    if (name.includes('卷') || name.includes('经') || category.includes('book') || category.includes('scroll')) return 'scroll';
+    if (useType || name.includes('丹') || category.includes('pill') || category.includes('medicine')) return 'jade-gourd';
+    return 'relic';
+  }
+
+  function caveItemIconHtmlB01(row = {}, large = false) {
+    const kind = caveItemIconKindB01(row);
+    const className = `cave-item-svg ${large ? 'large' : ''}`;
+    const icons = {
+      'spirit-stone': `<svg class="${className}" viewBox="0 0 80 80" aria-hidden="true"><path class="jade-light" d="M16 55 11 38 24 18 39 11 53 18 67 38 60 58 40 69z"/><path class="paper-line" d="m24 18 9 21-22-1m42-20-11 21 25-1M33 39h9l-2 30"/><circle class="gold-line" cx="40" cy="42" r="11"/><path class="gold-line" d="M34 42c4-7 8-7 12 0-4 7-8 7-12 0zm6-8v16"/></svg>`,
+      'jade-gourd': `<svg class="${className}" viewBox="0 0 80 80" aria-hidden="true"><path class="paper-fill" d="M35 8h10l2 10c8 5 13 13 12 23-1 17-9 29-19 29S22 58 21 41c-1-10 4-18 12-23z"/><path class="jade-line" d="M31 21c6 4 13 4 18 0M27 50c9 6 17 6 26 0"/><path class="red-fill" d="M27 29h26l-3 19-10 7-10-7z"/><path class="gold-line" d="M32 35h16m-13 6h10m-7 6h4"/><circle class="gold-fill" cx="40" cy="59" r="5"/></svg>`,
+      'incense-burner': `<svg class="${className}" viewBox="0 0 80 80" aria-hidden="true"><path class="bronze-fill" d="M26 35h28l-3 23H29z"/><path class="gold-line" d="M22 34h36l-4-7H26zm9 24h18l5 7H26zM31 43h18m-15 7h12"/><path class="mist-line" d="M35 28C25 20 43 16 34 5c14 7 0 15 8 22 8-7-2-11 5-19"/><circle class="jade-fill" cx="40" cy="44" r="4"/></svg>`,
+      'tea-bowl': `<svg class="${className}" viewBox="0 0 80 80" aria-hidden="true"><path class="celadon-fill" d="M22 34h36l-4 26H26z"/><path class="paper-line" d="M18 31h44l-5-8H23zm13-12h18l5 4H26zM26 61h28l5 5H21z"/><path class="jade-line" d="M33 43c7-9 13-7 15 2-7 7-12 6-15-2zm7-1c-1 5-3 8-6 11"/><path class="mist-line" d="M33 18c-7-7 8-9 1-17 12 7 0 11 6 17m5 0c-4-5 5-7 2-12"/></svg>`,
+      'ore': `<svg class="${className}" viewBox="0 0 80 80" aria-hidden="true"><path class="ore-fill" d="M14 55 19 30 34 12l20 5 13 21-8 24-26 7z"/><path class="paper-line" d="m19 30 20 8-5-26m5 26 20 24m-20-24 15-21M14 55l25-17"/><path class="gold-line" d="M30 43c6-8 14-8 20 0-6 8-14 8-20 0zm10-7v14"/></svg>`,
+      'herb': `<svg class="${className}" viewBox="0 0 80 80" aria-hidden="true"><path class="gold-line" d="M39 67c-1-17 2-33 9-48"/><path class="jade-fill" d="M44 34c7-13 17-16 25-11-4 12-12 18-25 11zm-3 10c-12-8-22-7-28 0 8 9 18 10 28 0zm5-20c-5-11-2-19 5-23 7 8 6 17-5 23z"/><path class="paper-line" d="M24 44c8 1 13 0 17-3m6-9c7-1 12-4 16-8"/></svg>`,
+      'talisman': `<svg class="${className}" viewBox="0 0 80 80" aria-hidden="true"><path class="bronze-fill" d="M24 10h32l5 8-4 46-17 7-17-7-4-46z"/><path class="ink-fill" d="M29 19h22l2 35-13 7-13-7z"/><path class="gold-line" d="M34 25c6-5 12-4 15 2-6 5-11 5-15-2zm-2 12h16m-13 7h10m-8 7h6"/><circle class="gold-fill" cx="40" cy="15" r="3"/></svg>`,
+      'scroll': `<svg class="${className}" viewBox="0 0 80 80" aria-hidden="true"><path class="paper-fill" d="M23 13h35c-5 4-5 10 0 14v39H23c5-5 5-10 0-15z"/><path class="bronze-fill" d="M18 12h10v16H18c-8 0-8-16 0-16zm0 39h10v16H18c-8 0-8-16 0-16z"/><path class="red-line" d="M33 25h17m-17 8h17m-17 8h12m-12 8h17"/><circle class="gold-line" cx="46" cy="56" r="7"/></svg>`,
+      'relic': `<svg class="${className}" viewBox="0 0 80 80" aria-hidden="true"><path class="bronze-fill" d="M40 9 58 20l7 21-10 21-15 9-15-9-10-21 7-21z"/><path class="ink-fill" d="M40 20 52 30l-4 20-8 8-8-8-4-20z"/><path class="gold-line" d="M40 20v38M28 30h24M32 50h16"/><circle class="jade-fill" cx="40" cy="39" r="6"/></svg>`
+    };
+    return icons[kind] || icons.relic;
+  }
+
+  function caveBuildingGlyphB01(row = {}, index = 0) {
+    const value = `${row.code || ''} ${row.name || ''}`.toLowerCase();
+    if (/alchemy|furnace|丹/.test(value)) return '丹';
+    if (/herb|garden|药/.test(value)) return '药';
+    if (/library|scripture|book|藏经/.test(value)) return '经';
+    if (/warehouse|storage|藏|库/.test(value)) return '藏';
+    if (/forge|refin|器/.test(value)) return '器';
+    if (/beast|兽/.test(value)) return '兽';
+    if (/ore|mine|矿/.test(value)) return '矿';
+    if (/qi|spirit|聚灵|灵脉/.test(value)) return '气';
+    return ['气', '药', '经', '丹', '器', '兽'][index % 6];
+  }
+
+  function caveBuildingPanelKindB01(row = {}) {
+    const value = `${row.code || ''} ${row.name || ''}`.toLowerCase();
+    if (/alchemy|furnace|丹/.test(value)) return 'alchemy';
+    if (/library|scripture|book|藏经/.test(value)) return 'library';
+    if (/warehouse|storage|藏|库/.test(value)) return 'storage';
+    return 'buildings';
+  }
+
   function inventoryGridHtml(inventory) {
-    const items = inventory || [];
+    const items = caveStorageItemsB01(inventory);
+    const pageCount = Math.max(1, Math.ceil(items.length / CAVE_STORAGE_SLOT_COUNT_B01));
+    const requestedPage = Math.max(0, Math.floor(Number(state.caveInventoryPageB01 || 0)));
+    const page = Math.min(pageCount - 1, requestedPage);
+    if (state.caveInventoryPageB01 !== page) state.caveInventoryPageB01 = page;
+    const pageStart = page * CAVE_STORAGE_SLOT_COUNT_B01;
+    const visibleItems = items.slice(pageStart, pageStart + CAVE_STORAGE_SLOT_COUNT_B01);
+    const emptyCount = Math.max(0, CAVE_STORAGE_SLOT_COUNT_B01 - visibleItems.length);
     return `
-      <div class="subsection-title"><strong>储物袋</strong><span>${formatNumber(items.length)} 类物品</span></div>
-      <div class="inventory-grid">
-        ${items.length ? items.map(row => {
-          const definition = row.definition || {};
-          const effects = definition.effects || {};
-          const washPill = definition.code === 'spirit_washing_pill_v0154' || effects.use_type === 'spirit_root_reroll';
-          const usable = ['instant_cultivation','timed_rate','comprehension'].includes(effects.use_type);
-          const quantityAttr = definition.code === 'spirit_stone' ? ' data-spirit-stone-balance' : '';
-          return `
-            <article class="inventory-card rarity-${escapeHtml(definition.rarity || 'common')}">
-              <div class="inventory-icon">${escapeHtml((definition.name || '物').slice(0, 1))}</div>
-              <div class="inventory-copy">
-                <span>${escapeHtml(rarityName(definition.rarity))} · ${escapeHtml(definition.category || '物品')}</span>
-                <strong>${escapeHtml(definition.name || '未知物品')} <small>× <span${quantityAttr}>${formatNumber(row.quantity)}</span></small></strong>
-                <p>${escapeHtml(itemEffectText(row))}</p>
-              </div>
-              ${washPill ? `<button class="primary-btn inventory-use-btn" type="button" data-use-spirit-washing-pill="${escapeHtml(row.id)}">重塑灵根</button>` : usable ? `<button class="primary-btn inventory-use-btn" type="button" data-use-item="${escapeHtml(row.id)}" data-use-item-name="${escapeHtml(definition.name || '储物')}" data-use-item-quantity="${escapeHtml(Math.max(1, Number(row.quantity || 1)))}" data-use-item-effect="${escapeHtml(itemEffectText(row))}">选择数量</button>` : ''}
-            </article>
-          `;
-        }).join('') : '<div class="empty-state">储物袋空空如也。</div>'}
-      </div>
+      <section id="caveStorageB01" class="cave-storage-b01" aria-label="洞府储物，直接显示当前玩家已有物品">
+        <div class="cave-storage-head-b01">
+          <strong>洞府储物</strong>
+          <span>${items.length ? `${formatNumber(pageStart + 1)}–${formatNumber(pageStart + visibleItems.length)} / ${formatNumber(items.length)}` : `0 / ${formatNumber(CAVE_STORAGE_SLOT_COUNT_B01)}`} · 当前玩家已有物品直接入格</span>
+        </div>
+        <div class="cave-storage-grid-b01">
+          ${visibleItems.map(row => {
+            const definition = row.definition || {};
+            const rarity = caveItemRarityClassB01(definition.rarity);
+            const [cornerMark, cornerClass] = caveItemCornerMarkB01(row);
+            const quantityAttr = definition.code === 'spirit_stone' ? ' data-spirit-stone-balance' : '';
+            return `<button class="cave-item-slot-b01 rarity-${escapeHtml(rarity)}" type="button" data-open-cave-item="${escapeHtml(row.id)}" aria-label="${escapeHtml(definition.name || '未知物品')}，数量${formatNumber(row.quantity)}">
+              <span class="cave-item-aura-b01" aria-hidden="true"></span>
+              ${cornerMark ? `<span class="cave-item-corner-b01 ${escapeHtml(cornerClass)}">${escapeHtml(cornerMark)}</span>` : ''}
+              ${caveItemIconHtmlB01(row)}
+              <span class="cave-item-name-b01">${escapeHtml(definition.name || '未知物品')}</span>
+              <strong class="cave-item-quantity-b01">×<span${quantityAttr}>${formatNumber(row.quantity)}</span></strong>
+            </button>`;
+          }).join('')}
+          ${Array.from({ length: emptyCount }, () => '<div class="cave-item-slot-b01 empty" aria-hidden="true"><span>道</span></div>').join('')}
+        </div>
+        ${pageCount > 1 ? `<div class="cave-storage-pager-b01"><button type="button" data-cave-storage-page="${page - 1}" ${page <= 0 ? 'disabled' : ''}>上一层</button><span>第 ${formatNumber(page + 1)} / ${formatNumber(pageCount)} 层</span><button type="button" data-cave-storage-page="${page + 1}" ${page >= pageCount - 1 ? 'disabled' : ''}>下一层</button></div>` : ''}
+      </section>
     `;
+  }
+
+  function caveBuildingWorkbenchHtmlB01(system, buildings) {
+    return `<div class="subsection-title"><strong>洞府扩建</strong><span>点击建筑查看并执行升级</span></div>
+      <div class="cave-building-grid">
+        ${buildings.map(row => {
+          const maxed = Number(row.level || 1) >= Number(row.max_level || 10);
+          const affordable = caveCanAfford(system, row.next_costs || {});
+          const output = row.output_resource_code
+            ? `产出 ${caveResourceName(row.output_resource_code)} ${formatNumber(row.rate_per_hour, 2)}/现实小时`
+            : row.code === 'warehouse'
+              ? `单项容量 ${formatNumber(row.capacity || 0)}`
+              : row.code === 'alchemy_furnace'
+                ? `炼丹耗时缩短 ${formatNumber(Math.min(65, Math.max(0, (Number(row.level || 1) - 1) * 6)))}%`
+                : '功能建筑';
+          return `<article class="cave-building-card" data-cave-building-card="${escapeHtml(row.code)}">
+            <div class="manage-card-head"><div><span>${escapeHtml(output)}</span><strong>${escapeHtml(row.name)} <small>Lv.${formatNumber(row.level)}/${formatNumber(row.max_level)}</small></strong></div><span class="badge">${maxed ? '已满级' : '可扩建'}</span></div>
+            <p>${escapeHtml(row.description || '')}</p>
+            <small class="cave-cost">${maxed ? '建筑已达到当前版本上限' : `下级消耗：${escapeHtml(caveCostText(row.next_costs || {}))}`}</small>
+            <button class="${affordable && !maxed ? 'primary-btn' : 'ghost-btn'}" type="button" data-upgrade-cave="${escapeHtml(row.code)}" ${maxed || !affordable ? 'disabled' : ''}>${maxed ? '已满级' : affordable ? '扩建' : '资源不足'}</button>
+          </article>`;
+        }).join('')}
+      </div>`;
+  }
+
+  function caveAlchemyWorkbenchHtmlB01(system, recipes, batch, maxBatch, batchReady) {
+    return `<div class="subsection-title"><strong>炼丹</strong><span>同一时间只能炼制一炉</span></div>
+      ${batch ? `<article class="alchemy-active-card ${batchReady ? 'ready' : ''}">
+        <div><span>${batchReady ? '丹成待取' : '炉火运转中'}</span><strong>${escapeHtml(batch.recipe_name || '未知丹方')} × ${formatNumber(batch.batch_count || 1)} 炉</strong><p>${batchReady ? '丹药已经炼成，可立即收入洞府储物。' : `剩余 <b id="alchemyCountdown">${formatDuration(batch.seconds_remaining || 0)}</b>`}</p></div>
+        <button id="claimAlchemyBtn" class="${batchReady ? 'primary-btn' : 'ghost-btn'}" type="button" ${batchReady ? '' : 'disabled'}>${batchReady ? '开炉取丹' : '炼制中'}</button>
+      </article>` : `<div class="cave-recipe-grid">
+        ${recipes.map(row => {
+          const unlocked = Boolean(row.furnace_unlocked);
+          const available = Boolean(row.output_item_available);
+          const baseCosts = row.resource_costs || {};
+          return `<article class="alchemy-recipe-card ${unlocked && available ? '' : 'locked'}">
+            <div class="manage-card-head"><div><span>丹炉 Lv.${formatNumber(row.required_furnace_level)} 解锁</span><strong>${escapeHtml(row.name)}</strong></div><span class="badge">${formatDuration(row.duration_seconds || 0)}/炉</span></div>
+            <p>${escapeHtml(row.description || '')}</p>
+            <small>单炉材料：${escapeHtml(caveCostText(baseCosts))} · 产出 ${escapeHtml(row.resolved_output_name || row.output_item_name)} × ${formatNumber(row.output_quantity)}</small>
+            <div class="alchemy-actions"><select data-alchemy-count="${escapeHtml(row.code)}" ${unlocked && available ? '' : 'disabled'}>${Array.from({ length: maxBatch }, (_, index) => index + 1).map(count => `<option value="${count}">${count} 炉</option>`).join('')}</select><button class="primary-btn" type="button" data-start-alchemy="${escapeHtml(row.code)}" ${unlocked && available ? '' : 'disabled'}>${!available ? '物品配置缺失' : !unlocked ? '丹炉等级不足' : '开炉炼制'}</button></div>
+          </article>`;
+        }).join('')}
+      </div>`}`;
   }
 
   function cavePanelHtml(system, inventory, techniqueLibrary = state.techniqueLibrary || { books: [] }) {
@@ -3426,88 +3565,100 @@
     const batch = system?.active_batch || null;
     const maxBatch = Math.max(1, Number(system?.rules?.max_batch_count || 10));
     const batchReady = batch?.status === 'ready' || Number(batch?.seconds_remaining || 0) <= 0;
+    const sceneBuildings = buildings.slice(0, 6);
+    const sceneSlots = [...sceneBuildings, ...Array.from({ length: Math.max(0, 6 - sceneBuildings.length) }, () => null)];
+    const resourceRows = [
+      { code: 'spirit_stone', name: '统一灵石', quantity: Number(system?.spirit_stones || 0), capacity: 0, description: '洞府、功法、坊市与赌坊共用' },
+      ...resources.filter(row => row.code !== 'spirit_stone')
+    ].slice(0, 4);
     return `
-      <div id="caveSystemRoot" class="cave-system-root">
-        <div class="cave-headline">
-          <div>
-            <span>道统洞府 · 跨世保留</span>
-            <strong>灵脉自行运转，离线最多结算 ${formatNumber(system?.rules?.offline_cap_hours || 72)} 小时</strong>
+      <div id="caveSystemRoot" class="cave-system-root cave-system-b01">
+        <section class="cave-scene-b01" aria-label="幽静洞府主景与建筑">
+          <div class="cave-rock-arch-b01" aria-hidden="true"></div>
+          <div class="cave-stalactites-b01" aria-hidden="true"></div>
+          <div class="cave-spirit-veins-b01" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="cave-scene-mist-b01" aria-hidden="true"></div>
+          <div class="cave-scene-lines-b01" aria-hidden="true"></div>
+          <div class="cave-lantern-b01 left" aria-hidden="true"><i></i></div>
+          <div class="cave-lantern-b01 right" aria-hidden="true"><i></i></div>
+          <div class="cave-building-orbit-b01">
+            ${sceneSlots.map((row, index) => row ? `<button class="cave-scene-building-b01 pos-${index + 1}" type="button" data-cave-open-panel="${escapeHtml(caveBuildingPanelKindB01(row))}" data-cave-building-code="${escapeHtml(row.code || '')}">
+              <span class="cave-building-glyph-b01">${escapeHtml(caveBuildingGlyphB01(row, index))}</span>
+              <span class="cave-building-copy-b01"><strong>${escapeHtml(row.name || '洞府建筑')}</strong><small>Lv.${formatNumber(row.level || 1)} · ${Number(row.level || 1) >= Number(row.max_level || 10) ? '已圆满' : '可扩建'}</small></span>
+            </button>` : `<div class="cave-scene-building-b01 pos-${index + 1} locked" aria-hidden="true"><span class="cave-building-glyph-b01">封</span><span class="cave-building-copy-b01"><strong>待开辟</strong><small>洞天未启</small></span></div>`).join('')}
           </div>
-          <div class="resource-inline"><span>可用灵石</span><strong data-spirit-stone-balance>${formatNumber(system?.spirit_stones || 0)}</strong></div>
-        </div>
-
-        <div class="cave-resource-grid">
-          ${resources.map(row => {
-            const percent = Number(row.capacity || 0) > 0 ? Math.min(100, Number(row.quantity || 0) / Number(row.capacity) * 100) : 0;
-            return `<article class="cave-resource-card">
-              <span>${escapeHtml(row.name)}</span>
-              <strong>${formatNumber(row.quantity)} <small>/ ${formatNumber(row.capacity)}</small></strong>
-              <p>${escapeHtml(row.description || '')}</p>
-              <div class="progress-track cave-progress"><div class="progress-fill" style="width:${percent}%"></div></div>
-            </article>`;
-          }).join('')}
-        </div>
-
-        ${techniqueLibraryHtml(techniqueLibrary)}
-
-        <div class="subsection-title"><strong>洞府建筑</strong><span>升级费用按当前等级²增长</span></div>
-        <div class="cave-building-grid">
-          ${buildings.map(row => {
-            const maxed = Number(row.level || 1) >= Number(row.max_level || 10);
-            const affordable = caveCanAfford(system, row.next_costs || {});
-            const output = row.output_resource_code
-              ? `产出 ${caveResourceName(row.output_resource_code)} ${formatNumber(row.rate_per_hour, 2)}/现实小时`
-              : row.code === 'warehouse'
-                ? `单项容量 ${formatNumber(row.capacity || 0)}`
-                : row.code === 'alchemy_furnace'
-                  ? `炼丹耗时缩短 ${formatNumber(Math.min(65, Math.max(0, (Number(row.level || 1) - 1) * 6)))}%`
-                  : '功能建筑';
-            return `<article class="cave-building-card">
-              <div class="manage-card-head">
-                <div><span>${escapeHtml(output)}</span><strong>${escapeHtml(row.name)} <small>Lv.${formatNumber(row.level)}/${formatNumber(row.max_level)}</small></strong></div>
-                <span class="badge">${maxed ? '已满级' : '可扩建'}</span>
-              </div>
-              <p>${escapeHtml(row.description || '')}</p>
-              <small class="cave-cost">${maxed ? '建筑已达到当前版本上限' : `下级消耗：${escapeHtml(caveCostText(row.next_costs || {}))}`}</small>
-              <button class="${affordable && !maxed ? 'primary-btn' : 'ghost-btn'}" type="button"
-                data-upgrade-cave="${escapeHtml(row.code)}" ${maxed || !affordable ? 'disabled' : ''}>${maxed ? '已满级' : affordable ? '扩建' : '资源不足'}</button>
-            </article>`;
-          }).join('')}
-        </div>
-
-        <div class="subsection-title"><strong>炼丹</strong><span>同一时间只能炼制一炉</span></div>
-        ${batch ? `<article class="alchemy-active-card ${batchReady ? 'ready' : ''}">
-          <div>
-            <span>${batchReady ? '丹成待取' : '炉火运转中'}</span>
-            <strong>${escapeHtml(batch.recipe_name || '未知丹方')} × ${formatNumber(batch.batch_count || 1)} 炉</strong>
-            <p>${batchReady ? '丹药已经炼成，可立即收入储物袋。' : `剩余 <b id="alchemyCountdown">${formatDuration(batch.seconds_remaining || 0)}</b>`}</p>
+          <div class="cave-meditation-b01" aria-hidden="true">
+            <div class="cave-stone-platform-b01"></div>
+            <div class="cave-meditation-ring-b01"></div>
+            <div class="cave-meditation-figure-b01"><i></i><b></b><span></span></div>
           </div>
-          <button id="claimAlchemyBtn" class="${batchReady ? 'primary-btn' : 'ghost-btn'}" type="button" ${batchReady ? '' : 'disabled'}>${batchReady ? '开炉取丹' : '炼制中'}</button>
-        </article>` : `<div class="cave-recipe-grid">
-          ${recipes.map(row => {
-            const unlocked = Boolean(row.furnace_unlocked);
-            const available = Boolean(row.output_item_available);
-            const baseCosts = row.resource_costs || {};
-            return `<article class="alchemy-recipe-card ${unlocked && available ? '' : 'locked'}">
-              <div class="manage-card-head">
-                <div><span>丹炉 Lv.${formatNumber(row.required_furnace_level)} 解锁</span><strong>${escapeHtml(row.name)}</strong></div>
-                <span class="badge">${formatDuration(row.duration_seconds || 0)}/炉</span>
-              </div>
-              <p>${escapeHtml(row.description || '')}</p>
-              <small>单炉材料：${escapeHtml(caveCostText(baseCosts))} · 产出 ${escapeHtml(row.resolved_output_name || row.output_item_name)} × ${formatNumber(row.output_quantity)}</small>
-              <div class="alchemy-actions">
-                <select data-alchemy-count="${escapeHtml(row.code)}" ${unlocked && available ? '' : 'disabled'}>
-                  ${Array.from({ length: maxBatch }, (_, index) => index + 1).map(count => `<option value="${count}">${count} 炉</option>`).join('')}
-                </select>
-                <button class="primary-btn" type="button" data-start-alchemy="${escapeHtml(row.code)}" ${unlocked && available ? '' : 'disabled'}>${!available ? '物品配置缺失' : !unlocked ? '丹炉等级不足' : '开炉炼制'}</button>
-              </div>
-            </article>`;
+          <div class="cave-scene-caption-b01"><strong>洞天幽居 · 灵脉自运</strong><span>仙府隐修 · 离线最多结算 ${formatNumber(system?.rules?.offline_cap_hours || 72)} 小时</span></div>
+        </section>
+
+        <section class="cave-resource-strip-b01" aria-label="洞府资源">
+          ${resourceRows.map(row => {
+            const capacity = Number(row.capacity || 0);
+            const percent = capacity > 0 ? Math.min(100, Number(row.quantity || 0) / capacity * 100) : 100;
+            return `<article class="cave-resource-card-b01"><span>${escapeHtml(row.name || caveResourceName(row.code))}</span><strong>${formatNumber(row.quantity || 0)}${capacity > 0 ? ` <small>/ ${formatNumber(capacity)}</small>` : ''}</strong><div class="cave-resource-track-b01"><i style="width:${percent}%"></i></div></article>`;
           }).join('')}
-        </div>`}
+        </section>
 
         ${inventoryGridHtml(inventory)}
+
+        <div class="cave-action-bar-b01">
+          <button class="ghost-btn" type="button" data-cave-open-panel="buildings">洞府扩建</button>
+          <button id="collectCaveYieldB01" class="primary-btn" type="button">一键收取</button>
+          <button id="tidyCaveStorageB01" class="ghost-btn" type="button">${state.caveInventorySortMode === 'tidy' ? '恢复顺序' : '整理储物'}</button>
+        </div>
+
+        <section id="caveWorkbenchB01" class="cave-workbench-b01" hidden>
+          <button class="cave-workbench-close-b01" type="button" data-close-cave-workbench aria-label="关闭洞府功能面板">×</button>
+          <nav class="cave-workbench-tabs-b01" aria-label="洞府功能切换">
+            <button type="button" data-cave-open-panel="buildings">建筑</button>
+            <button type="button" data-cave-open-panel="alchemy">炼丹</button>
+            <button type="button" data-cave-open-panel="library">藏经</button>
+          </nav>
+          <div data-cave-workbench-panel="buildings" hidden>${caveBuildingWorkbenchHtmlB01(system, buildings)}</div>
+          <div data-cave-workbench-panel="alchemy" hidden>${caveAlchemyWorkbenchHtmlB01(system, recipes, batch, maxBatch, batchReady)}</div>
+          <div data-cave-workbench-panel="library" hidden>${techniqueLibraryHtml(techniqueLibrary)}</div>
+        </section>
       </div>
     `;
+  }
+
+  function openCaveInventoryDetailB01(inventoryId) {
+    const row = findInventoryRow(inventoryId);
+    if (!row) { showToast('该物品已不在洞府储物中。', 'error'); return; }
+    const definition = row.definition || {};
+    const effects = definition.effects || {};
+    const washPill = definition.code === 'spirit_washing_pill_v0154' || effects.use_type === 'spirit_root_reroll';
+    const usable = ['instant_cultivation', 'timed_rate', 'comprehension'].includes(effects.use_type);
+    const actionLabel = washPill ? '重塑灵根' : usable ? '选择使用数量' : '';
+    const boundText = row.is_bound ? '已绑定 · 不可转移' : '未绑定';
+    const acquiredText = Number(row.acquired_year || 0) > 0 ? ` · 仙历 ${formatNumber(row.acquired_year)} 年所得` : '';
+    modalRoot.innerHTML = `<div id="caveItemDetailBackdropB01" class="modal-backdrop cave-item-detail-backdrop-b01">
+      <section class="modal cave-item-detail-modal-b01" role="dialog" aria-modal="true" aria-labelledby="caveItemDetailTitleB01">
+        <button id="closeCaveItemDetailB01" class="modal-close-button" type="button" aria-label="关闭">×</button>
+        <div class="cave-item-detail-head-b01">
+          <div class="cave-item-detail-icon-b01 rarity-${escapeHtml(caveItemRarityClassB01(definition.rarity))}">${caveItemIconHtmlB01(row, true)}</div>
+          <div><span>${escapeHtml(rarityName(definition.rarity))} · ${escapeHtml(definition.category || '物品')}</span><h3 id="caveItemDetailTitleB01">${escapeHtml(definition.name || '未知物品')}</h3><strong>当前持有 × ${formatNumber(row.quantity || 0)}</strong></div>
+        </div>
+        <div class="cave-item-detail-tags-b01"><span>${escapeHtml(boundText)}</span><span>可堆叠上限 ${formatNumber(definition.stack_limit || 1)}</span>${effects.use_type ? `<span>${escapeHtml(effects.use_type)}</span>` : ''}</div>
+        <p class="cave-item-detail-description-b01">${escapeHtml(definition.description || '此物灵韵内敛，尚无更多记载。')}</p>
+        <div class="cave-item-detail-effect-b01"><strong>物品效果</strong><p>${escapeHtml(itemEffectText(row))}</p></div>
+        <small class="cave-item-detail-source-b01">物品代码：${escapeHtml(definition.code || 'unknown')}${escapeHtml(acquiredText)}</small>
+        <div class="cave-item-detail-actions-b01">${actionLabel ? `<button id="caveItemPrimaryActionB01" class="primary-btn" type="button">${escapeHtml(actionLabel)}</button>` : ''}<button id="caveItemCloseActionB01" class="ghost-btn" type="button">关闭</button></div>
+      </section>
+    </div>`;
+    const close = () => { modalRoot.innerHTML = ''; };
+    document.getElementById('closeCaveItemDetailB01')?.addEventListener('click', close);
+    document.getElementById('caveItemCloseActionB01')?.addEventListener('click', close);
+    document.getElementById('caveItemDetailBackdropB01')?.addEventListener('click', event => { if (event.target?.id === 'caveItemDetailBackdropB01') close(); });
+    document.getElementById('caveItemPrimaryActionB01')?.addEventListener('click', () => {
+      close();
+      if (washPill) openSpiritWashingPillModal(row.id);
+      else if (usable) openInventoryQuantityModal({ inventoryId: row.id, itemName: definition.name || '储物', quantity: Math.max(1, Number(row.quantity || 1)), effectText: itemEffectText(row) });
+    });
   }
 
   function updateCaveCountdown() {
@@ -3545,7 +3696,7 @@
       <div id="inventoryQuantityBackdrop" class="modal-backdrop inventory-quantity-backdrop">
         <section class="modal inventory-quantity-modal" role="dialog" aria-modal="true" aria-labelledby="inventoryQuantityTitle">
           <button id="closeInventoryQuantityBtn" class="modal-close-button" type="button" aria-label="关闭">×</button>
-          <span class="eyebrow">洞府储物袋</span>
+          <span class="eyebrow">洞府储物</span>
           <h3 id="inventoryQuantityTitle">使用 · ${escapeHtml(itemName)}</h3>
           <p>${escapeHtml(effectText || '选择本次使用数量。')}</p>
           <div class="inventory-quantity-stock">当前拥有 <strong>${formatNumber(maxQuantity)}</strong></div>
@@ -3646,6 +3797,75 @@
   }
 
   function bindInventoryTechniqueActions() {
+    document.querySelectorAll('[data-open-cave-item]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => openCaveInventoryDetailB01(button.dataset.openCaveItem));
+    });
+
+    document.querySelectorAll('[data-cave-storage-page]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        state.caveInventoryPageB01 = Math.max(0, Math.floor(Number(button.dataset.caveStoragePage || 0)));
+        renderCaveSystemFromState();
+        document.getElementById('caveStorageB01')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    document.querySelectorAll('[data-cave-open-panel]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        const panelName = button.dataset.caveOpenPanel || 'buildings';
+        if (panelName === 'storage') {
+          document.getElementById('caveStorageB01')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        const workbench = document.getElementById('caveWorkbenchB01');
+        if (!workbench) return;
+        workbench.hidden = false;
+        workbench.querySelectorAll('[data-cave-workbench-panel]').forEach(panel => { panel.hidden = panel.dataset.caveWorkbenchPanel !== panelName; });
+        workbench.querySelectorAll('[data-cave-building-card]').forEach(card => card.classList.toggle('focused', Boolean(button.dataset.caveBuildingCode) && card.dataset.caveBuildingCard === button.dataset.caveBuildingCode));
+        workbench.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    });
+
+    document.querySelectorAll('[data-close-cave-workbench]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        const workbench = document.getElementById('caveWorkbenchB01');
+        if (workbench) workbench.hidden = true;
+      });
+    });
+
+    const collectButtonB01 = document.getElementById('collectCaveYieldB01');
+    if (collectButtonB01 && collectButtonB01.dataset.bound !== '1') {
+      collectButtonB01.dataset.bound = '1';
+      collectButtonB01.addEventListener('click', async () => {
+        setBusy(collectButtonB01, true, '收取中……');
+        try {
+          await refreshInventoryV0147();
+          await refreshCaveSystem(false);
+          renderCaveSystemFromState();
+          showToast('洞府产出与当前物品已同步。');
+        } catch (error) {
+          showToast(translateError(error), 'error');
+          setBusy(collectButtonB01, false);
+        }
+      });
+    }
+
+    const tidyButtonB01 = document.getElementById('tidyCaveStorageB01');
+    if (tidyButtonB01 && tidyButtonB01.dataset.bound !== '1') {
+      tidyButtonB01.dataset.bound = '1';
+      tidyButtonB01.addEventListener('click', () => {
+        state.caveInventorySortMode = state.caveInventorySortMode === 'tidy' ? 'default' : 'tidy';
+        renderCaveSystemFromState();
+        showToast(state.caveInventorySortMode === 'tidy' ? '已按品质与类别整理。' : '已恢复原有入库顺序。');
+      });
+    }
     document.querySelectorAll('[data-redeem-technique-book]').forEach(button => {
       button.addEventListener('click', async () => {
         const name = button.dataset.techniqueName || '功法道卷';
@@ -3752,7 +3972,7 @@
           showResultModal({
             seal: '丹',
             title: '丹成出炉',
-            message: `${result?.item_name || '丹药'} × ${formatNumber(result?.quantity_added || 0)} 已收入储物袋。`,
+            message: `${result?.item_name || '丹药'} × ${formatNumber(result?.quantity_added || 0)} 已收入洞府储物。`,
             detail: `当前共有 ${formatNumber(result?.quantity_total || 0)}。`,
             success: true
           });
@@ -5851,10 +6071,94 @@
   }
 
 
+  // V0.15.5 FIX1 CACHE27 · 元神战斗属性界面（数值系统尚未接入）
+  function primordialSpiritPanelHtmlV0155(root = {}, fate = {}) {
+    const rootName = escapeHtml(root.name || '未测灵根');
+    const fateName = escapeHtml(fate.name || '未定命格');
+    const card = (position, icon, name, detail) => `
+      <button class="yuanshen-stat-card-v0155 ${position}" type="button" data-yuanshen-stat="${escapeHtml(name)}" data-yuanshen-detail="${escapeHtml(detail)}">
+        <span class="yuanshen-sigil-v0155" aria-hidden="true">${escapeHtml(icon)}</span>
+        <span class="yuanshen-stat-copy-v0155">
+          <strong>${escapeHtml(name)}</strong>
+          <i aria-hidden="true"></i>
+          <small>数值 · <b>接入中</b></small>
+        </span>
+      </button>`;
+    return `
+      <div class="yuanshen-shell-v0155">
+        <div class="yuanshen-stage-v0155" aria-label="元神战斗属性总览">
+          <div class="yuanshen-beam-field-v0155" aria-hidden="true"></div>
+          ${card('left-1', '攻', '道攻', '决定角色造成的基础伤害；正式数值将在战斗属性计算服务接入后显示。')}
+          ${card('left-2', '御', '道御', '决定角色承受攻击时的防护与减伤；正式数值正在接入。')}
+          ${card('left-3', '战', '战力', '综合道攻、道御、生机、身法与额外加成的总评；当前不生成临时战力。')}
+
+          <section class="yuanshen-core-v0155" aria-label="元神运转功法动画">
+            <div class="yuanshen-mandala-v0155" aria-hidden="true">
+              <div class="yuanshen-halo-v0155"></div>
+              <div class="yuanshen-rays-v0155"></div>
+              <div class="yuanshen-orbit-v0155"></div>
+              <div class="yuanshen-ring-v0155 outer"></div>
+              <div class="yuanshen-ring-v0155 middle"></div>
+              <div class="yuanshen-ring-v0155 inner"></div>
+              <span class="yuanshen-particle-v0155 p1"></span>
+              <span class="yuanshen-particle-v0155 p2"></span>
+              <span class="yuanshen-particle-v0155 p3"></span>
+              <span class="yuanshen-particle-v0155 p4"></span>
+              <span class="yuanshen-particle-v0155 p5"></span>
+              <div class="yuanshen-cultivator-wrap-v0155">
+                <svg class="yuanshen-cultivator-v0155" viewBox="0 0 360 360" role="img" aria-label="正在运转功法的元神剪影">
+                  <defs>
+                    <radialGradient id="yuanshenInnerGlowV0155" cx="50%" cy="50%" r="50%">
+                      <stop offset="0" stop-color="#f2d98b" stop-opacity=".42"/>
+                      <stop offset=".5" stop-color="#d7b764" stop-opacity=".12"/>
+                      <stop offset="1" stop-color="#d7b764" stop-opacity="0"/>
+                    </radialGradient>
+                  </defs>
+                  <circle cx="180" cy="178" r="100" fill="url(#yuanshenInnerGlowV0155)"/>
+                  <path class="body" d="M180 58c-18 0-31 14-31 33 0 8 3 16 8 22-15 8-25 24-25 42 0 11 3 21 8 29-26 11-54 33-74 56l51 31-31 31h188l-31-31 51-31c-20-23-48-45-74-56 5-8 8-18 8-29 0-18-10-34-25-42 5-6 8-14 8-22 0-19-13-33-31-33Z"/>
+                  <path class="body" d="M116 257 72 293l71 4 37 39 37-39 71-4-44-36-45 22h-38Z"/>
+                  <path class="meridian" d="M180 103 C160 137 205 158 180 191 C156 223 199 240 180 281"/>
+                  <path class="meridian" d="M180 150 C144 164 137 191 112 217" opacity=".65"/>
+                  <path class="meridian" d="M180 150 C216 164 223 191 248 217" opacity=".65"/>
+                  <circle class="dantian" cx="180" cy="210" r="7"/>
+                </svg>
+              </div>
+            </div>
+            <div class="yuanshen-core-copy-v0155">
+              <h4>元神显化 · 战意流转</h4>
+              <p>神识内守，周天自转</p>
+              <span>道攻 / 道御 / 生机 / 身法</span>
+              <em>战斗属性数值系统接入中</em>
+            </div>
+          </section>
+
+          ${card('right-1', '生', '生机', '决定角色最大生命值；当前生机与负伤联动将在战斗系统阶段接入。')}
+          ${card('right-2', '身', '身法', '决定出手顺序、闪避与追击相关能力；正式数值正在接入。')}
+          ${card('right-3', '元', '加成', `灵根“${rootName}”、命格“${fateName}”的战斗加成接口尚未启用。`)}
+        </div>
+        <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">界面已开放；道攻、道御、生机、身法与战力数值统一显示“接入中”，不会生成伪造数据。</div>
+      </div>`;
+  }
+
+  function bindPrimordialSpiritPanelV0155() {
+    const cards = Array.from(document.querySelectorAll('[data-yuanshen-stat]'));
+    const detail = document.getElementById('yuanshenDetailV0155');
+    cards.forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        cards.forEach(item => item.classList.toggle('active', item === button));
+        if (detail) detail.textContent = `${button.dataset.yuanshenStat}：${button.dataset.yuanshenDetail}`;
+      });
+    });
+  }
+
+
   // Release verifier navigation contracts: data-mobile-tab="market" data-mobile-tab="social" data-mobile-tab="sect"
   function mobileBottomNavHtml(activeTab = 'cultivation') {
     const items = [
       ['cultivation', '修', '修炼'],
+      ['primordial', '元', '元神'],
       ['techniques', '法', '功法'],
       ['cave', '府', '洞府'],
       ['market', '市', '市坊'],
@@ -6087,6 +6391,7 @@
 
           <nav class="section-nav" aria-label="游戏内容导航">
             <a href="#cultivationSection">修炼</a>
+            <a href="#primordialSpiritSection">元神</a>
             <a href="#talentSection">功法</a>
             <a href="#inventorySection">洞府</a>
             <a href="#marketSection">市坊</a>
@@ -6135,6 +6440,11 @@
             <div><span>逆境</span><strong>${escapeHtml(c.adversity)}</strong></div>
             <div><span>天道</span><strong>${escapeHtml(heavenBalance.status_name || '大道均衡')}</strong></div>
           </div>
+        </section>
+
+        <section id="primordialSpiritSection" class="panel info-section primordial-spirit-panel-v0155" data-mobile-screen="primordial">
+          <div class="panel-title"><h3>元神</h3><span class="badge">战斗属性 · 接入中</span></div>
+          ${primordialSpiritPanelHtmlV0155(root, fate)}
         </section>
 
         <section id="talentSection" class="panel info-section" data-mobile-screen="techniques">
@@ -6215,6 +6525,7 @@
     bindOpportunityEntryActions();
     bindHeavenBalanceActions();
     bindCultivationRateBreakdownV0154();
+    bindPrimordialSpiritPanelV0155();
     bindInventoryTechniqueActions();
     bindExclusiveTechniqueActions();
     bindNpcSocialActions();

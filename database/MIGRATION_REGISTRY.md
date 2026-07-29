@@ -262,3 +262,15 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 - 鱼虾灵局40秒节奏修正为30秒下注、2秒封盘、5秒开骰、3秒结算展示。
 - 九霄界闻庄家与净输赢播报保持启用。
 - 发布控制提升为 `V0.15.1 CACHE18`。
+## V0.15.5 CACHE26
+- 文件：`database/V0.15.5/202607291340_v0155_cache26_cave_yuanshen_release.sql`
+- 仅提升 `jiuxiao_app_release_control.cache_epoch` 到26，触发客户端更新。
+- 不新增战斗属性表、字段、函数或RPC。
+## V0.15.5 FIX1 CACHE27
+
+- 文件：`database/V0.15.5_FIX1/202607291500_v0155_fix1_precheck.sql`（只读前置检查）。
+- 文件：`database/V0.15.5_FIX1/202607291510_v0155_fix1_cache27_cave_visual_release.sql`（仅更新客户端发布门禁至 CACHE27）。
+- 文件：`database/V0.15.5_FIX1/202607291520_v0155_fix1_check.sql`（只读升级后检查）。
+- 可从 V0.15.4 FIX5 CACHE25 直接升级，不要求先执行 CACHE26。
+- 不新增表、字段、RPC、触发器或RLS；不修改玩家资产、洞府结算、突破或渡劫规则。
+

@@ -1,0 +1,50 @@
+九霄问道 V0.15.5 CACHE26 本地测试结果
+基线：V0.15.4 FIX5 CACHE25
+合并：B-CAVE01 + 元神界面V1
+
+1. 发布元数据
+- V0.15.5 / v0155-cache26 / CACHE26：PASS
+- GitHub Pages 工作流：PASS
+- 新增SQL与数据库迁移文件：PASS
+
+2. JavaScript / Python语法
+- app.js、config.js、update-guard.js、sw.js：PASS
+- V0.15.5构建、校验、SQL审计与CI脚本：PASS
+
+3. 历史回归
+- V0.14.1 至 V0.15.4 前端与SQL静态回归：PASS
+- V0.15.4全局渡劫成功率80%硬上限保护：保留
+
+4. B-CAVE01专项
+- 洞府主景与六建筑环位：PASS
+- 真实character_inventory库存入格：PASS
+- 每层30格及超过30类分页：PASS
+- 物品详情与既有使用流程：PASS
+- 专项合计：14/14 PASS
+
+5. 元神专项
+- 修炼与功法之间新增“元神”导航：PASS
+- 道攻、道御、生机、身法、战力、加成均显示“接入中”：PASS
+- 未生成伪造战斗数值：PASS
+- 人物浮动、法阵旋转、光晕呼吸、经脉流动、灵气粒子：PASS
+- 手机响应式：PASS
+- 专项合计：9/9 PASS
+
+6. CACHE26 SQL
+- 只更新jiuxiao_app_release_control发布门禁：PASS
+- 不创建战斗属性表、字段、函数或RPC：PASS
+- 不直接写player_characters灵石字段：PASS
+
+7. Pages产物
+- 构建：PASS
+- 产物与哈希验证：40/40 PASS
+
+总结果：V0.15.5 CI PASS
+
+未完成的外部验证：
+- 未连接生产Supabase执行SQL。
+- 未使用真实登录账号验证洞府库存、丹药、洗灵丹、炼丹和建筑升级。
+- 未验证get_cave_system_v1对“一键收取”的生产结算语义。
+- 未做Android/iOS真机及生产PWA CACHE26更新验证。
+
+完整日志：V0.15.5_FULL_CI.log

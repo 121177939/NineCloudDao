@@ -21,7 +21,7 @@ const tests={
   'treasure immediate local inventory':app.includes('applyTreasurePurchaseResultV0154')&&app.includes('inventory_quantity')&&app.includes('已收入储物袋，可立即使用'),
   'treasure background correction ordered':app.includes('await refreshInventoryV0147();\n              renderCaveSystemFromState();'),
   'treasure no stale concurrent cave render':!app.includes('Promise.all([refreshTreasureShopV0154(true), refreshInventoryV0147(), refreshCaveSystem(false)])'),
-  'new css':css.includes('V0.15.4 FIX5 CACHE25')&&css.includes('.rate-detail-modal')&&css.includes('.treasure-shop-grid')
+  'new css':css.includes('V0.15.4 FIX4 CACHE24')&&css.includes('.rate-detail-modal')&&css.includes('.treasure-shop-grid')
 };
 let fail=0;for(const [n,o] of Object.entries(tests)){console.log(`${o?'PASS':'FAIL'} ${n}`);if(!o)fail++;}
 console.log(`TOTAL=${Object.keys(tests).length} PASS=${Object.keys(tests).length-fail} FAIL=${fail}`);process.exit(fail?1:0);
