@@ -4320,3 +4320,135 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
   .battle-combatant-public-fix2 i { padding: 5px 4px; }
   .battle-report-modal-fix2 { max-height: calc(100vh - 14px); padding: 22px 10px 12px; }
 }
+
+/* V1.0 FIX3: compact duel summary, expanded battle log, compact controls. */
+.battle-report-modal-fix2.battle-playback-modal-bcombat01 {
+  display: grid;
+  grid-template-rows: auto auto minmax(0,1fr) auto;
+  gap: 8px;
+  height: min(860px, calc(100dvh - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow: hidden;
+  padding: 24px 14px 12px;
+}
+.battle-report-modal-fix2 .battle-report-title-fix2 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.2;
+}
+.battle-duel-summary-fix3 {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 38px minmax(0,1fr);
+  align-items: stretch;
+  gap: 7px;
+  min-height: 0;
+}
+.battle-duel-combatant-fix3 {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(54px,.7fr);
+  grid-template-areas:
+    "label stats"
+    "name stats";
+  align-items: center;
+  gap: 2px 8px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(183,155,88,.28);
+  background: rgba(12,11,9,.34);
+}
+.battle-duel-combatant-fix3.is-opponent { text-align: right; }
+.battle-duel-side-label-fix3 {
+  grid-area: label;
+  color: #817965;
+  font-size: 8px;
+  letter-spacing: .12em;
+}
+.battle-duel-combatant-fix3 > strong {
+  grid-area: name;
+  overflow: hidden;
+  color: var(--gold-bright);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.battle-duel-combatant-fix3 .battle-duel-stat-fix3:first-of-type { align-self: end; }
+.battle-duel-stat-fix3 {
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+  color: #c7bea9;
+  font-size: 9px;
+  font-style: normal;
+  line-height: 1.35;
+}
+.battle-duel-stat-fix3 b { color: #817965; font-weight: 400; }
+.battle-duel-stat-fix3 em { overflow: hidden; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.battle-duel-versus-fix3 {
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(162,60,49,.62);
+  color: #e8b5a0;
+  background: rgba(116,39,32,.13);
+  font-size: 13px;
+  transform: rotate(45deg);
+}
+.battle-duel-versus-fix3::first-letter { transform: rotate(-45deg); }
+.battle-log-bcombat01.battle-log-fix3 {
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px;
+}
+.battle-playback-controls-bcombat01.battle-controls-fix3 {
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin: 0;
+  padding-top: 7px;
+  border-top: 1px solid rgba(206,182,126,.14);
+}
+.battle-controls-fix3 button {
+  min-height: 34px;
+  padding: 6px 12px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.battle-controls-fix3 [data-battle-skip] { flex: 0 1 auto; }
+
+@media (max-width:620px) {
+  .battle-report-modal-fix2.battle-playback-modal-bcombat01 {
+    height: calc(100dvh - 12px);
+    max-height: calc(100dvh - 12px);
+    gap: 6px;
+    padding: 20px 7px 7px;
+  }
+  .battle-report-modal-fix2 .battle-report-title-fix2 { font-size: 14px; }
+  .battle-duel-summary-fix3 { grid-template-columns: minmax(0,1fr) 28px minmax(0,1fr); gap: 4px; }
+  .battle-duel-combatant-fix3 {
+    grid-template-columns: 1fr;
+    grid-template-areas: "label" "name" "stats";
+    gap: 2px;
+    padding: 6px 5px;
+    text-align: center;
+  }
+  .battle-duel-combatant-fix3.is-opponent { text-align: center; }
+  .battle-duel-combatant-fix3 > strong { font-size: 13px; }
+  .battle-duel-stat-fix3 {
+    grid-column: 1;
+    justify-content: center;
+    gap: 4px;
+    font-size: 8px;
+  }
+  .battle-duel-stat-fix3 + .battle-duel-stat-fix3::before { content: "·"; color: #655f51; margin-right: 1px; }
+  .battle-duel-versus-fix3 { width: 26px; height: 26px; font-size: 10px; }
+  .battle-log-bcombat01.battle-log-fix3 { padding: 5px; }
+  .battle-playback-controls-bcombat01.battle-controls-fix3 { gap: 4px; padding-top: 5px; }
+  .battle-controls-fix3 button { min-height: 31px; padding: 4px 9px; font-size: 10px; }
+}

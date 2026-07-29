@@ -1,7 +1,7 @@
 {
-  "baseline": "V1.0_FIX2_CACHE32",
-  "developmentBaseline": "V1.0_FIX2_AB17_CACHE32",
-  "cacheEpoch": 32,
+  "baseline": "V1.0_FIX3_CACHE33",
+  "developmentBaseline": "V1.0_FIX3_AB18_CACHE33",
+  "cacheEpoch": 33,
   "protectedRules": [
     "渡劫最终成功率不超过80%",
     "灵石继续使用统一账户与库存链",
@@ -9,5 +9,5 @@
     "洞府保持洞窟、灵脉、石台、仙府隐修与经营感",
     "未研习功法只作为洞府虚拟展示格，不重复写入角色库存"
   ],
-  "updatedAt": "2026-07-29T18:00:00Z"
+  "updatedAt": "2026-07-29T18:35:00Z"
 }

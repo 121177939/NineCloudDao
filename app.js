@@ -4445,6 +4445,17 @@
     `;
   }
 
+  function battleDuelCombatantHtmlFix3(row, sideLabel, sideClass) {
+    return `
+      <article class="battle-duel-combatant-fix3 ${escapeHtml(sideClass || '')}">
+        <span class="battle-duel-side-label-fix3">${escapeHtml(sideLabel)}</span>
+        <strong>${escapeHtml(row?.name || '无名修士')}</strong>
+        <div class="battle-duel-stat-fix3"><b>战力</b><em>${formatNumber(row?.power || 0)}</em></div>
+        <div class="battle-duel-stat-fix3"><b>五行</b><em>${escapeHtml(row?.element_name || '未定')}行</em></div>
+      </article>
+    `;
+  }
+
   function closeBattleChallengeModalBCombat01() {
     if (state.battlePlaybackTimer) clearTimeout(state.battlePlaybackTimer);
     state.battlePlaybackTimer = null;
@@ -4639,17 +4650,17 @@
         <section class="modal battle-challenge-modal-bcombat01 battle-playback-modal-bcombat01 battle-report-modal-fix2" role="dialog" aria-modal="true" aria-labelledby="battleReportTitleFix2">
           <button class="modal-close-button" type="button" data-close-battle-challenge aria-label="关闭">×</button>
           <h3 id="battleReportTitleFix2" class="battle-report-title-fix2">挑战战报</h3>
-          <div class="battle-playback-head-bcombat01">
-            ${battleCombatantCardHtml(result?.challenger, '挑战者')}
-            <div class="battle-versus-mark-bcombat01">战</div>
-            ${battleCombatantCardHtml(result?.target, '守榜者')}
+          <div class="battle-duel-summary-fix3" aria-label="双方对战信息">
+            ${battleDuelCombatantHtmlFix3(result?.challenger, '我方', 'is-self')}
+            <div class="battle-duel-versus-fix3" aria-hidden="true">战</div>
+            ${battleDuelCombatantHtmlFix3(result?.target, '对方', 'is-opponent')}
           </div>
-          <div class="battle-playback-controls-bcombat01">
+          <div class="battle-log-bcombat01 battle-log-fix3" data-battle-log aria-live="polite"></div>
+          <div class="battle-playback-controls-bcombat01 battle-controls-fix3" aria-label="战报播放控制">
             <button class="ghost-btn active" type="button" data-battle-speed="1">1倍</button>
             <button class="ghost-btn" type="button" data-battle-speed="2">2倍</button>
             <button class="primary-btn" type="button" data-battle-skip>直接看结果</button>
           </div>
-          <div class="battle-log-bcombat01" data-battle-log aria-live="polite"></div>
         </section>
       </div>
     `;

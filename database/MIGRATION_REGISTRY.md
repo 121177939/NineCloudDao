@@ -295,3 +295,10 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 - `database/V1.0_FIX2/202607291910_v1_fix2_precheck.sql`：CACHE31只读检查。
 - `database/V1.0_FIX2/202607291920_v1_fix2_cache32_release.sql`：前端隐私与弹窗调整的CACHE32发布门禁。
 - `database/V1.0_FIX2/202607291930_v1_fix2_check.sql`：升级后只读检查。
+
+## V1.0 FIX3 CACHE33
+- `database/V1.0_FIX3/202607292020_v1_fix3_precheck.sql`：CACHE32只读检查。
+- `database/V1.0_FIX3/202607292030_v1_fix3_battle_story.sql`：挑战界闻趣味文案、历史战报重写与故障隔离触发器。
+- `database/V1.0_FIX3/202607292040_v1_fix3_cache33_release.sql`：CACHE33发布门禁。
+- `database/V1.0_FIX3/202607292050_v1_fix3_check.sql`：升级后只读检查。
+- `database/V1.0_FIX3/202607292060_v1_fix3_rollback.sql`：停止后续界闻重写；历史正文不自动恢复。
