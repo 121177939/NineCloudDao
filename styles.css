@@ -3142,7 +3142,7 @@ button, .badge, .hero-chip { max-width: 100%; }
   .technique-slot-actions select { padding: 7px 8px; font-size: 9px; }
 }
 
-/* V0.15.4 FIX4 CACHE24：珍宝阁购买即时入包与可用状态同步 */
+/* V0.15.4 FIX5 CACHE25：珍宝阁购买即时入包与可用状态同步 */
 .focus-stat-button {
   width: 100%;
   appearance: none;

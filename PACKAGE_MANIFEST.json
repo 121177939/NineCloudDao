@@ -1,14 +1,5 @@
 {
-  "packageName": "九霄问道 V0.15.4 FIX4 CACHE24 完整部署包",
-  "packageType": "authoritative_complete_deploy_and_development_baseline",
-  "version": "V0.15.4 FIX4 CACHE24",
-  "baseline": "V0.15.4_AB12_CACHE24",
-  "buildAt": "2026-07-29T07:30:01+00:00",
-  "usage": [
-    "GitHub完整部署",
-    "A线接入基线",
-    "B线开发基线"
-  ],
+  "version": "V0.15.4 FIX5 CACHE25",
   "files": [
     {
       "path": ".github/workflows/deploy-pages.yml",
@@ -27,8 +18,8 @@
     },
     {
       "path": "00_完整包使用说明.md",
-      "size": 463,
-      "sha256": "5e2d22f4bdafe495de11799bee73ff3c9cb5d0436b97f44c7bd3c7aae080c90e"
+      "size": 612,
+      "sha256": "5c410954943be43f50c16fee02ed253ab7e7694529e6ddba552bf7e028d62925"
     },
     {
       "path": "00_部署说明.txt",
@@ -38,7 +29,7 @@
     {
       "path": "404.html",
       "size": 2084,
-      "sha256": "ad963067a9a5738dbe434e1c1381e83f6e0fe3a2df8cbcf87973a1e4f9d1b025"
+      "sha256": "c2a1d548580819ad29875b2f2d22d2cee66876fe8576350c7f48dd25796a195e"
     },
     {
       "path": "AB_CONTROL/AB_DEVELOPMENT_PROTOCOL.md",
@@ -82,8 +73,8 @@
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 2496,
-      "sha256": "bf8e5852aa78edcf9f3e125cf601ae5de61647ce1d7d784fae5dfa50236a5b9e"
+      "size": 2584,
+      "sha256": "05bc2b210bd806e83e7ecbb902154333a6aab7bdadf1194771e3299d327f662f"
     },
     {
       "path": "DESKTOP_UPDATE.md",
@@ -102,8 +93,8 @@
     },
     {
       "path": "SQL/00_SQL执行说明.txt",
-      "size": 930,
-      "sha256": "ff921489978ccab35bcd9c7817e1b279b6c43f684c7705b01bdf9d1e86f17e85"
+      "size": 1074,
+      "sha256": "82db4380bd868b076df8e73292ae035460bd60a5b2a37c647b89626a8f630f5a"
     },
     {
       "path": "SQL/01_升级前检查.sql",
@@ -191,6 +182,16 @@
       "sha256": "a42b4b07666f9f38e0032b847b64f3c031a94b624aa31609cd0b2906e4afc0c9"
     },
     {
+      "path": "SQL/18_V0.15.4_FIX5_渡劫成功率80硬上限_CACHE25.sql",
+      "size": 34557,
+      "sha256": "3a109cef36bb967cd8b1c1b8e5bcb8c63d2ba8a0b1f09dabe62b53a05b33d6fe"
+    },
+    {
+      "path": "SQL/19_V0.15.4_FIX5_最终检查.sql",
+      "size": 1714,
+      "sha256": "c32e79453915fdcd6221be6951bc43c500c5e529c3d711f387d314989b9ae6c1"
+    },
+    {
       "path": "V0.14.8_TEST_RESULTS.txt",
       "size": 1648,
       "sha256": "3fb8b74b9c69b0f72d4d3cbf13ef1d55380648ec02825bbfc6380debc93f391c"
@@ -231,6 +232,11 @@
       "sha256": "bbb6197982a02693882b0c3ff42463ffc506f6af446c61e1ef7b91b418c76960"
     },
     {
+      "path": "V0.15.4_FIX5_CACHE25.txt",
+      "size": 58,
+      "sha256": "3f9b6b827b1e4794c28530484bf43d14680a51bfba5844f966880730f8420784"
+    },
+    {
       "path": "V0.15.4_SQL_FIX1.txt",
       "size": 492,
       "sha256": "be6f308828e459f1930e8a3119a78814994409365564357a45fe7a86415329bb"
@@ -252,8 +258,8 @@
     },
     {
       "path": "app.js",
-      "size": 367333,
-      "sha256": "7ed2328c44752f0fc530bbb23753ea1a2b05001d58a8008eb2b3390172f886e8"
+      "size": 367332,
+      "sha256": "e998b0b3195d2f88729ab5b921cacf5b715e643d12b41401c24bead0d4685fd2"
     },
     {
       "path": "assets/icon-192.png",
@@ -268,7 +274,7 @@
     {
       "path": "config.js",
       "size": 521,
-      "sha256": "6a194d0d9df17801e64859aa8b4262eaa1a93a1fc3bc0172e6bc46e71f04c7e4"
+      "sha256": "2e4715e10b2d2c7e82177f0a8441c3bc2d2816c29fc8706bfd875b62f030f46d"
     },
     {
       "path": "database/MIGRATION_REGISTRY.md",
@@ -911,6 +917,16 @@
       "sha256": "a42b4b07666f9f38e0032b847b64f3c031a94b624aa31609cd0b2906e4afc0c9"
     },
     {
+      "path": "database/V0.15.4_FIX5/202607290900_v0154_fix5_breakthrough_cap80_cache25.sql",
+      "size": 34557,
+      "sha256": "3a109cef36bb967cd8b1c1b8e5bcb8c63d2ba8a0b1f09dabe62b53a05b33d6fe"
+    },
+    {
+      "path": "database/V0.15.4_FIX5/202607290910_v0154_fix5_check.sql",
+      "size": 1714,
+      "sha256": "c32e79453915fdcd6221be6951bc43c500c5e529c3d711f387d314989b9ae6c1"
+    },
+    {
       "path": "docs/B01命格与造化池接入说明.md",
       "size": 411,
       "sha256": "9d36763fcdb5c28e562722dd244823a6ffcc6a5c984226d4ed22982fc23f3523"
@@ -1323,27 +1339,27 @@
     {
       "path": "index.html",
       "size": 2084,
-      "sha256": "ad963067a9a5738dbe434e1c1381e83f6e0fe3a2df8cbcf87973a1e4f9d1b025"
+      "sha256": "c2a1d548580819ad29875b2f2d22d2cee66876fe8576350c7f48dd25796a195e"
     },
     {
       "path": "manifest.webmanifest",
       "size": 530,
-      "sha256": "808d566629f770ea76945e35bc42e6812776f2b964f2ba4a8d6c232d03aa0e77"
+      "sha256": "d066b038b2f80da0ec738dbc4a15df2b735676a3279b7da3a9798bcac245ac53"
     },
     {
       "path": "release_config.json",
-      "size": 1903,
-      "sha256": "894855f520f514ec23207165075ffaff64ebbd49489105e30b88bd043a4619c9"
+      "size": 1938,
+      "sha256": "38631439792a39f510184a9d8af8f82387dbb04eacb1931b43267de80b5fd5df"
     },
     {
       "path": "styles.css",
       "size": 168780,
-      "sha256": "c91d0648f6ff762bd98da8af55ff174ed31cd1ce9be1d65f559b30fffb48fa3b"
+      "sha256": "412a0235af91eb88a5c1204c169144c7f313f2e4ffadda3786bbf81aa57a8f62"
     },
     {
       "path": "sw.js",
       "size": 2932,
-      "sha256": "8301618501f73a3fcdb36e5f26b0e047551ca5878981a1d78cab7efa6cd79d48"
+      "sha256": "27a1c21fd6138ad4e92f3e15e2eea63b6b0322832f66df6c738e387305612bfa"
     },
     {
       "path": "tools/audit_v0120_fix1.py",
@@ -1818,7 +1834,7 @@
     {
       "path": "update-guard.js",
       "size": 4919,
-      "sha256": "eb2b2617ad00f513a48e55298dc29e9492181dd36f81c15b6100a71fd76770c5"
+      "sha256": "0073815099ad05022b7bacb220611d12a66607ea3fd26dfc2a6fafd8c9bb9a92"
     }
   ]
 }

@@ -287,7 +287,7 @@
     if (raw.includes('TREASURE_ITEM_NOT_FOUND')) return '珍宝阁中没有这件商品。';
     if (raw.includes('INVALID_TREASURE_QUANTITY')) return '购买数量不正确。';
     if (raw.includes('BREAKTHROUGH_PILL_INSUFFICIENT')) return '渡境清元丹数量不足。';
-    if (raw.includes('BREAKTHROUGH_PILL_QUANTITY_EXCESS')) return '所选丹药数量超过本次提升到100%所需数量。';
+    if (raw.includes('BREAKTHROUGH_PILL_QUANTITY_EXCESS')) return '所选丹药数量超过本次提升到80%上限所需数量。';
     if (raw.includes('SPIRIT_WASHING_PILL_INSUFFICIENT')) return '洗灵丹数量不足。';
     if (raw.includes('INVALID_RANKING_PAGE')) return '榜单分页参数无效，请重新进入榜单。';
     if (raw.includes('V091_REQUIRED')) return 'V0.9.1修为榜基础尚未完成，请先部署并检查。';
@@ -2053,11 +2053,11 @@
     const recoveryActive = Boolean(status.major_fall_used && status.original_target_stage_name);
     const pillStock = Math.max(0, Math.floor(Number(status.breakthrough_pill_quantity || 0)));
     const normalRate = Math.max(0, Math.min(1, Number(status.success_rate || 0)));
-    const serverMaxUseful = Math.max(0, Math.floor(Number(status.max_useful_pills ?? Math.ceil(Math.max(0, 1 - normalRate) / 0.05))));
+    const serverMaxUseful = Math.max(0, Math.floor(Number(status.max_useful_pills ?? Math.ceil(Math.max(0, 0.8 - normalRate) / 0.05))));
     const maxPills = Math.min(pillStock, serverMaxUseful);
     state.breakthroughPillQuantity = Math.max(0, Math.min(maxPills, Math.floor(Number(state.breakthroughPillQuantity || 0))));
     const selectedPills = state.breakthroughPillQuantity;
-    const finalRate = Math.min(1, normalRate + selectedPills * 0.05);
+    const finalRate = Math.min(0.8, normalRate + selectedPills * 0.05);
     return `
       <div class="panel-title"><h3>境界突破</h3><span class="badge">目标 · ${escapeHtml(status.next_stage_name || '未知')}</span></div>
       <div class="breakthrough-card ${canBreakthrough ? 'cultivation-full' : ''}">
@@ -2066,7 +2066,7 @@
         <div class="progress-track"><div id="breakthroughProgressFill" class="progress-fill" style="width:${percent}%"></div></div>
         ${canBreakthrough ? '<div class="cultivation-full-notice"><strong>修为已至圆满</strong><p>丹田灵力已臻当前境界极限，再行吐纳亦无法寸进。唯有叩问天关、完成突破，方可继续修行。</p></div>' : ''}
         <div class="breakthrough-pill-selector ${pillStock > 0 ? '' : 'is-empty'}">
-          <div><span>渡境清元丹</span><strong>每枚 +5 个百分点</strong><small>库存 ${formatNumber(pillStock)} 枚 · 最终可提升至100%</small></div>
+          <div><span>渡境清元丹</span><strong>每枚 +5 个百分点</strong><small>库存 ${formatNumber(pillStock)} 枚 · 最终成功率上限80%</small></div>
           <div class="breakthrough-pill-controls">
             <button type="button" data-breakthrough-pill-delta="-1" ${selectedPills <= 0 ? 'disabled' : ''}>−</button>
             <b id="breakthroughPillQuantity">${formatNumber(selectedPills)}</b>
@@ -2079,7 +2079,7 @@
           <span>天劫感悟：${formatNumber(insights)}丝（突破 +${formatNumber(insightBonus * 100, 0)}个百分点 · 总修炼速度 +${formatNumber(insights * 10, 0)}%）</span>
           ${fateStatus?.code === 'unyielding_heart' ? `<span>百折道心：${formatNumber(unyieldingStacks)} / ${formatNumber(fateStatus.unyielding_stack_limit || 4)}层（突破额外 +${formatNumber(unyieldingBonus * 100, 0)}个百分点）</span>` : ''}
           ${fateStatus?.code === 'heaven_jealous' && status.penalty_enabled !== false ? `<span>天妒劫身：渡劫成功率 -${formatNumber(Number(fateStatus.tribulation_success_penalty || 0) * 100, 0)}个百分点</span>` : ''}
-          <span>常规加成上限：${formatNumber(Number(status.compensation_cap || 0.95) * 100, 0)}%；渡境清元丹可继续推至100%</span>
+          <span>最终硬上限：80%；渡境清元丹、天劫感悟、百折道心及任何其他加成都不能超过80%</span>
           <span>实际受到修为或境界惩罚后获得天劫感悟；百折道心同步获得百折。恢复周期中，中途突破成功不会清空。</span>
           <span>失败结果：道果崩解0.3% · 大跌境5% · 小跌境8% · 全损15% · 半损30% · 有惊无险41.7%</span>
           <span>道果崩解不会死亡：境界与修为回到凡人、状态变为濒死；重新达到保护下限后转为重伤。</span>
@@ -2500,10 +2500,10 @@
     const status = state.breakthroughStatus || {};
     const normalRate = Math.max(0, Math.min(1, Number(status.success_rate || 0)));
     const stock = Math.max(0, Math.floor(Number(status.breakthrough_pill_quantity || 0)));
-    const maxUseful = Math.min(stock, Math.max(0, Math.floor(Number(status.max_useful_pills ?? Math.ceil(Math.max(0, 1 - normalRate) / 0.05)))));
+    const maxUseful = Math.min(stock, Math.max(0, Math.floor(Number(status.max_useful_pills ?? Math.ceil(Math.max(0, 0.8 - normalRate) / 0.05)))));
     state.breakthroughPillQuantity = Math.max(0, Math.min(maxUseful, Math.floor(Number(state.breakthroughPillQuantity || 0))));
     const quantity = state.breakthroughPillQuantity;
-    const finalRate = Math.min(1, normalRate + quantity * 0.05);
+    const finalRate = Math.min(0.8, normalRate + quantity * 0.05);
     const quantityNode = document.getElementById('breakthroughPillQuantity');
     const chanceNode = document.getElementById('breakthroughChanceValue');
     const previewNode = document.getElementById('breakthroughPillPreview');
