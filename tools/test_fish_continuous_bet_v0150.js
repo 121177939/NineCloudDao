@@ -18,7 +18,7 @@ const checks=[
  ['queue serial worker',source.includes('state.fishShrimpBetProcessing = true')&&source.includes('while (queue.length)')],
  ['queue delay window',source.includes('}, 120);')],
  ['pending amount shown',source.includes('data-fish-pending')&&source.includes('待提交 +')],
- ['queue feedback says continue',source.includes('法印仍可继续点击')],
+ ['queue feedback says continue',source.includes('可连续选择法印')],
  ['refresh guarded during queue',source.includes('state.fishShrimpBetProcessing || !state.character')],
  ['only phase disables cards',source.includes("button.disabled = phase !== 'betting'")],
  ['queued css exists',css.includes('.fish-target-card.queued')&&css.includes('.fish-target-pending')]

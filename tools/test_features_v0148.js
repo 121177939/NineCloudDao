@@ -9,7 +9,7 @@ const checks=[
  ['B primary nav 1x4',source.includes('casinoPrimaryNavHtml')&&css.includes('repeat(4, minmax(0, 1fr))')],
  ['B lobby 2x2',source.includes('playerHouseLobbyCardsHtml')&&source.includes('data-casino-dealer-status')],
  ['formal naming',source.includes("casino: ['赌坊 · 万运博弈楼'")&&!source.includes('墨玉赌坊')],
- ['fish rpc',source.includes('rpcGetFishShrimpStateV0148')&&source.includes('rpcPlaceFishShrimpBetV0148')],
+ ['fish rpc',source.includes('rpcGetFishShrimpStateV0148')&&source.includes('rpcPlaceFishShrimpBetV1Fix4')],
  ['fish selector',source.includes('data-house-select-game="fish_shrimp"')&&source.includes('鱼虾灵局')],
  ['compact order',source.indexOf('fish-bet-controls')<source.indexOf('fish-draw-block')&&source.indexOf('fish-draw-block')<source.indexOf('fish-target-grid')],
  ['six symbols', ['fish','shrimp','crab','coin','gourd','frog'].every(x=>source.includes(`['${x}'`))],

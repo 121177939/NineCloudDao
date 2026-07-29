@@ -242,9 +242,13 @@
     if (raw.includes('MARKET_DISABLED')) return '万运博弈楼尚未开放。';
     if (raw.includes('CASINO_INSUFFICIENT_SPIRIT_STONES')) return '统一灵石余额不足，无法落注。';
     if (raw.includes('CASINO_INSUFFICIENT_CULTIVATION')) return '当前小境界内可动用修为不足；境界保底修为不可下注。';
-    if (raw.includes('CULTIVATION_STAKE_MINIMUM')) return '修为赌注通常最低五万点；不足五万时必须一次押上全部可动用修为。';
+    if (raw.includes('CULTIVATION_STAKE_MINIMUM')) return '修为赌注通常最低五万点；若当前10%下注上限低于五万，则按该上限落注。';
     if (raw.includes('CASINO_CULTIVATION_REQUIRES_NASCENT_SOUL')) return '修为局仅对元婴期及以上修士开放。';
-    if (raw.includes('CASINO_CULTIVATION_STAKE_EXCEEDS_TWENTY_PERCENT')) return '下注不得超过当前小境界内的全部可动用修为。';
+    if (raw.includes('CASINO_CULTIVATION_STAKE_EXCEEDS_TWENTY_PERCENT')) return '修为赌注超过当前规则允许范围。';
+    if (raw.includes('CASINO_STAKE_EXCEEDS_TEN_PERCENT')) return '单次下注不得超过当前可用灵石或修为的10%。';
+    if (raw.includes('CASINO_REQUEST_ID_REQUIRED')) return '本局唯一凭证缺失，请刷新页面后重新落注。';
+    if (raw.includes('CASINO_REQUEST_IN_PROGRESS')) return '这笔赌契正在结算，请勿重复提交。';
+    if (raw.includes('CASINO_REQUEST_PARAMETER_MISMATCH')) return '赌契凭证与本次下注内容不一致，请重新落注。';
     if (raw.includes('CASINO_STAKE_BELOW_MINIMUM')) return '本玩法赌注低于最低限制。';
     if (raw.includes('CASINO_STAKE_ABOVE_MAXIMUM')) return '本玩法赌注超过单局上限。';
     if (raw.includes('CASINO_STAKE_TOO_LARGE')) return '赌注数值过大，请降低后重试。';
@@ -258,7 +262,8 @@
     if (raw.includes('FISH_INVALID_HOUSE_MODE')) return '庄家类型无效。';
     if (raw.includes('FISH_ROUND_INVALID')) return '鱼虾灵局轮次异常，请刷新后重试。';
     if (raw.includes('CASINO_PLAYER_HOUSE_ONLY_SPIRIT_STONE')) return '玩家坐庄期间，大堂只接受灵石下注。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_DEALER_INSUFFICIENT')) return '玩家庄结算异常，请稍后重试；正常情况下不足部分由荷老补足。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_DEALER_INSUFFICIENT')) return '玩家庄不足以承担本局最大可能赔付，请降低下注金额或切换荷老。';
+    if (raw.includes('CASINO_PLAYER_HOUSE_RESERVE_MISSING')) return '玩家庄赔付保证金异常，本局未结算，请联系维护。';
     if (raw.includes('CASINO_PLAYER_HOUSE_DISABLED')) return '玩家坐庄功能当前已停用，荷老继续坐庄。';
     if (raw.includes('CASINO_PLAYER_HOUSE_OCCUPIED')) return '已有其他修士正在坐庄，请等待其下庄或任期结束。';
     if (raw.includes('CASINO_PLAYER_HOUSE_EXPIRED')) return '本次玩家庄任期已经结束，请重新申请上庄。';
@@ -719,8 +724,19 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcPlayHouseGameV0147(houseMode, gameCode, stakeType, stakeAmount, choice) {
-    const result = await restFetch('rpc/play_house_game_v0147', { method: 'POST', body: {
+  function casinoRequestIdFix4() {
+    if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+    const bytes = new Uint8Array(16);
+    globalThis.crypto?.getRandomValues?.(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = [...bytes].map(value => value.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+  }
+
+  async function rpcPlayHouseGameV1Fix4(houseMode, gameCode, stakeType, stakeAmount, choice, requestId = casinoRequestIdFix4()) {
+    const result = await restFetch('rpc/play_house_game_v1_fix4', { method: 'POST', body: {
+      p_request_id: requestId,
       p_house_mode: houseMode === 'player' ? 'player' : 'system',
       p_game_code: gameCode, p_stake_type: stakeType, p_stake_amount: Number(stakeAmount), p_choice: choice
     }});
@@ -747,9 +763,10 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcPlaceFishShrimpBetV0148(houseMode, stakeType, symbolCode, stakeAmount) {
-    const result = await restFetch('rpc/place_fish_shrimp_bet_v0148', {
+  async function rpcPlaceFishShrimpBetV1Fix4(houseMode, stakeType, symbolCode, stakeAmount, requestId = casinoRequestIdFix4()) {
+    const result = await restFetch('rpc/place_fish_shrimp_bet_v1_fix4', {
       method: 'POST', body: {
+        p_request_id: requestId,
         p_house_mode: houseMode === 'player' ? 'player' : 'system',
         p_stake_type: stakeType === 'cultivation' ? 'cultivation' : 'spirit_stone',
         p_symbol_code: symbolCode,
@@ -5466,7 +5483,7 @@
       </label>
       <div class="casino-balance-strip">
         <span>统一灵石 <b data-spirit-stone-balance>${formatNumber(character.spirit_stones || 0)}</b></span>
-        ${playerHouseOnlyStones ? '<span>玩家庄模式仅接受灵石</span>' : `<span>当前小境界可动用 <b>${formatNumber(character.cultivation_available || 0)}</b></span><span>输光后境界不变</span>`}
+        ${playerHouseOnlyStones ? '<span>玩家庄模式仅接受灵石 · 单局上限10%</span>' : `<span>当前小境界可动用 <b>${formatNumber(character.cultivation_available || 0)}</b></span><span>${prefix === 'house' ? '大堂单局上限10%' : '雅间沿用既有规则'}</span>`}
       </div>
       <div class="casino-multiplier-group">
         <span>快捷倍数</span>
@@ -5476,9 +5493,9 @@
         <small data-stake-base-hint="${escapeHtml(prefix)}">以 ${formatNumber(base)} ${unit}为基数，也可在下方直接填写任意整数。</small>
       </div>
       <label>自定义赌注数量
-        <input id="${escapeHtml(prefix)}StakeAmount" data-casino-stake-amount="${escapeHtml(prefix)}" type="number" min="${cultivation ? Math.min(50000, Math.max(1, Number(character.cultivation_available || 0))) : 10}" step="1" inputmode="numeric" value="${escapeHtml(draft.amount)}">
+        <input id="${escapeHtml(prefix)}StakeAmount" data-casino-stake-amount="${escapeHtml(prefix)}" type="number" min="${cultivation ? Math.min(50000, Math.max(1, prefix === 'house' ? Math.floor(Number(character.cultivation_available || 0) * 0.10) : Number(character.cultivation_available || 0))) : 10}" step="1" inputmode="numeric" value="${escapeHtml(draft.amount)}">
       </label>
-      ${cultivation ? `<button class="ghost-btn casino-all-in-btn" type="button" data-cultivation-all-in="${escapeHtml(prefix)}">全部修为 · ${formatNumber(character.cultivation_available || 0)}</button>` : ''}
+      ${cultivation && prefix !== 'house' ? `<button class="ghost-btn casino-all-in-btn" type="button" data-cultivation-all-in="${escapeHtml(prefix)}">全部修为 · ${formatNumber(character.cultivation_available || 0)}</button>` : ''}
       <div class="casino-stake-summary" data-stake-summary="${escapeHtml(prefix)}">本局确定下注：${formatNumber(draft.amount)} ${unit}</div>
     </div>`;
   }
@@ -5549,7 +5566,7 @@
       const action = house.can_deactivate
         ? '<button class="ghost-btn" type="button" data-player-house-toggle="off">主动下庄</button>'
         : '';
-      return `<div class="market-lore"><p><b>当前玩家庄家：${escapeHtml(house.dealer_name || '无名修士')}</b></p><p>本次任期剩余 ${formatDuration(house.remaining_seconds || 0)}，最多坐庄2小时，到期后必须重新申请。</p><p>玩家庄局不限下注金额。闲家中奖时，先扣玩家庄应承担部分，不足由荷老补足；毛利润仍扣除5%庄家佣金。玩家庄局不进入造化池。</p>${action}</div>`;
+      return `<div class="market-lore"><p><b>当前玩家庄家：${escapeHtml(house.dealer_name || '无名修士')}</b></p><p>本次任期剩余 ${formatDuration(house.remaining_seconds || 0)}，最多坐庄2小时，到期后必须重新申请。</p><p>玩家庄局单次下注最多为闲家当前灵石的10%；开奖前按最高倍率校验并锁定庄家赔付能力。闲家胜负结算均有5%坊税进入全服造化池，荷老不再兜底。</p>${action}</div>`;
     }
     if (house.can_activate) {
       return `<div class="market-lore"><p><b>你的统一灵石为 ${formatNumber(house.current_wealth || 0)}。</b></p><p>余额达到500万即可自愿上庄，无需财富榜第一。每次任期最多2小时，到期后需重新申请。</p><button class="primary-btn" type="button" data-player-house-toggle="on">自愿上庄</button></div>`;
@@ -5668,7 +5685,7 @@
     if (!status) return;
     const clicks = fishShrimpQueuedClickCountV0150();
     if (clicks > 0) {
-      status.textContent = `已加入 ${formatNumber(clicks)} 次连续落注，后台顺序提交中；法印仍可继续点击。`;
+      status.textContent = `已加入 ${formatNumber(clicks)} 次落注，后台顺序提交中；本局累计不得超过当前资源10%。`;
       status.classList.add('is-queueing');
       return;
     }
@@ -5698,6 +5715,18 @@
     }
 
     const queue = fishShrimpBetQueueV0150();
+    const character = state.fishShrimpState?.character || state.marketSystem?.character || {};
+    const available = stakeType === 'cultivation'
+      ? Number(character.cultivation_available || 0)
+      : Number(character.spirit_stones || 0);
+    const maximum = Math.max(0, Math.floor(available * 0.10));
+    const queuedForResource = queue
+      .filter(item => item.roundId === roundId && item.houseMode === houseMode && item.stakeType === stakeType)
+      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    if (queuedForResource + Number(amount) > maximum) {
+      showToast(`本局累计下注不得超过当前可用${stakeType === 'cultivation' ? '修为' : '灵石'}的10%（${formatNumber(maximum)}）。`, 'error');
+      return false;
+    }
     const key = fishShrimpBetQueueKeyV0150(roundId, houseMode, stakeType, symbolCode);
     const existing = queue.find(item => item.key === key && !item.processing);
     if (existing) {
@@ -5723,7 +5752,7 @@
 
     const meta = fishShrimpSymbolMetaV0148(symbolCode);
     const unit = stakeType === 'cultivation' ? '修为' : '灵石';
-    state.fishShrimpLastBetMessage = `已点${meta[1]} +${formatNumber(amount)} ${unit}；可继续点击。`;
+    state.fishShrimpLastBetMessage = `已点${meta[1]} +${formatNumber(amount)} ${unit}；本局累计上限为当前资源10%。`;
     updateFishShrimpQueueFeedbackV0150();
     scheduleFishShrimpBetQueueV0150();
     return true;
@@ -5740,7 +5769,7 @@
         const entry = queue[0];
         entry.processing = true;
         try {
-          const payload = await rpcPlaceFishShrimpBetV0148(
+          const payload = await rpcPlaceFishShrimpBetV1Fix4(
             entry.houseMode,
             entry.stakeType,
             entry.symbolCode,
@@ -5753,7 +5782,7 @@
           }
           const meta = fishShrimpSymbolMetaV0148(entry.symbolCode);
           const unit = entry.stakeType === 'cultivation' ? '修为' : '灵石';
-          state.fishShrimpLastBetMessage = `已押${meta[1]} ${formatNumber(entry.amount)} ${unit}${entry.clickCount > 1 ? `（合并${entry.clickCount}次）` : ''}；仍可继续点击。`;
+          state.fishShrimpLastBetMessage = `已押${meta[1]} ${formatNumber(entry.amount)} ${unit}${entry.clickCount > 1 ? `（合并${entry.clickCount}次）` : ''}；本局累计上限为当前资源10%。`;
           renderFishShrimpPanelV0148();
           startFishShrimpTimerV0148();
           updateFishShrimpQueueFeedbackV0150(state.fishShrimpLastBetMessage);
@@ -5901,13 +5930,13 @@
 
       <div class="fish-draw-block"><div class="fish-section-head"><div><strong>开盘灵骰</strong><small>封盘后疾转，依次停定</small></div><span>${round.round_no ? `第${escapeHtml(round.round_no)}局` : '同步中'}</span></div><div class="fish-orbit"><div class="fish-dice-row">${diceHtml}</div></div><small class="fish-draw-note">三枚灵骰共用同一份开奖结果，荷老局与玩家局分别结算。</small></div>
 
-      <div class="fish-target-block"><div class="fish-section-head"><div><strong>选择压什么</strong><small>先设置数量与倍率，再点击法印下注</small></div><button type="button" class="ghost-btn fish-refresh-btn" data-fish-refresh>刷新</button></div><div class="fish-target-grid">${targetHtml}</div><div class="fish-bet-status" id="fishBetStatus">${open ? '开放下注；法印可连续点击，系统会顺序合并提交，离开页面仍会结算。' : '本局已封盘，等待开盘与结算。'}</div></div>
+      <div class="fish-target-block"><div class="fish-section-head"><div><strong>选择压什么</strong><small>先设置数量与倍率，再点击法印下注</small></div><button type="button" class="ghost-btn fish-refresh-btn" data-fish-refresh>刷新</button></div><div class="fish-target-grid">${targetHtml}</div><div class="fish-bet-status" id="fishBetStatus">${open ? '开放下注；可连续选择法印，但本局累计下注不得超过当前资源10%。' : '本局已封盘，等待开盘与结算。'}</div></div>
 
       <div class="fish-history-block"><div class="fish-section-head"><div><strong>最近20局结算历史</strong><small>每桌只写一次“荷老局”或“玩家局”</small></div></div><div class="fish-history-list">${fishShrimpHistoryHtmlV0148(history)}</div></div>
 
       <div class="fish-detail-block"><div class="fish-section-head"><div><strong>结算明细</strong><small>按法印列出下注与本局输赢</small></div></div>${latestDetail}</div>
 
-      <details class="fish-rules-block"><summary>规则</summary><p>每局40秒：前30秒下注，随后2秒封盘，5秒依次开骰，最后3秒展示结算。鱼、虾、蟹、铜钱、葫芦、青蛙分别独立下注；出现1、2、3次时，毛利润分别为下注额的1、2、3倍，未出现则损失该门下注。</p><p>荷老局沿用全服造化池规则：赢局从毛利润提取5%入池，败局下注额10%入池、90%由天道回收。玩家局只接受灵石，毛利润扣5%庄家佣金；玩家庄余额不足时先扣至零，剩余由荷老补足。</p></details>
+      <details class="fish-rules-block"><summary>规则</summary><p>每局40秒：前30秒下注，随后2秒封盘，5秒依次开骰，最后3秒展示结算。鱼、虾、蟹、铜钱、葫芦、青蛙分别独立下注；出现1、2、3次时，毛利润分别为下注额的1、2、3倍，未出现则损失该门下注。</p><p>荷老局沿用全服造化池规则：赢局从毛利润提取5%入池，败局下注额10%入池、90%由天道回收。玩家局只接受灵石，单次下注不超过当前灵石10%；落注时玩家庄预扣3倍最大赔付保证金。胜负结算均有5%进入造化池，荷老不再兜底。</p></details>
     </section>`;
   }
 
@@ -6052,7 +6081,7 @@
       const houseBetDisabled = disabled || Boolean(selectedPlayerHouse && playerHouse.is_self_dealer);
       const houseSubtitle = fishSelected
         ? '40秒公共开盘 · 三骰共用 · 离线仍结算'
-        : selectedPlayerHouse ? '即时开奖 · 玩家庄5%佣金 · 荷老兜底' : '即时开奖 · 系统庄沿用FIX7A造化规则';
+        : selectedPlayerHouse ? '即时开奖 · 10%下注上限 · 玩家庄全额赔付' : '即时开奖 · 10%下注上限 · 系统庄沿用FIX7A造化规则';
       const houseModeSwitch = playerDealerActive ? `<div class="casino-house-switch" aria-label="选择庄家"><button type="button" data-house-mode="system" class="${state.casinoHouseMode === 'system' ? 'active' : ''}">荷老（系统庄）</button><button type="button" data-house-mode="player" class="${state.casinoHouseMode === 'player' ? 'active' : ''}">${escapeHtml(playerHouse.dealer_name || '玩家庄')}</button></div>` : '';
       const selector = `<section class="casino-play-sheet casino-game-selector-v0148"><div class="subsection-title"><strong>选择玩法</strong><span>${fishSelected ? '鱼虾灵局采用公共40秒轮次' : selectedPlayerHouse ? '玩家庄期间仅可选择灵石' : '先定玩法，再选灵石或修为'}</span></div><div class="casino-game-buttons"><button class="${draft.game === 'spirit_dice' ? 'active' : ''}" type="button" data-house-select-game="spirit_dice"><b>骰</b><span>灵骰问道</span><small>大小各50% · 豹子3倍 · 天命34倍</small></button><button class="${draft.game === 'turtle_oracle' ? 'active' : ''}" type="button" data-house-select-game="turtle_oracle"><b>卜</b><span>气运龟卜</span><small>吉、平、凶</small></button><button class="${fishSelected ? 'active' : ''}" type="button" data-house-select-game="fish_shrimp"><b>鱼</b><span>鱼虾灵局</span><small>六门同押 · 三骰公共开盘</small></button></div></section>`;
 
@@ -6070,7 +6099,7 @@
           <div class="casino-confirm-row">
             <button class="primary-btn" type="button" id="confirmHouseGameBtn" ${houseBetDisabled ? 'disabled' : ''}>${selectedPlayerHouse && playerHouse.is_self_dealer ? '庄家不可下注本桌' : '确认落注并立即开局'}</button>
             <small>${selectedPlayerHouse
-              ? '灵骰与龟卜沿用现有概率和实际净倍率。玩家庄局不限下注金额；闲家中奖时先从毛利润扣除5%庄家佣金，再优先扣玩家庄余额，不足部分由荷老补足。玩家庄局不进入造化池，也不发放造化资格。'
+              ? '灵骰与龟卜沿用现有概率和倍率。单局最多下注当前可用灵石的10%；开奖前按最高倍率锁定玩家庄赔付能力。闲家败局下注额5%进入造化池、庄家实得95%；闲家胜局毛利润5%进入造化池、实际获得95%利润并返还本金。荷老不再兜底。'
               : '灵骰先独立抽取大小，大、小各50%，玩家选择和两边下注量不参与开奖结果。3—10点为小，11—18点为大；111/222/333归小，444/555/666归大。普通非豹子押中毛利润1倍，普通豹子毛利润3倍，天命豹子毛利润34倍；普通豹子全服约1/80，天命豹子全服约1/5000。系统庄赢局仅从毛利润提取5%进入造化池；败局下注额10%进入造化池，余下90%由天道回收。'}</small>
           </div>
         </section>`;
@@ -6100,7 +6129,7 @@
           ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石')}
           ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为')}
         </div>
-        <div class="market-lore"><p><b>开奖规则：</b>荷老系统庄大堂赢局按毛利润5%进入奖池，败局按下注额10%进入奖池、90%由天道回收，并发放对应候选资格；玩家庄大堂仅从闲家赢家毛利润中收取5%庄家佣金，佣金归当局庄家，不进入造化池，也不发放造化资格。贵宾雅间分出胜负时，败者赌注的5%进入奖池、95%转给胜者，其他规则保持不变。重复游玩不会叠加个人中奖权重。开奖时在全部有效参与者中等概率抽出一人，票号抽中即中奖，不再进行40%/60%二次判定。</p><p>中奖者最多领取开奖前奖池的70%，整数奖励向下取整；至少30%继续留在奖池，与后续新入池奖励共同进入下一期。修为奖池若受当前境界硬上限限制，未实际承接的部分也继续留池，因此实际留存可能高于30%。游玩次数不设每日上限。</p></div>
+        <div class="market-lore"><p><b>开奖规则：</b>荷老系统庄大堂赢局按毛利润5%进入奖池，败局按下注额10%进入奖池、90%由天道回收，并发放对应候选资格；玩家庄大堂每个有效局均收取5%坊税进入灵石造化池：闲家败局庄家实得95%，闲家胜局获得95%毛利润并返还本金；玩家庄承担全部赔付，荷老不再兜底。贵宾雅间分出胜负时，败者赌注的5%进入奖池、95%转给胜者，其他规则保持不变。重复游玩不会叠加个人中奖权重。开奖时在全部有效参与者中等概率抽出一人，票号抽中即中奖，不再进行40%/60%二次判定。</p><p>中奖者最多领取开奖前奖池的70%，整数奖励向下取整；至少30%继续留在奖池，与后续新入池奖励共同进入下一期。修为奖池若受当前境界硬上限限制，未实际承接的部分也继续留池，因此实际留存可能高于30%。游玩次数不设每日上限。</p></div>
         <div class="subsection-title"><strong>近期造化</strong><span>抽中、领取与留存都会留下记录</span></div>
         ${casinoDrawRowsHtml(draws)}`;
     }
@@ -6110,7 +6139,7 @@
     return `${error}
       <div class="casino-lobby-summary">
         <div><span>统一灵石</span><strong data-spirit-stone-balance>${formatNumber(character.spirit_stones || 0)}</strong><small>机缘、洞府、功法与赌坊共用</small></div>
-        <div><span>当前境界可动用修为</span><strong>${formatNumber(character.cultivation_available || 0)}</strong><small>可一次押上全部，输光不跌境</small></div>
+        <div><span>当前境界可动用修为</span><strong>${formatNumber(character.cultivation_available || 0)}</strong><small>大堂单局最多10%，雅间沿用既有规则</small></div>
         <div><span>今日参与</span><strong>${formatNumber(activity.total_count || 0)} 局</strong><small>已取消每日次数限制</small></div>
         <div><span>当前庄家</span><strong>${escapeHtml(lobbyDealerName)}</strong><small>${escapeHtml(lobbyDealerNote)}</small></div>
       </div>
@@ -6124,7 +6153,7 @@
         <button type="button" data-casino-dealer-status><b>庄</b><strong>庄家状态</strong><span>查看当前庄家、上庄资格、任期与下庄入口</span></button>
       </div>
       ${playerHouseLobbyCardsHtml(data)}
-      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>统一灵石达到500万即可自愿上庄，每次最多2小时。玩家庄存在时，闲家仍可自由切换荷老系统庄；选择玩家庄时不限下注金额，中奖赔付先扣玩家庄，不足由荷老补足。玩家庄毛利润5%佣金、零入池规则不变。</p></div>`;
+      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>统一灵石达到500万即可自愿上庄，每次最多2小时。玩家庄存在时，闲家仍可自由切换荷老系统庄；单局下注最多为当前可用资源的10%。玩家庄必须承担开奖前最大可能赔付，荷老不再兜底；每个有效玩家庄局的5%坊税进入全服造化池。</p></div>`;
   }
 
   function duelChoices(game) {
@@ -6145,14 +6174,18 @@
     if (!typeSelect || !amountInput) return;
     const cultivation = typeSelect.value === 'cultivation';
     const base = casinoStakeBase(typeSelect.value);
-    const available = Number(state.marketSystem?.character?.cultivation_available || 0);
-    amountInput.min = cultivation ? String(Math.min(50000, Math.max(1, available))) : '10';
+    const character = state.marketSystem?.character || {};
+    const available = cultivation ? Number(character.cultivation_available || 0) : Number(character.spirit_stones || 0);
+    const houseMaximum = Math.max(0, Math.floor(available * 0.10));
+    amountInput.min = cultivation ? String(Math.min(50000, Math.max(1, prefix === 'house' ? houseMaximum : available))) : '10';
+    if (prefix === 'house') amountInput.max = String(houseMaximum);
+    else amountInput.removeAttribute('max');
     amountInput.step = '1';
     const value = Math.max(0, Math.floor(Number(amountInput.value || 0)));
     const unit = cultivation ? '修为' : '灵石';
     if (hint) hint.textContent = cultivation
-      ? `通常最低 50,000 修为；不足 50,000 时只允许一次押上全部可动用修为。当前境界不会跌落。`
-      : `以 ${formatNumber(base)} ${unit}为基数，也可在下方直接填写任意整数。`;
+      ? (prefix === 'house' ? `通常最低 50,000 修为；单局最多当前可动用修为10%，当前上限 ${formatNumber(houseMaximum)}。` : `通常最低 50,000 修为；不足 50,000 时按雅间既有规则处理。`)
+      : (prefix === 'house' ? `单局最多当前可用灵石10%，当前上限 ${formatNumber(houseMaximum)}。` : `以 ${formatNumber(base)} ${unit}为基数，也可在下方直接填写任意整数。`);
     if (summary) summary.textContent = `本局确定下注：${formatNumber(value)} ${unit}`;
   }
 
@@ -6163,15 +6196,15 @@
     const amount = Math.floor(Number(amountInput?.value || 0));
     const character = state.marketSystem?.character || {};
     const available = stakeType === 'cultivation' ? Number(character.cultivation_available || 0) : Number(character.spirit_stones || 0);
-    const minimum = stakeType === 'cultivation' ? Math.min(50000, Math.max(1, available)) : 10;
-    const maximum = stakeType === 'cultivation' ? available : available;
+    const maximum = prefix === 'house' ? Math.max(0, Math.floor(available * 0.10)) : available;
+    const minimum = stakeType === 'cultivation' ? Math.min(50000, Math.max(1, prefix === 'house' ? maximum : available)) : 10;
     if (!Number.isSafeInteger(amount) || amount < minimum) {
       throw new Error(stakeType === 'cultivation' ? 'CULTIVATION_STAKE_MINIMUM' : 'CASINO_STAKE_BELOW_MINIMUM');
     }
     if (amount > available) {
       throw new Error(stakeType === 'cultivation' ? 'CASINO_INSUFFICIENT_CULTIVATION' : 'CASINO_INSUFFICIENT_SPIRIT_STONES');
     }
-    if (stakeType === 'cultivation' && amount > maximum) throw new Error('CASINO_CULTIVATION_STAKE_EXCEEDS_TWENTY_PERCENT');
+    if (prefix === 'house' && amount > maximum) throw new Error('CASINO_STAKE_EXCEEDS_TEN_PERCENT');
     return { stakeType, amount };
   }
 
@@ -6414,7 +6447,7 @@
         setBusy(houseConfirm, true, '推演中……');
         try {
           const stake = readCasinoStake('house');
-          const result = await rpcPlayHouseGameV0147(state.casinoHouseMode, houseGameInput?.value || 'spirit_dice', stake.stakeType, stake.amount, houseChoice?.value || 'big');
+          const result = await rpcPlayHouseGameV1Fix4(state.casinoHouseMode, houseGameInput?.value || 'spirit_dice', stake.stakeType, stake.amount, houseChoice?.value || 'big');
           showToast(result?.result_text || '赌契已结算。', result?.won ? 'success' : 'error');
           await Promise.all([refreshMarketSystem(true), refreshWorldEvents(true), refreshSpiritStoneBalanceV0141(true)]);
         } catch (error) {

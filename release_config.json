@@ -1,25 +1,26 @@
 {
-  "version": "V1.0 FIX3",
-  "release": "v1-fix3-battle-story-cache33",
-  "base": "V1.0 FIX2 CACHE32",
-  "databaseBaseline": "V1.0 FIX2 CACHE32",
-  "databaseMigration": "database/V1.0_FIX3/202607292030_v1_fix3_battle_story.sql",
-  "databaseReleaseGate": "database/V1.0_FIX3/202607292040_v1_fix3_cache33_release.sql",
-  "databaseFinalCheck": "database/V1.0_FIX3/202607292050_v1_fix3_check.sql",
+  "version": "V1.0 FIX4",
+  "release": "v1-fix4-casino-security-cache34",
+  "base": "V1.0 FIX3 CACHE33",
+  "databaseBaseline": "V1.0 FIX3 CACHE33",
+  "databaseMigration": "database/V1.0_FIX4/202607292140_v1_fix4_casino_security.sql",
+  "databaseReleaseGate": "database/V1.0_FIX4/202607292150_v1_fix4_cache34_release.sql",
+  "databaseFinalCheck": "database/V1.0_FIX4/202607292160_v1_fix4_check.sql",
   "pagesStagingDirectory": ".pages-site",
   "features": [
-    "挑战战报顶部采用我方/对方横向紧凑信息栏，只显示姓名、战力与五行",
-    "扩大逐回合战斗日志区域，底部播放控制条紧凑化",
-    "九霄界闻战斗文案明确谁挑战谁、谁胜谁负、使用兵刃及修为损失",
-    "按速胜、险胜、五行克制、挑战成功或守榜成功等战况选取修仙化文案"
+    "大堂与鱼虾灵局单次下注不得超过当前可用灵石或修为的10%",
+    "玩家庄取消荷老系统兜底，开奖前校验并锁定最高可能赔付",
+    "玩家庄胜负有效局均按5%坊税进入现有全服造化池",
+    "大堂与鱼虾灵局使用唯一request_id，重复请求不会重复扣款、开奖或派奖",
+    "旧结算RPC撤销客户端执行权限，保留完整请求审计与结算版本"
   ],
-  "clientBuild": "v1-fix3-cache33",
-  "gameplayBaseline": "V1.0 FIX3 = V1.0 FIX2 + 战报布局优化 + 九霄界闻趣味战斗文案",
+  "clientBuild": "v1-fix4-cache34",
+  "gameplayBaseline": "V1.0 FIX4 = V1.0 FIX3 + 赌坊玩家庄安全结算",
   "worldFeedBaseline": "V0.14.2 + V0.15.1赌场播报 + V1.0 FIX3战斗故事文案",
   "rankingBaseline": "V0.14.3 + B-COMBAT01战力榜",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "databaseChange": "V1.0_FIX3_BATTLE_STORY_CACHE33",
-  "sqlRevision": "V1.0_FIX3_CACHE33",
-  "clientHotfix": "V1.0_FIX3_CACHE33",
-  "cacheEpoch": 33
+  "databaseChange": "V1.0_FIX4_CASINO_SECURITY_CACHE34",
+  "sqlRevision": "V1.0_FIX4_CACHE34",
+  "clientHotfix": "V1.0_FIX4_CACHE34",
+  "cacheEpoch": 34
 }
