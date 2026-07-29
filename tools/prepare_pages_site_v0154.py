@@ -13,6 +13,6 @@ for rel in files:
  if not src.is_file(): raise SystemExit(f'MISSING:{rel}')
  dst=out/rel;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst)
  data=dst.read_bytes();manifest.append({'path':rel,'size':len(data),'sha256':hashlib.sha256(data).hexdigest()})
-payload={'version':'V0.15.4','clientBuild':'v0154-cache24','files':manifest}
+payload={'version':'V0.15.4','clientBuild':'v0154-cache25','files':manifest}
 (out/'PAGES_ARTIFACT_MANIFEST.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n','utf-8')
 print('PAGES_SITE_BUILT',len(manifest)+1)

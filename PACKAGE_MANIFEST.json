@@ -1,5 +1,5 @@
 {
-  "version": "V0.15.4 FIX5 CACHE25",
+  "version": "V0.15.4 FIX5 DEPLOYFIX1 CACHE25",
   "files": [
     {
       "path": ".github/workflows/deploy-pages.yml",
@@ -1479,7 +1479,7 @@
     {
       "path": "tools/prepare_pages_site_v0154.py",
       "size": 1091,
-      "sha256": "da7373e1a9467446e4ccc8a9e1e18a73e6f1aa8d0c8e4cc2d20e6540a8c42cd1"
+      "sha256": "a36c22367c323c73a08f14f95d064f54d3c3275daa7ba59dbf7061def8337858"
     },
     {
       "path": "tools/sql_static_audit_v0130.py",
@@ -1609,7 +1609,7 @@
     {
       "path": "tools/test_features_v0154.js",
       "size": 2400,
-      "sha256": "2e6002f5420790ea0d383cf0285cc7fdddaa6ade43f462048fbbd7c323481cb8"
+      "sha256": "6707bef77939223f75a0be814a112f71030e1056c3bda3bc5ac952e3a78b15ff"
     },
     {
       "path": "tools/test_fish_continuous_bet_v0150.js",
@@ -1734,7 +1734,7 @@
     {
       "path": "tools/verify_pages_site_v0154.py",
       "size": 1945,
-      "sha256": "e38dcdf9da9503f9d485541784c802d4e40b946acf8e77f17ff03023e7131663"
+      "sha256": "e94653e81afd822f97422eb7d29a899c9a7663ebb5ffc3b4fe3d53557ab9c392"
     },
     {
       "path": "tools/verify_release.py",
@@ -1828,8 +1828,8 @@
     },
     {
       "path": "tools/verify_release_v0154.py",
-      "size": 3301,
-      "sha256": "27c6dd89904a351da3bc26076d722de48e05028b173945bccf0c05d2995e6b48"
+      "size": 3762,
+      "sha256": "d5037ac32d3bc87e030910d0dadabb0fbbc58715db0f2167efdc4225103c7c90"
     },
     {
       "path": "update-guard.js",
