@@ -4,6 +4,8 @@ import sys
 root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve()
 main=(root/'database/V0.15.4/202607290100_v0154_cache23_full_upgrade.sql').read_text('utf-8').lower()
 check=(root/'database/V0.15.4/202607290110_v0154_check.sql').read_text('utf-8').lower()
+fix4=(root/'database/V0.15.4_FIX4/202607290730_v0154_fix4_treasure_instant_inventory_cache24.sql').read_text('utf-8').lower()
+fix4check=(root/'database/V0.15.4_FIX4/202607290740_v0154_fix4_check.sql').read_text('utf-8').lower()
 checks={
  'atomic-transaction':main.count('begin;')==1 and main.count('commit;')==1,
  'dollar-quotes':main.count('$$')%2==0,
@@ -18,6 +20,7 @@ checks={
  'washing-pill-item':"'spirit_washing_pill_v0154','洗灵丹'" in main,
  'pill-category-fix':"array['consumable','pill','medicine','elixir','material','misc','currency']" in main and "'丹药','legendary'" not in main,
  'new-table-rls':all(x in main for x in ['alter table public.player_operation_requests_v0154 enable row level security','alter table ncd_b_module_backup.b02_functions enable row level security','alter table ncd_b_module_backup.b02_settings enable row level security']),
+ 'purchase-no-unsupported-on-conflict':"on conflict(character_id,item_definition_id) do update" not in main and 'v_inventory_id' in main,
  'pill-price':'1000000' in main,
  'wash-price':'5000000' in main,
  'pill-five-percent':'p_pill_quantity*0.05' in main and 'least(1.0' in main,
@@ -28,6 +31,12 @@ checks={
  'permissions':all(x in main for x in ['grant execute on function public.get_treasure_shop_v0154() to authenticated','revoke all on table public.player_operation_requests_v0154 from public,anon,authenticated']),
  'cache23':"release_name='v0.15.4 cache23'" in main and 'greatest(cache_epoch,23)' in main,
  'postcheck':'technique_bucket_fixed' in check and 'pill_to_100' in check and 'release_cache23' in check,
+ 'fix4-transaction':fix4.count('begin;')==1 and fix4.count('commit;')==1,
+ 'fix4-response-payload':all(x in fix4 for x in ["'inventory_id'","'inventory_quantity'","'item_definition_id'","'item_effects'"]),
+ 'fix4-no-unique-dependency':'on conflict(character_id,item_definition_id)' not in fix4,
+ 'fix4-cache24':"release_name='v0.15.4 fix4 cache24'" in fix4 and 'greatest(cache_epoch,24)' in fix4,
+ 'fix4-permissions':'revoke all on function public.purchase_treasure_item_v0154(text,integer,uuid)' in fix4 and 'to authenticated' in fix4,
+ 'fix4-check':'treasure_instant_inventory_payload' in fix4check and 'release_cache24' in fix4check,
 }
 failed=[]
 for n,o in checks.items(): print(('PASS ' if o else 'FAIL ')+n);failed += [] if o else [n]

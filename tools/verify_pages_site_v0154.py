@@ -8,10 +8,10 @@ required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js',
 for rel in required: ck(f'file:{rel}',(root/rel).is_file())
 ck('version',txt('VERSION.txt').strip()=='V0.15.4')
 ck('config-version',"version: '0.15.4'" in txt('config.js'))
-ck('build','v0154-cache23' in txt('config.js'))
-ck('epoch','cacheEpoch: 23' in txt('config.js'))
-ck('index-cache','0154-cache23' in txt('index.html'))
-ck('service-worker-cache','nine-cloud-dao-v0.15.4-cache23' in txt('sw.js'))
+ck('build','v0154-cache24' in txt('config.js'))
+ck('epoch','cacheEpoch: 24' in txt('config.js'))
+ck('index-cache','0154-cache24' in txt('index.html'))
+ck('service-worker-cache','nine-cloud-dao-v0.15.4-cache24' in txt('sw.js'))
 app=txt('app.js')
 for name,token in {
  'instant-technique':'optimisticTechniqueUpgradeV0154',
@@ -19,10 +19,12 @@ for name,token in {
  'treasure-shop':'get_treasure_shop_v0154',
  'washing-pill':'use_spirit_washing_pill_v0154',
  'pill-breakthrough':'attempt_breakthrough_v0154',
- 'b02-collapse':'道果崩解0.3%'
+ 'b02-collapse':'道果崩解0.3%',
+ 'treasure-instant':'applyTreasurePurchaseResultV0154',
+ 'treasure-immediate-toast':'已收入储物袋，可立即使用'
 }.items(): ck(name,token in app)
 manifest=json.loads(txt('PAGES_ARTIFACT_MANIFEST.json'))
-ck('manifest-version',manifest.get('version')=='V0.15.4');ck('manifest-build',manifest.get('clientBuild')=='v0154-cache23')
+ck('manifest-version',manifest.get('version')=='V0.15.4');ck('manifest-build',manifest.get('clientBuild')=='v0154-cache24')
 for e in manifest.get('files',[]):
  p=root/e['path'];ck(f"hash:{e['path']}",p.is_file() and p.stat().st_size==e['size'] and hashlib.sha256(p.read_bytes()).hexdigest()==e['sha256'])
 failed=[n for n,o in checks if not o]

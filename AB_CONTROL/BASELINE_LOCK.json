@@ -1,8 +1,8 @@
 {
   "version": "V0.15.4",
-  "release": "CACHE23",
-  "baseline": "V0.15.4_AB11_CACHE23",
-  "sourcePackage": "九霄问道_V0.15.4_CACHE23_完整部署包.zip",
+  "release": "CACHE24",
+  "baseline": "V0.15.4_AB12_CACHE24",
+  "sourcePackage": "九霄问道_V0.15.4_FIX4_CACHE24_完整部署包.zip",
   "sourceSha256": "见压缩包外部SHA256及包内SHA256SUMS.txt",
   "timing": {
     "round": 40,

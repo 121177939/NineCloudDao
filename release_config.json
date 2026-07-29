@@ -1,6 +1,6 @@
 {
   "version": "V0.15.4",
-  "release": "instant-actions-rate-breakdown-treasure-b02-cache23",
+  "release": "instant-actions-rate-breakdown-treasure-b02-fix4-cache24",
   "base": "V0.15.3 FIX2 CACHE22",
   "databaseBaseline": "V0.13.0修为硬上限 + V0.14.1 FIX7A + V0.14.2严格界闻 + V0.14.3财富榜 + V0.14.4综合升级 + V0.14.5机缘V4与玩家庄佣金 + V0.14.6机缘明细 + V0.14.7功法书藏经架与双庄兜底 + V0.14.8鱼虾灵局 + V0.15.0连续落注 + V0.15.1赌场界闻与40秒轮次 + V0.15.2命格功法 + V0.15.3 FIX2灵石账户",
   "databaseMigration": "database/V0.15.4/202607290100_v0154_cache23_full_upgrade.sql",
@@ -11,14 +11,17 @@
     "修复普通及专属功法贡献显示为0或被归入持续机缘的问题",
     "珍宝阁新增渡境清元丹与洗灵丹",
     "接入B02突破恢复周期与0.3%道果崩解，取消突破失败死亡",
-    "CACHE23强制客户端更新",
-    "SQL FIX1：兼容既有item_definitions类别约束并显式启用新表RLS"
+    "珍宝阁购买成功后即时更新持有数量、洞府储物袋与突破丹库存，无需刷新即可使用",
+    "购买RPC返回库存ID、堆叠数量与物品定义快照，前端后台静默回读校正",
+    "CACHE24强制旧客户端载入FIX4"
   ],
-  "clientBuild": "v0154-cache23",
+  "clientBuild": "v0154-cache24",
   "gameplayBaseline": "V0.14.1 FIX7A + V0.14.4 + V0.14.5 + V0.14.7 + V0.14.8 + V0.15.0 + V0.15.1 + V0.15.2 + V0.15.4",
   "worldFeedBaseline": "V0.14.2 + V0.15.1赌场庄家与鱼虾结算播报",
   "rankingBaseline": "V0.14.3",
   "adminBaseline": "V0.14.4 ADMIN2",
-  "databaseChange": "v0154_instant_idempotency_rate_breakdown_treasure_b02_cache23_sql_fix1",
-  "sqlRevision": "FIX1"
+  "databaseChange": "v0154_fix4_treasure_instant_inventory_cache24",
+  "sqlRevision": "FIX4",
+  "databaseHotfix": "database/V0.15.4_FIX4/202607290730_v0154_fix4_treasure_instant_inventory_cache24.sql",
+  "databaseFinalCheck": "database/V0.15.4_FIX4/202607290740_v0154_fix4_check.sql"
 }

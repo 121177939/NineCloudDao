@@ -836,6 +836,85 @@
     return row;
   }
 
+  function applyTreasurePurchaseResultV0154(result = {}) {
+    const code = String(result?.item_code || '');
+    const ownedQuantity = Math.max(0, Math.floor(Number(result?.owned_quantity ?? result?.quantity ?? 0)));
+    const inventoryQuantity = Math.max(0, Math.floor(Number(result?.inventory_quantity ?? ownedQuantity)));
+    const balance = Number(result?.spirit_stones_after);
+
+    if (Number.isFinite(balance)) {
+      setLocalSpiritStoneBalance(balance);
+      if (state.caveSystem) state.caveSystem.spirit_stones = balance;
+      if (state.treasureShop) state.treasureShop.spirit_stones = balance;
+    }
+
+    const shopRow = state.treasureShop?.items?.find(row => String(row.code || '') === code);
+    if (shopRow) shopRow.owned_quantity = ownedQuantity;
+    if (state.treasureShop) state.treasureShopFetchedAt = Date.now();
+
+    if (state.details) {
+      if (!Array.isArray(state.details.inventory)) state.details.inventory = [];
+      let row = state.details.inventory.find(item =>
+        String(item?.id || '') === String(result?.inventory_id || '') ||
+        String(item?.definition?.code || '') === code
+      );
+      const inventoryId = result?.inventory_id || row?.id || null;
+      if (row) {
+        row.id = inventoryId || row.id;
+        row.item_definition_id = result?.item_definition_id || row.item_definition_id;
+        row.quantity = inventoryQuantity;
+        row.is_bound = false;
+        row.item_instance = {};
+        row.acquired_year = Number(result?.acquired_year || row.acquired_year || 1);
+        row.definition = {
+          ...(row.definition || {}),
+          id: result?.item_definition_id || row.definition?.id,
+          code,
+          name: result?.item_name || row.definition?.name || '丹药',
+          category: result?.item_category || row.definition?.category || 'consumable',
+          rarity: result?.item_rarity || row.definition?.rarity || 'legendary',
+          stack_limit: Number(result?.item_stack_limit || row.definition?.stack_limit || 999999),
+          effects: result?.item_effects || row.definition?.effects || {},
+          description: result?.item_description || row.definition?.description || ''
+        };
+      } else if (inventoryId && code) {
+        row = {
+          id: inventoryId,
+          character_id: state.character?.id || null,
+          item_definition_id: result?.item_definition_id || null,
+          quantity: inventoryQuantity,
+          is_bound: false,
+          item_instance: {},
+          acquired_year: Number(result?.acquired_year || 1),
+          definition: {
+            id: result?.item_definition_id || null,
+            code,
+            name: result?.item_name || '丹药',
+            category: result?.item_category || 'consumable',
+            rarity: result?.item_rarity || 'legendary',
+            stack_limit: Number(result?.item_stack_limit || 999999),
+            effects: result?.item_effects || {},
+            description: result?.item_description || ''
+          }
+        };
+        state.details.inventory.push(row);
+      }
+    }
+
+    if (code === 'breakthrough_clear_origin_pill_v0154' && state.breakthroughStatus) {
+      state.breakthroughStatus.breakthrough_pill_quantity = ownedQuantity;
+      const panel = document.getElementById('breakthroughPanel');
+      if (panel) {
+        panel.innerHTML = breakthroughPanelHtml(state.breakthroughStatus, currentDisplayedCultivation());
+        bindProgressionActions();
+      }
+    }
+
+    if (state.marketView === 'treasure') updateBazaarPanel();
+    renderCaveSystemFromState();
+    return true;
+  }
+
   function renderCaveSystemFromState() {
     const root = document.getElementById('caveSystemRoot');
     if (!root || !state.details) return;
@@ -4500,9 +4579,19 @@
         setBusy(button, true, '成交中……');
         try {
           const result = await rpcPurchaseTreasureItemV0154(code, quantity, createUuid());
-          if (Number.isFinite(Number(result?.spirit_stones_after))) setLocalSpiritStoneBalance(Number(result.spirit_stones_after));
-          await Promise.all([refreshTreasureShopV0154(true), refreshInventoryV0147(), refreshCaveSystem(false)]);
-          showToast(`已购得${result?.item_name || '丹药'} ×${formatNumber(result?.quantity || quantity)}。`);
+          applyTreasurePurchaseResultV0154(result);
+          setBusy(button, false);
+          showToast(`已购得${result?.item_name || '丹药'} ×${formatNumber(result?.quantity || quantity)}，已收入储物袋，可立即使用。`);
+          void (async () => {
+            try {
+              await refreshInventoryV0147();
+              renderCaveSystemFromState();
+              await refreshTreasureShopV0154(true);
+              if (code === 'breakthrough_clear_origin_pill_v0154') await refreshBreakthroughStatus();
+            } catch (syncError) {
+              console.error(syncError);
+            }
+          })();
         } catch (error) {
           showToast(translateError(error), 'error');
           setBusy(button, false);

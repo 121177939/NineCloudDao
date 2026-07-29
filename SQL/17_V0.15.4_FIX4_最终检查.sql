@@ -1,18 +1,19 @@
--- 九霄问道 V0.15.4 CACHE23 升级后检查 FIX2（只读）
+-- 九霄问道 V0.15.4 FIX4 CACHE24 最终检查（只读）
 -- 修复：原检查脚本第23行多余右括号，以及文本检索误用双引号。
 
 with defs as (
   select
     coalesce(pg_get_functiondef(to_regprocedure('public.claim_cultivation_v1()')), '') as claim_def,
-    coalesce(pg_get_functiondef(to_regprocedure('public.attempt_breakthrough_v1()')), '') as attempt_def
+    coalesce(pg_get_functiondef(to_regprocedure('public.attempt_breakthrough_v1()')), '') as attempt_def,
+    coalesce(pg_get_functiondef(to_regprocedure('public.purchase_treasure_item_v0154(text,integer,uuid)')), '') as purchase_def
 ), checks(item, passed, detail) as (
-  select 'release_cache23',
+  select 'release_cache24',
          exists(
            select 1
            from public.jiuxiao_app_release_control
-           where singleton_id = 1 and cache_epoch >= 23
+           where singleton_id = 1 and cache_epoch >= 24
          ),
-         '发布控制已升至 CACHE23'
+         '发布控制已升至 CACHE24'
 
   union all
   select 'operation_idempotency_table',
@@ -88,9 +89,28 @@ with defs as (
              'breakthrough_clear_origin_pill_v0154',
              'spirit_washing_pill_v0154'
            )
-             and category = '丹药'
+             and category::text = '丹药'
          ),
          '丹药类别符合既有 CHECK 约束，不再写入中文展示词'
+
+  union all
+  select 'treasure_instant_inventory_payload',
+         (
+           select
+             strpos(purchase_def, $q$'inventory_id'$q$) > 0
+             and strpos(purchase_def, $q$'inventory_quantity'$q$) > 0
+             and strpos(purchase_def, $q$'item_effects'$q$) > 0
+           from defs
+         ),
+         '购买RPC返回库存ID、实时堆叠数量与物品效果，前端可即时入包并使用'
+
+  union all
+  select 'treasure_purchase_no_unique_constraint_dependency',
+         (
+           select strpos(purchase_def, 'on conflict(character_id,item_definition_id)') = 0
+           from defs
+         ),
+         '购买RPC不依赖线上不存在的复合唯一约束'
 
   union all
   select 'operation_table_rls',
