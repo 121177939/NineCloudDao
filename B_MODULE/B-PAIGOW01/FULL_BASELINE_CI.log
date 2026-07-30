@@ -1,0 +1,84 @@
+$ node --check /mnt/data/jiuxiao_b_paigow_build/Jiuxiao_V1.2_CACHE37_B-PAIGOW01_CANDIDATE/app.js
+
+$ node --check /mnt/data/jiuxiao_b_paigow_build/Jiuxiao_V1.2_CACHE37_B-PAIGOW01_CANDIDATE/b-paigow01.js
+
+$ node tools/test_features_v1_1_fix1.js
+FAIL CACHE36 build
+PASS true dice choices
+PASS triple beats sides
+PASS secure random
+PASS two-hour period
+PASS one-minute close
+PASS fixed bankrolls
+PASS profit half to pool
+PASS 70 percent prize
+PASS old equal ticket
+PASS thirty percent stake
+PASS no session limit
+PASS reject concurrent requests
+PASS player house 97.5
+PASS player house no cover
+PASS system payout EV dice side
+PASS system payout EV dice triple
+PASS system payout EV turtle neutral
+PASS system payout EV turtle edge
+PASS system payout EV fish
+PASS probabilities total
+PASS fix4 RPC retained
+PASS battle V1.1 preserved
+{
+  "ok": false,
+  "checks": 23,
+  "expectedValuePer100": {
+    "diceSide": -5.208333333333329,
+    "diceTriple": -5,
+    "turtleNeutral": -5,
+    "turtleEdge": -5,
+    "fish": -5.000000000000002
+  }
+}
+/mnt/data/jiuxiao_b_paigow_build/Jiuxiao_V1.2_CACHE37_B-PAIGOW01_CANDIDATE/tools/test_features_v1_1_fix1.js:49
+if (failed.length) throw new Error('failed: ' + failed.join(', '));
+                   ^
+
+Error: failed: CACHE36 build
+    at Object.<anonymous> (/mnt/data/jiuxiao_b_paigow_build/Jiuxiao_V1.2_CACHE37_B-PAIGOW01_CANDIDATE/tools/test_features_v1_1_fix1.js:49:26)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+    at node:internal/main/run_main_module:36:49
+
+Node.js v22.16.0
+
+$ node tools/test_fish_entry_click_v0148_fix1.js
+PASS selector handler exists
+PASS fish branch exists
+PASS draft saved first
+PASS hidden field synced before render
+PASS fix marker exists
+PASS regression model stays fish_shrimp
+TOTAL=6 PASS=6 FAIL=0
+
+$ node tools/test_casino_render_v0141.js
+/mnt/data/jiuxiao_b_paigow_build/Jiuxiao_V1.2_CACHE37_B-PAIGOW01_CANDIDATE/tools/test_casino_render_v0141.js:10
+for(const [name,html,tokens] of [['lobby',lobby,['大堂','贵宾雅间','全服造化池','已取消每日次数限制','统一灵石']],['house',house,['灵骰问道','气运龟卜','赌注资源','快捷倍数','自定义赌注数量','确认落注并立即开局','3—10点为小','11—18点为大','111/222/333归小','大小各50%','普通豹子','1/80','1/5000','毛利润3倍','毛利润34倍','败局下注额10%','余下90%']],['duel',duel,['贵宾雅间','灵拳对弈','五行灵拳','确认赌注并封招开桌','双方各押100','胜者共到账195','奖池增加5']],['pools',pools,['40%','60%','大堂赢局按毛利润5%进入奖池','败者赌注的5%进入奖池、95%转给胜者','不会叠加个人中奖权重','未中滚存']]]) for(const t of tokens) if(!html.includes(t)) throw new Error(`${name} missing ${t}`);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+
+Error: house missing 气运龟卜
+    at Object.<anonymous> (/mnt/data/jiuxiao_b_paigow_build/Jiuxiao_V1.2_CACHE37_B-PAIGOW01_CANDIDATE/tools/test_casino_render_v0141.js:10:484)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+    at node:internal/main/run_main_module:36:49
+
+Node.js v22.16.0
+
+NOTE: test_features_v1_1_fix1.js contains a legacy CACHE36 identity assertion while this baseline is CACHE37. test_casino_render_v0141.js intentionally expects the removed 气运龟卜 label. These two legacy assertions are documented compatibility deltas, not hidden as passes.

@@ -328,3 +328,12 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 - `database/V1.1/202607300260_v1_1_check.sql`：只读最终检查。
 - `database/V1.1/202607300270_v1_1_emergency_disable.sql`：紧急关闭战力挑战。
 - `database/V1.1/202607300280_v1_1_resume.sql`：恢复战力挑战。
+
+## V1.2 FIX1 CACHE38
+- `database/V1.2_FIX1/202607301500_v1_2_fix1_precheck.sql`
+- `database/V1.2_FIX1/202607301510_v1_2_fix1_paigow_main.sql`
+- `database/V1.2_FIX1/202607301520_v1_2_fix1_cache38_release.sql`
+- `database/V1.2_FIX1/202607301530_v1_2_fix1_check.sql`
+- `database/V1.2_FIX1/202607301540_v1_2_fix1_emergency_disable_paigow.sql`
+- `database/V1.2_FIX1/202607301550_v1_2_fix1_resume_paigow.sql`
+- B-PAIGOW01正式并线；后续SQL从77号追加。

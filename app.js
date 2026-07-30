@@ -5436,7 +5436,13 @@
       draft.amount = casinoStakeBase('spirit_stone', 'house');
       draft.multiplier = null;
     }
-    if (key === 'house' && !['spirit_dice','turtle_oracle','fish_shrimp'].includes(draft.game)) {
+    // V1.2 FIX1：气运龟卜入口已由九霄灵牌替换。兼容旧客户端本地草稿，
+    // 防止隐藏的 turtle_oracle 选择继续调用旧即时开奖RPC。
+    if (key === 'house' && draft.game === 'turtle_oracle') {
+      draft.game = 'spirit_dice';
+      draft.choice = 'big';
+    }
+    if (key === 'house' && !['spirit_dice','fish_shrimp'].includes(draft.game)) {
       draft.game = 'spirit_dice';
     }
     if (key === 'house' && draft.game === 'spirit_dice' && !['big', 'small', 'triple'].includes(draft.choice)) {
@@ -6118,7 +6124,7 @@
         ? '40秒公共开盘 · 三骰共用 · 离线仍结算'
         : selectedPlayerHouse ? '即时开奖 · 30%下注上限 · 玩家庄100:97.5自赔' : '即时开奖 · 30%下注上限 · 系统周期资金公平结算';
       const houseModeSwitch = playerDealerActive ? `<div class="casino-house-switch" aria-label="选择庄家"><button type="button" data-house-mode="system" class="${state.casinoHouseMode === 'system' ? 'active' : ''}">荷老（系统庄）</button><button type="button" data-house-mode="player" class="${state.casinoHouseMode === 'player' ? 'active' : ''}">${escapeHtml(playerHouse.dealer_name || '玩家庄')}</button></div>` : '';
-      const selector = `<section class="casino-play-sheet casino-game-selector-v0148"><div class="subsection-title"><strong>选择玩法</strong><span>${fishSelected ? '鱼虾灵局采用公共40秒轮次' : selectedPlayerHouse ? '玩家庄期间仅可选择灵石' : '先定玩法，再选灵石或修为'}</span></div><div class="casino-game-buttons"><button class="${draft.game === 'spirit_dice' ? 'active' : ''}" type="button" data-house-select-game="spirit_dice"><b>骰</b><span>灵骰问道</span><small>真三骰 · 大小 · 任意豹子</small></button><button class="${draft.game === 'turtle_oracle' ? 'active' : ''}" type="button" data-house-select-game="turtle_oracle"><b>卜</b><span>气运龟卜</span><small>吉、平、凶</small></button><button class="${fishSelected ? 'active' : ''}" type="button" data-house-select-game="fish_shrimp"><b>鱼</b><span>鱼虾灵局</span><small>六门同押 · 三骰公共开盘</small></button></div></section>`;
+      const selector = `<section class="casino-play-sheet casino-game-selector-v0148"><div class="subsection-title"><strong>选择玩法</strong><span>${fishSelected ? '鱼虾灵局采用公共40秒轮次' : selectedPlayerHouse ? '玩家庄期间仅可选择灵石' : '先定玩法，再选灵石或修为'}</span></div><div class="casino-game-buttons"><button class="${draft.game === 'spirit_dice' ? 'active' : ''}" type="button" data-house-select-game="spirit_dice"><b>骰</b><span>灵骰问道</span><small>真三骰 · 大小 · 任意豹子</small></button><button type="button" data-paigow-open><b>牌</b><span>九霄灵牌</span><small>牌九 · 大牌九 · 房间对局</small></button><button class="${fishSelected ? 'active' : ''}" type="button" data-house-select-game="fish_shrimp"><b>鱼</b><span>鱼虾灵局</span><small>六门同押 · 三骰公共开盘</small></button></div></section>`;
 
       if (fishSelected) {
         return `${error}${periodNotice}${casinoPrimaryNavHtml('house', disabled)}${casinoModeHeader('大堂 · 鱼虾灵局', houseSubtitle)}${selector}${fishShrimpPanelHtmlV0148(data)}`;
@@ -6134,8 +6140,8 @@
           <div class="casino-confirm-row">
             <button class="primary-btn" type="button" id="confirmHouseGameBtn" ${houseBetDisabled ? 'disabled' : ''}>${selectedPlayerHouse && playerHouse.is_self_dealer ? '庄家不可下注本桌' : '确认落注并立即开局'}</button>
             <small>${selectedPlayerHouse
-              ? '玩家庄使用同一套公平概率：灵骰为三颗独立骰，豹子通吃大小；龟卜为吉25%、平50%、凶25%。单局最多下注开局灵石30%；庄家按公平毛利润自赔，获胜方实得97.5%，下注按40灵石步进，2.5%进入赌场资金，系统绝不兜底。'
-              : '荷老灵骰直接掷三颗独立公平骰：非豹子4—10为小、11—17为大，任意豹子独立投注且通吃大小；大小每100净赢95，豹子每100净赢3320。龟卜平每100净赢90，吉凶每100净赢280。败局下注全部进入赌场资金；每两小时仅将赌场正利润的50%加入造化池。'}</small>
+              ? '玩家庄灵骰继续使用三颗独立公平骰，豹子通吃大小；九霄灵牌改由独立房间处理老何固定庄、随机抢庄与开船。原玩家庄规则保持不变，九霄灵牌玩家局按每笔确认赌注的2.5%计入赌场资金。'
+              : '荷老灵骰继续使用三颗独立公平骰：非豹子4—10为小、11—17为大，任意豹子独立投注且通吃大小；大小每100净赢95，豹子每100净赢3320。九霄灵牌老何庄按100∶100等额输赢，玩家败款进入现有赌场资金，玩家赢款从现有赌场资金支付。'}</small>
           </div>
         </section>`;
     }
@@ -6457,6 +6463,19 @@
       if (!houseChoice) return;
       houseChoice.innerHTML = houseChoiceOptions(game).map(([value, name]) => `<option value="${value}">${name}</option>`).join('');
     };
+    document.querySelectorAll('[data-paigow-open]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      button.addEventListener('click', () => {
+        const moduleApi = window.JiuxiaoPaiGowB01;
+        if (!moduleApi || typeof moduleApi.open !== 'function') {
+          showToast('九霄灵牌模块尚未加载，请刷新页面后重试。', 'error');
+          return;
+        }
+        moduleApi.open({ source: 'casino-house', baseline: 'V1.2_FIX1_CACHE38' });
+      });
+    });
+
     document.querySelectorAll('[data-house-select-game]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';

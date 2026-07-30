@@ -1,0 +1,16 @@
+{
+  "module": "B-PAIGOW01",
+  "baseline": "V1.2_AB22_CACHE37",
+  "release": "V1.2 CACHE37",
+  "sourcePackage": "Jiuxiao_V1.2_CACHE37_Full.zip",
+  "sourcePackageSha256": "ecbaf60a4a95b0a23fb07818bd9d1d0520892058ebcf3d42cc51f8dacc177e10",
+  "cacheEpoch": 37,
+  "sqlStartRule": "71+",
+  "protectedCasinoObjects": [
+    "casino_bankroll_v1",
+    "casino_bankroll_apply_v1",
+    "casino_secure_random_int_v1",
+    "casino_debit_v1",
+    "casino_credit_result_v0141"
+  ]
+}

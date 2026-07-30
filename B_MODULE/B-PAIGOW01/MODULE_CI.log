@@ -1,0 +1,25 @@
+visible_old_turtle_removed: PASS
+new_entry: PASS
+launcher_loaded: PASS
+four_rooms: PASS
+traditional_tiles: PASS
+long_three_face: PASS
+existing_bankroll_reused: PASS
+room_limit_sql: PASS
+idle_20m_sql: PASS
+fee_250bps: PASS
+laohe_equal: PASS
+physical_tiles_32: PASS
+inline html scripts: PASS (2 blocks)
+entry replacement: PASS
+room flow: PASS
+small and big: PASS
+weak head rule: PASS
+timers: PASS
+baseline bankroll: PASS
+$ /opt/pyvenv/bin/python /mnt/data/jiuxiao_b_paigow_build/B-PAIGOW01/tools/static_audit_bpaigow01.py
+$ node --check /mnt/data/jiuxiao_b_paigow_build/B-PAIGOW01/CLIENT_CANDIDATE/app.js
+$ node --check /mnt/data/jiuxiao_b_paigow_build/B-PAIGOW01/CLIENT_CANDIDATE/b-paigow01.js
+$ /opt/pyvenv/bin/python /mnt/data/jiuxiao_b_paigow_build/B-PAIGOW01/tools/check_inline_html_js.py
+$ node /mnt/data/jiuxiao_b_paigow_build/B-PAIGOW01/tools/test_client_bpaigow01.js
+B-PAIGOW01 MODULE CI PASS

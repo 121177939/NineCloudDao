@@ -1,0 +1,152 @@
+{
+  "module": "B-PAIGOW01",
+  "name": "九霄灵牌房间与牌九对局",
+  "status": "B-line candidate; not deployed",
+  "baseline": "V1.2_AB22_CACHE37",
+  "release": "V1.2 CACHE37",
+  "baselinePackageSha256": "ecbaf60a4a95b0a23fb07818bd9d1d0520892058ebcf3d42cc51f8dacc177e10",
+  "generatedAt": "2026-07-30T07:34:21-07:00",
+  "fileCount": 29,
+  "files": [
+    {
+      "path": "00_MODULE_README.md",
+      "size": 2393,
+      "sha256": "aef05a6998892c97cd1005c37fbc073f2332586e81e3722e1f0be1e6a656aaa6"
+    },
+    {
+      "path": "ACCEPTANCE_SCENARIOS.md",
+      "size": 1032,
+      "sha256": "7b9e9a283a5f7ae0a71d56d2e857fcf9467c60d9d5b251dc71fa8b72ace7a83c"
+    },
+    {
+      "path": "BASELINE_REFERENCE.json",
+      "size": 466,
+      "sha256": "8c0c90474fc890bae9051c62b0611cae0a017716be27183acca5b01430836ad5"
+    },
+    {
+      "path": "CHANGE_LIST.md",
+      "size": 1087,
+      "sha256": "bfbd256093f30c93bc785babc8ff112540c4fc69b494f7b7661b1554a919f2a3"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/app.js",
+      "size": 432938,
+      "sha256": "f719ebda88dbf186221bb3cf04b09aef764dd758548da2df05f9a2f251f37160"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/app.js.patch",
+      "size": 5544,
+      "sha256": "4cb8ce754e416ed761a87d462b4267f41acd1c8207487671d682572bdd4b8854"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/b-paigow01.css",
+      "size": 837,
+      "sha256": "46ebb8fa5eb421e5822d6106a3c3067ad1ee28369e7934fa87691b8c0ef4ad97"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/b-paigow01.html",
+      "size": 128700,
+      "sha256": "474110f4f9414e2984d0cb2bfc81272da153c0ea0da49d087e4533365c3954d4"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/b-paigow01.js",
+      "size": 2047,
+      "sha256": "e91628344a74333da11da7c3fbebf9cc672ade92229f9ea6cbca8185b844c35b"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/index.html",
+      "size": 2192,
+      "sha256": "ecfa4c9019b83f9e4eac92eae2033bc2318be69067c72c392528e3a11a7c11a6"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/index.html.patch",
+      "size": 831,
+      "sha256": "8df513f62b8813130a45beb9806e397d0fb714682e33afe0797c0e5a89b8ca38"
+    },
+    {
+      "path": "CLIENT_CANDIDATE/styles.css",
+      "size": 227022,
+      "sha256": "21052ac09766e2a32884a9c9721d3a7c869d926cdb1ec24a4c0d9a96745fa9d0"
+    },
+    {
+      "path": "CONFLICT_NOTES.md",
+      "size": 890,
+      "sha256": "b0f99ebc8871182eedd1561519923b1e5ed53939125933f8e020149ed03b3c4f"
+    },
+    {
+      "path": "DESIGN_SPEC.md",
+      "size": 1594,
+      "sha256": "d8c6f61b90270b4c5dc4ad2f29715907f5dc6886c219e7b0d4c8625c6b650f33"
+    },
+    {
+      "path": "FULL_BASELINE_CI.log",
+      "size": 4667,
+      "sha256": "16f84f1bb1f7f3885845a858a2f3a55fd544e2fc5003bc1b6761e77e64d7d05e"
+    },
+    {
+      "path": "MODULE_CI.log",
+      "size": 900,
+      "sha256": "975077ba21b9ef0a0307f158ef24ccb9ecc916052d4e2be2a8e972c6cdb9c22a"
+    },
+    {
+      "path": "RPC_CONTRACT.md",
+      "size": 1343,
+      "sha256": "5d9b98f253f39921f6cbb0087c50eb4484b6861818b2a76502fc8cd4be512621"
+    },
+    {
+      "path": "SOURCE_HASHES.txt",
+      "size": 2495,
+      "sha256": "d995cf6641ab65ffc459ed8165432085c96c161c733cc75ae1f6caef7e0de21a"
+    },
+    {
+      "path": "SQL_CANDIDATE/00_PRECHECK.sql",
+      "size": 1010,
+      "sha256": "7b5faf38c0126ec8b338896ec9aaff44157f8b09fc4c8e3a68671d9cbf264531"
+    },
+    {
+      "path": "SQL_CANDIDATE/71_B_PAIGOW01_MAIN.sql",
+      "size": 20808,
+      "sha256": "bff035ac4e6277c7edf2e72520b81678cf702419c4c82a71776e67de1f38109b"
+    },
+    {
+      "path": "SQL_CANDIDATE/72_B_PAIGOW01_CHECK.sql",
+      "size": 784,
+      "sha256": "9c5aae5460960c558d041cf306bfab56fdc67b07b3be3fd077b0266c9b65395d"
+    },
+    {
+      "path": "SQL_CANDIDATE/90_EMERGENCY_DISABLE.sql",
+      "size": 386,
+      "sha256": "e267e4fdf5e576bf31f75a5accb079aae14d08fa30fb65481f9072c77a505fcb"
+    },
+    {
+      "path": "SQL_CANDIDATE/99_ROLLBACK.sql",
+      "size": 1231,
+      "sha256": "5f73b349806f31423d1d77476ddc8646458fc56c66bf90c44bdb82931e3c0ae5"
+    },
+    {
+      "path": "TEST_RESULTS.txt",
+      "size": 5923,
+      "sha256": "59386b6c8368acf8b76d1c679c88d8315d11758256073a3caf0c16be3f5fdff8"
+    },
+    {
+      "path": "tools/check_inline_html_js.py",
+      "size": 734,
+      "sha256": "a4d99ae397c837c7e778773a775caec046c9b06e522cb1cbf3358f3138ae4095"
+    },
+    {
+      "path": "tools/ci_bpaigow01.py",
+      "size": 548,
+      "sha256": "2f051003c653294e1372abcff39059c511ba25b5fbdb500db8415c6d3900dca5"
+    },
+    {
+      "path": "tools/static_audit_bpaigow01.py",
+      "size": 1357,
+      "sha256": "6e4096886fad451da7a69c0384f6503d108e0a493bebbd495fd9ccf3ae674aed"
+    },
+    {
+      "path": "tools/test_client_bpaigow01.js",
+      "size": 962,
+      "sha256": "dd28ad016c9d6bfcaf6c388e3756d6b7382f2bd55631e7fb245b81619a62ada6"
+    }
+  ]
+}

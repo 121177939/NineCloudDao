@@ -1,0 +1,294 @@
+
+=== release metadata ===
+PASS required:index.html
+PASS required:404.html
+PASS required:app.js
+PASS required:styles.css
+PASS required:config.js
+PASS required:update-guard.js
+PASS required:sw.js
+PASS required:manifest.webmanifest
+PASS required:b-paigow01.js
+PASS required:b-paigow01.css
+PASS required:b-paigow01.html
+PASS required:paigow-app.js
+PASS required:paigow-app.css
+PASS required:VERSION.txt
+PASS required:CURRENT_BASELINE.json
+PASS required:release_config.json
+PASS required:V1.2_FIX1_CACHE38.txt
+PASS required:V1.2_FIX1_升级说明.md
+PASS required:docs/V1.2_FIX1_九霄灵牌规则.md
+PASS required:.github/workflows/deploy-pages.yml
+PASS required:SQL/71_V1.2_FIX1_升级前检查.sql
+PASS required:SQL/72_V1.2_FIX1_九霄灵牌正式并线.sql
+PASS required:SQL/73_V1.2_FIX1_CACHE38_正式发布门禁.sql
+PASS required:SQL/74_V1.2_FIX1_升级后检查.sql
+PASS required:SQL/75_V1.2_FIX1_紧急停用九霄灵牌.sql
+PASS required:SQL/76_V1.2_FIX1_恢复九霄灵牌.sql
+PASS version
+PASS config
+PASS release-json
+PASS baseline-json
+PASS lock-json
+PASS cache38:index.html
+PASS cache38:404.html
+PASS cache38:config.js
+PASS cache38:sw.js
+PASS cache38:manifest.webmanifest
+PASS cache38:update-guard.js
+PASS cache38:b-paigow01.html
+PASS cache38:b-paigow01.js
+PASS sw-paigow
+PASS workflow
+PASS paigow-entry
+PASS mutation-retained
+PASS casino-retained
+TOTAL=44 PASS=44 FAIL=0
+
+=== node syntax app.js ===
+
+=== node syntax config.js ===
+
+=== node syntax update-guard.js ===
+
+=== node syntax sw.js ===
+
+=== node syntax b-paigow01.js ===
+
+=== node syntax paigow-app.js ===
+
+=== python syntax tools/prepare_pages_site_v1_2_fix1.py ===
+
+=== python syntax tools/verify_pages_site_v1_2_fix1.py ===
+
+=== python syntax tools/verify_release_v1_2_fix1.py ===
+
+=== python syntax tools/sql_static_audit_v1_2_fix1.py ===
+
+=== python syntax tools/ci_v1_2_fix1.py ===
+
+=== V1.2 FIX1 SQL audit ===
+PASS pre-readonly
+PASS post-readonly
+PASS main-balanced-dollar
+PASS main-balanced-transactions
+PASS gate-balanced-dollar
+PASS gate-balanced-transactions
+PASS disable-balanced-dollar
+PASS disable-balanced-transactions
+PASS resume-balanced-dollar
+PASS resume-balanced-transactions
+PASS pre-no-missing-relation-reference
+PASS tables
+PASS rls-private
+PASS thirty-two
+PASS secure-rng
+PASS shuffle-loop
+PASS four-room-index
+PASS idle-close
+PASS capacities
+PASS small-six-big-ten
+PASS weak-head
+PASS one-robber-valid
+PASS role-switch-guard
+PASS fee-250
+PASS cancel-restores-fee-carry
+PASS 30pct
+PASS laohe-bankroll
+PASS dealer-reserve
+PASS settlement-tail-only
+PASS idempotency
+PASS authenticated-rpcs
+PASS internal-revoked
+PASS gate-cache38
+PASS emergency-refund
+PASS resume
+PASS migration-copy:SQL/71_V1.2_FIX1_升级前检查.sql
+PASS migration-copy:SQL/72_V1.2_FIX1_九霄灵牌正式并线.sql
+PASS migration-copy:SQL/73_V1.2_FIX1_CACHE38_正式发布门禁.sql
+PASS migration-copy:SQL/74_V1.2_FIX1_升级后检查.sql
+PASS migration-copy:SQL/75_V1.2_FIX1_紧急停用九霄灵牌.sql
+PASS migration-copy:SQL/76_V1.2_FIX1_恢复九霄灵牌.sql
+TOTAL=41 PASS=41 FAIL=0
+
+=== V1.2 FIX1 feature test ===
+PASS CACHE38 build
+PASS launcher loaded
+PASS old visible turtle replaced
+PASS four rooms
+PASS small and big
+PASS traditional 32 tiles
+PASS secure server shuffle
+PASS private masking
+PASS room timers
+PASS laohe existing bankroll
+PASS player fee 2.5
+PASS thirty percent
+PASS player dealer zero cover
+PASS single robber allowed
+PASS active player cannot role switch
+PASS tail deadline settlement only
+PASS request idempotency
+PASS responsive UI
+PASS V1.2 mutation retained
+PASS casino retained
+{
+  "ok": true,
+  "checks": 20,
+  "failed": []
+}
+
+=== regression tools/test_features_v1.js ===
+PASS snapshot rpc client
+PASS live primordial panel
+PASS exact mobile order
+PASS three columns mobile
+PASS cave rich layers
+PASS cave animations
+PASS unlearned techniques in storage
+PASS visible item name and type
+PASS 36 slots and paging
+PASS battle ranking and challenge
+PASS 80 percent cap copy preserved
+TOTAL=11 PASS=11 FAIL=0
+
+=== regression tools/test_features_v1_fix1.js ===
+PASS root element chip
+PASS fire red
+PASS yuanshen compressed ten percent
+PASS cave six by six
+PASS labels remain visible
+PASS challenge compatibility overload
+PASS friendly production error
+TOTAL=7 PASS=7 FAIL=0
+
+=== regression tools/test_features_v1_fix2.js ===
+PASS no champion copy
+PASS no champion render
+PASS battle rank private stats removed
+PASS compact public card
+PASS separate resolving popup
+PASS separate report popup
+PASS generic battle copy
+PASS css compact
+PASS css report
+{"ok":true,"checks":9}
+
+=== regression tools/test_features_v1_fix3.js ===
+PASS duel summary helper
+PASS duel excludes level
+PASS my side and opponent
+PASS log precedes controls
+PASS speed controls kept
+PASS modal grid layout
+PASS expanded log
+PASS compact controls
+PASS story names challenge relation
+PASS story weapons and cultivation
+PASS story variants
+PASS story failure isolation
+PASS no extra feed subline
+{"ok":true,"checks":13}
+
+=== regression tools/test_features_v1_1.js ===
+PASS ranking bidirectional
+PASS daily 20
+PASS cooldown 20
+PASS same opponent allowed
+PASS stage progress rates
+PASS no stage drop
+PASS equal transfer
+PASS world event correct table
+PASS history backfill
+PASS old higher-only error removed
+{"ok":true,"checks":10}
+
+=== B-COMBAT01 module audit ===
+
+=== node --check app.js ===
+
+=== node B_MODULE/B-COMBAT01/tools/test_client_bcombat01.js /mnt/data/jiuxiao_paigow_merge ===
+{"ok":true,"checks":45}
+
+=== /opt/pyvenv/bin/python3 B_MODULE/B-COMBAT01/tools/static_audit_bcombat01.py ===
+PASS transaction
+PASS 44-stage-values
+PASS power-formula
+PASS five-elements
+PASS balanced-allocation-lock
+PASS new-character-trigger
+PASS element-rules
+PASS daily-rules
+PASS sword-heart-eight-percent
+PASS sword-heart-no-four-stat-bonus
+PASS defense-caps
+PASS cultivation-floor-one-percent
+PASS cultivation-cap-preserved
+PASS idempotency-lock
+PASS world-feed-reused
+PASS no-release-control-write
+PASS no-version-cache-write
+PASS rls-on-new-tables
+PASS precheck-required-deps
+PASS postcheck-rules
+PASS rollback-restores-sword-heart
+PASS client-rpcs
+PASS client-fallbacks
+PASS client-battle-modal
+PASS client-world-refresh
+PASS client-battle-privacy
+PASS client-css
+TOTAL=27 PASS=27 FAIL=0
+
+=== /opt/pyvenv/bin/python3 B_MODULE/B-COMBAT01/tools/test_balance_bcombat01.py ===
+B-COMBAT01 BALANCE PASS 90/90
+golden_initial_beats_middle_with_overcome: {'winner': 'attacker', 'attacker_hp': 80, 'defender_hp': 0, 'rounds': 8}
+golden_initial_loses_late_with_weak_overcome: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 754, 'rounds': 7}
+golden_late_beats_perfect_with_overcome: {'winner': 'attacker', 'attacker_hp': 176, 'defender_hp': 0, 'rounds': 8}
+golden_perfect_loses_nascent_initial: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 837, 'rounds': 8}
+golden_perfect_sword_heart_still_loses_nascent_initial: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 662, 'rounds': 8}
+
+=== node tools/test_ranking_render_v0143.js /mnt/data/jiuxiao_paigow_merge ===
+{"ok":true,"checks":25,"module":"V1.0 FIX2"}
+
+B-COMBAT01 CI PASS
+
+=== B-PAIGOW01 original candidate audit ===
+visible_old_turtle_removed: PASS
+new_entry: PASS
+launcher_loaded: PASS
+four_rooms: PASS
+traditional_tiles: PASS
+long_three_face: PASS
+existing_bankroll_reused: PASS
+room_limit_sql: PASS
+idle_20m_sql: PASS
+fee_250bps: PASS
+laohe_equal: PASS
+physical_tiles_32: PASS
+inline html scripts: PASS (2 blocks)
+entry replacement: PASS
+room flow: PASS
+small and big: PASS
+weak head rule: PASS
+timers: PASS
+baseline bankroll: PASS
+$ /opt/pyvenv/bin/python3 /mnt/data/jiuxiao_paigow_merge/B_MODULE/B-PAIGOW01/tools/static_audit_bpaigow01.py
+$ node --check /mnt/data/jiuxiao_paigow_merge/B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/app.js
+$ node --check /mnt/data/jiuxiao_paigow_merge/B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/b-paigow01.js
+$ /opt/pyvenv/bin/python3 /mnt/data/jiuxiao_paigow_merge/B_MODULE/B-PAIGOW01/tools/check_inline_html_js.py
+$ node /mnt/data/jiuxiao_paigow_merge/B_MODULE/B-PAIGOW01/tools/test_client_bpaigow01.js
+B-PAIGOW01 MODULE CI PASS
+
+=== build pages ===
+PAGES_SITE_BUILT 20
+
+=== verify pages ===
+{
+  "ok": true,
+  "checks": 44,
+  "failed": []
+}
+
+V1.2 FIX1 CACHE38 CI PASS

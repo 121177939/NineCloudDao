@@ -1,13 +1,17 @@
 {
-  "version": "V1.2 CACHE37",
-  "clientBuild": "v1-2-cache37",
-  "generatedAt": "2026-07-30T14:07:59.460235+00:00",
-  "generatedFileCount": 592,
+  "release": "V1.2 FIX1 CACHE38",
+  "buildId": "v1-2-fix1-cache38",
+  "cacheEpoch": 38,
+  "developmentBaseline": "V1.2_FIX1_AB23_CACHE38",
+  "sourceBaselineSha256": "ecbaf60a4a95b0a23fb07818bd9d1d0520892058ebcf3d42cc51f8dacc177e10",
+  "sourceModuleSha256": "8bb9b75da033a965cac76eb148520b5a0e5b3856130116bea9838db519b4358c",
+  "generatedAtUtc": "2026-07-30T15:45:00Z",
+  "fileCount": 650,
   "files": [
     {
       "path": ".github/workflows/deploy-pages.yml",
-      "size": 1206,
-      "sha256": "ca22e867d0e0f7fe80e7c2f0039142870d59f715c324d38e649b0a74d22dd071"
+      "size": 1216,
+      "sha256": "e4e4b0fc429e62b3746ae70128e3cf9675a37c895649adc7b3357a6028c87344"
     },
     {
       "path": ".gitignore",
@@ -21,18 +25,18 @@
     },
     {
       "path": "00_完整包使用说明.md",
-      "size": 335,
-      "sha256": "82fe9f2d869a5d5dd757ab7eb4edc52477ee160bf34103a7f0f9229445f58349"
+      "size": 188,
+      "sha256": "12aea1d7ae917d6364bebb245fe0901c7d8895748905a784394cf31da88b3187"
     },
     {
       "path": "00_部署说明.txt",
-      "size": 492,
-      "sha256": "1636b58c90f399b87372fadfd29f1548946b70ad523cbe8649416085b2eb2045"
+      "size": 516,
+      "sha256": "61a7b26637a6bd2c35ebf444f56200304bd23e3877f081f5b20d67781d7c04d4"
     },
     {
       "path": "404.html",
-      "size": 2074,
-      "sha256": "29729128bf6baf5b22d75eb4d4cb096e96b61ac0f48d38ddde5504a8c776ecff"
+      "size": 2242,
+      "sha256": "4d1e2659496e53e678c2066658a7030668c8ee6fe79f52acb192ad7849c127e5"
     },
     {
       "path": "AB_CONTROL/AB_DEVELOPMENT_PROTOCOL.md",
@@ -41,13 +45,13 @@
     },
     {
       "path": "AB_CONTROL/BASELINE_LOCK.json",
-      "size": 466,
-      "sha256": "fd2de6ee40d19a68c30ca78b30bcdb5ba85c69c15f643b656a104b14655d09fa"
+      "size": 586,
+      "sha256": "d100bff60408e26e057c1db3217fb192414657509e49ecd45d6171610f090044"
     },
     {
       "path": "AB_CONTROL/NEXT_WORK.md",
-      "size": 125,
-      "sha256": "b14ef6ab31e4976488448ad1e147a131ddbb7538d0ecc5dbc89d073236cf91e7"
+      "size": 212,
+      "sha256": "c5eb701dc11fd9b315df538b9d4d2b7e27d7f05fec9d73e62cc5b8c51cc0f3cd"
     },
     {
       "path": "AB_CONTROL/PROTECTED_AREAS.md",
@@ -56,8 +60,8 @@
     },
     {
       "path": "B_BASELINE/00_B线开发从这里开始.md",
-      "size": 271,
-      "sha256": "30fbb594a27f4bd5e200368297f1163aefc91509a97a2f688c56f5067025c291"
+      "size": 233,
+      "sha256": "4633225a2ca6fd9c109e292d1a43a9638579eb5772cb32899c299c998a703643"
     },
     {
       "path": "B_BASELINE/B模块交付规范.md",
@@ -66,8 +70,8 @@
     },
     {
       "path": "B_BASELINE/DEVELOPMENT_MANIFEST.json",
-      "size": 424,
-      "sha256": "56954f319ad01c16ad0b0d1f44f18d3531ac50b27c7819c87469e7b55e87f91c"
+      "size": 482,
+      "sha256": "8e5113f9f49e615ca437f5672d3b5c9eb7a458589d39bece6c35a859663eb00c"
     },
     {
       "path": "B_MODULE/B-COMBAT01/00_MODULE_README.md",
@@ -185,14 +189,164 @@
       "sha256": "bad6b51a944f086c1f9e0faa4f1ec0c647ac0c9d3deb6d92b67de480d6f0c066"
     },
     {
+      "path": "B_MODULE/B-PAIGOW01/00_MODULE_README.md",
+      "size": 2393,
+      "sha256": "aef05a6998892c97cd1005c37fbc073f2332586e81e3722e1f0be1e6a656aaa6"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/ACCEPTANCE_SCENARIOS.md",
+      "size": 1032,
+      "sha256": "7b9e9a283a5f7ae0a71d56d2e857fcf9467c60d9d5b251dc71fa8b72ace7a83c"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/A_LINE_INTEGRATION_STATUS.md",
+      "size": 560,
+      "sha256": "27baf594fc541ba5fdd3df5d0a5f7c50d7ac6db671a2c2afe0ea2e052c63441d"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/BASELINE_REFERENCE.json",
+      "size": 466,
+      "sha256": "8c0c90474fc890bae9051c62b0611cae0a017716be27183acca5b01430836ad5"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CHANGE_LIST.md",
+      "size": 1087,
+      "sha256": "bfbd256093f30c93bc785babc8ff112540c4fc69b494f7b7661b1554a919f2a3"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/app.js",
+      "size": 432938,
+      "sha256": "f719ebda88dbf186221bb3cf04b09aef764dd758548da2df05f9a2f251f37160"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/app.js.patch",
+      "size": 5544,
+      "sha256": "4cb8ce754e416ed761a87d462b4267f41acd1c8207487671d682572bdd4b8854"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/b-paigow01.css",
+      "size": 837,
+      "sha256": "46ebb8fa5eb421e5822d6106a3c3067ad1ee28369e7934fa87691b8c0ef4ad97"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/b-paigow01.html",
+      "size": 128700,
+      "sha256": "474110f4f9414e2984d0cb2bfc81272da153c0ea0da49d087e4533365c3954d4"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/b-paigow01.js",
+      "size": 2047,
+      "sha256": "e91628344a74333da11da7c3fbebf9cc672ade92229f9ea6cbca8185b844c35b"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/index.html",
+      "size": 2192,
+      "sha256": "ecfa4c9019b83f9e4eac92eae2033bc2318be69067c72c392528e3a11a7c11a6"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/index.html.patch",
+      "size": 831,
+      "sha256": "8df513f62b8813130a45beb9806e397d0fb714682e33afe0797c0e5a89b8ca38"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/styles.css",
+      "size": 227022,
+      "sha256": "21052ac09766e2a32884a9c9721d3a7c869d926cdb1ec24a4c0d9a96745fa9d0"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/CONFLICT_NOTES.md",
+      "size": 890,
+      "sha256": "b0f99ebc8871182eedd1561519923b1e5ed53939125933f8e020149ed03b3c4f"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/DESIGN_SPEC.md",
+      "size": 1594,
+      "sha256": "d8c6f61b90270b4c5dc4ad2f29715907f5dc6886c219e7b0d4c8625c6b650f33"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/FULL_BASELINE_CI.log",
+      "size": 4667,
+      "sha256": "16f84f1bb1f7f3885845a858a2f3a55fd544e2fc5003bc1b6761e77e64d7d05e"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/MODULE_CI.log",
+      "size": 900,
+      "sha256": "975077ba21b9ef0a0307f158ef24ccb9ecc916052d4e2be2a8e972c6cdb9c22a"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/PACKAGE_MANIFEST.json",
+      "size": 4814,
+      "sha256": "1a9ced4d7fc502faabae8ff05008710ebbca6d2232d90777937269f8fab01a21"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/RPC_CONTRACT.md",
+      "size": 1343,
+      "sha256": "5d9b98f253f39921f6cbb0087c50eb4484b6861818b2a76502fc8cd4be512621"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/SOURCE_HASHES.txt",
+      "size": 2495,
+      "sha256": "d995cf6641ab65ffc459ed8165432085c96c161c733cc75ae1f6caef7e0de21a"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/SQL_CANDIDATE/00_PRECHECK.sql",
+      "size": 1010,
+      "sha256": "7b5faf38c0126ec8b338896ec9aaff44157f8b09fc4c8e3a68671d9cbf264531"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/SQL_CANDIDATE/71_B_PAIGOW01_MAIN.sql",
+      "size": 20808,
+      "sha256": "bff035ac4e6277c7edf2e72520b81678cf702419c4c82a71776e67de1f38109b"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/SQL_CANDIDATE/72_B_PAIGOW01_CHECK.sql",
+      "size": 784,
+      "sha256": "9c5aae5460960c558d041cf306bfab56fdc67b07b3be3fd077b0266c9b65395d"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/SQL_CANDIDATE/90_EMERGENCY_DISABLE.sql",
+      "size": 386,
+      "sha256": "e267e4fdf5e576bf31f75a5accb079aae14d08fa30fb65481f9072c77a505fcb"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/SQL_CANDIDATE/99_ROLLBACK.sql",
+      "size": 1231,
+      "sha256": "5f73b349806f31423d1d77476ddc8646458fc56c66bf90c44bdb82931e3c0ae5"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/TEST_RESULTS.txt",
+      "size": 5923,
+      "sha256": "59386b6c8368acf8b76d1c679c88d8315d11758256073a3caf0c16be3f5fdff8"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/tools/check_inline_html_js.py",
+      "size": 734,
+      "sha256": "a4d99ae397c837c7e778773a775caec046c9b06e522cb1cbf3358f3138ae4095"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/tools/ci_bpaigow01.py",
+      "size": 548,
+      "sha256": "2f051003c653294e1372abcff39059c511ba25b5fbdb500db8415c6d3900dca5"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/tools/static_audit_bpaigow01.py",
+      "size": 1357,
+      "sha256": "6e4096886fad451da7a69c0384f6503d108e0a493bebbd495fd9ccf3ae674aed"
+    },
+    {
+      "path": "B_MODULE/B-PAIGOW01/tools/test_client_bpaigow01.js",
+      "size": 962,
+      "sha256": "dd28ad016c9d6bfcaf6c388e3756d6b7382f2bd55631e7fb245b81619a62ada6"
+    },
+    {
       "path": "CHANGELOG.md",
-      "size": 22312,
-      "sha256": "ecfc3404a6f18888a4a37fc13c28555df287e12bd02e1cdeb07b55107c17f6ca"
+      "size": 22753,
+      "sha256": "dab10ae87c8c3064d5d4c5b3d6e6eea80118f349dfc5d07f4fdbed346f7dd4a9"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 1605,
-      "sha256": "0b2f2fd653b56d8ad2e64b4c739af8a274458ceaf56f5cb202f9beb9f4af81af"
+      "size": 1779,
+      "sha256": "4f650e3646989e0f23c540e692e9add9aefaee2ac17c68ddc676133ced9d71bd"
     },
     {
       "path": "DESKTOP_UPDATE.md",
@@ -201,18 +355,18 @@
     },
     {
       "path": "DEVELOPMENT_BASELINE_NOTICE.md",
-      "size": 167,
-      "sha256": "458728daa7e0b691194ee7ba6c08cf1eecb393ae3cc1136e80de569893b6c895"
+      "size": 132,
+      "sha256": "9f0cd62b8ad1be3525f10ec5d6292699a4bd64f7f936fc348b34f2abcd8165ed"
     },
     {
       "path": "README.md",
-      "size": 541,
-      "sha256": "b44987e051388974aaa6a09db738dffef4467f40dc0f5959a68449ad0c4d901a"
+      "size": 172,
+      "sha256": "b27b908ba3f16b10d7581899ffd89f88cd7943cd37c25538d365532315ae224f"
     },
     {
       "path": "SQL/00_SQL执行说明.txt",
-      "size": 504,
-      "sha256": "ee5ebb401b4fef80164bb76713883589c5074eb076323f1ca12102e7aff8dc61"
+      "size": 567,
+      "sha256": "9aacebe88ca56d6c47549886816434168caa99547b59d05d807e3dbe79e910fd"
     },
     {
       "path": "SQL/01_升级前检查.sql",
@@ -550,6 +704,36 @@
       "sha256": "ca485db757d5b5125d8576e12e60c67df8def435f8cff3e828873c8141287783"
     },
     {
+      "path": "SQL/71_V1.2_FIX1_升级前检查.sql",
+      "size": 1853,
+      "sha256": "d7e10512ca151c0f1a0557db1339405303881543615c4d3cccd440984bda94b7"
+    },
+    {
+      "path": "SQL/72_V1.2_FIX1_九霄灵牌正式并线.sql",
+      "size": 87210,
+      "sha256": "436703ca629beab1d998b15306dc3bc8ae594c4073f46f5caa2ecd9640e2424b"
+    },
+    {
+      "path": "SQL/73_V1.2_FIX1_CACHE38_正式发布门禁.sql",
+      "size": 2652,
+      "sha256": "54d0cba0a0a65001862a52a1eca90f816e67559282ae960c3d380c45059aaa32"
+    },
+    {
+      "path": "SQL/74_V1.2_FIX1_升级后检查.sql",
+      "size": 3047,
+      "sha256": "0b92d92a4ee9a9c17e9b8a3958acddc609a597dd8053768039403b4ab8d37a5e"
+    },
+    {
+      "path": "SQL/75_V1.2_FIX1_紧急停用九霄灵牌.sql",
+      "size": 1112,
+      "sha256": "b1937b79209f98ca5fa3280147314c3e2ba43e8530d789221b34113ed9b3d9d9"
+    },
+    {
+      "path": "SQL/76_V1.2_FIX1_恢复九霄灵牌.sql",
+      "size": 579,
+      "sha256": "205b515c60594126a15477e2cdced6e2aa684b61d8b87ab57913d3a3064d8326"
+    },
+    {
       "path": "V0.14.8_TEST_RESULTS.txt",
       "size": 1648,
       "sha256": "3fb8b74b9c69b0f72d4d3cbf13ef1d55380648ec02825bbfc6380debc93f391c"
@@ -785,6 +969,26 @@
       "sha256": "5a3168139b7e6ccc0781248b18025e775bc5a0380065190637074b08135bddd5"
     },
     {
+      "path": "V1.2_FIX1_CACHE38.txt",
+      "size": 122,
+      "sha256": "b300170ab6bdff8cbb910ffb763f8c121badf30fd2572539a7d520717956ebb0"
+    },
+    {
+      "path": "V1.2_FIX1_FULL_CI.log",
+      "size": 8217,
+      "sha256": "0f76b2b68e74a5ff4bc9cb59be56889c80bc3a06087d3d507c4756d7b0edeb31"
+    },
+    {
+      "path": "V1.2_FIX1_TEST_RESULTS.txt",
+      "size": 2169,
+      "sha256": "90f827c164b941949909afe2995ed186617129d0ae4a95adac2ccddb74771ade"
+    },
+    {
+      "path": "V1.2_FIX1_升级说明.md",
+      "size": 1872,
+      "sha256": "5755486815527ea42c7a3814831a1737fab8b6ef33b6774151d6ae39b5a70ec2"
+    },
+    {
       "path": "V1.2_FULL_CI.log",
       "size": 9333,
       "sha256": "d7c718ac7382d7dea3f61bb8d6120d2ef91639bd1387806c8460cb9586c0dce8"
@@ -801,13 +1005,13 @@
     },
     {
       "path": "VERSION.txt",
-      "size": 5,
-      "sha256": "653976530b183d8fa592f9d00b54d167786b6de8e072942b7065b0d35921db9d"
+      "size": 10,
+      "sha256": "d60777d03eb056ef174c4adfcc1d4738d850faf3bd635c23bc530db64eb35fe3"
     },
     {
       "path": "app.js",
-      "size": 432509,
-      "sha256": "ba000841cbffd970e1c7b2cb92baf40eba22bf89b4b0154779a32fd22f232dbe"
+      "size": 433231,
+      "sha256": "4d76edf52df7ac62bbbd0edb0b42ba619185792cd6d11ac4a0340180683d0193"
     },
     {
       "path": "assets/icon-192.png",
@@ -820,14 +1024,29 @@
       "sha256": "325dfbfd51969375a6a360dac434263b2f874bed68309fcf0b2a1594b5445858"
     },
     {
+      "path": "b-paigow01.css",
+      "size": 837,
+      "sha256": "46ebb8fa5eb421e5822d6106a3c3067ad1ee28369e7934fa87691b8c0ef4ad97"
+    },
+    {
+      "path": "b-paigow01.html",
+      "size": 571,
+      "sha256": "807c360ac0094f09494ed2bc1e24f43b7c5d98c43756d58cc1143111d0287ed9"
+    },
+    {
+      "path": "b-paigow01.js",
+      "size": 2071,
+      "sha256": "9de6be25003c9ca6cbd3f7c291ed064873bd2d68b728bca2fe4ac461d0859900"
+    },
+    {
       "path": "config.js",
-      "size": 492,
-      "sha256": "71b0e53b9e42d57f6b4e2dd42faaa0fb33f1dc8909884a8b6a0dd40d3846083e"
+      "size": 509,
+      "sha256": "8af3773bafcf679277531e6fb0d6dcf699d832988bd9a6f0cb4bb7d6a96de8ff"
     },
     {
       "path": "database/MIGRATION_REGISTRY.md",
-      "size": 21101,
-      "sha256": "ce87602c6b4741feaca6ecc0d5226d5de813c9f0e8422c0a9d8b6ccaaf228a94"
+      "size": 21559,
+      "sha256": "c45918a4e34c8c96f2edeb620a588e1dacdd7472b56ca988f1a27030d3a68e0f"
     },
     {
       "path": "database/V0.11.10_FIX1/202607260530_v01110_fix1_check.sql",
@@ -1715,6 +1934,36 @@
       "sha256": "ca485db757d5b5125d8576e12e60c67df8def435f8cff3e828873c8141287783"
     },
     {
+      "path": "database/V1.2_FIX1/202607301500_v1_2_fix1_precheck.sql",
+      "size": 1853,
+      "sha256": "d7e10512ca151c0f1a0557db1339405303881543615c4d3cccd440984bda94b7"
+    },
+    {
+      "path": "database/V1.2_FIX1/202607301510_v1_2_fix1_paigow_main.sql",
+      "size": 87210,
+      "sha256": "436703ca629beab1d998b15306dc3bc8ae594c4073f46f5caa2ecd9640e2424b"
+    },
+    {
+      "path": "database/V1.2_FIX1/202607301520_v1_2_fix1_cache38_release.sql",
+      "size": 2652,
+      "sha256": "54d0cba0a0a65001862a52a1eca90f816e67559282ae960c3d380c45059aaa32"
+    },
+    {
+      "path": "database/V1.2_FIX1/202607301530_v1_2_fix1_check.sql",
+      "size": 3047,
+      "sha256": "0b92d92a4ee9a9c17e9b8a3958acddc609a597dd8053768039403b4ab8d37a5e"
+    },
+    {
+      "path": "database/V1.2_FIX1/202607301540_v1_2_fix1_emergency_disable_paigow.sql",
+      "size": 1112,
+      "sha256": "b1937b79209f98ca5fa3280147314c3e2ba43e8530d789221b34113ed9b3d9d9"
+    },
+    {
+      "path": "database/V1.2_FIX1/202607301550_v1_2_fix1_resume_paigow.sql",
+      "size": 579,
+      "sha256": "205b515c60594126a15477e2cdced6e2aa684b61d8b87ab57913d3a3064d8326"
+    },
+    {
       "path": "docs/B01命格与造化池接入说明.md",
       "size": 411,
       "sha256": "9d36763fcdb5c28e562722dd244823a6ffcc6a5c984226d4ed22982fc23f3523"
@@ -2125,6 +2374,11 @@
       "sha256": "7809a29d8094eaed19572f00dba65c713c2aedaa247a154f6f455fa69772f95e"
     },
     {
+      "path": "docs/V1.2_FIX1_九霄灵牌规则.md",
+      "size": 1186,
+      "sha256": "32626379e5839a1d3934b10b467ca804144da4ab7e9e5d9b06c20fdf353f7be5"
+    },
+    {
       "path": "docs/V1.2_SOURCE_CHANGE_REPORT.md",
       "size": 960,
       "sha256": "577825f9e931c278c8240733b751954f380b9ad3b67e6bd3fb14dc2de96f49ca"
@@ -2146,18 +2400,28 @@
     },
     {
       "path": "index.html",
-      "size": 2074,
-      "sha256": "29729128bf6baf5b22d75eb4d4cb096e96b61ac0f48d38ddde5504a8c776ecff"
+      "size": 2242,
+      "sha256": "4d1e2659496e53e678c2066658a7030668c8ee6fe79f52acb192ad7849c127e5"
     },
     {
       "path": "manifest.webmanifest",
-      "size": 529,
-      "sha256": "cd4dc434fd3e96845129e94da10e63d555076de802b90f891295b0a144ef8b03"
+      "size": 534,
+      "sha256": "5830931615c14645411a23b1774f208677526627c089bca71aed2ace4fd6b05d"
+    },
+    {
+      "path": "paigow-app.css",
+      "size": 5636,
+      "sha256": "58b5fbed32e8c6fa877765de3a6b1c8208a38faab041eebcb93415535d5af024"
+    },
+    {
+      "path": "paigow-app.js",
+      "size": 22728,
+      "sha256": "84a754530f0d0378bd7112614dd3565552c67e982191caab78d16b7796ec54c8"
     },
     {
       "path": "release_config.json",
-      "size": 194,
-      "sha256": "4d62f24f22380a44685cd855b77fa5b163deb19473ae03c4141f6f7bde79bcad"
+      "size": 209,
+      "sha256": "ff6d0c9b4ba00635a41ea99b9494034751526811a5d1b0f6959cec49bb59b4b4"
     },
     {
       "path": "styles.css",
@@ -2166,8 +2430,8 @@
     },
     {
       "path": "sw.js",
-      "size": 2929,
-      "sha256": "2522bbb70779c15a0903d5766ff0a3497d948c940565563377fa8e36b8798fe0"
+      "size": 3178,
+      "sha256": "2512ad4745cc34d00c8fce3b083d975ae12a02e9aeb82cfda91ae3275bb3ace3"
     },
     {
       "path": "tools/audit_v0120_fix1.py",
@@ -2228,6 +2492,11 @@
       "path": "tools/ci_v1_2.py",
       "size": 1358,
       "sha256": "e644ac25d2a385b8ce716178fe3fbe682f5c6e4c42fd40b22b663e2818ba05f1"
+    },
+    {
+      "path": "tools/ci_v1_2_fix1.py",
+      "size": 1436,
+      "sha256": "6c2810914eeb98812eea4ad2947769a706f30da2de062694cde6c6b02627ebab"
     },
     {
       "path": "tools/ci_v1_fix1.py",
@@ -2370,6 +2639,11 @@
       "sha256": "b711dab6d6c7876f147ff94640cedd1a0e359bbf47aef76fb66efb6effff85e3"
     },
     {
+      "path": "tools/prepare_pages_site_v1_2_fix1.py",
+      "size": 1167,
+      "sha256": "94fdc601d2e9cd9bbeac1558ed20d13adf58ce06bf775f006e659f3ddaaf9c2f"
+    },
+    {
       "path": "tools/prepare_pages_site_v1_fix1.py",
       "size": 1081,
       "sha256": "fa96a4395fe9c083aa83033a34aa6d9433f6f5048597385f280eb5d35605e093"
@@ -2510,6 +2784,11 @@
       "sha256": "817310bbaa38623dd85a3154e8168079629612324e77f41092ef33d1e13647a6"
     },
     {
+      "path": "tools/sql_static_audit_v1_2_fix1.py",
+      "size": 4776,
+      "sha256": "c55578d1c15fd9c1739a9a77fbb41cc2f02e790eb288df217f64b237e2cfe1e2"
+    },
+    {
       "path": "tools/sql_static_audit_v1_fix1.py",
       "size": 1513,
       "sha256": "94a2e6579edc525aca0cdd48d2832a1cda809cd4446f04e17e458d6ad59fe940"
@@ -2608,6 +2887,11 @@
       "path": "tools/test_features_v1_2.js",
       "size": 3639,
       "sha256": "8659b66b509dabfb16aeffda754da7ceffab4b9cf79214e676c49d7f2fe0b524"
+    },
+    {
+      "path": "tools/test_features_v1_2_fix1.js",
+      "size": 3362,
+      "sha256": "75d08621fa6937850f9c583dc77c0357a8315d550eff6a31eb25685db77d54b4"
     },
     {
       "path": "tools/test_features_v1_fix1.js",
@@ -2795,6 +3079,11 @@
       "sha256": "189fc17c33ceb0c8a72c8ab755574783de127884377ef21008388ff228163b3b"
     },
     {
+      "path": "tools/verify_pages_site_v1_2_fix1.py",
+      "size": 1511,
+      "sha256": "329d863268a6b69825750a2e60c85c6ed29037fb82293ea1791f1fae97f6ffb1"
+    },
+    {
       "path": "tools/verify_pages_site_v1_fix1.py",
       "size": 1681,
       "sha256": "df2eb9825bb4c96d92ccba5afe672ad063982f200c343c74c1bb8a7a118feb69"
@@ -2940,6 +3229,11 @@
       "sha256": "f7da6e9e6f81d9c31767c5bfdaacb3aa40a6c6a108098716d22de9339d5d3561"
     },
     {
+      "path": "tools/verify_release_v1_2_fix1.py",
+      "size": 2474,
+      "sha256": "4172636d3aaac72b76c00537eafcc6c591af2c8b51032209b0b6b1b0cfa4a348"
+    },
+    {
       "path": "tools/verify_release_v1_fix1.py",
       "size": 2243,
       "sha256": "a0a930ccd50732bf330c6356a5a2c1f47f4ab93c8f0dc0ce847e43f78a8cc14a"
@@ -2961,12 +3255,8 @@
     },
     {
       "path": "update-guard.js",
-      "size": 4918,
-      "sha256": "6c5e23cc0d0a0b907ba3354d4584baa34ad03c2207b71e0322cd112e75124bdc"
+      "size": 4923,
+      "sha256": "0b20083a896efd6d4e6fd692b023d4843b48633412765bf8493989195396451b"
     }
-  ],
-  "notes": [
-    "生产数据库未在本地执行；上线须依次执行SQL 64—68。",
-    "69/70仅用于紧急停用或恢复变异伤害加成。"
   ]
 }

@@ -1,0 +1,17 @@
+--- /mnt/data/jiuxiao_v12_cache37_base/index.html	2026-07-30 13:53:06.000000000 +0000
++++ /mnt/data/jiuxiao_b_paigow_build/B-PAIGOW01/CLIENT_CANDIDATE/index.html	2026-07-30 14:34:19.402573891 +0000
+@@ -14,6 +14,7 @@
+   <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png?v=v1-2-cache37">
+   <link rel="apple-touch-icon" href="assets/icon-192.png?v=v1-2-cache37">
+   <link rel="stylesheet" href="styles.css?v=v1-2-cache37">
++  <link rel="stylesheet" href="b-paigow01.css?v=b-paigow01-1">
+ </head>
+ <body>
+   <div class="ink ink-a" aria-hidden="true"></div>
+@@ -52,5 +53,6 @@
+   <script src="config.js?v=v1-2-cache37"></script>
+   <script src="update-guard.js?v=v1-2-cache37"></script>
+   <script src="app.js?v=v1-2-cache37"></script>
++  <script src="b-paigow01.js?v=b-paigow01-1"></script>
+ </body>
+ </html>

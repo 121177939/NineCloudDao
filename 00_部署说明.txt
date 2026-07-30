@@ -1,12 +1,12 @@
-九霄问道 V1.2 CACHE37 完整部署包
+九霄问道 V1.2 FIX1 CACHE38 完整部署包
 
+前提：生产数据库已经完成V1.2 CACHE37。
 数据库执行顺序：
-1. SQL/64_V1.1_FIX1_安全随机兼容修复.sql
-2. SQL/65_V1.2_升级前检查.sql（全部true）
-3. SQL/66_V1.2_变异灵根与剑心互斥.sql
-4. SQL/67_V1.2_CACHE37_正式发布门禁.sql
-5. SQL/68_V1.2_升级后检查.sql（全部true）
-6. 将完整包覆盖GitHub仓库根目录并等待Pages部署成功。
+1. SQL/71_V1.2_FIX1_升级前检查.sql（全部true）
+2. SQL/72_V1.2_FIX1_九霄灵牌正式并线.sql
+3. SQL/73_V1.2_FIX1_CACHE38_正式发布门禁.sql
+4. SQL/74_V1.2_FIX1_升级后检查.sql（全部true）
+5. 将完整包覆盖GitHub仓库根目录并等待Pages部署成功。
 
-69/70仅用于紧急停用/恢复变异伤害加成。
-客户端构建：v1-2-cache37，cacheEpoch：37。
+75/76仅用于紧急停用/恢复九霄灵牌。
+客户端构建：v1-2-fix1-cache38，cacheEpoch：38。
