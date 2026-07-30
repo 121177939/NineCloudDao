@@ -1,3 +1,10 @@
+# V1.3 CACHE41
+
+- 修复GitHub Pages build阶段对未安装Playwright和固定Chromium路径的依赖。
+- 正式CI改为零第三方Python依赖的可移植构建。
+- 新增Pages工作流、产物与缓存版本专项审计。
+- 游戏逻辑、牌九规则与资金结算保持不变。
+
 # V1.2 FIX1 CACHE38
 
 - 正式并线B-PAIGOW01九霄灵牌，替换赌坊大堂可见的气运龟卜入口。

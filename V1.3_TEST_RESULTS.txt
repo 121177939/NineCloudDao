@@ -1,0 +1,38 @@
+九霄问道 V1.3 CACHE41 本地检查结果
+
+故障修复定位：
+- V1.2 FIX3正式工作流调用tools/ci_v1_2_fix3.py。
+- 该CI把Playwright/Chromium行为测试列为强制步骤。
+- 行为测试直接导入playwright并固定使用/usr/bin/chromium，但工作流只配置Python与Node，没有安装Playwright或Chromium。
+- V1.3正式CI已移除这项外部环境依赖；浏览器行为测试保留为可选本地测试。
+
+检查结果：
+- 发布元数据：6/6 PASS
+- GitHub Pages工作流审计：10/10 PASS
+- JavaScript语法：6项 PASS
+- Python脚本语法：7项 PASS
+- V1.3 SQL静态审计：6/6 PASS
+- V1.3功能断言：10/10 PASS
+- 既有核心功能回归：50/50 PASS
+- B-COMBAT01客户端断言：45/45 PASS
+- B-COMBAT01静态审计：27/27 PASS
+- B-COMBAT01数值测试：90/90 PASS
+- B-PAIGOW01候选模块CI：PASS
+- GitHub Pages产物校验：45/45 PASS
+- 可选Chromium行为测试：3/3 PASS
+- 使用不含Playwright的/usr/bin/python3执行完整V1.3 CI：PASS
+
+已验证：
+- 正式deploy-pages.yml不安装、不导入Playwright，不引用/usr/bin/chromium或/opt/pyvenv。
+- build只依赖工作流配置的Python 3.12与Node.js 20。
+- Pages产物包含.nojekyll及全部必要静态文件。
+- 产物文件大小与SHA-256清单一致。
+- build与deploy作业依赖、权限及github-pages环境配置完整。
+- CACHE41已写入首页、404页、牌九iframe、Service Worker与PWA启动地址。
+- 牌九无闪烁轮询和自定义底注保持。
+- 牌型、概率、洗牌、赔率、资金结算及战斗规则未修改。
+
+未执行：
+- 未在用户真实GitHub仓库中代为push。
+- 未在用户GitHub Actions环境中实际运行build/deploy。
+- 未执行生产Supabase 83—84号SQL。

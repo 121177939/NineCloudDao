@@ -1,3 +1,9 @@
+## V1.3 CACHE41
+
+- `database/V1.3/202607301645_v1_3_cache41_pages_ci_release.sql`：GitHub Pages可移植构建发布门禁，仅提升CACHE41。
+- `database/V1.3/202607301650_v1_3_cache41_check.sql`：升级后只读检查。
+- 不修改牌型、概率、洗牌、赔率、资金结算或战斗规则。
+
 ## V1.2 CACHE37
 
 - `database/V1.1_FIX1/202607300950_v1_1_fix1_secure_rng_compat.sql`：补齐64号安全随机兼容修复。

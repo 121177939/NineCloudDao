@@ -32,8 +32,13 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Verify and build V1.2 FIX3 CACHE40
-        run: python3 tools/ci_v1_2_fix3.py .
+      - name: Verify runner environment
+        run: |
+          python3 --version
+          node --version
+
+      - name: Verify and build V1.3 CACHE41
+        run: python3 tools/ci_v1_3.py .
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

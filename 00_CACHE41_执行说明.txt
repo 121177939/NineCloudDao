@@ -1,0 +1,6 @@
+生产库已完成CACHE40：
+1. 执行83号SQL。
+2. 执行84号SQL，确认所有ok=true。
+3. 将V1.3 CACHE41完整包全部覆盖到GitHub仓库根目录。
+4. 提交并推送main。
+5. GitHub Settings > Pages 的Source必须为GitHub Actions。

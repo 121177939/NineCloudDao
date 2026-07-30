@@ -558,7 +558,7 @@
     }
 
 
-/* V1.2 FIX3 CACHE40：V26预览视觉接入真实服务端数据 */
+/* V1.3 CACHE41：V26预览视觉接入真实服务端数据 */
 html,body{min-height:100%;}
 body{overflow-x:hidden;}
 #paigowApp{min-height:100vh;position:relative;z-index:1;}
@@ -628,5 +628,5 @@ button:disabled{pointer-events:none;}
   .self-zone .banker-corner{right:5px;top:5px;}
 }
 
-/* V1.2 FIX3 CACHE40：静默轮询期间不重建页面，仅显示轻量忙碌光标。 */
+/* V1.3 CACHE41：静默轮询期间不重建页面，仅显示轻量忙碌光标。 */
 .pg-app.is-busy{cursor:progress}
