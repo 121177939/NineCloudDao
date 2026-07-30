@@ -4452,3 +4452,17 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
   .battle-playback-controls-bcombat01.battle-controls-fix3 { gap: 4px; padding-top: 5px; }
   .battle-controls-fix3 button { min-height: 31px; padding: 4px 9px; font-size: 10px; }
 }
+
+
+/* V1.2 CACHE37 · 只给“雷/冰/风”属性字着色，容器与其余文字保持原UI颜色。 */
+.mutation-attribute-v12 { font: inherit; font-weight: 600; }
+.mutation-attribute-v12.mutation-thunder { color:#a879ff; text-shadow:0 0 8px rgba(132,79,230,.34); }
+.mutation-attribute-v12.mutation-ice { color:#72c7ff; text-shadow:0 0 8px rgba(65,151,220,.26); }
+.mutation-attribute-v12.mutation-wind { color:#f4f5f2; text-shadow:0 0 7px rgba(255,255,255,.18); }
+.mutation-attribute-v12.mutation-none { color:inherit; text-shadow:none; }
+.mutation-badge-v12 {
+  display:inline-flex;align-items:center;gap:1px;height:18px;margin-left:5px;padding:0 5px;
+  border:1px solid rgba(206,182,126,.24);background:rgba(255,255,255,.025);
+  color:var(--paper-muted);font-size:9px;font-weight:500;vertical-align:1px;
+}
+.battle-talent-line-v12 { color:#cdb9e8; font-size:10px; line-height:1.55; }

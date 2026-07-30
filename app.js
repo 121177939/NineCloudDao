@@ -1054,6 +1054,11 @@
     });
   }
 
+  async function rpcGetMyBirthResultV12() {
+    const result = await restFetch('rpc/get_my_birth_result_v12', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
   async function rpcClaimCultivation() {
     const result = await restFetch('rpc/claim_cultivation_v1', {
       method: 'POST',
@@ -1839,7 +1844,13 @@
         const gender = document.querySelector('input[name="gender"]:checked')?.value || 'unspecified';
         const result = await rpcCreateCharacter(name, gender);
         const birth = Array.isArray(result) ? result[0] : result;
-        showBirthModal(name, birth?.spirit_root_name || '未知灵根', birth?.fate_name || '未知命格');
+        const actualBirth = await rpcGetMyBirthResultV12().catch(() => null);
+        showBirthModal(
+          name,
+          actualBirth?.spirit_root_name || birth?.spirit_root_name || '未知灵根',
+          actualBirth?.fate_name || birth?.fate_name || '未知命格',
+          actualBirth || birth || {}
+        );
       } catch (error) {
         const box = document.getElementById('createError');
         box.textContent = translateError(error);
@@ -1850,7 +1861,8 @@
     });
   }
 
-  function showBirthModal(name, spiritRoot, fate) {
+  function showBirthModal(name, spiritRoot, fate, birth = {}) {
+    const rootDisplay = spiritRootDisplayHtmlV12(spiritRoot, birth);
     modalRoot.innerHTML = `
       <div class="modal-backdrop">
         <section class="modal" role="dialog" aria-modal="true" aria-labelledby="birthTitle">
@@ -1858,7 +1870,7 @@
           <h2 id="birthTitle">${escapeHtml(name)}，此生已定</h2>
           <p>测灵石光华流转，天道在九霄界留下了你的第一笔命书。</p>
           <div class="birth-result">
-            <div><span>先天灵根</span><strong>${escapeHtml(spiritRoot)}</strong></div>
+            <div><span>先天灵根</span><strong>${rootDisplay}</strong></div>
             <div><span>降生命格</span><strong>${escapeHtml(fate)}</strong></div>
           </div>
           <button id="enterWorldBtn" class="primary-btn full" type="button">进入九霄界</button>
@@ -3947,8 +3959,8 @@
           await enterGame({ silent: true });
           showResultModal({
             seal: '灵', title: '灵根重塑',
-            message: `${result?.old_root_name || currentRoot.name || '原灵根'} → ${result?.new_root_name || '新灵根'}`,
-            detail: `修炼系数 ×${formatNumber(result?.old_cultivation_multiplier || currentRoot.cultivation_multiplier || 1, 2)} → ×${formatNumber(result?.new_cultivation_multiplier || 1, 2)}${Number.isFinite(Number(result?.current_rate_per_second)) ? `；当前修炼速度 ${formatRate(result.current_rate_per_second)}` : ''}`,
+            message: `${result?.old_root_name || currentRoot.name || '原灵根'} → ${result?.mutation_display || result?.new_root_name || '新灵根'}`,
+            detail: `${result?.conflict_replaced ? `天生剑心与变异灵根发生冲突，系统已随机改为“${result?.new_root_name || '合法灵根'}”；` : ''}修炼系数 ×${formatNumber(result?.old_cultivation_multiplier || currentRoot.cultivation_multiplier || 1, 2)} → ×${formatNumber(result?.new_cultivation_multiplier || 1, 2)}${Number.isFinite(Number(result?.current_rate_per_second)) ? `；当前修炼速度 ${formatRate(result.current_rate_per_second)}` : ''}`,
             success: true
           });
         } catch (error) {
@@ -4320,7 +4332,7 @@
               <div><span>本尊姓名</span><strong>${escapeHtml(result.self.name || state.character?.name || '本尊')}</strong></div>
               <div><span>当前等级</span><strong>${escapeHtml(result.self.realm || '未知境界')}</strong></div>
               <div><span>本尊战力</span><strong>${formatNumber(result.self.power || result.self_power || 0)}</strong></div>
-              <div><span>本命五行</span><strong>${escapeHtml(result.self.element_name || '未定')}</strong></div>
+              <div><span>本命五行</span><strong>${escapeHtml(result.self.element_name || '未定')}${result.self.mutation_active ? ` · 变异${mutationAttributeHtmlV12(result.self)}` : ''}</strong></div>
             </div>
           ` : ''}
           <div class="battle-ranking-rule-bcombat01">
@@ -4335,7 +4347,7 @@
               <article class="destiny-ranking-row rank-${Math.min(4, rank)} ${row.is_self ? 'self' : ''} ${safeBoard === 'battle' ? 'battle-ranking-row-bcombat01' : ''}">
                 <div class="destiny-rank-medal">${escapeHtml(destinyRankMedal(rank))}</div>
                 <div class="destiny-rank-main">
-                  <div><strong>${escapeHtml(row.name || '无名修士')}</strong>${row.is_self ? '<span class="self-mark">本尊</span>' : ''}${safeBoard === 'battle' ? `<span class="battle-element-mark-bcombat01 element-${escapeHtml(row.element || 'none')}">${escapeHtml(row.element_name || '未定')}行</span>` : ''}</div>
+                  <div><strong>${escapeHtml(row.name || '无名修士')}</strong>${row.is_self ? '<span class="self-mark">本尊</span>' : ''}${safeBoard === 'battle' ? `<span class="battle-element-mark-bcombat01 element-${escapeHtml(row.element || 'none')}">${escapeHtml(row.element_name || '未定')}行</span>${mutationBadgeHtmlV12(row)}` : ''}</div>
                   <p>${safeBoard === 'battle'
                     ? `等级 ${escapeHtml(row.realm || '未知境界')}`
                     : `${escapeHtml(row.realm || '未知境界')} · 命格「${escapeHtml(row.fate || '未定命格')}」`}</p>
@@ -4456,7 +4468,7 @@
         <div class="battle-combatant-public-fix2">
           <i><b>等级</b>${escapeHtml(row?.realm || '未知境界')}</i>
           <i><b>战力</b>${formatNumber(row?.power || 0)}</i>
-          <i><b>五行</b>${escapeHtml(row?.element_name || '未定')}行</i>
+          <i><b>五行</b>${escapeHtml(row?.element_name || '未定')}行${row?.mutation_active ? ` · 变异${mutationAttributeHtmlV12(row)}` : ''}</i>
         </div>
       </article>
     `;
@@ -4468,7 +4480,7 @@
         <span class="battle-duel-side-label-fix3">${escapeHtml(sideLabel)}</span>
         <strong>${escapeHtml(row?.name || '无名修士')}</strong>
         <div class="battle-duel-stat-fix3"><b>战力</b><em>${formatNumber(row?.power || 0)}</em></div>
-        <div class="battle-duel-stat-fix3"><b>五行</b><em>${escapeHtml(row?.element_name || '未定')}行</em></div>
+        <div class="battle-duel-stat-fix3"><b>五行</b><em>${escapeHtml(row?.element_name || '未定')}行${row?.mutation_active ? ` · 变异${mutationAttributeHtmlV12(row)}` : ''}</em></div>
       </article>
     `;
   }
@@ -4622,12 +4634,18 @@
       : multiplier < 1
         ? `${escapeHtml(attacker.element_name || '')}行受${escapeHtml(defender.element_name || '')}行压制，伤害降低${formatNumber((1 - multiplier) * 100, 0)}%。`
         : '五行未形成直接克制，本次伤害不作修正。';
+    const mutationMultiplier = Number(action?.mutation_multiplier || 1);
+    const talentLine = mutationMultiplier > 1
+      ? `变异灵根（${escapeHtml(action?.mutation_name || attacker?.mutation_name || '异')}）在最终伤害层提高${formatNumber((mutationMultiplier - 1) * 100, 0)}%。`
+      : Number(action?.sword_heart_multiplier || 1) > 1
+        ? `天生剑心在最终伤害层提高${formatNumber((Number(action.sword_heart_multiplier) - 1) * 100, 0)}%。`
+        : '';
     return `
       <article class="battle-action-bcombat01 ${action?.defeated ? 'is-finisher' : ''}">
         <header><span>第 ${formatNumber(action?.round || 1)} 回合</span><strong>${escapeHtml(action?.attacker_name || '')} 出手</strong></header>
         <p>${battleAttackCopyBCombat01(action)}</p>
         <p>${battleDefenseCopyBCombat01(action)}</p>
-        <p class="battle-element-line-bcombat01">${elementLine}</p>
+        <p class="battle-element-line-bcombat01">${elementLine}</p>${talentLine ? `<p class="battle-talent-line-v12">${talentLine}</p>` : ''}
         <div class="battle-damage-line-bcombat01">
           <strong>造成 ${formatNumber(action?.damage || 0)} 点伤害</strong>
           <span>道御与护体共化去 ${formatNumber(Number(action?.defense_reduction || 0) * 100, 2)}%</span>
@@ -6590,7 +6608,9 @@
     const ready = snapshot && snapshot.status !== 'unavailable' && Number.isFinite(Number(snapshot.attack));
     const value = key => ready ? formatNumber(snapshot[key] || 0) : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
     const bonusValue = ready
-      ? (snapshot.sword_heart_active ? '剑心 +8%' : `五行 · ${snapshot.element_name || '未定'}`)
+      ? (snapshot.sword_heart_active
+        ? '剑心 +8%'
+        : (snapshot.mutation_active ? `变异·${snapshot.mutation_name || '未知'} +8%` : `五行 · ${snapshot.element_name || '未定'}`))
       : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
     const card = (position, icon, name, displayValue, detail) => `
       <button class="yuanshen-stat-card-v0155 ${position}" type="button" data-yuanshen-stat="${escapeHtml(name)}" data-yuanshen-detail="${escapeHtml(detail)}">
@@ -6638,7 +6658,7 @@
 
           ${card('right-1', '生', '生机', value('vitality'), ready ? `境界基础 ${formatNumber(snapshot.base_vitality || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_vitality || 0)}。` : '正在读取服务端权威战斗快照。')}
           ${card('right-2', '身', '身法', value('agility'), ready ? `境界基础 ${formatNumber(snapshot.base_agility || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_agility || 0)}；第一版用于决定先手。` : '正在读取服务端权威战斗快照。')}
-          ${card('right-3', '元', '加成', bonusValue, ready ? `灵根“${rootName}”只影响修炼速度；本命五行为“${snapshot.element_name || '未定'}”。命格“${fateName}”${snapshot.sword_heart_active ? '已满足剑类武器与剑系功法条件，最终剑伤 +8%。' : '当前没有常驻四属性加成。'}` : '正在读取五行、命格、装备与功法加成。')}
+          ${card('right-3', '元', '加成', bonusValue, ready ? `本命五行为“${snapshot.element_name || '未定'}”，继续使用原五行克制。${snapshot.mutation_active ? `变异灵根已显化为“${snapshot.mutation_name || '未知'}”，只在最终伤害层提高8%，不建立新克制。` : `灵根“${rootName}”只影响修炼速度。`}命格“${fateName}”${snapshot.sword_heart_active ? '已满足剑类武器与剑系功法条件，最终剑伤 +8%。' : snapshot.mutation_active ? '与变异灵根互斥，不会叠加剑心加成。' : '当前没有常驻四属性加成。'}` : '正在读取五行、命格、装备与功法加成。')}
         </div>
         <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；当前武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
       </div>`;
@@ -6836,11 +6856,36 @@
     return `element-${safe}`;
   }
 
+  function mutationElementClassV12(element = '') {
+    const safe = ['thunder','ice','wind'].includes(String(element || '').toLowerCase())
+      ? String(element).toLowerCase()
+      : 'none';
+    return `mutation-${safe}`;
+  }
+
+  function mutationAttributeHtmlV12(snapshot = {}) {
+    const name = String(snapshot?.mutation_name || '').trim();
+    if (!name) return '';
+    return `<b class="mutation-attribute-v12 ${mutationElementClassV12(snapshot?.mutation_element)}">${escapeHtml(name)}</b>`;
+  }
+
+  function spiritRootDisplayHtmlV12(rootName = '', snapshot = {}) {
+    const safeRoot = escapeHtml(rootName || '未测灵根');
+    const mutation = mutationAttributeHtmlV12(snapshot);
+    return mutation ? `变异灵根（${mutation}）` : safeRoot;
+  }
+
+  function mutationBadgeHtmlV12(snapshot = {}) {
+    const mutation = mutationAttributeHtmlV12(snapshot);
+    return mutation ? `<span class="mutation-badge-v12">变异·${mutation}</span>` : '';
+  }
+
   function heroSpiritRootChipHtmlV1(root = {}, snapshot = state.battleSnapshotV1) {
-    const rootName = escapeHtml(root.name || '未测灵根');
+    const rootDisplay = spiritRootDisplayHtmlV12(root.name || '未测灵根', snapshot || {});
+    if (snapshot?.mutation_active) return rootDisplay;
     const elementName = String(snapshot?.element_name || '').trim();
-    if (!elementName) return rootName;
-    return `${rootName}<b class="hero-spirit-element-v1 ${battleElementClassV1(snapshot?.element)}">（${escapeHtml(elementName)}）</b>`;
+    if (!elementName) return rootDisplay;
+    return `${rootDisplay}<b class="hero-spirit-element-v1 ${battleElementClassV1(snapshot?.element)}">（${escapeHtml(elementName)}）</b>`;
   }
 
   function renderHeroSpiritRootChipV1() {

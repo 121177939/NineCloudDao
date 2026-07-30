@@ -1,3 +1,13 @@
+## V1.2 CACHE37
+
+- `database/V1.1_FIX1/202607300950_v1_1_fix1_secure_rng_compat.sql`：补齐64号安全随机兼容修复。
+- `database/V1.2/202607301300_v1_2_precheck.sql`：V1.2升级前检查。
+- `database/V1.2/202607301310_v1_2_mutation_roots_sword_heart_mutex.sql`：雷风冰变异灵根、剑心互斥、冲突随机替换、战斗8%与UI数据契约。
+- `database/V1.2/202607301320_v1_2_cache37_release.sql`：CACHE37发布门禁。
+- `database/V1.2/202607301330_v1_2_check.sql`：升级后检查。
+- `database/V1.2/202607301340_v1_2_emergency_disable_mutation.sql`：紧急停用变异伤害加成。
+- `database/V1.2/202607301350_v1_2_resume_mutation.sql`：恢复变异伤害加成。
+
 ## V1.1 FIX1 CACHE36
 - `database/V1.1_FIX1/202607300850_v1_1_fix1_precheck.sql`：V1.1 CACHE35前置检查与未结算注单门禁。
 - `database/V1.1_FIX1/202607300900_v1_1_fix1_casino_period_bankroll.sql`：两小时赌场资金、公开赔率、30%单局上限、玩家庄2.5%平台费和70%奖池。

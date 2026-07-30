@@ -1,0 +1,312 @@
+
+=== release metadata ===
+PASS required:index.html
+PASS required:404.html
+PASS required:app.js
+PASS required:styles.css
+PASS required:config.js
+PASS required:update-guard.js
+PASS required:sw.js
+PASS required:manifest.webmanifest
+PASS required:VERSION.txt
+PASS required:CURRENT_BASELINE.json
+PASS required:release_config.json
+PASS required:V1.2_CACHE37.txt
+PASS required:V1.2_升级说明.md
+PASS required:docs/V1.2_变异灵根与剑心互斥规则.md
+PASS required:.github/workflows/deploy-pages.yml
+PASS required:SQL/64_V1.1_FIX1_安全随机兼容修复.sql
+PASS required:SQL/65_V1.2_升级前检查.sql
+PASS required:SQL/66_V1.2_变异灵根与剑心互斥.sql
+PASS required:SQL/67_V1.2_CACHE37_正式发布门禁.sql
+PASS required:SQL/68_V1.2_升级后检查.sql
+PASS required:SQL/69_V1.2_紧急停用变异加成.sql
+PASS required:SQL/70_V1.2_恢复启用变异加成.sql
+PASS required:database/V1.1_FIX1/202607300950_v1_1_fix1_secure_rng_compat.sql
+PASS required:database/V1.2/202607301300_v1_2_precheck.sql
+PASS required:database/V1.2/202607301310_v1_2_mutation_roots_sword_heart_mutex.sql
+PASS required:database/V1.2/202607301320_v1_2_cache37_release.sql
+PASS required:database/V1.2/202607301330_v1_2_check.sql
+PASS required:database/V1.2/202607301340_v1_2_emergency_disable_mutation.sql
+PASS required:database/V1.2/202607301350_v1_2_resume_mutation.sql
+PASS required:tools/verify_release_v1_2.py
+PASS required:tools/sql_static_audit_v1_2.py
+PASS required:tools/test_features_v1_2.js
+PASS required:tools/test_balance_v1_2.py
+PASS required:tools/prepare_pages_site_v1_2.py
+PASS required:tools/verify_pages_site_v1_2.py
+PASS required:tools/ci_v1_2.py
+PASS version-file
+PASS config-version
+PASS config-label
+PASS config-build
+PASS config-epoch
+PASS release-json
+PASS baseline-json
+PASS baseline-sql-range
+PASS lock-json
+PASS cache37:index.html
+PASS cache37:404.html
+PASS cache37:config.js
+PASS cache37:sw.js
+PASS cache37:manifest.webmanifest
+PASS cache37:update-guard.js
+PASS workflow
+PASS frontend-mutation
+PASS frontend-colors
+PASS sql-mutex
+PASS sql-damage
+PASS casino-regression
+TOTAL=57 PASS=57 FAIL=0
+
+=== node syntax app.js ===
+
+=== node syntax config.js ===
+
+=== node syntax update-guard.js ===
+
+=== node syntax sw.js ===
+
+=== python syntax tools/prepare_pages_site_v1_2.py ===
+
+=== python syntax tools/verify_pages_site_v1_2.py ===
+
+=== python syntax tools/verify_release_v1_2.py ===
+
+=== python syntax tools/sql_static_audit_v1_2.py ===
+
+=== python syntax tools/test_balance_v1_2.py ===
+
+=== python syntax tools/ci_v1_2.py ===
+
+=== V1.2 SQL audit ===
+PASS pre-readonly
+PASS post-readonly
+PASS rng-transaction
+PASS rng-balanced-dollar-quotes
+PASS main-transaction
+PASS main-balanced-dollar-quotes
+PASS gate-transaction
+PASS gate-balanced-dollar-quotes
+PASS disable-transaction
+PASS disable-balanced-dollar-quotes
+PASS resume-transaction
+PASS resume-balanced-dollar-quotes
+PASS rng-no-gen-random-bytes-call
+PASS rng-uuid-rejection
+PASS rng-private
+PASS conflict-log-table
+PASS mutant-detector
+PASS mapping-metal-thunder
+PASS mapping-wood-wind
+PASS mapping-water-ice
+PASS fire-earth-no-mapping
+PASS sword-heart-blocks-mutation
+PASS labels
+PASS root-guard-trigger
+PASS fate-guard-trigger
+PASS root-conflict-random-replacement
+PASS fate-conflict-random-replacement
+PASS secure-random-selection
+PASS historical-conflict-random-branch
+PASS migration-conflict-audit
+PASS final-conflict-assertion
+PASS mutation-settings
+PASS snapshot-replaced-in-place
+PASS snapshot-no-rename-wrapper
+PASS snapshot-field:spirit_root_is_mutant
+PASS snapshot-field:mutation_element
+PASS snapshot-field:mutation_name
+PASS snapshot-field:mutation_active
+PASS snapshot-field:mutation_final_damage_bonus
+PASS snapshot-field:mutation_display
+PASS snapshot-field:talent_conflict
+PASS sword-active-requires-no-mutation
+PASS ranking-v11-rule-preserved
+PASS ranking-mutation-fields
+PASS damage-sword-elsif-mutation
+PASS damage-final-layer
+PASS damage-eight-percent-default
+PASS damage-report-fields
+PASS root-reroll-rereads-result
+PASS birth-result-rpc
+PASS no-element-cycle-redefinition
+PASS no-new-overcome-pairs
+PASS gate-cache37
+PASS gate-damage-layer
+PASS post-mapping-checks
+PASS post-five-elements-unchanged
+PASS disable-only-bonus
+PASS resume-eight-percent
+PASS migration-copy:SQL/64_V1.1_FIX1_安全随机兼容修复.sql
+PASS migration-copy:SQL/65_V1.2_升级前检查.sql
+PASS migration-copy:SQL/66_V1.2_变异灵根与剑心互斥.sql
+PASS migration-copy:SQL/67_V1.2_CACHE37_正式发布门禁.sql
+PASS migration-copy:SQL/68_V1.2_升级后检查.sql
+PASS migration-copy:SQL/69_V1.2_紧急停用变异加成.sql
+PASS migration-copy:SQL/70_V1.2_恢复启用变异加成.sql
+TOTAL=65 PASS=65 FAIL=0
+
+=== V1.2 feature test ===
+PASS V1.2 CACHE37 build
+PASS mutation mapping SQL
+PASS no fire earth mutation
+PASS five element cycle unchanged
+PASS no mutation overcome pairs
+PASS mutation final damage eight
+PASS sword and mutation mutex damage
+PASS root conflict random replacement
+PASS fate conflict random replacement
+PASS birth result re-read
+PASS root reroll actual result
+PASS single character wrapper
+PASS thunder purple
+PASS ice blue
+PASS wind white
+PASS whole row not recolored
+PASS hero shows mutation root
+PASS rank and battle display mutation
+PASS casino V1.1 retained
+PASS battle V1.1 retained
+{
+  "ok": true,
+  "checks": 20,
+  "failed": []
+}
+
+=== V1.2 balance test ===
+PASS mutation +8% [1080.00]
+PASS sword heart +8% [1080.00]
+PASS no 1.1664 stack [[Decimal('1.00'), Decimal('1.08')]]
+PASS element 0.90 preserved [900->972]
+PASS element 1.00 preserved [1000->1080]
+PASS element 1.10 preserved [1100->1188]
+PASS mapping exact [{'metal': 'thunder', 'wood': 'wind', 'water': 'ice', 'fire': None, 'earth': None}]
+TOTAL=7 PASS=7 FAIL=0
+
+=== regression tools/test_features_v1.js ===
+PASS snapshot rpc client
+PASS live primordial panel
+PASS exact mobile order
+PASS three columns mobile
+PASS cave rich layers
+PASS cave animations
+PASS unlearned techniques in storage
+PASS visible item name and type
+PASS 36 slots and paging
+PASS battle ranking and challenge
+PASS 80 percent cap copy preserved
+TOTAL=11 PASS=11 FAIL=0
+
+=== regression tools/test_features_v1_fix1.js ===
+PASS root element chip
+PASS fire red
+PASS yuanshen compressed ten percent
+PASS cave six by six
+PASS labels remain visible
+PASS challenge compatibility overload
+PASS friendly production error
+TOTAL=7 PASS=7 FAIL=0
+
+=== regression tools/test_features_v1_fix2.js ===
+PASS no champion copy
+PASS no champion render
+PASS battle rank private stats removed
+PASS compact public card
+PASS separate resolving popup
+PASS separate report popup
+PASS generic battle copy
+PASS css compact
+PASS css report
+{"ok":true,"checks":9}
+
+=== regression tools/test_features_v1_fix3.js ===
+PASS duel summary helper
+PASS duel excludes level
+PASS my side and opponent
+PASS log precedes controls
+PASS speed controls kept
+PASS modal grid layout
+PASS expanded log
+PASS compact controls
+PASS story names challenge relation
+PASS story weapons and cultivation
+PASS story variants
+PASS story failure isolation
+PASS no extra feed subline
+{"ok":true,"checks":13}
+
+=== regression tools/test_features_v1_1.js ===
+PASS ranking bidirectional
+PASS daily 20
+PASS cooldown 20
+PASS same opponent allowed
+PASS stage progress rates
+PASS no stage drop
+PASS equal transfer
+PASS world event correct table
+PASS history backfill
+PASS old higher-only error removed
+{"ok":true,"checks":10}
+
+=== B-COMBAT01 original module audit ===
+
+=== node --check app.js ===
+
+=== node B_MODULE/B-COMBAT01/tools/test_client_bcombat01.js /mnt/data/jiuxiao_v12_work ===
+{"ok":true,"checks":45}
+
+=== /opt/pyvenv/bin/python B_MODULE/B-COMBAT01/tools/static_audit_bcombat01.py ===
+PASS transaction
+PASS 44-stage-values
+PASS power-formula
+PASS five-elements
+PASS balanced-allocation-lock
+PASS new-character-trigger
+PASS element-rules
+PASS daily-rules
+PASS sword-heart-eight-percent
+PASS sword-heart-no-four-stat-bonus
+PASS defense-caps
+PASS cultivation-floor-one-percent
+PASS cultivation-cap-preserved
+PASS idempotency-lock
+PASS world-feed-reused
+PASS no-release-control-write
+PASS no-version-cache-write
+PASS rls-on-new-tables
+PASS precheck-required-deps
+PASS postcheck-rules
+PASS rollback-restores-sword-heart
+PASS client-rpcs
+PASS client-fallbacks
+PASS client-battle-modal
+PASS client-world-refresh
+PASS client-battle-privacy
+PASS client-css
+TOTAL=27 PASS=27 FAIL=0
+
+=== /opt/pyvenv/bin/python B_MODULE/B-COMBAT01/tools/test_balance_bcombat01.py ===
+B-COMBAT01 BALANCE PASS 90/90
+golden_initial_beats_middle_with_overcome: {'winner': 'attacker', 'attacker_hp': 80, 'defender_hp': 0, 'rounds': 8}
+golden_initial_loses_late_with_weak_overcome: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 754, 'rounds': 7}
+golden_late_beats_perfect_with_overcome: {'winner': 'attacker', 'attacker_hp': 176, 'defender_hp': 0, 'rounds': 8}
+golden_perfect_loses_nascent_initial: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 837, 'rounds': 8}
+golden_perfect_sword_heart_still_loses_nascent_initial: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 662, 'rounds': 8}
+
+=== node tools/test_ranking_render_v0143.js /mnt/data/jiuxiao_v12_work ===
+{"ok":true,"checks":25,"module":"V1.0 FIX2"}
+
+B-COMBAT01 CI PASS
+
+=== build pages ===
+PAGES_SITE_BUILT 15
+
+=== verify pages ===
+{
+  "ok": true,
+  "checks": 38,
+  "failed": []
+}
+
+V1.2 CACHE37 CI PASS

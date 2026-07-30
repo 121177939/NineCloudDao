@@ -1,26 +1,14 @@
 {
-  "baseline": "V1.1_FIX1_AB21_CACHE36",
-  "sourcePackage": "九霄问道_V1.1_FIX1_CACHE36_完整部署包.zip",
-  "status": "B_READY",
-  "integratedModules": [
-    "B-CAVE01",
-    "B-CAVE01-FIX1-洞府视觉修正",
-    "B-COMBAT01",
-    "CASINO-FIX1"
-  ],
-  "aLineOverrides": [
-    "V1.0_FIX4_赌坊幂等安全结算",
-    "V1.1_双向战力挑战与阶段修为转移",
-    "V1.1_挑战界闻正确表修复",
-    "V1.1_FIX1_赌场周期资金与公平概率"
-  ],
-  "protectedCasinoRules": [
-    "两小时固定重置灵石1亿与修为10亿",
-    "正利润50%入池、获奖者70%、30%滚存",
-    "旧等权奖票规则",
-    "单局或同轮累计30%",
-    "玩家庄100:97.5且系统零兜底"
-  ],
-  "nextSqlNumber": 64,
-  "cacheEpoch": 36
+  "baseline": "V1.2_AB22_CACHE37",
+  "sourcePackage": "九霄问道_V1.2_CACHE37_完整部署包.zip",
+  "release": "V1.2 CACHE37",
+  "cacheEpoch": 37,
+  "developmentRule": "只允许从本完整包继续开发；SQL从71号追加。",
+  "protectedAreas": [
+    "原五行克制函数",
+    "天生剑心8%条件加成",
+    "变异灵根互斥触发器",
+    "赌场资金与随机函数",
+    "渡劫80%硬上限"
+  ]
 }

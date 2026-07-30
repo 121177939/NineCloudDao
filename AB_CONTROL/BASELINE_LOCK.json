@@ -1,13 +1,15 @@
 {
-  "baseline": "V1.1_FIX1_AB21_CACHE36",
-  "release": "V1.1 FIX1 CACHE36",
-  "sourceBaseline": "V1.1_AB20_CACHE35",
-  "cacheEpoch": 36,
-  "databaseSqlRange": "58-63",
+  "baseline": "V1.2_AB22_CACHE37",
+  "release": "V1.2 CACHE37",
+  "sourceBaseline": "V1.1_FIX1_AB21_CACHE36",
+  "cacheEpoch": 37,
+  "databaseSqlRange": "64-70",
   "protectedRules": [
     "渡劫最终成功率不超过80%",
     "历史正式SQL只追加不回写",
     "玩家庄系统零兜底",
-    "赌坊公平概率不可按盈亏动态修改"
+    "赌坊公平概率不可按盈亏动态修改",
+    "原五行克制关系与倍率不可被风冰雷改写",
+    "天生剑心与变异灵根不可共存"
   ]
 }
