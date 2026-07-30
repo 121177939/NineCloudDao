@@ -1,12 +1,13 @@
 {
-  "version": "V1.0 FIX4 CACHE34",
-  "clientBuild": "v1-fix4-cache34",
-  "generatedFileCount": 519,
+  "version": "V1.1 CACHE35",
+  "clientBuild": "v1-1-cache35",
+  "generatedAt": "2026-07-30T02:55:23.330345+00:00",
+  "generatedFileCount": 541,
   "files": [
     {
       "path": ".github/workflows/deploy-pages.yml",
-      "size": 1214,
-      "sha256": "fd02c3a48f8bb482234aa4a6d9523da8d0e870963bc74817e7f9aa739d042e8f"
+      "size": 1206,
+      "sha256": "0237a1597b2d5f9d96f243101eafef965d54334235e1fa977c4f38e4e8039bff"
     },
     {
       "path": ".gitignore",
@@ -20,43 +21,43 @@
     },
     {
       "path": "00_完整包使用说明.md",
-      "size": 784,
-      "sha256": "c8f1ca792d7f38e12ef9bbbb9429bc7517e5ab5614046938a5593c5129c4c47a"
+      "size": 686,
+      "sha256": "84c76706fa4c75d3fc98f0319296c5ad1d376d8770d62cb579c028cb8aacf376"
     },
     {
       "path": "00_部署说明.txt",
-      "size": 300,
-      "sha256": "36d10dad644d423aa7e9cb9d282b20e58d61c32c69b751036dc5a99823b78cc8"
+      "size": 373,
+      "sha256": "4d68b9da058703d4e0b9c41c8c741780f0e0061a53494ddcaa650be81a79f8dc"
     },
     {
       "path": "404.html",
-      "size": 2104,
-      "sha256": "4d94b811b76cbf7f4eb632b420ca621791cdf3c884211e92753d71ddca0d610a"
+      "size": 2083,
+      "sha256": "138673296bdff4ffa96d80fdfe69fee16474887fd57fd7593b96288fe1901cea"
     },
     {
       "path": "AB_CONTROL/AB_DEVELOPMENT_PROTOCOL.md",
-      "size": 411,
-      "sha256": "44c2463c1539c911453e791210117fdd9a7c00f772d916410d1fa5896db47e30"
+      "size": 865,
+      "sha256": "cffd3e783a7abbb9807b15144c6bb491f29b7e670a559bd0864f1f8835e95da5"
     },
     {
       "path": "AB_CONTROL/BASELINE_LOCK.json",
-      "size": 478,
-      "sha256": "e19f29f88be79ef241746ab5aa24a5edc6aa3ed2e241659c96669f305d4d2097"
+      "size": 295,
+      "sha256": "4865f4061e9ac6e6d8496d0bc61be1adcb8e7bb78c55372de002b45c3f5e14dd"
     },
     {
       "path": "AB_CONTROL/NEXT_WORK.md",
-      "size": 349,
-      "sha256": "c8deffe7b199fc5172ad7cced1b52cea4703e77f0dd29619d4be27c0e6ad2b40"
+      "size": 469,
+      "sha256": "680d860fd699bbf1a883f9f49cf67d3592938dd1a651e4264f445136ddabdd15"
     },
     {
       "path": "AB_CONTROL/PROTECTED_AREAS.md",
-      "size": 571,
-      "sha256": "e730a298792f25ad10ccf2659383a14c4f6242e724b0b32289d902d0ec47a89d"
+      "size": 557,
+      "sha256": "022f795b69f7605cf41e1be9980365ae74f732042aee2c14e37a81937a5189f0"
     },
     {
       "path": "B_BASELINE/00_B线开发从这里开始.md",
-      "size": 662,
-      "sha256": "02fa72ce844b0a1dbb9fc934cdebf45a228fb5e5e432c54b2ac3904f5fbfa4e3"
+      "size": 1028,
+      "sha256": "ff671d32ce7c6da6c8ec00e87317fe50dd4e53d22e0f849180f260e25b9f784e"
     },
     {
       "path": "B_BASELINE/B模块交付规范.md",
@@ -65,8 +66,8 @@
     },
     {
       "path": "B_BASELINE/DEVELOPMENT_MANIFEST.json",
-      "size": 357,
-      "sha256": "d2a9132f104de0909f823c77b139f1684b1c7a87c2253d8acf622234b1475fa5"
+      "size": 501,
+      "sha256": "3806136479100178a969fbdb85d143860368b0fb33a900a1e31334ca91141e8c"
     },
     {
       "path": "B_MODULE/B-COMBAT01/00_MODULE_README.md",
@@ -185,33 +186,33 @@
     },
     {
       "path": "CHANGELOG.md",
-      "size": 20626,
-      "sha256": "4b9f35f16ada8e9b4a5c9d25b3f20d77e4a7bb64eb4111ce253c440304e7cc57"
+      "size": 20964,
+      "sha256": "65067d7ced6e02d22b775021440dbf8563d9def7d0bf5a22d3e20b9394dc075a"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 1864,
-      "sha256": "1cf288faa0c211723e52c2e46bfe6c244995574e604d17101788ba029b62e698"
+      "size": 1642,
+      "sha256": "8ee7983883352263fc680e866e0ac896578afe291777624459925fe43a42adc5"
     },
     {
       "path": "DESKTOP_UPDATE.md",
-      "size": 220,
-      "sha256": "e4b890122531a4798b20977a1ed50894c5f95eed1aa324da5aaca686319bc1d6"
+      "size": 362,
+      "sha256": "5f591df8af05ac620c69a1b5766956c318351232cf847585fa5a1b63acab229c"
     },
     {
       "path": "DEVELOPMENT_BASELINE_NOTICE.md",
-      "size": 359,
-      "sha256": "b2843c12128fbd6098db60a5ade36d6d1308521f1ccd11ca87bc65be0bb5bf98"
+      "size": 490,
+      "sha256": "bab32dcc5f513ac08cb2b40e13ec57b2cee9ea59ca5a138a7a2971acb4250539"
     },
     {
       "path": "README.md",
-      "size": 413,
-      "sha256": "637bb0852da3d7203652d6d700f31cb11b26d0ba9f41d0e3bceaed02cf49e60f"
+      "size": 936,
+      "sha256": "7b3c17a1b3831b262cb81f03f0dbcdc0acecda769d2fa46289ca55505142b6a7"
     },
     {
       "path": "SQL/00_SQL执行说明.txt",
-      "size": 560,
-      "sha256": "70fe34bb630209e30039d806e0e53e1d60417fd5a83808079c23dc7e7b9fc658"
+      "size": 580,
+      "sha256": "8da7d769b2ede54f3117cb72621a70a02be83fd47115d7b1f3344d884cc2c667"
     },
     {
       "path": "SQL/01_升级前检查.sql",
@@ -454,6 +455,36 @@
       "sha256": "521901e61feb5a8c4182a2d196691ea62ba23742ac41c9572c48a366afaaabce"
     },
     {
+      "path": "SQL/49_V1.1_升级前检查.sql",
+      "size": 1127,
+      "sha256": "1634359bd3a1ae93f1687b3cc8c45fa81dfc23cb57b5e4048d72b1979109048e"
+    },
+    {
+      "path": "SQL/50_V1.1_双向战力挑战与界闻修复.sql",
+      "size": 27956,
+      "sha256": "b0fca7cb180e18fc737f854e874353f4afe24f1bebe50f20714ff6dd3c35930b"
+    },
+    {
+      "path": "SQL/51_V1.1_CACHE35_正式发布门禁.sql",
+      "size": 1365,
+      "sha256": "1e0bef064d385c94530700878243ed6ec2f5c81f5ca6dc20f6b6f8058920d5f1"
+    },
+    {
+      "path": "SQL/52_V1.1_升级后检查.sql",
+      "size": 2156,
+      "sha256": "6aa3c590f5182cee737b6a89349b3c29d7df135a6567e82fcd8b91da3ae94868"
+    },
+    {
+      "path": "SQL/53_V1.1_紧急停用战力挑战.sql",
+      "size": 242,
+      "sha256": "37f907b637eb1c6affbad4494780475834d4c21a282cf52e5a835b0f7553569b"
+    },
+    {
+      "path": "SQL/54_V1.1_恢复启用战力挑战.sql",
+      "size": 226,
+      "sha256": "b2a4468804b80cacf9a24f3ed4c53f22c87029437c0ec9f6c721efdece646dc5"
+    },
+    {
       "path": "V0.14.8_TEST_RESULTS.txt",
       "size": 1648,
       "sha256": "3fb8b74b9c69b0f72d4d3cbf13ef1d55380648ec02825bbfc6380debc93f391c"
@@ -644,14 +675,34 @@
       "sha256": "31ad9e463fb492657f8eeda0814cfff4f1cf4be4d2032f783a20c942c67744ee"
     },
     {
+      "path": "V1.1_CACHE35.txt",
+      "size": 349,
+      "sha256": "1e6ebd27c421539bca0f8444314e18f117a15dd24036c5fb69870d2b5d0f313b"
+    },
+    {
+      "path": "V1.1_FULL_CI.log",
+      "size": 9831,
+      "sha256": "a47fa60ade6384ec43bf2829ea0a4b49eeab32f076ab9c1ecc8dc53dc24134e3"
+    },
+    {
+      "path": "V1.1_TEST_RESULTS.txt",
+      "size": 588,
+      "sha256": "8cbae2a9c2f4859824c53a51f8db6b22b4394de04640a56523d3f82f952b9c04"
+    },
+    {
+      "path": "V1.1_升级说明.md",
+      "size": 1394,
+      "sha256": "4e6197856a42fcc4973f61fae399923efa47ce5f06e2b8d6221f6b0afb954e88"
+    },
+    {
       "path": "VERSION.txt",
-      "size": 10,
-      "sha256": "edf7a50941e52d03ef2638af1b280574026df396e5f879de383c05c68d8c7ea3"
+      "size": 5,
+      "sha256": "b0ec6cc194c4941af5c19fd757a30e72a8cbc0810ad106d94efe822c02af75fe"
     },
     {
       "path": "app.js",
-      "size": 426881,
-      "sha256": "b90d49f3597b84e007cba8f3adfe1586e49d2e240dd55e8784cc65685ad83002"
+      "size": 426616,
+      "sha256": "79234cc26c498073d173f02d867ee1e23ba34a34aec84fbab06af5b2944c6779"
     },
     {
       "path": "assets/icon-192.png",
@@ -665,13 +716,13 @@
     },
     {
       "path": "config.js",
-      "size": 510,
-      "sha256": "6042d6a902ca8d9ff4787485613fd972fd09985e1bcbe3c9a2d4bb5cfe3e9a98"
+      "size": 492,
+      "sha256": "879da7542eef61c586e4a0a396f4f43da9bf203a0ba6a5bfa3a745d1e8c7bae1"
     },
     {
       "path": "database/MIGRATION_REGISTRY.md",
-      "size": 19200,
-      "sha256": "49d1b370ba21cad8a018619ab47696b4b8fd8c358688a8add0e8a45fe3df5a32"
+      "size": 19750,
+      "sha256": "73a00c9e4e7c835284ba75ca73b625e16cc94ce1a8d09f10505336160d256027"
     },
     {
       "path": "database/V0.11.10_FIX1/202607260530_v01110_fix1_check.sql",
@@ -1464,6 +1515,36 @@
       "sha256": "521901e61feb5a8c4182a2d196691ea62ba23742ac41c9572c48a366afaaabce"
     },
     {
+      "path": "database/V1.1/202607300230_v1_1_precheck.sql",
+      "size": 1127,
+      "sha256": "1634359bd3a1ae93f1687b3cc8c45fa81dfc23cb57b5e4048d72b1979109048e"
+    },
+    {
+      "path": "database/V1.1/202607300240_v1_1_battle_rules_world_event_fix.sql",
+      "size": 27956,
+      "sha256": "b0fca7cb180e18fc737f854e874353f4afe24f1bebe50f20714ff6dd3c35930b"
+    },
+    {
+      "path": "database/V1.1/202607300250_v1_1_cache35_release.sql",
+      "size": 1365,
+      "sha256": "1e0bef064d385c94530700878243ed6ec2f5c81f5ca6dc20f6b6f8058920d5f1"
+    },
+    {
+      "path": "database/V1.1/202607300260_v1_1_check.sql",
+      "size": 2156,
+      "sha256": "6aa3c590f5182cee737b6a89349b3c29d7df135a6567e82fcd8b91da3ae94868"
+    },
+    {
+      "path": "database/V1.1/202607300270_v1_1_emergency_disable.sql",
+      "size": 242,
+      "sha256": "37f907b637eb1c6affbad4494780475834d4c21a282cf52e5a835b0f7553569b"
+    },
+    {
+      "path": "database/V1.1/202607300280_v1_1_resume.sql",
+      "size": 226,
+      "sha256": "b2a4468804b80cacf9a24f3ed4c53f22c87029437c0ec9f6c721efdece646dc5"
+    },
+    {
       "path": "docs/B01命格与造化池接入说明.md",
       "size": 411,
       "sha256": "9d36763fcdb5c28e562722dd244823a6ffcc6a5c984226d4ed22982fc23f3523"
@@ -1880,18 +1961,18 @@
     },
     {
       "path": "index.html",
-      "size": 2104,
-      "sha256": "4d94b811b76cbf7f4eb632b420ca621791cdf3c884211e92753d71ddca0d610a"
+      "size": 2083,
+      "sha256": "138673296bdff4ffa96d80fdfe69fee16474887fd57fd7593b96288fe1901cea"
     },
     {
       "path": "manifest.webmanifest",
-      "size": 532,
-      "sha256": "2ba60542d954697bc9708111dfcbc1391cace4b078f068ec55b70715f6688de1"
+      "size": 529,
+      "sha256": "9ee79347e60124bc79c005ed99541e36d15ab7f83af6f37411a16370a42010b5"
     },
     {
       "path": "release_config.json",
-      "size": 1344,
-      "sha256": "4a7b9cb6eb216989bfc1390bbe2bfdaa602e942a37c640f2e217c7fca89f067c"
+      "size": 194,
+      "sha256": "fa8f60f78950a2875995fe1e98067b4bb04dd8d2bd731cc2868e88bec4490858"
     },
     {
       "path": "styles.css",
@@ -1900,8 +1981,8 @@
     },
     {
       "path": "sw.js",
-      "size": 2955,
-      "sha256": "de7028a018fca761927e6b165c2b598ed2277ca7f66615625624e4901ec8cbad"
+      "size": 2929,
+      "sha256": "c4d0de11f7f16587608c40ea216a840d73a3aa6e91e8d8ea1ef9814b8ce952fc"
     },
     {
       "path": "tools/audit_v0120_fix1.py",
@@ -1947,6 +2028,11 @@
       "path": "tools/ci_v1.py",
       "size": 2218,
       "sha256": "04d5744e429ce9e87bdfcc6f1c7d4bf3071f33df3db1d9349c604f6255abf58b"
+    },
+    {
+      "path": "tools/ci_v1_1.py",
+      "size": 1512,
+      "sha256": "d26b014accc41bba70131b6f9715b1cb0a9162f0abe7f4a07ff4d43793ef3bc2"
     },
     {
       "path": "tools/ci_v1_fix1.py",
@@ -2074,6 +2160,11 @@
       "sha256": "f678f4e42e8f46c19fa29e9287badd0eabd3547197ca6466864081f3a2b50548"
     },
     {
+      "path": "tools/prepare_pages_site_v1_1.py",
+      "size": 1073,
+      "sha256": "15756c798cc06fc4899ed89379624fa2c674e04e2a5851310ed7fa094a44c939"
+    },
+    {
       "path": "tools/prepare_pages_site_v1_fix1.py",
       "size": 1081,
       "sha256": "fa96a4395fe9c083aa83033a34aa6d9433f6f5048597385f280eb5d35605e093"
@@ -2199,6 +2290,11 @@
       "sha256": "42f4f5fdbe22e797ea3d912a82feecf642b92fc50ce47fcf652d7ca23c700f4a"
     },
     {
+      "path": "tools/sql_static_audit_v1_1.py",
+      "size": 1908,
+      "sha256": "27325ffd6bb3d25cc6713f671c8458847bb1b9e22fb5f644c2ff2b104b8a070d"
+    },
+    {
       "path": "tools/sql_static_audit_v1_fix1.py",
       "size": 1513,
       "sha256": "94a2e6579edc525aca0cdd48d2832a1cda809cd4446f04e17e458d6ad59fe940"
@@ -2240,8 +2336,8 @@
     },
     {
       "path": "tools/test_cave_visual_v0155_fix1.js",
-      "size": 2093,
-      "sha256": "956958bc598921669904eea7557c952c64ca0fab5c3d114ee946f3c2b7f7fbe9"
+      "size": 2137,
+      "sha256": "e30dc82be081c19c254cc96dd4929d189fe66b044b34b93e3bf9ed7be496badb"
     },
     {
       "path": "tools/test_features_v0144.js",
@@ -2270,13 +2366,18 @@
     },
     {
       "path": "tools/test_features_v0155.js",
-      "size": 1742,
-      "sha256": "dd24cf36e40a2435deebfd7c230d97dc8e969a8078e5771acda604ebf8931f5c"
+      "size": 1786,
+      "sha256": "2142bad854794d6592b549a5a1960bcba2dbe32ad29c129119fdbfa3eab07c8e"
     },
     {
       "path": "tools/test_features_v1.js",
       "size": 2354,
       "sha256": "69cfa87edee3a3d43ab4a101812ee02ed87124d4c2fb24f4fd813df8dcedb22d"
+    },
+    {
+      "path": "tools/test_features_v1_1.js",
+      "size": 1668,
+      "sha256": "6670225d804d8094f7f6b028220bfb534b53f9db8f52e0f9379a04c1916c9e90"
     },
     {
       "path": "tools/test_features_v1_fix1.js",
@@ -2444,6 +2545,11 @@
       "sha256": "16da4cbdbfeb8f59e6cd8ae98eda86ddc9f22b020b07162dec9cf167fdef35ce"
     },
     {
+      "path": "tools/verify_pages_site_v1_1.py",
+      "size": 1560,
+      "sha256": "3f732476a96d23da1375ceff902c9c91f998367c288efa7968c762bc95543cb9"
+    },
+    {
       "path": "tools/verify_pages_site_v1_fix1.py",
       "size": 1681,
       "sha256": "df2eb9825bb4c96d92ccba5afe672ad063982f200c343c74c1bb8a7a118feb69"
@@ -2574,6 +2680,11 @@
       "sha256": "35566763cc03fdf20c9900ce9adebd179ca0c5c02c21c821fd945ae161004aa4"
     },
     {
+      "path": "tools/verify_release_v1_1.py",
+      "size": 2487,
+      "sha256": "5055aafaa0c908c1fcf7fb62e93e2f988a53e7d4ef9a0422791d818a4531f09d"
+    },
+    {
       "path": "tools/verify_release_v1_fix1.py",
       "size": 2243,
       "sha256": "a0a930ccd50732bf330c6356a5a2c1f47f4ab93c8f0dc0ce847e43f78a8cc14a"
@@ -2595,8 +2706,8 @@
     },
     {
       "path": "update-guard.js",
-      "size": 4921,
-      "sha256": "da82bd0a2f37f0eaa61d3109e821d0048728e2e8e1ac72d944f7b99f722dd5f9"
+      "size": 4918,
+      "sha256": "761707f94cb30d066174bc0b97d0b906d142a74df4d6c03fa21e6d81e7dd518f"
     }
   ]
 }

@@ -302,3 +302,11 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 - `database/V1.0_FIX3/202607292040_v1_fix3_cache33_release.sql`：CACHE33发布门禁。
 - `database/V1.0_FIX3/202607292050_v1_fix3_check.sql`：升级后只读检查。
 - `database/V1.0_FIX3/202607292060_v1_fix3_rollback.sql`：停止后续界闻重写；历史正文不自动恢复。
+
+## V1.1 CACHE35
+- `database/V1.1/202607300230_v1_1_precheck.sql`：V1.0 FIX4 前置检查。
+- `database/V1.1/202607300240_v1_1_battle_rules_world_event_fix.sql`：双向挑战、20次/20分钟、阶段修为转移与界闻错表修复。
+- `database/V1.1/202607300250_v1_1_cache35_release.sql`：CACHE35发布门禁。
+- `database/V1.1/202607300260_v1_1_check.sql`：只读最终检查。
+- `database/V1.1/202607300270_v1_1_emergency_disable.sql`：紧急关闭战力挑战。
+- `database/V1.1/202607300280_v1_1_resume.sql`：恢复战力挑战。

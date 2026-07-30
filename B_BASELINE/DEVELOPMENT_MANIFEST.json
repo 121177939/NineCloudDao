@@ -1,15 +1,20 @@
 {
-  "baseline": "V1.0_FIX3_AB18_CACHE33",
-  "sourcePackage": "九霄问道_V1.0_FIX3_CACHE33_完整部署包.zip",
+  "baseline": "V1.1_AB20_CACHE35",
+  "sourcePackage": "九霄问道_V1.1_CACHE35_完整部署包.zip",
   "status": "B_READY",
   "integratedModules": [
     "B-CAVE01",
     "B-CAVE01-FIX1-洞府视觉修正",
     "B-COMBAT01"
   ],
+  "aLineOverrides": [
+    "V1.0_FIX4_赌坊安全结算",
+    "V1.1_双向战力挑战与阶段修为转移",
+    "V1.1_挑战界闻正确表修复"
+  ],
   "reservedModules": [
     "装备正式掉落与锻造系统",
     "更多PVE/PVP玩法"
   ],
-  "cacheEpoch": 33
+  "cacheEpoch": 35
 }

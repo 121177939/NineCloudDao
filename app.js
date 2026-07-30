@@ -303,11 +303,8 @@
     if (raw.includes('INVALID_CHALLENGE_TARGET')) return '挑战目标无效。';
     if (raw.includes('CHALLENGE_TARGET_NOT_FOUND')) return '对方当前无法接受挑战。';
     if (raw.includes('CHALLENGE_WORLD_MISMATCH')) return '只能挑战同一九霄世界中的角色。';
-    if (raw.includes('TARGET_POWER_NOT_HIGHER')) return '只能挑战战力高于自己的角色。';
-    if (raw.includes('ACTIVE_CHALLENGE_DAILY_LIMIT')) return '你今日的5次主动挑战已经用尽。';
-    if (raw.includes('TARGET_CHALLENGED_DAILY_LIMIT')) return '对方今日已经被有效挑战10次。';
-    if (raw.includes('PAIR_CHALLENGE_DAILY_LIMIT')) return '你与这名对手今日已经产生过一次修为转移。';
-    if (raw.includes('TARGET_IN_CHALLENGE_PROTECTION')) return '对方战败后正处于30分钟挑战保护期。';
+    if (raw.includes('ACTIVE_CHALLENGE_DAILY_LIMIT')) return '你今日的20次主动挑战已经用尽。';
+    if (raw.includes('CHALLENGE_COOLDOWN')) return '每次挑战后需要等待20分钟，请稍后再战。';
     if (raw.includes('COMBAT_STATS_NOT_CONFIGURED')) return '该境界的战斗四属性尚未配置。';
     if (raw.includes('INVALID_REQUEST_ID')) return '挑战请求编号无效，请重新发起。';
     if (raw.includes('world_event_publish_v0140') && raw.includes('does not exist')) return '挑战战报发布接口尚未完成兼容修复，请先执行 V1.0 FIX1 SQL。';
@@ -4325,7 +4322,7 @@
           ` : ''}
           <div class="battle-ranking-rule-bcombat01">
             <strong>战力只作综合评分，不直接决定胜负</strong>
-            <span>只能挑战战力高于本尊的角色；五行、命格条件与技能组合在开战时单独结算。</span>
+            <span>高低战力均可互相挑战；低战力击败高战力转移败者当前阶段进度1%，其余胜利转移0.5%。</span>
           </div>
         ` : ''}
         <div class="destiny-ranking-list">
@@ -4346,7 +4343,7 @@
                   ${safeBoard === 'battle' && !row.is_self ? `
                     <button class="${row.can_challenge ? 'primary-btn' : 'ghost-btn'} battle-rank-challenge-bcombat01" type="button"
                       data-battle-challenge-target="${escapeHtml(row.character_id || '')}" ${row.can_challenge ? '' : 'disabled'}>
-                      ${row.can_challenge ? '挑战' : '战力较低'}
+                      ${row.can_challenge ? '挑战' : '本尊'}
                     </button>
                   ` : ''}
                 </div>
@@ -4536,12 +4533,11 @@
             <div class="battle-element-relation-bcombat01">${battleElementRelationHtml(preview?.challenger, preview?.target)}</div>
             <div class="battle-risk-note-bcombat01">
               <strong>胜负皆有修为代价</strong>
-              <p>挑战失败：本尊损失 ${formatNumber(preview?.challenger_potential_loss || 0)} 修为。<br>
-              挑战成功：获得对方损失的 ${formatNumber(preview?.target_potential_loss || 0)} 修为。</p>
-              <small>今日主动挑战 ${formatNumber(preview?.active_challenges_used || 0)} / ${formatNumber(preview?.active_challenges_limit || 5)} ·
-              对方今日被挑战 ${formatNumber(preview?.target_challenged_count || 0)} / ${formatNumber(preview?.target_challenged_limit || 10)} ·
-              同一对手每日最多一次修为转移 · 战败保护30分钟。</small>
+              <p>挑战成功：最多转移对方当前阶段进度的 ${Number(preview?.challenger_win_rate || 0) * 100}%（${formatNumber(preview?.target_potential_loss || 0)} 修为）。<br>
+              挑战失败：最多损失当前阶段进度的 ${Number(preview?.target_win_rate || 0) * 100}%（${formatNumber(preview?.challenger_potential_loss || 0)} 修为）。</p>
+              <small>今日主动挑战 ${formatNumber(preview?.active_challenges_used || 0)} / ${formatNumber(preview?.active_challenges_limit || 20)} · 每场有效挑战后全局冷却20分钟 · 可以重复挑战同一对手。</small>
               ${!canStart && preview?.blocked_reason ? `<small class="battle-blocked-reason-bcombat01">当前不可挑战：${escapeHtml(preview.blocked_reason)}</small>` : ''}
+              <small>${escapeHtml(preview?.transfer_note || '')}</small>
               <small>${escapeHtml(preview?.escrow_note || '')}</small>
             </div>
             <div class="modal-actions">

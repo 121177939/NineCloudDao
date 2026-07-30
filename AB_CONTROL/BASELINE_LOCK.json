@@ -1,13 +1,8 @@
 {
-  "baseline": "V1.0_FIX3_CACHE33",
-  "developmentBaseline": "V1.0_FIX3_AB18_CACHE33",
-  "cacheEpoch": 33,
-  "protectedRules": [
-    "渡劫最终成功率不超过80%",
-    "灵石继续使用统一账户与库存链",
-    "战斗属性以服务端快照为唯一权威来源",
-    "洞府保持洞窟、灵脉、石台、仙府隐修与经营感",
-    "未研习功法只作为洞府虚拟展示格，不重复写入角色库存"
-  ],
-  "updatedAt": "2026-07-29T18:35:00Z"
+  "baseline": "V1.1_AB20_CACHE35",
+  "release": "V1.1 CACHE35",
+  "source": "V1.0 FIX4 CACHE34",
+  "cacheEpoch": 35,
+  "aRole": "正式基线、SQL、合并、测试、发布与归档总负责",
+  "bRole": "只按A线任务在锁定基线开发独立候选模块，不直接改正式基线"
 }

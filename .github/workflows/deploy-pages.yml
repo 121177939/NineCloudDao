@@ -32,8 +32,8 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Verify and build V1.0 FIX4 CACHE34
-        run: python3 tools/ci_v1_fix4.py .
+      - name: Verify and build V1.1 CACHE35
+        run: python3 tools/ci_v1_1.py .
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
