@@ -1,0 +1,24 @@
+九霄问道 V1.2 FIX3 CACHE40 本地检查结果
+
+发布元数据：6/6 PASS
+V1.2 FIX3 SQL静态审计：6/6 PASS
+牌九无闪烁与自定义底注功能断言：10/10 PASS
+真实Chromium行为测试：3/3 PASS
+- 大厅自动刷新触发必要重绘后，自定义底注123仍保持
+- 牌桌2秒轮询返回相同状态时，board-frame DOM节点保持不变
+- 灵石自定义底注step=1，可输入任意整数（服务端最低10）
+既有V1/V1.1功能回归：50/50 PASS
+B-COMBAT01静态、客户端与数值测试：全部PASS
+B-PAIGOW01原候选模块测试：全部PASS
+GitHub Pages发布产物：45/45 PASS
+JavaScript与Python语法：全部PASS
+
+修复确认：
+- 轮询不再通过action切换busy并前后整体重绘
+- 页面生成HTML未变化时不执行app.innerHTML替换
+- 轮询具有重入锁，避免慢网络下请求重叠
+- 创建房间表单使用createDraft保留全部选择与底注
+- 灵石底注任意整数且不少于10；修为底注任意整数且不少于5000
+- CACHE40资源参数、Service Worker、发布门禁与版本元数据一致
+
+未执行：生产Supabase 81—82迁移、生产真实多账号牌局、弱网与断线重连联调。

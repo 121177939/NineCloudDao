@@ -19,7 +19,16 @@
     selectedHead: [],
     poll: null,
     clock: null,
-    lastError: ''
+    lastError: '',
+    renderHtml: '',
+    polling: false,
+    createDraft: {
+      duelType: 'pvp',
+      pvpMode: 'rob',
+      game: 'small',
+      stake: 'spirit_stone',
+      base: '20'
+    }
   };
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -90,10 +99,15 @@
     return data;
   }
 
+  function setBusyUi(busy) {
+    app.classList.toggle('is-busy', busy);
+    app.setAttribute('aria-busy', busy ? 'true' : 'false');
+  }
+
   async function action(fn) {
     if (state.busy) return;
     state.busy = true;
-    render();
+    setBusyUi(true);
     try {
       await fn();
       state.lastError = '';
@@ -102,6 +116,7 @@
       toast(state.lastError);
     } finally {
       state.busy = false;
+      setBusyUi(false);
       render();
     }
   }
@@ -200,42 +215,47 @@
     </header>`;
   }
 
+  function checked(value, expected) {
+    return value === expected ? 'checked' : '';
+  }
+
   function createFormHtml() {
+    const draft = state.createDraft;
     return `<form id="createRoomForm" class="create-body">
       <div class="form-block">
         <span class="form-label">对局类型</span>
         <div class="choice-grid">
-          <label class="choice"><input type="radio" name="duelType" value="laohe"><span>老何 VS 玩家<br>老何固定庄</span></label>
-          <label class="choice"><input type="radio" name="duelType" value="pvp" checked><span>玩家 VS 玩家<br>自由牌局</span></label>
+          <label class="choice"><input type="radio" name="duelType" value="laohe" ${checked(draft.duelType, 'laohe')}><span>老何 VS 玩家<br>老何固定庄</span></label>
+          <label class="choice"><input type="radio" name="duelType" value="pvp" ${checked(draft.duelType, 'pvp')}><span>玩家 VS 玩家<br>自由牌局</span></label>
         </div>
       </div>
       <div id="pvpModeBlock" class="form-block">
         <span class="form-label">玩家局模式</span>
         <div class="choice-grid">
-          <label class="choice"><input type="radio" name="pvpMode" value="rob" checked><span>随机抢庄</span></label>
-          <label class="choice"><input type="radio" name="pvpMode" value="boat"><span>开船模式</span></label>
+          <label class="choice"><input type="radio" name="pvpMode" value="rob" ${checked(draft.pvpMode, 'rob')}><span>随机抢庄</span></label>
+          <label class="choice"><input type="radio" name="pvpMode" value="boat" ${checked(draft.pvpMode, 'boat')}><span>开船模式</span></label>
         </div>
       </div>
       <div class="form-block">
         <span class="form-label">游戏玩法</span>
         <div class="choice-grid">
-          <label class="choice"><input type="radio" name="game" value="small" checked><span>牌九<br>两牌玩法</span></label>
-          <label class="choice"><input type="radio" name="game" value="big"><span>大牌九<br>四牌分头尾</span></label>
+          <label class="choice"><input type="radio" name="game" value="small" ${checked(draft.game, 'small')}><span>牌九<br>两牌玩法</span></label>
+          <label class="choice"><input type="radio" name="game" value="big" ${checked(draft.game, 'big')}><span>大牌九<br>四牌分头尾</span></label>
         </div>
       </div>
       <div class="form-block">
         <span class="form-label">下注资源</span>
         <div class="choice-grid">
-          <label class="choice"><input type="radio" name="stake" value="spirit_stone" checked><span>灵石</span></label>
-          <label class="choice"><input type="radio" name="stake" value="cultivation"><span>修为</span></label>
+          <label class="choice"><input type="radio" name="stake" value="spirit_stone" ${checked(draft.stake, 'spirit_stone')}><span>灵石</span></label>
+          <label class="choice"><input type="radio" name="stake" value="cultivation" ${checked(draft.stake, 'cultivation')}><span>修为</span></label>
         </div>
       </div>
       <div class="form-block">
         <label class="form-label" for="baseBetInput">自定义底注</label>
-        <div class="base-bet-wrap"><input id="baseBetInput" name="base" type="number" inputmode="numeric" min="10" step="10" value="100" required><div id="currencyPreview" class="currency-preview">灵石</div></div>
+        <div class="base-bet-wrap"><input id="baseBetInput" name="base" type="number" inputmode="numeric" min="10" step="1" value="${esc(draft.base)}" required autocomplete="off"><div id="currencyPreview" class="currency-preview">灵石</div></div>
       </div>
       <div id="createRulePreview" class="rule-preview">玩家局每笔确认赌注收取2.5%手续费；赌注与手续费合计不得超过开局余额30%。</div>
-      <button class="create-submit" type="submit" ${state.busy ? 'disabled' : ''}>创建房间</button>
+      <button class="create-submit" type="submit">创建房间</button>
     </form>`;
   }
 
@@ -492,7 +512,7 @@
       : playerSeatHtml(entry, index, data)).join('');
     const deadline = deadlineMs(round);
     return `<section id="gameView">
-      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.2 FIX2 CACHE39</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
+      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.2 FIX3 CACHE40</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
       ${errorHtml()}
       <main class="app-shell"><section class="room-strip"><strong>${esc(room.room_name)}</strong><div class="mode-switch room-locked"><button class="mode-btn ${room.game_mode === 'small' ? 'active' : ''}" disabled>小牌九</button><button class="mode-btn ${room.game_mode === 'big' ? 'active' : ''}" disabled>大牌九</button></div><div class="room-quick-actions"><button type="button" data-refresh-room>刷新状态</button>${room.status === 'waiting' && data.self_member?.is_owner ? '<button class="primary-mini" type="button" data-start>开始本局</button>' : ''}</div><div class="room-meta"><span>底注 <b>${fmt(room.base_stake)}${currencyLabel(room.stake_type)}</b></span><span>席位 <b>${members.filter(m => m.role === 'player').length}/${roomCapacity(room)}</b></span><span>局数 <b>${round?.round_no || 0}</b></span><span>阶段 <b>${phaseLabel(round?.phase)}</b></span>${deadline ? `<span>倒计时 <b data-deadline="${deadline}">--</b></span>` : ''}<span class="room-locked-note">${duelLabel(room)}</span></div></section>
       <div class="layout"><section class="board-frame" aria-label="九霄牌九桌"><div class="felt"><div id="opponentSeats">${opponentsHtml}</div>${selfZoneHtml(data)}</div></section><aside class="side-stack"><section class="panel"><div class="panel-head"><h3>本局概览</h3><span>${gameLabel(room)}</span></div><div class="panel-body">${metricsHtml(data)}</div></section><section class="panel"><div class="panel-head"><h3>开牌排名</h3><span>按服务端结果</span></div><div class="panel-body"><div class="rank-list">${rankHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>牌局动态</h3><span>当前状态</span></div><div class="panel-body"><div class="log-list">${logHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>玩法说明</h3><span>${duelLabel(room)}</span></div><div class="panel-body rule-note"><b>老何庄：</b>100∶100等额结算，直接使用现有赌场资金。<br><b>玩家局：</b>每笔确认赌注收取2.5%手续费，庄家责任资金预先冻结，系统不兜底。<br><b>倍率：</b>10、50、100倍；赌注与手续费合计不得超过开局余额30%。<br><b>安全：</b>洗牌、私牌遮罩、阶段截止与资金结算均由数据库完成。</div></section></aside></div>
@@ -509,13 +529,24 @@
   }
 
   function render() {
+    let nextHtml = '';
     if (!session()?.access_token) {
-      app.innerHTML = '<section class="loading-screen"><h2>需要登录</h2><p>请关闭九霄灵牌，先在主界面登录游戏。</p></section>';
-      return;
+      nextHtml = '<section class="loading-screen"><h2>需要登录</h2><p>请关闭九霄灵牌，先在主界面登录游戏。</p></section>';
+    } else if (state.roomId && state.room) {
+      nextHtml = roomHtml();
+    } else if (state.lobby) {
+      nextHtml = lobbyHtml();
+    } else {
+      nextHtml = '<section class="loading-screen">正在连接九霄灵牌……</section>';
     }
-    if (state.roomId && state.room) app.innerHTML = roomHtml();
-    else if (state.lobby) app.innerHTML = lobbyHtml();
-    else app.innerHTML = '<section class="loading-screen">正在连接九霄灵牌……</section>';
+
+    if (state.renderHtml !== nextHtml) {
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
+      app.innerHTML = nextHtml;
+      state.renderHtml = nextHtml;
+      requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+    }
     updateCountdown();
     syncCreateForm();
   }
@@ -534,19 +565,33 @@
     });
   }
 
-  function syncCreateForm() {
+  function captureCreateDraft(form) {
+    if (!form) return;
+    state.createDraft = {
+      duelType: form.querySelector('input[name="duelType"]:checked')?.value || state.createDraft.duelType,
+      pvpMode: form.querySelector('input[name="pvpMode"]:checked')?.value || state.createDraft.pvpMode,
+      game: form.querySelector('input[name="game"]:checked')?.value || state.createDraft.game,
+      stake: form.querySelector('input[name="stake"]:checked')?.value || state.createDraft.stake,
+      base: form.elements.base?.value ?? state.createDraft.base
+    };
+  }
+
+  function syncCreateForm({ normalizeBase = false } = {}) {
     const form = document.getElementById('createRoomForm');
     if (!form) return;
-    const duel = form.querySelector('input[name="duelType"]:checked')?.value || 'pvp';
-    const stake = form.querySelector('input[name="stake"]:checked')?.value || 'spirit_stone';
+    const duel = form.querySelector('input[name="duelType"]:checked')?.value || state.createDraft.duelType;
+    const stake = form.querySelector('input[name="stake"]:checked')?.value || state.createDraft.stake;
     const pvp = document.getElementById('pvpModeBlock');
     if (pvp) pvp.hidden = duel === 'laohe';
     const base = form.elements.base;
     const cultivation = stake === 'cultivation';
     if (base) {
       base.min = cultivation ? '5000' : '10';
-      base.step = cultivation ? '5000' : '10';
-      if (Number(base.value || 0) < Number(base.min)) base.value = base.min;
+      base.step = '1';
+      if (normalizeBase && (!base.value || Number(base.value) < Number(base.min))) {
+        base.value = base.min;
+        state.createDraft.base = base.value;
+      }
     }
     const preview = document.getElementById('currencyPreview');
     if (preview) preview.textContent = cultivation ? '修为' : '灵石';
@@ -579,13 +624,27 @@
     render();
   }
 
+  async function pollOnce() {
+    if (state.busy || state.polling) return;
+    state.polling = true;
+    try {
+      state.lastError = '';
+      if (state.roomId) await loadRoom(true);
+      else await loadLobby();
+    } catch (error) {
+      const message = errorText(error);
+      if (message !== state.lastError) toast(message);
+      state.lastError = message;
+      render();
+    } finally {
+      state.polling = false;
+    }
+  }
+
   function startPolling() {
     clearInterval(state.poll);
     clearInterval(state.clock);
-    state.poll = setInterval(() => {
-      if (state.busy) return;
-      action(async () => state.roomId ? loadRoom(true) : loadLobby());
-    }, state.roomId ? 2000 : 5000);
+    state.poll = setInterval(pollOnce, state.roomId ? 2000 : 5000);
     state.clock = setInterval(updateCountdown, 250);
   }
 
@@ -700,13 +759,24 @@
     }
   });
 
+  app.addEventListener('input', event => {
+    const form = event.target.closest('#createRoomForm');
+    if (!form) return;
+    captureCreateDraft(form);
+    syncCreateForm();
+  });
+
   app.addEventListener('change', event => {
-    if (event.target.closest('#createRoomForm')) syncCreateForm();
+    const form = event.target.closest('#createRoomForm');
+    if (!form) return;
+    captureCreateDraft(form);
+    syncCreateForm({ normalizeBase: event.target.name === 'stake' });
   });
 
   app.addEventListener('submit', event => {
     if (event.target.id !== 'createRoomForm') return;
     event.preventDefault();
+    captureCreateDraft(event.target);
     const form = new FormData(event.target);
     const duelType = form.get('duelType');
     const stake = form.get('stake');

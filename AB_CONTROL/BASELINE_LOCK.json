@@ -1,9 +1,9 @@
 {
-  "baseline": "V1.2_FIX2_AB24_CACHE39",
-  "release": "V1.2 FIX2 CACHE39",
-  "sourceBaseline": "V1.2_FIX1_AB23_CACHE38",
-  "cacheEpoch": 39,
-  "databaseSqlRange": "71-80",
+  "baseline": "V1.2_FIX3_AB25_CACHE40",
+  "release": "V1.2 FIX3 CACHE40",
+  "sourceBaseline": "V1.2_FIX2_AB24_CACHE39",
+  "cacheEpoch": 40,
+  "databaseSqlRange": "71-82",
   "protectedRules": [
     "渡劫最终成功率不超过80%",
     "历史正式SQL只追加不回写",
@@ -13,6 +13,7 @@
     "天生剑心与变异灵根不可共存",
     "九霄灵牌私牌与牌堆不可由客户端直读",
     "九霄灵牌老何庄只使用现有赌场资金",
-    "九霄牌九V26界面不得重新引入客户端洗牌或本地资金结算"
+    "九霄牌九V26界面不得重新引入客户端洗牌或本地资金结算",
+    "九霄牌九自动轮询不得整体重建未变化页面或覆盖创建房间草稿"
   ]
 }
