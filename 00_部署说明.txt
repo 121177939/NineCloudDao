@@ -1,12 +1,10 @@
-九霄问道 V1.4 CACHE42 完整部署包
+九霄问道 V1.5 CACHE43 完整部署包
 
-数据库已完成V1.3 CACHE41：
-1. 执行SQL/85
-2. 执行SQL/86
-3. 执行SQL/87并确认全部ok=true
-4. 解压完整包覆盖GitHub仓库根目录
-5. 提交并推送main
+1. 数据库已到87号：执行SQL/88、89、90。
+2. 90号全部ok=true。
+3. 解压完整包，覆盖GitHub仓库根目录（包含.github）。
+4. 推送main，Pages来源为GitHub Actions。
 
-客户端构建：v1-4-cache42
-缓存纪元：42
-下一正式SQL：88
+客户端构建：v1-5-cache43
+开发基线：V1.5_AB28_CACHE43
+下一正式SQL：91

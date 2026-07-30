@@ -70,9 +70,10 @@
       ['PAIGOW_ONLY_OWNER_DELETES', '只有房主可以删除该房间。'],
       ['PAIGOW_CANNOT_DELETE_ACTIVE_ROOM', '牌局已经开始，当前房间不能删除。'],
       ['PAIGOW_STAKE_EXCEEDS_THIRTY_PERCENT_OR_BALANCE', '本局赌注和手续费超过开局余额30%或余额不足。'],
-      ['PAIGOW_DEALER_LIABILITY_LIMIT', '庄家30%责任资金不足，请降低倍率。'],
       ['PAIGOW_HEAD_MUST_NOT_EXCEED_TAIL', '头牌必须弱于或等于尾牌。'],
       ['PAIGOW_CANNOT_LEAVE_ACTIVE_ROUND', '进行中的参战玩家不能离房。'],
+      ['PAIGOW_ENTRY_BALANCE_BELOW_TEN_TIMES_BASE', '灵石不足房间底注的10倍，只能进入观战。'],
+      ['PAIGOW_CULTIVATION_STAKES_TEMPORARILY_DISABLED', '牌九修为赌局暂时关闭。'],
       ['CASINO_CULTIVATION_REQUIRES_NASCENT_SOUL', '修为局仅对元婴期及以上开放。'],
       ['CULTIVATION_STAKE_MINIMUM', '修为下注额不足最低限制。'],
       ['CASINO_INSUFFICIENT_SPIRIT_STONES', '灵石余额不足。'],
@@ -214,8 +215,8 @@
     const balances = lobby?.balances || {};
     return `<header class="casino-head">
       <div class="casino-title"><span class="seal">${esc(seal)}</span><div><h1>${esc(title)}</h1><p>${esc(subtitle)}</p></div></div>
-      <div class="casino-balance">灵石 <b>${fmt(balances.spirit_stone)}</b> · 修为 <b>${fmt(balances.cultivation)}</b>
-        <span class="fund-line">赌场资金池：灵石 <b>${fmt(lobby?.bankrolls?.spirit_stone)}</b> · 修为 <b>${fmt(lobby?.bankrolls?.cultivation)}</b></span>
+      <div class="casino-balance">灵石 <b>${fmt(balances.spirit_stone)}</b>
+        <span class="fund-line">赌场灵石资金池：<b>${fmt(lobby?.bankrolls?.spirit_stone)}</b> · 修为牌九暂时关闭</span>
       </div>
     </header>`;
   }
@@ -250,9 +251,8 @@
       </div>
       <div class="form-block">
         <span class="form-label">下注资源</span>
-        <div class="choice-grid">
-          <label class="choice"><input type="radio" name="stake" value="spirit_stone" ${checked(draft.stake, 'spirit_stone')}><span>灵石</span></label>
-          <label class="choice"><input type="radio" name="stake" value="cultivation" ${checked(draft.stake, 'cultivation')}><span>修为</span></label>
+        <div class="choice-grid one-choice">
+          <label class="choice"><input type="radio" name="stake" value="spirit_stone" checked><span>灵石<br><small>修为牌九暂时关闭</small></span></label>
         </div>
       </div>
       <div class="form-block">
@@ -267,17 +267,20 @@
   function roomCardHtml(room, index) {
     const titles = ['天字一号房', '地字二号房', '玄字三号房', '黄字四号房'];
     if (!room) {
-      return `<article class="room-card empty-room-card"><div class="room-title-row"><h3>${titles[index]}</h3><span class="room-status">空闲</span></div><div class="room-rule">当前空闲。创建后20分钟仍未开始首局会自动关闭并释放房名。</div></article>`;
+      return `<article class="room-card empty-room-card"><div class="room-title-row"><h3>${titles[index]}</h3><span class="room-status">空闲</span></div><div class="room-rule">当前空闲。创建后5分钟仍未开始首局会自动关闭并释放房名。</div></article>`;
     }
-    const expires = room.expires_at ? new Date(room.expires_at).getTime() : 0;
+    const firstRoundPending = !room.first_round_started_at;
+    const expires = firstRoundPending && room.expires_at ? new Date(room.expires_at).getTime() : 0;
+    const minimum = Number(room.minimum_entry_balance || Number(room.base_stake || 0) * 10);
+    const canSeat = room.can_take_seat !== false;
     const deleteButton = room.can_delete
       ? `<button class="delete-room" type="button" data-delete-room="${room.id}">删除房间</button>`
       : '';
     return `<article class="room-card ${room.status === 'playing' ? 'started' : ''}">
       <div class="room-title-row"><h3>${esc(room.name)}</h3><span class="room-status ${room.status === 'playing' ? 'playing' : ''}">${room.status === 'playing' ? '对局中' : '等待中'}</span></div>
       <div class="room-tags"><span class="room-tag">${duelLabel(room)}</span><span class="room-tag gold">${gameLabel(room)}</span><span class="room-tag">${currencyLabel(room.stake_type)}底注${fmt(room.base_stake)}</span></div>
-      <div class="room-rule">${room.players}/${room.capacity}人入座 · ${room.spectators}人观战。${room.status === 'playing' ? '当前牌局正在进行，禁止删除房间。' : '入座后10秒内准备；全员准备后2秒自动开始。'}</div>
-      <div class="room-foot"><span class="room-countdown" ${expires ? `data-deadline-long="${expires}"` : ''}>${room.status === 'playing' ? '牌局已开始' : '首局倒计时'}</span><div class="room-actions"><button class="enter-room" type="button" data-open-room="${room.id}">${room.joined ? '返回房间' : room.status === 'playing' ? '进入观战' : '选择座位'}</button>${deleteButton}</div></div>
+      <div class="room-rule">${room.players}/${room.capacity}人入座 · ${room.spectators}人观战。入座要求至少${fmt(minimum)}灵石。${room.status === 'playing' ? '当前牌局正在进行，禁止删除房间。' : canSeat ? '入座后10秒内准备；全员准备后2秒自动开始。' : '你的灵石不足，只能观战。'}</div>
+      <div class="room-foot"><span class="room-countdown" ${expires ? `data-deadline-long="${expires}"` : ''}>${room.status === 'playing' ? '牌局已开始' : firstRoundPending ? '首局倒计时' : '已开始过牌局'}</span><div class="room-actions"><button class="enter-room" type="button" data-open-room="${room.id}">${room.joined ? '返回房间' : room.status === 'playing' ? '进入观战' : '选择座位'}</button>${deleteButton}</div></div>
     </article>`;
   }
 
@@ -290,7 +293,7 @@
       <div class="lobby-grid">
         <section class="lobby-panel"><div class="lobby-panel-head"><h2>创建牌局</h2><span>${rooms.length} / 4 房</span></div>${createFormHtml()}</section>
         <section class="lobby-panel"><div class="lobby-panel-head"><h2>天地玄黄房</h2><button class="secondary-btn" type="button" data-refresh-lobby>刷新状态</button></div><div class="room-list-body"><div class="room-grid">${slots.map(roomCardHtml).join('')}</div>
-          <div class="lobby-notes"><div class="lobby-note"><b>自动准备</b>入座后10秒内未准备会自动离桌；全员准备后2秒自动开局。</div><div class="lobby-note"><b>私密明牌</b>小牌九首张牌只对牌主本人可见，对手与观战者只看见牌背。</div><div class="lobby-note"><b>房间管理</b>房主可在大厅删除等待房间；牌局开始后禁止删除。</div></div>
+          <div class="lobby-notes"><div class="lobby-note"><b>5分钟关闭</b>房间创建后5分钟未开始首局，系统自动关闭并释放房名。</div><div class="lobby-note"><b>入座门槛</b>至少持有底注10倍灵石；不足可观战，结算后低于门槛自动起身。</div><div class="lobby-note"><b>牌局规则</b>单手同牌庄家胜；大牌九一胜一负平局并退还手续费。</div></div>
         </div></section>
       </div>
     </section>`;
@@ -306,12 +309,14 @@
     const roundPlayers = new Map((data.round?.players || []).map(player => [player.character_id, player]));
     const bySeat = new Map(members.filter(member => member.role === 'player').map(member => [Number(member.seat_no), member]));
     const capacity = roomCapacity(room);
+    const minimum = Number(room.base_stake || 0) * 10;
+    const canSeat = Number(data.self_balance || 0) >= minimum && room.stake_type === 'spirit_stone';
     return Array.from({ length: 9 }, (_, i) => i + 1).map(seat => {
       const member = bySeat.get(seat);
       const player = member ? roundPlayers.get(member.character_id) : null;
-      const disabled = seat > capacity || room.status === 'playing';
+      const disabled = seat > capacity || room.status === 'playing' || !canSeat;
       if (!member) {
-        return `<div class="seat-node seat-pos-${seat} empty ${seat > capacity ? 'standby' : ''}"><button type="button" ${disabled ? 'disabled' : `data-join-seat="${seat}"`}><span class="seat-avatar">${seat}</span><strong>${seat}号席</strong><small>${seat > capacity ? '本模式候补席' : '点击入座'}</small></button></div>`;
+        return `<div class="seat-node seat-pos-${seat} empty ${seat > capacity ? 'standby' : ''}"><button type="button" ${disabled ? 'disabled' : `data-join-seat="${seat}"`}><span class="seat-avatar">${seat}</span><strong>${seat}号席</strong><small>${seat > capacity ? '本模式候补席' : !canSeat ? `需至少${fmt(minimum)}灵石` : '点击入座'}</small></button></div>`;
       }
       const readyDeadline = !member.ready && member.ready_deadline
         ? `<small class="ready-timeout">准备剩余 <b data-deadline="${new Date(member.ready_deadline).getTime()}">--</b></small>`
@@ -349,7 +354,7 @@
         <div class="seat-content">
           <div class="seat-table" aria-label="九席选座">${seatNodesHtml(data)}<div class="seat-table-center"><strong>九霄牌九</strong><small>${gameLabel(room)}</small></div></div>
           <aside class="seat-side">
-            <div class="seat-summary"><b>房间规则</b><br>${duelLabel(room)}<br>${gameLabel(room)} · ${currencyLabel(room.stake_type)}底注${fmt(room.base_stake)}<br>当前${players.length}人入座、${members.filter(m => m.role === 'spectator').length}人观战。</div>
+            <div class="seat-summary"><b>房间规则</b><br>${duelLabel(room)}<br>${gameLabel(room)} · ${currencyLabel(room.stake_type)}底注${fmt(room.base_stake)}<br>入座门槛：至少${fmt(Number(room.base_stake || 0) * 10)}灵石。<br>当前${players.length}人入座、${members.filter(m => m.role === 'spectator').length}人观战。</div>
             <div class="seat-summary">${self ? `<b>你的身份</b><br>${self.role === 'player' ? `${self.seat_no}号席 · ${self.ready ? '已准备' : '未准备'}` : '观战者'}${self.role === 'player' && !self.ready && self.ready_deadline ? `<br>请在 <b data-deadline="${new Date(self.ready_deadline).getTime()}">--</b> 内准备，否则自动离桌。` : ''}${room.auto_start_at ? `<br>全员已准备，<b data-deadline="${new Date(room.auto_start_at).getTime()}">--</b> 后自动开局。` : ''}` : '尚未入座，可点击空位或以观战身份进入。'}</div>
             <div class="seat-actions">${waitingControlsHtml(data)}</div>
           </aside>
@@ -378,7 +383,7 @@
     if (round.phase === 'arrange') return player.action_confirmed ? '头尾已确定' : '正在组合头尾';
     if (round.phase === 'head_reveal') return '头牌已亮';
     if (round.phase === 'tail_reveal') return '尾牌已亮';
-    if (round.phase === 'settled') return player.net_amount >= 0 ? `净胜${fmt(player.net_amount)}` : `净负${fmt(Math.abs(player.net_amount))}`;
+    if (round.phase === 'settled') return Number(player.net_amount || 0) === 0 ? '平局' : player.net_amount > 0 ? `净胜${fmt(player.net_amount)}` : `净负${fmt(Math.abs(player.net_amount))}`;
     return '牌局进行中';
   }
 
@@ -470,7 +475,9 @@
     const hidden = Array.from({ length: Math.max(0, expected - cards.length) }, () => tileHtml(null, { big: true, hidden: true })).join('');
     const name = (data.members || []).find(m => m.is_self)?.name || '观战者';
     const result = selfPlayer && round?.phase === 'settled'
-      ? `<div class="self-card-note ${selfPlayer.net_amount >= 0 ? 'positive' : 'negative'}">本局净胜负：${selfPlayer.net_amount >= 0 ? '+' : ''}${fmt(selfPlayer.net_amount)}</div>`
+      ? Number(selfPlayer.net_amount || 0) === 0
+        ? `<div class="self-card-note">本局平局：本金与手续费已退还</div>`
+        : `<div class="self-card-note ${selfPlayer.net_amount > 0 ? 'positive' : 'negative'}">本局净胜负：${selfPlayer.net_amount > 0 ? '+' : ''}${fmt(selfPlayer.net_amount)}</div>`
       : `<div class="self-card-note">${selfPlayer?.public_value?.label ? esc(selfPlayer.public_value.label) : arranging ? '点选两张作为较弱头牌' : cards.length ? '你的可见牌面' : '牌面尚未发放'}</div>`;
     return `<section class="self-zone ${data.room.game_mode === 'big' ? 'big-mode-zone' : ''}">
       ${selfPlayer?.is_dealer ? '<span class="banker-corner">庄</span>' : ''}
@@ -604,10 +611,10 @@
       : playerSeatHtml(entry, index, data)).join('');
     const deadline = deadlineMs(round);
     return `<section id="gameView">
-      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.4 CACHE42</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
+      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.5 CACHE43</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
       ${errorHtml()}
       <main class="app-shell"><section class="room-strip"><strong>${esc(room.room_name)}</strong><div class="mode-switch room-locked"><button class="mode-btn ${room.game_mode === 'small' ? 'active' : ''}" disabled>小牌九</button><button class="mode-btn ${room.game_mode === 'big' ? 'active' : ''}" disabled>大牌九</button></div><div class="room-quick-actions"><button type="button" data-refresh-room>刷新状态</button></div><div class="room-meta"><span>底注 <b>${fmt(room.base_stake)}${currencyLabel(room.stake_type)}</b></span><span>席位 <b>${members.filter(m => m.role === 'player').length}/${roomCapacity(room)}</b></span><span>局数 <b>${round?.round_no || 0}</b></span><span>阶段 <b>${phaseLabel(round?.phase)}</b></span>${deadline ? `<span>倒计时 <b data-deadline="${deadline}">--</b></span>` : ''}<span class="room-locked-note">${duelLabel(room)}</span></div></section>
-      <div class="layout"><section class="board-frame" aria-label="九霄牌九桌"><div class="felt"><div id="opponentSeats">${opponentsHtml}</div>${selfZoneHtml(data)}</div></section><aside class="side-stack"><section class="panel"><div class="panel-head"><h3>本局概览</h3><span>${gameLabel(room)}</span></div><div class="panel-body">${metricsHtml(data)}</div></section><section class="panel"><div class="panel-head"><h3>开牌排名</h3><span>按服务端结果</span></div><div class="panel-body"><div class="rank-list">${rankHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>牌局动态</h3><span>当前状态</span></div><div class="panel-body"><div class="log-list">${logHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>玩法说明</h3><span>${duelLabel(room)}</span></div><div class="panel-body rule-note"><b>老何庄：</b>100∶100等额结算，直接使用现有赌场资金。<br><b>玩家局：</b>每笔确认赌注收取2.5%手续费，庄家责任资金预先冻结，系统不兜底。<br><b>倍率：</b>10、50、100倍；赌注与手续费合计不得超过开局余额30%。<br><b>准备：</b>入座后10秒内未准备自动离桌；全员准备后2秒自动开局。<br><b>小牌九：</b>5秒选倍，首张明牌仅牌主本人可见。<br><b>安全：</b>洗牌、私牌遮罩、阶段截止与资金结算均由数据库完成。</div></section></aside></div>
+      <div class="layout"><section class="board-frame" aria-label="九霄牌九桌"><div class="felt"><div id="opponentSeats">${opponentsHtml}</div>${selfZoneHtml(data)}</div></section><aside class="side-stack"><section class="panel"><div class="panel-head"><h3>本局概览</h3><span>${gameLabel(room)}</span></div><div class="panel-body">${metricsHtml(data)}</div></section><section class="panel"><div class="panel-head"><h3>开牌排名</h3><span>按服务端结果</span></div><div class="panel-body"><div class="rank-list">${rankHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>牌局动态</h3><span>当前状态</span></div><div class="panel-body"><div class="log-list">${logHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>玩法说明</h3><span>${duelLabel(room)}</span></div><div class="panel-body rule-note"><b>老何庄：</b>100∶100等额结算，直接使用现有赌场资金。<br><b>玩家庄：</b>选庄时冻结庄家全部可用灵石；不足赔付时按所有赢家名义利润比例分配，系统不兜底。<br><b>平局：</b>大牌九一胜一负为平局，本金与2.5%手续费全退；单手同牌及双方0点均判庄家胜。<br><b>倍率：</b>10、50、100倍；赌注与手续费合计不得超过开局余额30%。<br><b>房间：</b>首局5分钟未开始自动关闭；入座需至少持有底注10倍灵石，结算后低于门槛自动转观战。<br><b>准备：</b>入座后10秒内未准备自动离桌；全员准备后2秒自动开局。<br><b>小牌九：</b>5秒选倍，首张明牌仅牌主本人可见。<br><b>安全：</b>洗牌、私牌遮罩、阶段截止与资金结算均由数据库完成。</div></section></aside></div>
       <div class="game-footer-actions"><button class="secondary-btn" type="button" data-refresh-room>刷新状态</button>${data.self_member && room.status === 'waiting' ? '<button class="secondary-btn danger-text" type="button" data-leave>离开房间</button>' : ''}</div></main>
     </section>`;
   }
@@ -666,7 +673,7 @@
       duelType: form.querySelector('input[name="duelType"]:checked')?.value || state.createDraft.duelType,
       pvpMode: form.querySelector('input[name="pvpMode"]:checked')?.value || state.createDraft.pvpMode,
       game: form.querySelector('input[name="game"]:checked')?.value || state.createDraft.game,
-      stake: form.querySelector('input[name="stake"]:checked')?.value || state.createDraft.stake,
+      stake: 'spirit_stone',
       base: form.elements.base?.value ?? state.createDraft.base
     };
   }
@@ -675,13 +682,13 @@
     const form = document.getElementById('createRoomForm');
     if (!form) return;
     const duel = form.querySelector('input[name="duelType"]:checked')?.value || state.createDraft.duelType;
-    const stake = form.querySelector('input[name="stake"]:checked')?.value || state.createDraft.stake;
+    const stake = 'spirit_stone';
     const pvp = document.getElementById('pvpModeBlock');
     if (pvp) pvp.hidden = duel === 'laohe';
     const base = form.elements.base;
-    const cultivation = stake === 'cultivation';
+    const cultivation = false;
     if (base) {
-      base.min = cultivation ? '5000' : '10';
+      base.min = '10';
       base.step = '1';
       if (normalizeBase && (!base.value || Number(base.value) < Number(base.min))) {
         base.value = base.min;
@@ -689,11 +696,21 @@
       }
     }
     const preview = document.getElementById('currencyPreview');
-    if (preview) preview.textContent = cultivation ? '修为' : '灵石';
+    if (preview) preview.textContent = '灵石';
     const rule = document.getElementById('createRulePreview');
-    if (rule) rule.innerHTML = duel === 'laohe'
+    const required = Math.max(0, Number(base?.value || 0) * 10);
+    const available = Number(state.lobby?.balances?.spirit_stone || 0);
+    const fundsNote = `<br><b>创建并入座要求：</b>至少${fmt(required)}灵石；当前${fmt(available)}灵石。`;
+    if (rule) rule.innerHTML = (duel === 'laohe'
       ? '<b>老何固定庄：</b>玩家与老何按100∶100等额结算，输赢直接进入现有赌场资金池。'
-      : '<b>玩家牌局：</b>每笔确认赌注收取2.5%手续费；赌注与手续费合计不得超过开局余额30%。';
+      : '<b>玩家牌局：</b>入座需底注10倍灵石；玩家庄资金不足时按赢家名义利润比例赔付；大牌九平局退还本金和手续费。') + fundsNote;
+    const submit = form.querySelector('.create-submit');
+    if (submit) {
+      const roomFull = Number(state.lobby?.rooms?.length || 0) >= 4;
+      const underfunded = required > 0 && available < required;
+      submit.disabled = roomFull || underfunded;
+      submit.textContent = roomFull ? '房间已满（最多4间）' : underfunded ? `灵石不足（需${fmt(required)}）` : '创建房间';
+    }
   }
 
   async function loadLobby() {
@@ -720,6 +737,9 @@
     if (previouslySeated && !state.room?.self_member) {
       state.wasSeated = false;
       toast('你已因10秒内未准备而自动退出对局。');
+    } else if (previouslySeated && state.room?.self_member?.role === 'spectator') {
+      state.wasSeated = false;
+      toast('当前灵石低于房间底注10倍，已自动起身转为观战。');
     } else {
       state.wasSeated = state.room?.self_member?.role === 'player';
     }
@@ -894,7 +914,7 @@
     captureCreateDraft(event.target);
     const form = new FormData(event.target);
     const duelType = form.get('duelType');
-    const stake = form.get('stake');
+    const stake = 'spirit_stone';
     const pvpMode = duelType === 'laohe' ? null : form.get('pvpMode');
     action(async () => {
       const result = await rpc('create_paigow_room_bpaigow01', {

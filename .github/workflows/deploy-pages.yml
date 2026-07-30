@@ -37,8 +37,8 @@ jobs:
           python3 --version
           node --version
 
-      - name: Verify and build V1.4 CACHE42
-        run: python3 tools/ci_v1_4.py .
+      - name: Verify and build V1.5 CACHE43
+        run: python3 tools/ci_v1_5.py .
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

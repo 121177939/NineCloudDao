@@ -1,0 +1,3 @@
+PASS lobby custom stake survives required rerender
+PASS unchanged room polling preserves board DOM
+PASS integer custom stake step=1
