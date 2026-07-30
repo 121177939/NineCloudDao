@@ -1,8 +1,13 @@
 {
-  "baseline": "V1.1_AB20_CACHE35",
-  "release": "V1.1 CACHE35",
-  "source": "V1.0 FIX4 CACHE34",
-  "cacheEpoch": 35,
-  "aRole": "正式基线、SQL、合并、测试、发布与归档总负责",
-  "bRole": "只按A线任务在锁定基线开发独立候选模块，不直接改正式基线"
+  "baseline": "V1.1_FIX1_AB21_CACHE36",
+  "release": "V1.1 FIX1 CACHE36",
+  "sourceBaseline": "V1.1_AB20_CACHE35",
+  "cacheEpoch": 36,
+  "databaseSqlRange": "58-63",
+  "protectedRules": [
+    "渡劫最终成功率不超过80%",
+    "历史正式SQL只追加不回写",
+    "玩家庄系统零兜底",
+    "赌坊公平概率不可按盈亏动态修改"
+  ]
 }

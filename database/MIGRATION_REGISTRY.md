@@ -1,3 +1,11 @@
+## V1.1 FIX1 CACHE36
+- `database/V1.1_FIX1/202607300850_v1_1_fix1_precheck.sql`：V1.1 CACHE35前置检查与未结算注单门禁。
+- `database/V1.1_FIX1/202607300900_v1_1_fix1_casino_period_bankroll.sql`：两小时赌场资金、公开赔率、30%单局上限、玩家庄2.5%平台费和70%奖池。
+- `database/V1.1_FIX1/202607300910_v1_1_fix1_cache36_release.sql`：CACHE36发布门禁。
+- `database/V1.1_FIX1/202607300920_v1_1_fix1_check.sql`：只读最终检查。
+- `database/V1.1_FIX1/202607300930_v1_1_fix1_emergency_disable.sql`：紧急停用赌坊。
+- `database/V1.1_FIX1/202607300940_v1_1_fix1_resume.sql`：恢复启用赌坊。
+
 # 数据库迁移登记
 
 ## V0.14.9

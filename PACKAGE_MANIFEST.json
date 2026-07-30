@@ -1,13 +1,13 @@
 {
-  "version": "V1.1 CACHE35",
-  "clientBuild": "v1-1-cache35",
-  "generatedAt": "2026-07-30T02:55:23.330345+00:00",
-  "generatedFileCount": 541,
+  "version": "V1.1 FIX1 CACHE36",
+  "clientBuild": "v1-1-fix1-cache36",
+  "generatedAt": "2026-07-30T08:55:57.225817+00:00",
+  "generatedFileCount": 565,
   "files": [
     {
       "path": ".github/workflows/deploy-pages.yml",
-      "size": 1206,
-      "sha256": "0237a1597b2d5f9d96f243101eafef965d54334235e1fa977c4f38e4e8039bff"
+      "size": 1216,
+      "sha256": "912264316d8967703ea69af66923257a451414be86cc9fcf5a292aa595fd650c"
     },
     {
       "path": ".gitignore",
@@ -21,33 +21,33 @@
     },
     {
       "path": "00_完整包使用说明.md",
-      "size": 686,
-      "sha256": "84c76706fa4c75d3fc98f0319296c5ad1d376d8770d62cb579c028cb8aacf376"
+      "size": 869,
+      "sha256": "902cf0bd0ccbdc88b3adec64afcee50729704290df912e5b483fb842900e8523"
     },
     {
       "path": "00_部署说明.txt",
-      "size": 373,
-      "sha256": "4d68b9da058703d4e0b9c41c8c741780f0e0061a53494ddcaa650be81a79f8dc"
+      "size": 844,
+      "sha256": "700cd2b1a1deeba43c253636ef25c10bdbc6f17e6b3c39b723021e766287dce2"
     },
     {
       "path": "404.html",
-      "size": 2083,
-      "sha256": "138673296bdff4ffa96d80fdfe69fee16474887fd57fd7593b96288fe1901cea"
+      "size": 2119,
+      "sha256": "5155019b93c6b630cb66f15a28c716c28e1790ef26146b3173b13b0c637a0ffb"
     },
     {
       "path": "AB_CONTROL/AB_DEVELOPMENT_PROTOCOL.md",
-      "size": 865,
-      "sha256": "cffd3e783a7abbb9807b15144c6bb491f29b7e670a559bd0864f1f8835e95da5"
+      "size": 870,
+      "sha256": "04a7a1ecd324399e889329ef77c4e9bf2563c5b33b13dca21f22d6495e3da447"
     },
     {
       "path": "AB_CONTROL/BASELINE_LOCK.json",
-      "size": 295,
-      "sha256": "4865f4061e9ac6e6d8496d0bc61be1adcb8e7bb78c55372de002b45c3f5e14dd"
+      "size": 362,
+      "sha256": "0ce8ff4655f63a89982b3cb97fad267a3dd667a1b4450efe1866240815ba9702"
     },
     {
       "path": "AB_CONTROL/NEXT_WORK.md",
-      "size": 469,
-      "sha256": "680d860fd699bbf1a883f9f49cf67d3592938dd1a651e4264f445136ddabdd15"
+      "size": 162,
+      "sha256": "5f5791c7d5f5892343bb263450c6be79d3d62d7c13023b7631b775ca38f6a78c"
     },
     {
       "path": "AB_CONTROL/PROTECTED_AREAS.md",
@@ -56,8 +56,8 @@
     },
     {
       "path": "B_BASELINE/00_B线开发从这里开始.md",
-      "size": 1028,
-      "sha256": "ff671d32ce7c6da6c8ec00e87317fe50dd4e53d22e0f849180f260e25b9f784e"
+      "size": 912,
+      "sha256": "5538df6372a52600755bf0ac016606da2534d534a41a0c335e426a31ca7cecb4"
     },
     {
       "path": "B_BASELINE/B模块交付规范.md",
@@ -66,8 +66,8 @@
     },
     {
       "path": "B_BASELINE/DEVELOPMENT_MANIFEST.json",
-      "size": 501,
-      "sha256": "3806136479100178a969fbdb85d143860368b0fb33a900a1e31334ca91141e8c"
+      "size": 757,
+      "sha256": "947b40f230baf3491d078b63eaaea8a281ceacc9cc02ad451a9c3453903531c4"
     },
     {
       "path": "B_MODULE/B-COMBAT01/00_MODULE_README.md",
@@ -186,33 +186,33 @@
     },
     {
       "path": "CHANGELOG.md",
-      "size": 20964,
-      "sha256": "65067d7ced6e02d22b775021440dbf8563d9def7d0bf5a22d3e20b9394dc075a"
+      "size": 21778,
+      "sha256": "854fe4e8b90f987810846aab11a8aba9bf5460e8ef72ddf796c77f2abc926089"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 1642,
-      "sha256": "8ee7983883352263fc680e866e0ac896578afe291777624459925fe43a42adc5"
+      "size": 1834,
+      "sha256": "469e2696a8a1421e4ea7ee749039285963b5ac1a337882333e30f38590a19271"
     },
     {
       "path": "DESKTOP_UPDATE.md",
-      "size": 362,
-      "sha256": "5f591df8af05ac620c69a1b5766956c318351232cf847585fa5a1b63acab229c"
+      "size": 556,
+      "sha256": "adf77fa00551b929270662e6b1a17d4aa06e4946e9caec2b7e04f97d678cbcd3"
     },
     {
       "path": "DEVELOPMENT_BASELINE_NOTICE.md",
-      "size": 490,
-      "sha256": "bab32dcc5f513ac08cb2b40e13ec57b2cee9ea59ca5a138a7a2971acb4250539"
+      "size": 590,
+      "sha256": "2adf2c5c0b937904644460b72204b47006bbef906aa5f76af7e3f16ba13d26c8"
     },
     {
       "path": "README.md",
-      "size": 936,
-      "sha256": "7b3c17a1b3831b262cb81f03f0dbcdc0acecda769d2fa46289ca55505142b6a7"
+      "size": 1133,
+      "sha256": "0cdb935a4514496a77004127e3074589f29f55609510ee74b403c901243f02d8"
     },
     {
       "path": "SQL/00_SQL执行说明.txt",
-      "size": 580,
-      "sha256": "8da7d769b2ede54f3117cb72621a70a02be83fd47115d7b1f3344d884cc2c667"
+      "size": 1021,
+      "sha256": "ed7953fd3de150d1bf94a8d1251faeb4a97d26fbb500049f864c81043674f025"
     },
     {
       "path": "SQL/01_升级前检查.sql",
@@ -485,6 +485,36 @@
       "sha256": "b2a4468804b80cacf9a24f3ed4c53f22c87029437c0ec9f6c721efdece646dc5"
     },
     {
+      "path": "SQL/58_V1.1_FIX1_升级前检查.sql",
+      "size": 3404,
+      "sha256": "652eef35c453943af24d96a31ea39bdbb3d6c83562dc8bc72e7c18ac8ccc8e4f"
+    },
+    {
+      "path": "SQL/59_V1.1_FIX1_赌场周期资金与公平结算.sql",
+      "size": 70567,
+      "sha256": "e95184757a9b967627189a5a969a8414d6c32ae3252a52ea8d065c2e45cdd98c"
+    },
+    {
+      "path": "SQL/60_V1.1_FIX1_CACHE36_正式发布门禁.sql",
+      "size": 2824,
+      "sha256": "fb7ea26c12fe0292cb45c1e85e0d92774044b32cd5c3795da9b27ccaa9d2a7ed"
+    },
+    {
+      "path": "SQL/61_V1.1_FIX1_升级后检查.sql",
+      "size": 2526,
+      "sha256": "09a8423576dfdcf39e90f75d15d41be39a0398618e3bea08b1f2d4a7a402d15d"
+    },
+    {
+      "path": "SQL/62_V1.1_FIX1_紧急停用赌坊.sql",
+      "size": 464,
+      "sha256": "46d1f4b285173379ef3270bdfec90f147b8eed09773e86e942597802322ff0e5"
+    },
+    {
+      "path": "SQL/63_V1.1_FIX1_恢复启用赌坊.sql",
+      "size": 805,
+      "sha256": "203fb0149264d7a217150fd833b7ff1e61b77d299ad19126c945c46a8fa8bdbc"
+    },
+    {
       "path": "V0.14.8_TEST_RESULTS.txt",
       "size": 1648,
       "sha256": "3fb8b74b9c69b0f72d4d3cbf13ef1d55380648ec02825bbfc6380debc93f391c"
@@ -680,6 +710,26 @@
       "sha256": "1e6ebd27c421539bca0f8444314e18f117a15dd24036c5fb69870d2b5d0f313b"
     },
     {
+      "path": "V1.1_FIX1_CACHE36.txt",
+      "size": 118,
+      "sha256": "44d80da5aabb74719ae92d4570d0eb1e2fa5971e0f1c28528efec7b047d932c0"
+    },
+    {
+      "path": "V1.1_FIX1_FULL_CI.log",
+      "size": 9244,
+      "sha256": "c75f3154f13472bc88db701cb7b681426715e7ca76c50e15176d7ba5e385cc9d"
+    },
+    {
+      "path": "V1.1_FIX1_TEST_RESULTS.txt",
+      "size": 1401,
+      "sha256": "017d849112df753645cb414618ac3b3cab56f2b1c5aa3004d22285c8385f901f"
+    },
+    {
+      "path": "V1.1_FIX1_升级说明.md",
+      "size": 3664,
+      "sha256": "6a384c902c29aae56bfadca929a79db4ceb1f4c4f96177719d04bb45051b5c09"
+    },
+    {
       "path": "V1.1_FULL_CI.log",
       "size": 9831,
       "sha256": "a47fa60ade6384ec43bf2829ea0a4b49eeab32f076ab9c1ecc8dc53dc24134e3"
@@ -696,13 +746,13 @@
     },
     {
       "path": "VERSION.txt",
-      "size": 5,
-      "sha256": "b0ec6cc194c4941af5c19fd757a30e72a8cbc0810ad106d94efe822c02af75fe"
+      "size": 10,
+      "sha256": "e687e2d3f43017a0db2e5686fa98a34f67318fc2a07008b8a1e2d9d83a07c78d"
     },
     {
       "path": "app.js",
-      "size": 426616,
-      "sha256": "79234cc26c498073d173f02d867ee1e23ba34a34aec84fbab06af5b2944c6779"
+      "size": 429576,
+      "sha256": "5a8b084321018cf31b64848fef295e7785ac06c56a489a5e10720071089f3e98"
     },
     {
       "path": "assets/icon-192.png",
@@ -716,13 +766,13 @@
     },
     {
       "path": "config.js",
-      "size": 492,
-      "sha256": "879da7542eef61c586e4a0a396f4f43da9bf203a0ba6a5bfa3a745d1e8c7bae1"
+      "size": 512,
+      "sha256": "f4250823ea28c99402c5d51dbb63b70c09393e527e38b7b263861b02a54b3ac4"
     },
     {
       "path": "database/MIGRATION_REGISTRY.md",
-      "size": 19750,
-      "sha256": "73a00c9e4e7c835284ba75ca73b625e16cc94ce1a8d09f10505336160d256027"
+      "size": 20399,
+      "sha256": "cedcaa345eb41ddb3a27c80aadf4952a1ee14d55e0154e6e6eed0e4781fef524"
     },
     {
       "path": "database/V0.11.10_FIX1/202607260530_v01110_fix1_check.sql",
@@ -1545,6 +1595,36 @@
       "sha256": "b2a4468804b80cacf9a24f3ed4c53f22c87029437c0ec9f6c721efdece646dc5"
     },
     {
+      "path": "database/V1.1_FIX1/202607300850_v1_1_fix1_precheck.sql",
+      "size": 3404,
+      "sha256": "652eef35c453943af24d96a31ea39bdbb3d6c83562dc8bc72e7c18ac8ccc8e4f"
+    },
+    {
+      "path": "database/V1.1_FIX1/202607300900_v1_1_fix1_casino_period_bankroll.sql",
+      "size": 70567,
+      "sha256": "e95184757a9b967627189a5a969a8414d6c32ae3252a52ea8d065c2e45cdd98c"
+    },
+    {
+      "path": "database/V1.1_FIX1/202607300910_v1_1_fix1_cache36_release.sql",
+      "size": 2824,
+      "sha256": "fb7ea26c12fe0292cb45c1e85e0d92774044b32cd5c3795da9b27ccaa9d2a7ed"
+    },
+    {
+      "path": "database/V1.1_FIX1/202607300920_v1_1_fix1_check.sql",
+      "size": 2526,
+      "sha256": "09a8423576dfdcf39e90f75d15d41be39a0398618e3bea08b1f2d4a7a402d15d"
+    },
+    {
+      "path": "database/V1.1_FIX1/202607300930_v1_1_fix1_emergency_disable.sql",
+      "size": 464,
+      "sha256": "46d1f4b285173379ef3270bdfec90f147b8eed09773e86e942597802322ff0e5"
+    },
+    {
+      "path": "database/V1.1_FIX1/202607300940_v1_1_fix1_resume.sql",
+      "size": 805,
+      "sha256": "203fb0149264d7a217150fd833b7ff1e61b77d299ad19126c945c46a8fa8bdbc"
+    },
+    {
       "path": "docs/B01命格与造化池接入说明.md",
       "size": 411,
       "sha256": "9d36763fcdb5c28e562722dd244823a6ffcc6a5c984226d4ed22982fc23f3523"
@@ -1950,6 +2030,11 @@
       "sha256": "99af63e85b020976c4343279a13a3b59bef6676316e30ef106f65dd6dcbafa38"
     },
     {
+      "path": "docs/V1.1_FIX1_赌场周期资金与公平结算规则.md",
+      "size": 1792,
+      "sha256": "7809a29d8094eaed19572f00dba65c713c2aedaa247a154f6f455fa69772f95e"
+    },
+    {
       "path": "docs/功法系统最终规则_V0.15.3_FIX2.md",
       "size": 1423,
       "sha256": "03db4da6acb0d29c204a13cb62a1c2306191170105dc8b53cce41be837512181"
@@ -1961,18 +2046,18 @@
     },
     {
       "path": "index.html",
-      "size": 2083,
-      "sha256": "138673296bdff4ffa96d80fdfe69fee16474887fd57fd7593b96288fe1901cea"
+      "size": 2119,
+      "sha256": "5155019b93c6b630cb66f15a28c716c28e1790ef26146b3173b13b0c637a0ffb"
     },
     {
       "path": "manifest.webmanifest",
-      "size": 529,
-      "sha256": "9ee79347e60124bc79c005ed99541e36d15ab7f83af6f37411a16370a42010b5"
+      "size": 534,
+      "sha256": "43c4a15b76ffed54a3b28abb4a6debc2e788e1e668578d841a44c3e131f414eb"
     },
     {
       "path": "release_config.json",
-      "size": 194,
-      "sha256": "fa8f60f78950a2875995fe1e98067b4bb04dd8d2bd731cc2868e88bec4490858"
+      "size": 209,
+      "sha256": "8589648ea0447a0e87271fb06bc103597c75566e5e8f798869384016611ccec6"
     },
     {
       "path": "styles.css",
@@ -1981,8 +2066,8 @@
     },
     {
       "path": "sw.js",
-      "size": 2929,
-      "sha256": "c4d0de11f7f16587608c40ea216a840d73a3aa6e91e8d8ea1ef9814b8ce952fc"
+      "size": 2969,
+      "sha256": "6407b5174ab28e89eb842cef60c7d8bcb6ee702044fb5d09d243bda2eabf6115"
     },
     {
       "path": "tools/audit_v0120_fix1.py",
@@ -2033,6 +2118,11 @@
       "path": "tools/ci_v1_1.py",
       "size": 1512,
       "sha256": "d26b014accc41bba70131b6f9715b1cb0a9162f0abe7f4a07ff4d43793ef3bc2"
+    },
+    {
+      "path": "tools/ci_v1_1_fix1.py",
+      "size": 1409,
+      "sha256": "f3806559146d22d4b14c4149f87d1ee0d4c86b08aa0e1869515a51670b9498e7"
     },
     {
       "path": "tools/ci_v1_fix1.py",
@@ -2165,6 +2255,11 @@
       "sha256": "15756c798cc06fc4899ed89379624fa2c674e04e2a5851310ed7fa094a44c939"
     },
     {
+      "path": "tools/prepare_pages_site_v1_1_fix1.py",
+      "size": 1240,
+      "sha256": "7b206c252130d6d336bb43c38f84c6698416b18a5fa6dc397f07efb5e6ec14a5"
+    },
+    {
       "path": "tools/prepare_pages_site_v1_fix1.py",
       "size": 1081,
       "sha256": "fa96a4395fe9c083aa83033a34aa6d9433f6f5048597385f280eb5d35605e093"
@@ -2295,6 +2390,11 @@
       "sha256": "27325ffd6bb3d25cc6713f671c8458847bb1b9e22fb5f644c2ff2b104b8a070d"
     },
     {
+      "path": "tools/sql_static_audit_v1_1_fix1.py",
+      "size": 6803,
+      "sha256": "492fc6e73a97cb8b0ce9fd85c9dc00747d045c8e9739cb94837444ea0d020b0c"
+    },
+    {
       "path": "tools/sql_static_audit_v1_fix1.py",
       "size": 1513,
       "sha256": "94a2e6579edc525aca0cdd48d2832a1cda809cd4446f04e17e458d6ad59fe940"
@@ -2380,6 +2480,11 @@
       "sha256": "6670225d804d8094f7f6b028220bfb534b53f9db8f52e0f9379a04c1916c9e90"
     },
     {
+      "path": "tools/test_features_v1_1_fix1.js",
+      "size": 3698,
+      "sha256": "e4b1c6bf97501bfd954dc6336d795875bbe9041a2b5c32c9ee60ba9146fbab03"
+    },
+    {
       "path": "tools/test_features_v1_fix1.js",
       "size": 1374,
       "sha256": "475b1e31eeec71dc6d847158e3c5327e8d03f69e590223c65cedc15125b55934"
@@ -2448,6 +2553,11 @@
       "path": "tools/verify_package_v1.py",
       "size": 577,
       "sha256": "9dd9bb5705d3eee8e6071733e660bf56878b44aaedfe2cf5632121b333712771"
+    },
+    {
+      "path": "tools/verify_package_v1_1_fix1.py",
+      "size": 911,
+      "sha256": "51afee4064df9ae6ad1d7edb4410c8df7b70468d89d55643ac2b7466aa063b9b"
     },
     {
       "path": "tools/verify_pages_site_v0131.py",
@@ -2548,6 +2658,11 @@
       "path": "tools/verify_pages_site_v1_1.py",
       "size": 1560,
       "sha256": "3f732476a96d23da1375ceff902c9c91f998367c288efa7968c762bc95543cb9"
+    },
+    {
+      "path": "tools/verify_pages_site_v1_1_fix1.py",
+      "size": 1974,
+      "sha256": "203ec14ec6e6861f3c0bda6027d6c09971842422a3731bb39a4893028f5a2a11"
     },
     {
       "path": "tools/verify_pages_site_v1_fix1.py",
@@ -2685,6 +2800,11 @@
       "sha256": "5055aafaa0c908c1fcf7fb62e93e2f988a53e7d4ef9a0422791d818a4531f09d"
     },
     {
+      "path": "tools/verify_release_v1_1_fix1.py",
+      "size": 5092,
+      "sha256": "2fd9ee3870df3d3ff72c77b6969c0167f0822a605d4099843cdcf1ba5e789c53"
+    },
+    {
       "path": "tools/verify_release_v1_fix1.py",
       "size": 2243,
       "sha256": "a0a930ccd50732bf330c6356a5a2c1f47f4ab93c8f0dc0ce847e43f78a8cc14a"
@@ -2706,8 +2826,8 @@
     },
     {
       "path": "update-guard.js",
-      "size": 4918,
-      "sha256": "761707f94cb30d066174bc0b97d0b906d142a74df4d6c03fa21e6d81e7dd518f"
+      "size": 4923,
+      "sha256": "f1c98e6ba0996be77ec9946e832936ecec0294fddc0066aed79bb31dc29e81d6"
     }
   ]
 }

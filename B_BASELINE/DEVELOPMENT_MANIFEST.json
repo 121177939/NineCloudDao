@@ -1,20 +1,26 @@
 {
-  "baseline": "V1.1_AB20_CACHE35",
-  "sourcePackage": "九霄问道_V1.1_CACHE35_完整部署包.zip",
+  "baseline": "V1.1_FIX1_AB21_CACHE36",
+  "sourcePackage": "九霄问道_V1.1_FIX1_CACHE36_完整部署包.zip",
   "status": "B_READY",
   "integratedModules": [
     "B-CAVE01",
     "B-CAVE01-FIX1-洞府视觉修正",
-    "B-COMBAT01"
+    "B-COMBAT01",
+    "CASINO-FIX1"
   ],
   "aLineOverrides": [
-    "V1.0_FIX4_赌坊安全结算",
+    "V1.0_FIX4_赌坊幂等安全结算",
     "V1.1_双向战力挑战与阶段修为转移",
-    "V1.1_挑战界闻正确表修复"
+    "V1.1_挑战界闻正确表修复",
+    "V1.1_FIX1_赌场周期资金与公平概率"
   ],
-  "reservedModules": [
-    "装备正式掉落与锻造系统",
-    "更多PVE/PVP玩法"
+  "protectedCasinoRules": [
+    "两小时固定重置灵石1亿与修为10亿",
+    "正利润50%入池、获奖者70%、30%滚存",
+    "旧等权奖票规则",
+    "单局或同轮累计30%",
+    "玩家庄100:97.5且系统零兜底"
   ],
-  "cacheEpoch": 35
+  "nextSqlNumber": 64,
+  "cacheEpoch": 36
 }
