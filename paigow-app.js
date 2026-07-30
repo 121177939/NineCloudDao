@@ -22,6 +22,8 @@
     lastError: '',
     renderHtml: '',
     polling: false,
+    effectRoundId: null,
+    wasSeated: false,
     createDraft: {
       duelType: 'pvp',
       pvpMode: 'rob',
@@ -63,7 +65,10 @@
       ['PAIGOW_SEAT_NOT_ACTIVE_FOR_MODE', '该席位在当前玩法中属于候补席。'],
       ['PAIGOW_PLAYERS_NOT_READY', '仍有入座玩家尚未准备。'],
       ['PAIGOW_NOT_ENOUGH_PLAYERS', '当前参战人数不足。'],
-      ['PAIGOW_ONLY_OWNER_STARTS', '只有房主可以开始本局。'],
+      ['PAIGOW_AUTO_START_NOT_READY', '全员准备后的2秒自动开局倒计时尚未结束。'],
+      ['PAIGOW_PLAYER_NOT_SEATED_OR_READY_TIMEOUT', '你已因10秒内未准备而自动退出对局。'],
+      ['PAIGOW_ONLY_OWNER_DELETES', '只有房主可以删除该房间。'],
+      ['PAIGOW_CANNOT_DELETE_ACTIVE_ROOM', '牌局已经开始，当前房间不能删除。'],
       ['PAIGOW_STAKE_EXCEEDS_THIRTY_PERCENT_OR_BALANCE', '本局赌注和手续费超过开局余额30%或余额不足。'],
       ['PAIGOW_DEALER_LIABILITY_LIMIT', '庄家30%责任资金不足，请降低倍率。'],
       ['PAIGOW_HEAD_MUST_NOT_EXCEED_TAIL', '头牌必须弱于或等于尾牌。'],
@@ -265,11 +270,14 @@
       return `<article class="room-card empty-room-card"><div class="room-title-row"><h3>${titles[index]}</h3><span class="room-status">空闲</span></div><div class="room-rule">当前空闲。创建后20分钟仍未开始首局会自动关闭并释放房名。</div></article>`;
     }
     const expires = room.expires_at ? new Date(room.expires_at).getTime() : 0;
+    const deleteButton = room.can_delete
+      ? `<button class="delete-room" type="button" data-delete-room="${room.id}">删除房间</button>`
+      : '';
     return `<article class="room-card ${room.status === 'playing' ? 'started' : ''}">
       <div class="room-title-row"><h3>${esc(room.name)}</h3><span class="room-status ${room.status === 'playing' ? 'playing' : ''}">${room.status === 'playing' ? '对局中' : '等待中'}</span></div>
       <div class="room-tags"><span class="room-tag">${duelLabel(room)}</span><span class="room-tag gold">${gameLabel(room)}</span><span class="room-tag">${currencyLabel(room.stake_type)}底注${fmt(room.base_stake)}</span></div>
-      <div class="room-rule">${room.players}/${room.capacity}人入座 · ${room.spectators}人观战。${room.status === 'playing' ? '当前牌局正在进行，可进入观战。' : '入座后准备，由房主开始本局。'}</div>
-      <div class="room-foot"><span class="room-countdown" ${expires ? `data-deadline-long="${expires}"` : ''}>${room.status === 'playing' ? '牌局已开始' : '首局倒计时'}</span><div class="room-actions"><button class="enter-room" type="button" data-open-room="${room.id}">${room.joined ? '返回房间' : room.status === 'playing' ? '进入观战' : '选择座位'}</button></div></div>
+      <div class="room-rule">${room.players}/${room.capacity}人入座 · ${room.spectators}人观战。${room.status === 'playing' ? '当前牌局正在进行，禁止删除房间。' : '入座后10秒内准备；全员准备后2秒自动开始。'}</div>
+      <div class="room-foot"><span class="room-countdown" ${expires ? `data-deadline-long="${expires}"` : ''}>${room.status === 'playing' ? '牌局已开始' : '首局倒计时'}</span><div class="room-actions"><button class="enter-room" type="button" data-open-room="${room.id}">${room.joined ? '返回房间' : room.status === 'playing' ? '进入观战' : '选择座位'}</button>${deleteButton}</div></div>
     </article>`;
   }
 
@@ -282,7 +290,7 @@
       <div class="lobby-grid">
         <section class="lobby-panel"><div class="lobby-panel-head"><h2>创建牌局</h2><span>${rooms.length} / 4 房</span></div>${createFormHtml()}</section>
         <section class="lobby-panel"><div class="lobby-panel-head"><h2>天地玄黄房</h2><button class="secondary-btn" type="button" data-refresh-lobby>刷新状态</button></div><div class="room-list-body"><div class="room-grid">${slots.map(roomCardHtml).join('')}</div>
-          <div class="lobby-notes"><div class="lobby-note"><b>自动关闭</b>创建后20分钟仍未开始第一局，房间自动关闭并释放房名。</div><div class="lobby-note"><b>老何固定庄</b>输赢按100∶100等额结算，使用现有赌场资金池。</div><div class="lobby-note"><b>玩家牌局扣点</b>随机抢庄与开船均按确认赌注收取2.5%赌场收入。</div></div>
+          <div class="lobby-notes"><div class="lobby-note"><b>自动准备</b>入座后10秒内未准备会自动离桌；全员准备后2秒自动开局。</div><div class="lobby-note"><b>私密明牌</b>小牌九首张牌只对牌主本人可见，对手与观战者只看见牌背。</div><div class="lobby-note"><b>房间管理</b>房主可在大厅删除等待房间；牌局开始后禁止删除。</div></div>
         </div></section>
       </div>
     </section>`;
@@ -305,8 +313,11 @@
       if (!member) {
         return `<div class="seat-node seat-pos-${seat} empty ${seat > capacity ? 'standby' : ''}"><button type="button" ${disabled ? 'disabled' : `data-join-seat="${seat}"`}><span class="seat-avatar">${seat}</span><strong>${seat}号席</strong><small>${seat > capacity ? '本模式候补席' : '点击入座'}</small></button></div>`;
       }
+      const readyDeadline = !member.ready && member.ready_deadline
+        ? `<small class="ready-timeout">准备剩余 <b data-deadline="${new Date(member.ready_deadline).getTime()}">--</b></small>`
+        : '';
       return `<div class="seat-node seat-pos-${seat} ${member.is_self ? 'selected' : ''} ${player?.is_dealer ? 'banker' : ''}">
-        ${player?.is_dealer ? '<span class="banker-corner">庄</span>' : ''}<span class="seat-avatar">${esc(initials(member.name))}</span><strong>${esc(member.name)}</strong><small>${seat}号席${member.is_owner ? ' · 房主' : ''}</small><small class="${member.ready ? 'is-ready' : ''}">${member.ready ? '已准备' : '未准备'}</small>
+        ${player?.is_dealer ? '<span class="banker-corner">庄</span>' : ''}<span class="seat-avatar">${esc(initials(member.name))}</span><strong>${esc(member.name)}</strong><small>${seat}号席${member.is_owner ? ' · 房主' : ''}</small><small class="${member.ready ? 'is-ready' : ''}">${member.ready ? '已准备' : '未准备'}</small>${readyDeadline}
       </div>`;
     }).join('');
   }
@@ -319,7 +330,6 @@
     if (self?.role === 'player' && room.status === 'waiting') {
       controls.push(`<button class="seat-enter" type="button" data-ready="${self.ready ? 'false' : 'true'}">${self.ready ? '取消准备' : '确认准备'}</button>`);
     }
-    if (self?.is_owner && room.status === 'waiting') controls.push('<button class="seat-enter start-round" type="button" data-start>开始本局</button>');
     controls.push('<button class="seat-back" type="button" data-refresh-room>刷新状态</button>');
     if (self && room.status === 'waiting') controls.push('<button class="seat-back danger-text" type="button" data-leave>离开房间</button>');
     controls.push('<button class="seat-back" type="button" data-back-lobby>返回房间大厅</button>');
@@ -340,7 +350,7 @@
           <div class="seat-table" aria-label="九席选座">${seatNodesHtml(data)}<div class="seat-table-center"><strong>九霄牌九</strong><small>${gameLabel(room)}</small></div></div>
           <aside class="seat-side">
             <div class="seat-summary"><b>房间规则</b><br>${duelLabel(room)}<br>${gameLabel(room)} · ${currencyLabel(room.stake_type)}底注${fmt(room.base_stake)}<br>当前${players.length}人入座、${members.filter(m => m.role === 'spectator').length}人观战。</div>
-            <div class="seat-summary">${self ? `<b>你的身份</b><br>${self.role === 'player' ? `${self.seat_no}号席 · ${self.ready ? '已准备' : '未准备'}` : '观战者'}${self.is_owner ? '<br>你是房主，可在所有玩家准备后开始本局。' : ''}` : '尚未入座，可点击空位或以观战身份进入。'}</div>
+            <div class="seat-summary">${self ? `<b>你的身份</b><br>${self.role === 'player' ? `${self.seat_no}号席 · ${self.ready ? '已准备' : '未准备'}` : '观战者'}${self.role === 'player' && !self.ready && self.ready_deadline ? `<br>请在 <b data-deadline="${new Date(self.ready_deadline).getTime()}">--</b> 内准备，否则自动离桌。` : ''}${room.auto_start_at ? `<br>全员已准备，<b data-deadline="${new Date(room.auto_start_at).getTime()}">--</b> 后自动开局。` : ''}` : '尚未入座，可点击空位或以观战身份进入。'}</div>
             <div class="seat-actions">${waitingControlsHtml(data)}</div>
           </aside>
         </div>
@@ -384,7 +394,8 @@
     const dealer = isLaohe || player?.is_dealer;
     const stateText = isLaohe ? '老何固定庄' : playerStateText(player, member, data.round);
     const stake = player?.stake_amount || 0;
-    return `<article class="seat ${side} ${row} ${member?.ready ? 'ready' : ''} ${dealer ? 'banker-seat' : ''}">
+    const fxId = isLaohe ? 'laohe' : (player?.character_id || member?.character_id || '');
+    return `<article class="seat ${side} ${row} ${member?.ready ? 'ready' : ''} ${dealer ? 'banker-seat' : ''}" data-fx-character="${esc(fxId)}">
       ${dealer ? '<span class="banker-corner">庄</span>' : ''}
       <div class="seat-inner ${data.room.game_mode === 'big' ? 'big-seat' : ''}">
         <div class="avatar-wrap"><div class="avatar">${esc(initials(name))}</div>${player?.multiplier ? `<div class="mult-badge show">×${player.multiplier}</div>` : ''}<span class="ready-mark ${member?.ready ? 'show' : ''}">已准备</span></div>
@@ -406,9 +417,16 @@
     }
 
     if (room.status === 'waiting' && (!round || ['settled', 'cancelled'].includes(round.phase))) {
-      return `<div class="phase-title">等待下一局</div>
+      const readyDeadline = selfMember.ready_deadline ? new Date(selfMember.ready_deadline).getTime() : 0;
+      const autoStart = room.auto_start_at ? new Date(room.auto_start_at).getTime() : 0;
+      const copy = autoStart
+        ? `全员已准备，<span data-deadline="${autoStart}">--</span>后自动开局`
+        : selfMember.ready
+          ? '你已准备，等待其他玩家'
+          : `请在 <span data-deadline="${readyDeadline}">--</span> 内准备`;
+      return `<div class="phase-title">${copy}</div>
         <button class="primary-btn" type="button" data-ready="${selfMember.ready ? 'false' : 'true'}">${selfMember.ready ? '取消准备' : '准备入局'}</button>
-        ${selfMember.is_owner ? '<button class="ghost-btn" type="button" data-start>开始本局</button>' : ''}`;
+        <div class="ready-note">不再由房主手动开始；达到最低人数且全员准备后，系统倒计时2秒自动发牌。</div>`;
     }
 
     if (round?.phase === 'rob' && selfPlayer?.active && selfPlayer.rob_choice == null) {
@@ -456,7 +474,7 @@
       : `<div class="self-card-note">${selfPlayer?.public_value?.label ? esc(selfPlayer.public_value.label) : arranging ? '点选两张作为较弱头牌' : cards.length ? '你的可见牌面' : '牌面尚未发放'}</div>`;
     return `<section class="self-zone ${data.room.game_mode === 'big' ? 'big-mode-zone' : ''}">
       ${selfPlayer?.is_dealer ? '<span class="banker-corner">庄</span>' : ''}
-      <div class="self-grid"><div class="self-id"><div class="avatar">${esc(initials(name))}</div><strong>${esc(name)}</strong><small>${selfMember?.role === 'player' ? `${selfMember.seat_no}号席${selfMember.is_owner ? ' · 房主' : ''}` : '观战身份'}</small><span class="self-stake">${selfPlayer?.stake_amount ? `已押 ${fmt(selfPlayer.stake_amount)} ${currencyLabel(data.room.stake_type)}` : '尚未下注'}</span></div>
+      <div class="self-grid"><div class="self-id" data-fx-character="${esc(selfPlayer?.character_id || data.self_character_id || '')}"><div class="avatar">${esc(initials(name))}</div><strong>${esc(name)}</strong><small>${selfMember?.role === 'player' ? `${selfMember.seat_no}号席${selfMember.is_owner ? ' · 房主' : ''}` : '观战身份'}</small><span class="self-stake">${selfPlayer?.stake_amount ? `已押 ${fmt(selfPlayer.stake_amount)} ${currencyLabel(data.room.stake_type)}` : '尚未下注'}</span></div>
       <div><div class="self-cards ${data.room.game_mode === 'big' ? 'big-hand' : ''}">${selectableCards}${hidden}</div>${result}</div>
       <div class="action-panel">${actionPanelHtml(data, selfPlayer)}</div></div>
     </section>`;
@@ -495,6 +513,80 @@
     return rows.map(text => `<div class="log-row"><time>·</time>${esc(text)}</div>`).join('');
   }
 
+
+  function effectParticipantElement(id) {
+    if (!id) return null;
+    const holder = Array.from(app.querySelectorAll('[data-fx-character]'))
+      .find(node => node.dataset.fxCharacter === String(id));
+    return holder?.querySelector('.avatar') || null;
+  }
+
+  function playResourceTransferEffects() {
+    const data = state.room;
+    const round = data?.round;
+    if (!round || round.phase !== 'settled' || state.effectRoundId === round.id) return;
+    state.effectRoundId = round.id;
+
+    const participants = (round.players || []).map(player => ({
+      id: player.character_id,
+      net: Number(player.net_amount || 0)
+    }));
+    if (round.laohe) {
+      participants.push({
+        id: 'laohe',
+        net: -participants.reduce((sum, participant) => sum + participant.net, 0)
+      });
+    }
+
+    const losers = participants.filter(participant => participant.net < 0 && effectParticipantElement(participant.id));
+    const winners = participants.filter(participant => participant.net > 0 && effectParticipantElement(participant.id));
+    if (!losers.length || !winners.length) return;
+
+    const layer = document.createElement('div');
+    layer.className = `pg-resource-fx-layer ${data.room.stake_type === 'cultivation' ? 'cultivation' : 'spirit-stone'}`;
+    document.body.appendChild(layer);
+    let streamIndex = 0;
+
+    losers.forEach(loser => {
+      const source = effectParticipantElement(loser.id)?.getBoundingClientRect();
+      if (!source) return;
+      winners.forEach(winner => {
+        const target = effectParticipantElement(winner.id)?.getBoundingClientRect();
+        if (!target) return;
+        const sx = source.left + source.width / 2;
+        const sy = source.top + source.height / 2;
+        const tx = target.left + target.width / 2;
+        const ty = target.top + target.height / 2;
+        const dx = tx - sx;
+        const dy = ty - sy;
+        const arc = Math.min(140, 45 + Math.hypot(dx, dy) * 0.16);
+        const count = 5;
+        for (let i = 0; i < count; i += 1) {
+          const particle = document.createElement('i');
+          particle.className = 'pg-resource-particle';
+          particle.style.left = `${sx}px`;
+          particle.style.top = `${sy}px`;
+          layer.appendChild(particle);
+          const delay = streamIndex * 90 + i * 75;
+          particle.animate([
+            { opacity: 0, transform: 'translate(-50%,-50%) rotate(45deg) scale(.35)' },
+            { opacity: 1, offset: .12, transform: 'translate(-50%,-50%) rotate(135deg) scale(1)' },
+            { opacity: 1, offset: .62, transform: `translate(calc(-50% + ${dx * .58}px),calc(-50% + ${dy * .58 - arc}px)) rotate(300deg) scale(.9)` },
+            { opacity: 0, transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) rotate(540deg) scale(.45)` }
+          ], {
+            duration: 1050,
+            delay,
+            easing: 'cubic-bezier(.2,.72,.2,1)',
+            fill: 'forwards'
+          });
+        }
+        streamIndex += 1;
+      });
+    });
+
+    window.setTimeout(() => layer.remove(), 1500 + streamIndex * 100);
+  }
+
   function gameViewHtml(data) {
     const room = data.room;
     const round = data.round;
@@ -512,10 +604,10 @@
       : playerSeatHtml(entry, index, data)).join('');
     const deadline = deadlineMs(round);
     return `<section id="gameView">
-      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.3 CACHE41</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
+      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.4 CACHE42</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
       ${errorHtml()}
-      <main class="app-shell"><section class="room-strip"><strong>${esc(room.room_name)}</strong><div class="mode-switch room-locked"><button class="mode-btn ${room.game_mode === 'small' ? 'active' : ''}" disabled>小牌九</button><button class="mode-btn ${room.game_mode === 'big' ? 'active' : ''}" disabled>大牌九</button></div><div class="room-quick-actions"><button type="button" data-refresh-room>刷新状态</button>${room.status === 'waiting' && data.self_member?.is_owner ? '<button class="primary-mini" type="button" data-start>开始本局</button>' : ''}</div><div class="room-meta"><span>底注 <b>${fmt(room.base_stake)}${currencyLabel(room.stake_type)}</b></span><span>席位 <b>${members.filter(m => m.role === 'player').length}/${roomCapacity(room)}</b></span><span>局数 <b>${round?.round_no || 0}</b></span><span>阶段 <b>${phaseLabel(round?.phase)}</b></span>${deadline ? `<span>倒计时 <b data-deadline="${deadline}">--</b></span>` : ''}<span class="room-locked-note">${duelLabel(room)}</span></div></section>
-      <div class="layout"><section class="board-frame" aria-label="九霄牌九桌"><div class="felt"><div id="opponentSeats">${opponentsHtml}</div>${selfZoneHtml(data)}</div></section><aside class="side-stack"><section class="panel"><div class="panel-head"><h3>本局概览</h3><span>${gameLabel(room)}</span></div><div class="panel-body">${metricsHtml(data)}</div></section><section class="panel"><div class="panel-head"><h3>开牌排名</h3><span>按服务端结果</span></div><div class="panel-body"><div class="rank-list">${rankHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>牌局动态</h3><span>当前状态</span></div><div class="panel-body"><div class="log-list">${logHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>玩法说明</h3><span>${duelLabel(room)}</span></div><div class="panel-body rule-note"><b>老何庄：</b>100∶100等额结算，直接使用现有赌场资金。<br><b>玩家局：</b>每笔确认赌注收取2.5%手续费，庄家责任资金预先冻结，系统不兜底。<br><b>倍率：</b>10、50、100倍；赌注与手续费合计不得超过开局余额30%。<br><b>安全：</b>洗牌、私牌遮罩、阶段截止与资金结算均由数据库完成。</div></section></aside></div>
+      <main class="app-shell"><section class="room-strip"><strong>${esc(room.room_name)}</strong><div class="mode-switch room-locked"><button class="mode-btn ${room.game_mode === 'small' ? 'active' : ''}" disabled>小牌九</button><button class="mode-btn ${room.game_mode === 'big' ? 'active' : ''}" disabled>大牌九</button></div><div class="room-quick-actions"><button type="button" data-refresh-room>刷新状态</button></div><div class="room-meta"><span>底注 <b>${fmt(room.base_stake)}${currencyLabel(room.stake_type)}</b></span><span>席位 <b>${members.filter(m => m.role === 'player').length}/${roomCapacity(room)}</b></span><span>局数 <b>${round?.round_no || 0}</b></span><span>阶段 <b>${phaseLabel(round?.phase)}</b></span>${deadline ? `<span>倒计时 <b data-deadline="${deadline}">--</b></span>` : ''}<span class="room-locked-note">${duelLabel(room)}</span></div></section>
+      <div class="layout"><section class="board-frame" aria-label="九霄牌九桌"><div class="felt"><div id="opponentSeats">${opponentsHtml}</div>${selfZoneHtml(data)}</div></section><aside class="side-stack"><section class="panel"><div class="panel-head"><h3>本局概览</h3><span>${gameLabel(room)}</span></div><div class="panel-body">${metricsHtml(data)}</div></section><section class="panel"><div class="panel-head"><h3>开牌排名</h3><span>按服务端结果</span></div><div class="panel-body"><div class="rank-list">${rankHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>牌局动态</h3><span>当前状态</span></div><div class="panel-body"><div class="log-list">${logHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>玩法说明</h3><span>${duelLabel(room)}</span></div><div class="panel-body rule-note"><b>老何庄：</b>100∶100等额结算，直接使用现有赌场资金。<br><b>玩家局：</b>每笔确认赌注收取2.5%手续费，庄家责任资金预先冻结，系统不兜底。<br><b>倍率：</b>10、50、100倍；赌注与手续费合计不得超过开局余额30%。<br><b>准备：</b>入座后10秒内未准备自动离桌；全员准备后2秒自动开局。<br><b>小牌九：</b>5秒选倍，首张明牌仅牌主本人可见。<br><b>安全：</b>洗牌、私牌遮罩、阶段截止与资金结算均由数据库完成。</div></section></aside></div>
       <div class="game-footer-actions"><button class="secondary-btn" type="button" data-refresh-room>刷新状态</button>${data.self_member && room.status === 'waiting' ? '<button class="secondary-btn danger-text" type="button" data-leave>离开房间</button>' : ''}</div></main>
     </section>`;
   }
@@ -545,7 +637,10 @@
       const scrollY = window.scrollY;
       app.innerHTML = nextHtml;
       state.renderHtml = nextHtml;
-      requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+      requestAnimationFrame(() => {
+        window.scrollTo(scrollX, scrollY);
+        playResourceTransferEffects();
+      });
     }
     updateCountdown();
     syncCreateForm();
@@ -609,9 +704,25 @@
 
   async function loadRoom(advance = false) {
     if (!state.roomId) return;
+    const previouslySeated = state.room?.self_member?.role === 'player' || state.wasSeated;
     state.room = advance
       ? await rpc('advance_paigow_round_bpaigow01', { p_room_id: state.roomId })
       : await rpc('get_paigow_room_state_bpaigow01', { p_room_id: state.roomId });
+    if (state.room?.room?.status === 'closed') {
+      state.roomId = null;
+      state.room = null;
+      state.wasSeated = false;
+      toast('房间已关闭或被房主删除。');
+      await loadLobby();
+      startPolling();
+      return;
+    }
+    if (previouslySeated && !state.room?.self_member) {
+      state.wasSeated = false;
+      toast('你已因10秒内未准备而自动退出对局。');
+    } else {
+      state.wasSeated = state.room?.self_member?.role === 'player';
+    }
     if (!state.lobby) await loadLobby();
     else {
       state.lobby.balances[state.room.room.stake_type] = state.room.self_balance;
@@ -644,7 +755,7 @@
   function startPolling() {
     clearInterval(state.poll);
     clearInterval(state.clock);
-    state.poll = setInterval(pollOnce, state.roomId ? 2000 : 5000);
+    state.poll = setInterval(pollOnce, state.roomId ? 1000 : 5000);
     state.clock = setInterval(updateCountdown, 250);
   }
 
@@ -652,6 +763,8 @@
     state.roomId = id;
     state.room = null;
     state.selectedHead = [];
+    state.effectRoundId = null;
+    state.wasSeated = false;
     render();
     action(async () => {
       await loadRoom(true);
@@ -663,12 +776,21 @@
     const target = event.target.closest('button');
     if (!target) return;
     if (target.dataset.openRoom) return openRoom(target.dataset.openRoom);
+    if (target.dataset.deleteRoom) {
+      if (!window.confirm('确定删除这个等待中的房间吗？房内尚未开局的玩家会被移出。')) return;
+      return action(async () => {
+        state.lobby = await rpc('delete_paigow_room_bpaigow01', { p_room_id: target.dataset.deleteRoom });
+        toast('房间已删除。');
+      });
+    }
     if (target.hasAttribute('data-refresh-lobby')) return action(loadLobby);
     if (target.hasAttribute('data-refresh-room')) return action(() => loadRoom(true));
     if (target.hasAttribute('data-back-lobby')) {
       state.roomId = null;
       state.room = null;
       state.selectedHead = [];
+      state.effectRoundId = null;
+      state.wasSeated = false;
       startPolling();
       return action(loadLobby);
     }
@@ -679,6 +801,7 @@
           p_seat_no: Number(target.dataset.joinSeat),
           p_spectator: false
         });
+        state.wasSeated = true;
       });
     }
     if (target.hasAttribute('data-watch')) {
@@ -695,14 +818,6 @@
         state.room = await rpc('set_paigow_ready_bpaigow01', {
           p_room_id: state.roomId,
           p_ready: target.dataset.ready === 'true'
-        });
-      });
-    }
-    if (target.hasAttribute('data-start')) {
-      return action(async () => {
-        state.room = await rpc('start_paigow_round_bpaigow01', {
-          p_room_id: state.roomId,
-          p_request_id: uuid()
         });
       });
     }

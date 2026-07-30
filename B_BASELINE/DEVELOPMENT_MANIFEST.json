@@ -1,7 +1,7 @@
 {
-  "baseline": "V1.3_AB26_CACHE41",
-  "sourcePackage": "Jiuxiao_V1.3_CACHE41_Full.zip",
-  "release": "V1.3 CACHE41",
-  "cacheEpoch": 41,
-  "nextSql": 85
+  "baseline": "V1.4_AB27_CACHE42",
+  "sourcePackage": "Jiuxiao_V1.4_CACHE42_Full.zip",
+  "release": "V1.4 CACHE42",
+  "cacheEpoch": 42,
+  "nextSql": 88
 }

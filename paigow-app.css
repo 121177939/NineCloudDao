@@ -630,3 +630,44 @@ button:disabled{pointer-events:none;}
 
 /* V1.3 CACHE41：静默轮询期间不重建页面，仅显示轻量忙碌光标。 */
 .pg-app.is-busy{cursor:progress}
+
+
+/* V1.4 CACHE42：自动准备、自动开局、房间删除与结算资源流特效 */
+.room-actions .delete-room{
+  border-color:rgba(207,106,90,.52);
+  color:#efaaa0;
+  background:rgba(95,31,27,.34);
+}
+.room-actions .delete-room:hover{background:rgba(132,42,35,.48)}
+.ready-timeout{color:#d7a889!important;font-variant-numeric:tabular-nums}
+.ready-timeout b{color:#efc072;font-weight:500}
+.pg-resource-fx-layer{
+  position:fixed;
+  inset:0;
+  z-index:160;
+  pointer-events:none;
+  overflow:hidden;
+}
+.pg-resource-particle{
+  position:fixed;
+  width:13px;
+  height:10px;
+  border-radius:3px 8px 3px 8px;
+  border:1px solid rgba(255,238,163,.92);
+  background:
+    radial-gradient(circle at 28% 26%,rgba(255,255,255,.95) 0 12%,transparent 14%),
+    linear-gradient(145deg,#f6dc78 0 28%,#c58b2f 52%,#6f4316 100%);
+  box-shadow:0 0 7px rgba(239,194,81,.88),0 0 18px rgba(201,150,47,.48);
+  transform-origin:center;
+  will-change:transform,opacity;
+}
+.pg-resource-fx-layer.cultivation .pg-resource-particle{
+  border-color:rgba(207,242,255,.94);
+  background:
+    radial-gradient(circle at 28% 26%,rgba(255,255,255,.98) 0 12%,transparent 14%),
+    linear-gradient(145deg,#dff8ff 0 28%,#71b9d5 52%,#285873 100%);
+  box-shadow:0 0 8px rgba(133,216,247,.9),0 0 19px rgba(74,158,199,.5);
+}
+@media(prefers-reduced-motion:reduce){
+  .pg-resource-fx-layer{display:none!important}
+}

@@ -1,23 +1,24 @@
 {
-  "version": "1.3.0",
-  "releaseLabel": "九霄问道 V1.3 CACHE41",
-  "sourceBaseline": "V1.2 FIX3 CACHE40",
-  "minimumDatabaseBaseline": "V1.2 CACHE37",
-  "databaseChange": "V1_3_GITHUB_PAGES_PORTABLE_CI_CACHE41",
-  "databaseMigration": "database/V1.3/202607301645_v1_3_cache41_pages_ci_release.sql",
-  "databaseReleaseGate": "database/V1.3/202607301645_v1_3_cache41_pages_ci_release.sql",
-  "databaseFinalCheck": "database/V1.3/202607301650_v1_3_cache41_check.sql",
+  "version": "1.4.0",
+  "releaseLabel": "九霄问道 V1.4 CACHE42",
+  "sourceBaseline": "V1.3 CACHE41",
+  "minimumDatabaseBaseline": "V1.3 CACHE41",
+  "databaseChange": "V1_4_PAIGOW_PRIVATE_CARD_AUTO_READY_CACHE42",
+  "databaseMigration": "database/V1.4/202607301900_v1_4_paigow_auto_ready_private_card.sql",
+  "databaseReleaseGate": "database/V1.4/202607301910_v1_4_cache42_release.sql",
+  "databaseFinalCheck": "database/V1.4/202607301920_v1_4_cache42_check.sql",
   "deploymentStatus": "authoritative_complete_deployment_package",
   "authoritativePackages": {
-    "completePackage": "Jiuxiao_V1.3_CACHE41_Full.zip",
-    "sqlPackage": "Jiuxiao_V1.3_CACHE41_SQL.zip"
+    "completePackage": "Jiuxiao_V1.4_CACHE42_Full.zip",
+    "sqlPackage": "Jiuxiao_V1.4_CACHE42_SQL.zip"
   },
   "notes": [
-    "修复GitHub Pages构建阶段依赖未安装Playwright及固定Chromium路径导致的CI失败风险",
-    "正式部署CI改为仅使用GitHub Runner自带Python与Node，不再要求浏览器或第三方Python包",
-    "保留可选浏览器行为测试，检测到Playwright和Chromium时才运行，不阻断Pages发布",
-    "Pages产物继续执行文件清单、版本、缓存标记与SHA-256一致性验证",
-    "九霄牌九无闪烁轮询、自定义底注、牌型、洗牌和资金结算规则保持不变"
+    "小牌九首张明牌只向牌主本人返回，对手与观战者只显示牌背",
+    "小牌九选倍准备时间调整为5秒",
+    "玩家入座后10秒内未准备自动离桌",
+    "达到最低人数且全员准备后2秒自动开始，不再由房主手动开局",
+    "房主可在大厅删除等待房间，牌局进行中禁止删除",
+    "结算时按每个输家到每个赢家生成灵石或修为资源流特效"
   ],
   "integratedModules": [
     "B-CAVE01",
@@ -28,16 +29,17 @@
     "B-PAIGOW01",
     "B-PAIGOW01-V26-UI",
     "B-PAIGOW01-STABLE-UI",
-    "PAGES-CI-PORTABLE-V13"
+    "PAGES-CI-PORTABLE-V13",
+    "B-PAIGOW01-AUTO-READY-PRIVATE-CARD-V14"
   ],
-  "clientHotfix": "V1.3_CACHE41",
-  "developmentBaseline": "V1.3_AB26_CACHE41",
+  "clientHotfix": "V1.4_CACHE42",
+  "developmentBaseline": "V1.4_AB27_CACHE42",
   "packagePolicy": {
     "delivery": "完整部署包与独立SQL包",
     "deployment": "完整包解压后覆盖GitHub仓库根目录",
-    "database": "已完成CACHE40时执行83—84；未完成时先按历史顺序执行至82"
+    "database": "已完成CACHE41时执行85—87；未完成时先按历史顺序执行至84"
   },
-  "handoffUpdatedAt": "2026-07-30T16:45:00Z",
-  "sqlRevision": "V1.3_CACHE41",
-  "cacheEpoch": 41
+  "handoffUpdatedAt": "2026-07-30T17:30:00Z",
+  "sqlRevision": "V1.4_CACHE42",
+  "cacheEpoch": 42
 }

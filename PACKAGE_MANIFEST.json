@@ -1,15 +1,19 @@
 {
-  "release": "V1.3 CACHE41",
-  "buildId": "v1-3-cache41",
-  "cacheEpoch": 41,
-  "developmentBaseline": "V1.3_AB26_CACHE41",
-  "nextSql": 85,
-  "fileCount": 705,
+  "release": "V1.4 CACHE42",
+  "version": "1.4.0",
+  "buildId": "v1-4-cache42",
+  "cacheEpoch": 42,
+  "sourceBaseline": "V1.3 CACHE41",
+  "developmentBaseline": "V1.4_AB27_CACHE42",
+  "nextSql": 88,
+  "sourcePackage": "Jiuxiao_V1.4_CACHE42_Full.zip",
+  "fileCount": 724,
+  "manifestPolicy": "file list excludes root PACKAGE_MANIFEST.json and SHA256SUMS.txt to avoid recursive hashes",
   "files": [
     {
       "path": ".github/workflows/deploy-pages.yml",
       "size": 1315,
-      "sha256": "afb19662ac034441b65de9d81df9fb9fade76776e9963ff70d1a76b59455c947"
+      "sha256": "6775a3a9cc2cac5bd2b15c8bb270b6d8b398e5166f7680735dcf30a89e4a5757"
     },
     {
       "path": ".gitignore",
@@ -27,19 +31,24 @@
       "sha256": "c76656c84e50f8bec9d27e153d7c4792f3a08cb7542f4e9658d017719f83d70a"
     },
     {
+      "path": "00_CACHE42_执行说明.txt",
+      "size": 241,
+      "sha256": "76e3f3e055a56899b98312c61cf5ef80bc718f118aebcbd1eceedc5d58a112c3"
+    },
+    {
       "path": "00_完整包使用说明.md",
-      "size": 371,
-      "sha256": "b40d388ffc877deaf04f5a108039c5fd6516d987a0e7e34d0025804357486beb"
+      "size": 500,
+      "sha256": "ad7fdcb6bedcfe8d303b48ace2d9158de7cc75963edbea8d3d034cb8b5e10ae9"
     },
     {
       "path": "00_部署说明.txt",
-      "size": 531,
-      "sha256": "c412777cf4ea581af153bc53ee8ed466510201648a1c7f3414f82c1234743fb4"
+      "size": 287,
+      "sha256": "6cf684c1e7ae18b264139494bce95b13613ad0500e28b7b8efac24a284f7c6a9"
     },
     {
       "path": "404.html",
       "size": 2192,
-      "sha256": "5e28b6f68b7bafd11999bb571571ef909b1fbce6539fd0ece8a8cf4fbdd83f16"
+      "sha256": "b49ace98fcf7b72b618735d1ced57c709650cdb376cdd49db9ea25996f9ff6da"
     },
     {
       "path": "AB_CONTROL/AB_DEVELOPMENT_PROTOCOL.md",
@@ -48,13 +57,13 @@
     },
     {
       "path": "AB_CONTROL/BASELINE_LOCK.json",
-      "size": 863,
-      "sha256": "7f8a09534590da2cb1a2f1cb946b0b3e12946b7863bd9ff792a0bb8cb3bf6be4"
+      "size": 1044,
+      "sha256": "550761aeba81dc4c2f4ff2cf7e3b260046979e09501688eb0e8edaf48d4aec14"
     },
     {
       "path": "AB_CONTROL/NEXT_WORK.md",
-      "size": 95,
-      "sha256": "6b889c7c3b75ee9d913446e0d134ace6430cf0241a97bc44627a11b0d249a3d8"
+      "size": 92,
+      "sha256": "5f1728e317a1ba7fa7fcd3c1e80d422295d2421a299039ff75fbe327a1592b11"
     },
     {
       "path": "AB_CONTROL/PROTECTED_AREAS.md",
@@ -64,7 +73,7 @@
     {
       "path": "B_BASELINE/00_B线开发从这里开始.md",
       "size": 110,
-      "sha256": "cc58770379f795b106825fb6d0a1c2558d9c410250c1b5670415d0e81efb4d38"
+      "sha256": "1c039b7ce5bb5ee5ad4e223c6d0868b98b6306c264d1c098626c1ecedb7ff1d8"
     },
     {
       "path": "B_BASELINE/B模块交付规范.md",
@@ -74,7 +83,7 @@
     {
       "path": "B_BASELINE/DEVELOPMENT_MANIFEST.json",
       "size": 156,
-      "sha256": "44d723ccbbd182d66cd43e965eb995a952634b040c6f46d9b3c73af8932c9cf0"
+      "sha256": "aeb31559256dd180e8853ab31223059b0e3d2138ee0c8e37e8726cf003410689"
     },
     {
       "path": "B_MODULE/B-COMBAT01/00_MODULE_README.md",
@@ -353,33 +362,33 @@
     },
     {
       "path": "CHANGELOG.md",
-      "size": 23473,
-      "sha256": "4b7ff1be4af149ba8d01c2dea86d05d0fd3c53594d61befb642e22f77d57f27a"
+      "size": 23931,
+      "sha256": "6a9a6474773ca8d1a0c5be05e6e5268635dcae62ae10627741d5e85d4b400408"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 1869,
-      "sha256": "a31f37611b8d24a2f1f11c8bbf24b8cd233b37e415c528b8f5903f1cf0adbe51"
+      "size": 1821,
+      "sha256": "f09445a9801efa97440d6015381e19d7a61a750214b5c21da65d5366f7e83a01"
     },
     {
       "path": "DESKTOP_UPDATE.md",
-      "size": 268,
-      "sha256": "9ffd83ac12681cb45ce9107eb3024466a3c413d1ba7dc046f8194e8c35a9022b"
+      "size": 423,
+      "sha256": "2f87ec2247fe0cbc39077089512a9b737967d00ce608ae40316437c686b50d79"
     },
     {
       "path": "DEVELOPMENT_BASELINE_NOTICE.md",
-      "size": 132,
-      "sha256": "9f0cd62b8ad1be3525f10ec5d6292699a4bd64f7f936fc348b34f2abcd8165ed"
+      "size": 347,
+      "sha256": "1bcb8637b523d01d94c41f143d9e21e94e799e0d5dd0b50f0ec0ec7c77223f64"
     },
     {
       "path": "README.md",
-      "size": 452,
-      "sha256": "de93113d4f96d34a6690efb17492f8674dc62e9fba7ed8d76e88b7afe299cedd"
+      "size": 464,
+      "sha256": "92e69990fa635d87e93932f52dca5c223ecce90597e98b92376e4e908a1dbddd"
     },
     {
       "path": "SQL/00_SQL执行说明.txt",
-      "size": 416,
-      "sha256": "07d836fe949256481c057f286df01b168e37490e95c6eff66f0cd9c93be41af9"
+      "size": 335,
+      "sha256": "a77ad0124d880539d60ab5dda81af70f877e5f61ecc803762a018add2e604e16"
     },
     {
       "path": "SQL/01_升级前检查.sql",
@@ -787,6 +796,21 @@
       "sha256": "f0b5dc1b1d9c4d4569b68efff128a2240ac5c958d582923d965a9a2aa5bdf952"
     },
     {
+      "path": "SQL/85_V1.4_九霄牌九自动准备与私密明牌.sql",
+      "size": 27072,
+      "sha256": "ae3fb6a2247ada1d8549a477ce56ece09ac7f81a03d8e07182d35de87dfee43b"
+    },
+    {
+      "path": "SQL/86_V1.4_CACHE42_正式发布门禁.sql",
+      "size": 1533,
+      "sha256": "bc9b2f90d05b4292a52633acaaaf022b6e64a224f23e4f69b7d41819354411b5"
+    },
+    {
+      "path": "SQL/87_V1.4_CACHE42_升级后检查.sql",
+      "size": 2656,
+      "sha256": "ab61ee9cf4350489b08bc5b5b30de3cef8cc418d286eb4c8100ae91b78f2a34e"
+    },
+    {
       "path": "V0.14.8_TEST_RESULTS.txt",
       "size": 1648,
       "sha256": "3fb8b74b9c69b0f72d4d3cbf13ef1d55380648ec02825bbfc6380debc93f391c"
@@ -1127,9 +1151,34 @@
       "sha256": "5c3439b36ae96699c5c70bf2f7882a168174f42d72a6347779bb952b038a6d95"
     },
     {
+      "path": "V1.4_BROWSER_OPTIONAL.log",
+      "size": 132,
+      "sha256": "cda0e645ce5d36d2ec98e871f363416179bb644e213da47da0cadafe14e9e5ae"
+    },
+    {
+      "path": "V1.4_CACHE42.txt",
+      "size": 57,
+      "sha256": "dd0aac929661e908dd67cb56585885200969e3773f94e3065ac7d729caac435c"
+    },
+    {
+      "path": "V1.4_FULL_CI.log",
+      "size": 7323,
+      "sha256": "38e30454c46f2da751aa8487912ae1d244be67d8f2e5537295e4f45a6c03359b"
+    },
+    {
+      "path": "V1.4_TEST_RESULTS.txt",
+      "size": 1395,
+      "sha256": "474429ecef2cc5293dc465babedab484ebf6a7bb478b3456be17e283ea15c8eb"
+    },
+    {
+      "path": "V1.4_升级说明.md",
+      "size": 1765,
+      "sha256": "c066e90d87aadf5abb7531a715ab0d45437161086638f4d8a2d1af3d107cd1da"
+    },
+    {
       "path": "VERSION.txt",
       "size": 5,
-      "sha256": "79aa4bda7c470cbb9a11b04837a4e97f5a2ee461b5eaba44025cbba63f050cb7"
+      "sha256": "bbab88f5e5632b42714e38fb43d2aa598551726344f0bbd5b2549539291afc89"
     },
     {
       "path": "app.js",
@@ -1154,22 +1203,22 @@
     {
       "path": "b-paigow01.html",
       "size": 556,
-      "sha256": "55c726366fae4a79caa5512f964815589d3565cd165d2b0db23e364d15a31164"
+      "sha256": "047e6aa8f0c7b448594f62564a3af8689c15d996cb6298f36f478dd2809fa849"
     },
     {
       "path": "b-paigow01.js",
       "size": 2066,
-      "sha256": "74551f5b72075e07829050f9635e61cdd9e41c65805c922de0ba0fe4a21ca500"
+      "sha256": "ae05bebc825c85ac757907b2b57fd98c6fc139d5e56ecee448c6812e9f921842"
     },
     {
       "path": "config.js",
       "size": 494,
-      "sha256": "79f5aca1a0f8ebb36b4e8e92d0a1642cb9f7679d92f8346af4fa5d5c0486c97f"
+      "sha256": "8e4c8459f593d3985ce2cb757c8ef279de574ff92092c78ce4275b62fa6a118f"
     },
     {
       "path": "database/MIGRATION_REGISTRY.md",
-      "size": 22424,
-      "sha256": "d7be1513189667474e596b0693ca0ed8a1bc95c740df3a6a978e550251ebdaf4"
+      "size": 22623,
+      "sha256": "ab9c137a14a9417176789177586eb3e034600f5b23d34af97a89aef76cda8c14"
     },
     {
       "path": "database/V0.11.10_FIX1/202607260530_v01110_fix1_check.sql",
@@ -2127,6 +2176,21 @@
       "sha256": "f0b5dc1b1d9c4d4569b68efff128a2240ac5c958d582923d965a9a2aa5bdf952"
     },
     {
+      "path": "database/V1.4/202607301900_v1_4_paigow_auto_ready_private_card.sql",
+      "size": 27072,
+      "sha256": "ae3fb6a2247ada1d8549a477ce56ece09ac7f81a03d8e07182d35de87dfee43b"
+    },
+    {
+      "path": "database/V1.4/202607301910_v1_4_cache42_release.sql",
+      "size": 1533,
+      "sha256": "bc9b2f90d05b4292a52633acaaaf022b6e64a224f23e4f69b7d41819354411b5"
+    },
+    {
+      "path": "database/V1.4/202607301920_v1_4_cache42_check.sql",
+      "size": 2656,
+      "sha256": "ab61ee9cf4350489b08bc5b5b30de3cef8cc418d286eb4c8100ae91b78f2a34e"
+    },
+    {
       "path": "docs/B01命格与造化池接入说明.md",
       "size": 411,
       "sha256": "9d36763fcdb5c28e562722dd244823a6ffcc6a5c984226d4ed22982fc23f3523"
@@ -2564,27 +2628,27 @@
     {
       "path": "index.html",
       "size": 2192,
-      "sha256": "5e28b6f68b7bafd11999bb571571ef909b1fbce6539fd0ece8a8cf4fbdd83f16"
+      "sha256": "b49ace98fcf7b72b618735d1ced57c709650cdb376cdd49db9ea25996f9ff6da"
     },
     {
       "path": "manifest.webmanifest",
       "size": 529,
-      "sha256": "4aa29476456bf002b5dc7330bce8c66c31c3cd1359a717581fd930a58f9da0ca"
+      "sha256": "92af2d6cfdf196cad5c08b8c069f2e5db445214986ca07f1aed62df2bc882980"
     },
     {
       "path": "paigow-app.css",
-      "size": 46575,
-      "sha256": "8dc202e6a653efa767fa9f5b5ce8d925d678c3df3a3bbdc4ddfc1afc46a93561"
+      "size": 47950,
+      "sha256": "68e66a5b04d2e023fd9764312fdd3e208ef3d2bec5f312bc796d2d3fbe7bbf3e"
     },
     {
       "path": "paigow-app.js",
-      "size": 46514,
-      "sha256": "53365c20fc87904da1a99929447b4cdf5345cf52f51bbf9dc623e442718f7a14"
+      "size": 52108,
+      "sha256": "73dee0c3ae38e0c5781db11293f6d118ca1d4bd7938502c5ac21396950edc832"
     },
     {
       "path": "release_config.json",
       "size": 189,
-      "sha256": "b70660a1e63a534a75736a1164e84a8ac8698b8b058ea6c877d0f4c35220c500"
+      "sha256": "0b4f172ce2506ca5c0eb7ac60fa26c8e0ca6b1cd23db27d815f32c882ab8e502"
     },
     {
       "path": "styles.css",
@@ -2594,7 +2658,7 @@
     {
       "path": "sw.js",
       "size": 3113,
-      "sha256": "81fef8e4b24097bcfafc1018598eeaee32a0e9ccbf6d97b86342ec0ccbce36f6"
+      "sha256": "173616bf25adecdf2c8953b570fc0de9e3b659c42d0c70ffa8716c2f55539732"
     },
     {
       "path": "tools/audit_v0120_fix1.py",
@@ -2675,6 +2739,11 @@
       "path": "tools/ci_v1_3.py",
       "size": 1551,
       "sha256": "c6cbc7c43ec23212219270834b980454ba36c8d1d108b73fa56f39d5e93216eb"
+    },
+    {
+      "path": "tools/ci_v1_4.py",
+      "size": 1506,
+      "sha256": "2a7b7221ee1336c9a88916783e04afb9798a7d235f2a489eedb575a6904f415f"
     },
     {
       "path": "tools/ci_v1_fix1.py",
@@ -2837,6 +2906,11 @@
       "sha256": "c2fff59c9ba776cfdf23039583e7361ab0e52b688fb3c2c741fc7bd71691e80c"
     },
     {
+      "path": "tools/prepare_pages_site_v1_4.py",
+      "size": 1247,
+      "sha256": "81cdd15cbe631e5d2fba72d36c0fd94717aa1f2bfb531dd974970d57d2ecf31c"
+    },
+    {
       "path": "tools/prepare_pages_site_v1_fix1.py",
       "size": 1081,
       "sha256": "fa96a4395fe9c083aa83033a34aa6d9433f6f5048597385f280eb5d35605e093"
@@ -2997,6 +3071,11 @@
       "sha256": "a21e424f0337edcbea6436a66ab9f95a491e3e8ebc1499e9b3981bcc28995a2d"
     },
     {
+      "path": "tools/sql_static_audit_v1_4.py",
+      "size": 2169,
+      "sha256": "018fbf8160d9e2df894aa8d2e10e846530d7ee2cded78634304667b6bf654b8e"
+    },
+    {
       "path": "tools/sql_static_audit_v1_fix1.py",
       "size": 1513,
       "sha256": "94a2e6579edc525aca0cdd48d2832a1cda809cd4446f04e17e458d6ad59fe940"
@@ -3117,6 +3196,11 @@
       "sha256": "4f197d739adb4d35d50cb512bf3ca6c605c09c34e0af0e70af924883d7363f95"
     },
     {
+      "path": "tools/test_features_v1_4.js",
+      "size": 2670,
+      "sha256": "5c7f4d2e47b351dff51629f490002a262b89d979708d45e8462e8db02b4dfef5"
+    },
+    {
       "path": "tools/test_features_v1_fix1.js",
       "size": 1374,
       "sha256": "475b1e31eeec71dc6d847158e3c5327e8d03f69e590223c65cedc15125b55934"
@@ -3200,6 +3284,11 @@
       "path": "tools/verify_github_pages_workflow_v1_3.py",
       "size": 1111,
       "sha256": "fd303ddcaaaf17bb3660799cda99ad0c82851494b5fffa5c65bbf37de5597e7b"
+    },
+    {
+      "path": "tools/verify_github_pages_workflow_v1_4.py",
+      "size": 1106,
+      "sha256": "1eecb44025cc9eb2a8e12edcfb2be97884aaa9a477eebb2921c11eeaf0a16817"
     },
     {
       "path": "tools/verify_package_v1.py",
@@ -3340,6 +3429,11 @@
       "path": "tools/verify_pages_site_v1_3.py",
       "size": 1596,
       "sha256": "2eec7ebb66a052a6063602417179112acd846241a6113156c8e4f04025922849"
+    },
+    {
+      "path": "tools/verify_pages_site_v1_4.py",
+      "size": 1726,
+      "sha256": "dfedc92e7407a0e47e5c274e0eea65b90e45b52d241cd5eae2ecf01d081d9b61"
     },
     {
       "path": "tools/verify_pages_site_v1_fix1.py",
@@ -3507,6 +3601,11 @@
       "sha256": "095da573a108b0cb9a4ba0b0b85ed312173d11ce981f9462f8ecaab935f85c61"
     },
     {
+      "path": "tools/verify_release_v1_4.py",
+      "size": 1419,
+      "sha256": "007efb252c33e4c99da0e01a3100a812a6aa5c1198278c1975f612d5d9c113ca"
+    },
+    {
       "path": "tools/verify_release_v1_fix1.py",
       "size": 2243,
       "sha256": "a0a930ccd50732bf330c6356a5a2c1f47f4ab93c8f0dc0ce847e43f78a8cc14a"
@@ -3529,7 +3628,7 @@
     {
       "path": "update-guard.js",
       "size": 4918,
-      "sha256": "18681262c7b44d7697edec50d9ebe362f81aff579e9ae83f673bd67a50251acf"
+      "sha256": "e7b75767027e2d3f10169abdfe90d1e14ea894adb533ef6fcc1f5422a1c522c8"
     }
   ]
 }

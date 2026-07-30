@@ -1,9 +1,9 @@
 {
-  "baseline": "V1.3_AB26_CACHE41",
-  "release": "V1.3 CACHE41",
-  "sourceBaseline": "V1.2_FIX3_AB25_CACHE40",
-  "cacheEpoch": 41,
-  "databaseSqlRange": "71-84",
+  "baseline": "V1.4_AB27_CACHE42",
+  "release": "V1.4 CACHE42",
+  "sourceBaseline": "V1.3_AB26_CACHE41",
+  "cacheEpoch": 42,
+  "databaseSqlRange": "71-87",
   "protectedRules": [
     "渡劫最终成功率不超过80%",
     "历史正式SQL只追加不回写",
@@ -15,6 +15,9 @@
     "九霄灵牌老何庄只使用现有赌场资金",
     "九霄牌九V26界面不得重新引入客户端洗牌或本地资金结算",
     "九霄牌九自动轮询不得整体重建未变化页面或覆盖创建房间草稿",
-    "GitHub Pages正式构建不得依赖未在工作流安装的第三方运行时或固定本机路径"
+    "GitHub Pages正式构建不得依赖未在工作流安装的第三方运行时或固定本机路径",
+    "小牌九首张可见牌只能返回给牌主本人",
+    "九霄牌九不再允许房主手动开始，必须全员准备后自动开局",
+    "牌局进行中禁止删除房间"
   ]
 }

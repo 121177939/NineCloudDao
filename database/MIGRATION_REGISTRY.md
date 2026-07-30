@@ -1,3 +1,9 @@
+## V1.4 CACHE42
+
+- `database/V1.4/202607301900_v1_4_paigow_auto_ready_private_card.sql`
+- `database/V1.4/202607301910_v1_4_cache42_release.sql`
+- `database/V1.4/202607301920_v1_4_cache42_check.sql`
+
 ## V1.3 CACHE41
 
 - `database/V1.3/202607301645_v1_3_cache41_pages_ci_release.sql`：GitHub Pages可移植构建发布门禁，仅提升CACHE41。
