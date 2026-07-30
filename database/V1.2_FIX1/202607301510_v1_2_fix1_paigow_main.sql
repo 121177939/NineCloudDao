@@ -1,3 +1,8 @@
+-- V1.2 FIX1 CACHE38 / 72号修复版
+-- 修复 PostgreSQL PL/pgSQL 中 IF 与 CASE 表达式的解析歧义。
+-- 已修复 start_paigow_round、paigow_after_multiplier、paigow_settle_round 三处人数判断。
+-- 本脚本可直接替换并重新执行原 72 号脚本；全部 DDL 使用 IF NOT EXISTS / CREATE OR REPLACE / UPSERT，可安全重跑。
+
 -- B-PAIGOW01 / 71_B_PAIGOW01_MAIN.sql
 -- 九霄灵牌房间、桌位、动作与赌场资金接入候选。
 -- 不创建第二套赌场资金；老何庄与玩家局手续费只调用 V1.1 FIX1 既有资金函数。
@@ -155,41 +160,97 @@ begin
   return jsonb_build_object('status','active','rooms',v_rooms,'room_limit',4,'character_id',v_character,'balances',jsonb_build_object('spirit_stone',public.casino_available_v1(v_character,'spirit_stone'),'cultivation',public.casino_available_v1(v_character,'cultivation')),'bankrolls',jsonb_build_object('spirit_stone',v_stone,'cultivation',v_cult),'rules',jsonb_build_object('idle_close_seconds',1200,'player_fee_bps',250,'laohe_profit_bps',10000));
 end $$;
 
-create or replace function public.create_paigow_room_bpaigow01(p_duel_type text,p_pvp_mode text,p_game_mode text,p_stake_type text,p_base_stake bigint) returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
-declare v_character uuid:=public.casino_current_character_id_v1();v_slot smallint;v_room public.paigow_rooms_bpaigow01%rowtype;
+create or replace function public.create_paigow_room_bpaigow01(
+  p_duel_type text,
+  p_pvp_mode text,
+  p_game_mode text,
+  p_stake_type text,
+  p_base_stake bigint
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path=public,pg_temp
+as $$
+declare
+  v_character uuid := public.casino_current_character_id_v1();
+  v_slot smallint;
+  v_room public.paigow_rooms_bpaigow01%rowtype;
+  v_min bigint;
 begin
-  perform public.casino_assert_enabled_v1();perform public.paigow_cleanup_rooms_bpaigow01();
-  if p_duel_type not in('laohe','pvp') or p_game_mode not in('small','big') or p_stake_type not in('spirit_stone','cultivation') then raise exception 'PAIGOW_ROOM_CONFIG_INVALID';end if;
-  if p_duel_type='pvp' and p_pvp_mode not in('rob','boat') then raise exception 'PAIGOW_PVP_MODE_INVALID';end if;
-  if p_duel_type='laohe' then p_pvp_mode:=null;end if;
-  if p_base_stake is null or p_base_stake<1 then raise exception 'PAIGOW_BASE_STAKE_INVALID';end if;
-  perform pg_advisory_xact_lock(hashtextextended('bpaigow01-room-slots',7101));
-  select s into v_slot from generate_series(1,4) s where not exists(select 1 from public.paigow_rooms_bpaigow01 r where r.slot_no=s and r.status in('waiting','playing')) order by s limit 1;
-  if v_slot is null then raise exception 'PAIGOW_ROOM_LIMIT_REACHED';end if;
-  insert into public.paigow_rooms_bpaigow01(slot_no,room_name,owner_character_id,duel_type,pvp_mode,game_mode,stake_type,base_stake)
-  values(v_slot,public.paigow_room_name_bpaigow01(v_slot),v_character,p_duel_type,p_pvp_mode,p_game_mode,p_stake_type,p_base_stake) returning * into v_room;
-  return jsonb_build_object('room',to_jsonb(v_room));
-end $$;
+  perform public.paigow_assert_enabled_bpaigow01();
+  perform public.paigow_cleanup_rooms_bpaigow01();
 
-create or replace function public.join_paigow_room_bpaigow01(p_room_id uuid,p_seat_no smallint default null,p_spectator boolean default false) returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
-declare v_character uuid:=public.casino_current_character_id_v1();v_room public.paigow_rooms_bpaigow01%rowtype;v_limit integer;v_players integer;v_existing_role text;
-begin
-  perform public.paigow_cleanup_rooms_bpaigow01();select * into v_room from public.paigow_rooms_bpaigow01 where id=p_room_id and status in('waiting','playing') for update;
-  if v_room.id is null then raise exception 'PAIGOW_ROOM_NOT_AVAILABLE';end if;
-  select role into v_existing_role from public.paigow_room_members_bpaigow01 where room_id=p_room_id and character_id=v_character and left_at is null;
-  v_limit:=case when v_room.game_mode='big' then 8 else 9 end;
-  select count(*) into v_players from public.paigow_room_members_bpaigow01 where room_id=p_room_id and left_at is null and role='player';
-  if p_spectator or (v_players>=v_limit and coalesce(v_existing_role,'')<>'player') then
-    insert into public.paigow_room_members_bpaigow01(room_id,character_id,seat_no,role,left_at,ready) values(p_room_id,v_character,null,'spectator',null,false)
-    on conflict(room_id,character_id) do update set seat_no=null,role='spectator',left_at=null,ready=false,joined_at=now();
-  else
-    if p_seat_no is null or p_seat_no not between 1 and 9 then raise exception 'PAIGOW_SEAT_INVALID';end if;
-    if v_room.game_mode='big' and p_seat_no=9 then raise exception 'PAIGOW_BIG_SEAT_NINE_SPECTATOR_ONLY';end if;
-    insert into public.paigow_room_members_bpaigow01(room_id,character_id,seat_no,role,left_at,ready) values(p_room_id,v_character,p_seat_no,'player',null,false)
-    on conflict(room_id,character_id) do update set seat_no=excluded.seat_no,role='player',left_at=null,ready=false,joined_at=now();
+  if p_duel_type not in ('laohe','pvp')
+     or p_game_mode not in ('small','big')
+     or p_stake_type not in ('spirit_stone','cultivation') then
+    raise exception 'PAIGOW_ROOM_CONFIG_INVALID';
   end if;
-  return public.get_paigow_room_state_bpaigow01(p_room_id);
-end $$;
+
+  if p_duel_type='pvp' and p_pvp_mode not in ('rob','boat') then
+    raise exception 'PAIGOW_PVP_MODE_INVALID';
+  end if;
+
+  if p_duel_type='laohe' then
+    p_pvp_mode := null;
+  end if;
+
+  v_min := case when p_stake_type='cultivation' then 5000 else 10 end;
+  if p_base_stake is null
+     or p_base_stake < v_min
+     or p_base_stake > 9007199254740 then
+    raise exception 'PAIGOW_BASE_STAKE_INVALID';
+  end if;
+
+  perform pg_advisory_xact_lock(hashtextextended('bpaigow01-room-slots',7101));
+
+  select s::smallint
+    into v_slot
+    from generate_series(1,4) as s
+   where not exists (
+     select 1
+       from public.paigow_rooms_bpaigow01 r
+      where r.slot_no=s
+        and r.status in ('waiting','playing')
+   )
+   order by s
+   limit 1;
+
+  if v_slot is null then
+    raise exception 'PAIGOW_ROOM_LIMIT_REACHED';
+  end if;
+
+  insert into public.paigow_rooms_bpaigow01(
+    slot_no,
+    room_name,
+    owner_character_id,
+    duel_type,
+    pvp_mode,
+    game_mode,
+    stake_type,
+    base_stake
+  )
+  values(
+    v_slot,
+    public.paigow_room_name_bpaigow01(v_slot),
+    v_character,
+    p_duel_type,
+    p_pvp_mode,
+    p_game_mode,
+    p_stake_type,
+    p_base_stake
+  )
+  returning * into v_room;
+
+  -- 关键修复：显式转成 smallint，避免 PostgreSQL 按 integer 查找不存在的重载。
+  perform public.join_paigow_room_bpaigow01(v_room.id, 1::smallint, false);
+
+  return jsonb_build_object(
+    'room', to_jsonb(v_room),
+    'state', public.get_paigow_room_state_bpaigow01(v_room.id)
+  );
+end
+$$;
 
 create or replace function public.leave_paigow_room_bpaigow01(p_room_id uuid) returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
 declare v_character uuid:=public.casino_current_character_id_v1();
@@ -448,24 +509,97 @@ commit;
 
 begin;
 
-create or replace function public.create_paigow_room_bpaigow01(p_duel_type text,p_pvp_mode text,p_game_mode text,p_stake_type text,p_base_stake bigint)
-returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
-declare v_character uuid:=public.casino_current_character_id_v1();v_slot smallint;v_room public.paigow_rooms_bpaigow01%rowtype;v_min bigint;
+create or replace function public.create_paigow_room_bpaigow01(
+  p_duel_type text,
+  p_pvp_mode text,
+  p_game_mode text,
+  p_stake_type text,
+  p_base_stake bigint
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path=public,pg_temp
+as $$
+declare
+  v_character uuid := public.casino_current_character_id_v1();
+  v_slot smallint;
+  v_room public.paigow_rooms_bpaigow01%rowtype;
+  v_min bigint;
 begin
-  perform public.paigow_assert_enabled_bpaigow01();perform public.paigow_cleanup_rooms_bpaigow01();
-  if p_duel_type not in('laohe','pvp') or p_game_mode not in('small','big') or p_stake_type not in('spirit_stone','cultivation') then raise exception 'PAIGOW_ROOM_CONFIG_INVALID';end if;
-  if p_duel_type='pvp' and p_pvp_mode not in('rob','boat') then raise exception 'PAIGOW_PVP_MODE_INVALID';end if;
-  if p_duel_type='laohe' then p_pvp_mode:=null;end if;
-  v_min:=case when p_stake_type='cultivation' then 5000 else 10 end;
-  if p_base_stake is null or p_base_stake<v_min or p_base_stake>9007199254740 then raise exception 'PAIGOW_BASE_STAKE_INVALID';end if;
+  perform public.paigow_assert_enabled_bpaigow01();
+  perform public.paigow_cleanup_rooms_bpaigow01();
+
+  if p_duel_type not in ('laohe','pvp')
+     or p_game_mode not in ('small','big')
+     or p_stake_type not in ('spirit_stone','cultivation') then
+    raise exception 'PAIGOW_ROOM_CONFIG_INVALID';
+  end if;
+
+  if p_duel_type='pvp' and p_pvp_mode not in ('rob','boat') then
+    raise exception 'PAIGOW_PVP_MODE_INVALID';
+  end if;
+
+  if p_duel_type='laohe' then
+    p_pvp_mode := null;
+  end if;
+
+  v_min := case when p_stake_type='cultivation' then 5000 else 10 end;
+  if p_base_stake is null
+     or p_base_stake < v_min
+     or p_base_stake > 9007199254740 then
+    raise exception 'PAIGOW_BASE_STAKE_INVALID';
+  end if;
+
   perform pg_advisory_xact_lock(hashtextextended('bpaigow01-room-slots',7101));
-  select s into v_slot from generate_series(1,4)s where not exists(select 1 from public.paigow_rooms_bpaigow01 r where r.slot_no=s and r.status in('waiting','playing')) order by s limit 1;
-  if v_slot is null then raise exception 'PAIGOW_ROOM_LIMIT_REACHED';end if;
-  insert into public.paigow_rooms_bpaigow01(slot_no,room_name,owner_character_id,duel_type,pvp_mode,game_mode,stake_type,base_stake)
-  values(v_slot,public.paigow_room_name_bpaigow01(v_slot),v_character,p_duel_type,p_pvp_mode,p_game_mode,p_stake_type,p_base_stake) returning * into v_room;
-  perform public.join_paigow_room_bpaigow01(v_room.id,1,false);
-  return jsonb_build_object('room',to_jsonb(v_room),'state',public.get_paigow_room_state_bpaigow01(v_room.id));
-end $$;
+
+  select s::smallint
+    into v_slot
+    from generate_series(1,4) as s
+   where not exists (
+     select 1
+       from public.paigow_rooms_bpaigow01 r
+      where r.slot_no=s
+        and r.status in ('waiting','playing')
+   )
+   order by s
+   limit 1;
+
+  if v_slot is null then
+    raise exception 'PAIGOW_ROOM_LIMIT_REACHED';
+  end if;
+
+  insert into public.paigow_rooms_bpaigow01(
+    slot_no,
+    room_name,
+    owner_character_id,
+    duel_type,
+    pvp_mode,
+    game_mode,
+    stake_type,
+    base_stake
+  )
+  values(
+    v_slot,
+    public.paigow_room_name_bpaigow01(v_slot),
+    v_character,
+    p_duel_type,
+    p_pvp_mode,
+    p_game_mode,
+    p_stake_type,
+    p_base_stake
+  )
+  returning * into v_room;
+
+  -- 关键修复：显式转成 smallint，避免 PostgreSQL 按 integer 查找不存在的重载。
+  perform public.join_paigow_room_bpaigow01(v_room.id, 1::smallint, false);
+
+  return jsonb_build_object(
+    'room', to_jsonb(v_room),
+    'state', public.get_paigow_room_state_bpaigow01(v_room.id)
+  );
+end
+$$;
 
 create or replace function public.join_paigow_room_bpaigow01(p_room_id uuid,p_seat_no smallint default null,p_spectator boolean default false)
 returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
@@ -624,44 +758,215 @@ begin
   return p_response;
 end $$;
 
-create or replace function public.start_paigow_round_bpaigow01(p_room_id uuid,p_request_id uuid)
-returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+create or replace function public.start_paigow_round_bpaigow01(
+  p_room_id uuid,
+  p_request_id uuid
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path=public,pg_temp
+as $$
 declare
-  v_character uuid:=public.casino_current_character_id_v1();v_existing jsonb;v_room public.paigow_rooms_bpaigow01%rowtype;v_round public.paigow_rounds_bpaigow01%rowtype;
-  v_deck text[];v_pos integer:=1;v_count integer;v_need integer;v_round_no integer;v_phase text;v_deadline timestamptz;v_cards text[];m record;v_settings public.paigow_settings_bpaigow01%rowtype;
+  v_character uuid := public.casino_current_character_id_v1();
+  v_existing jsonb;
+  v_room public.paigow_rooms_bpaigow01%rowtype;
+  v_round public.paigow_rounds_bpaigow01%rowtype;
+  v_deck text[];
+  v_pos integer := 1;
+  v_count integer;
+  v_need integer;
+  v_round_no integer;
+  v_phase text;
+  v_deadline timestamptz;
+  v_cards text[];
+  v_member record;
+  v_settings public.paigow_settings_bpaigow01%rowtype;
 begin
   perform public.paigow_assert_enabled_bpaigow01();
-  v_existing:=public.paigow_action_existing_bpaigow01(v_character,p_request_id,'start_round');if v_existing is not null then return v_existing;end if;
-  if not public.paigow_action_claim_bpaigow01(v_character,p_request_id,'start_round',jsonb_build_object('room_id',p_room_id)) then raise exception 'PAIGOW_REQUEST_IN_PROGRESS';end if;
-  select * into v_settings from public.paigow_settings_bpaigow01 where singleton_id=1;
-  select * into v_room from public.paigow_rooms_bpaigow01 where id=p_room_id for update;
-  if v_room.id is null or v_room.status<>'waiting' then raise exception 'PAIGOW_ROOM_NOT_WAITING';end if;
-  if v_room.owner_character_id<>v_character then raise exception 'PAIGOW_ONLY_OWNER_STARTS';end if;
-  if exists(select 1 from public.paigow_rounds_bpaigow01 where room_id=p_room_id and phase not in('settled','cancelled')) then raise exception 'PAIGOW_ACTIVE_ROUND_EXISTS';end if;
-  select count(*) into v_count from public.paigow_room_members_bpaigow01 where room_id=p_room_id and left_at is null and role='player';
-  if v_count<case when v_room.duel_type='laohe' then 1 else 2 end then raise exception 'PAIGOW_NOT_ENOUGH_PLAYERS';end if;
-  if v_count>public.paigow_room_capacity_bpaigow01(v_room.duel_type,v_room.game_mode) then raise exception 'PAIGOW_TOO_MANY_PLAYERS';end if;
-  if exists(select 1 from public.paigow_room_members_bpaigow01 where room_id=p_room_id and left_at is null and role='player' and not ready) then raise exception 'PAIGOW_PLAYERS_NOT_READY';end if;
-  select coalesce(max(round_no),0)+1 into v_round_no from public.paigow_rounds_bpaigow01 where room_id=p_room_id;
-  v_phase:=case when v_room.duel_type='pvp' and v_room.pvp_mode='rob' then 'rob' else 'multiplier' end;
-  v_deadline:=clock_timestamp()+make_interval(secs=>case when v_phase='rob' then v_settings.rob_seconds when v_room.game_mode='small' then v_settings.small_multiplier_seconds else v_settings.big_multiplier_seconds end);
-  insert into public.paigow_rounds_bpaigow01(room_id,round_no,phase,phase_deadline,fee_carry_start) values(p_room_id,v_round_no,v_phase,v_deadline,v_room.fee_carry_bps) returning * into v_round;
-  v_deck:=public.paigow_shuffle_deck_bpaigow01();v_need:=case when v_room.game_mode='big' then 4 else 2 end;
-  for m in select m.character_id,m.seat_no from public.paigow_room_members_bpaigow01 m where m.room_id=p_room_id and m.left_at is null and m.role='player' order by m.seat_no loop
-    v_cards:=v_deck[v_pos:v_pos+v_need-1];v_pos:=v_pos+v_need;
-    insert into public.paigow_round_players_bpaigow01(round_id,character_id,seat_no,cards,action_confirmed)
-    values(v_round.id,m.character_id,m.seat_no,to_jsonb(v_cards),false);
-  end loop;
-  if v_room.duel_type='laohe' then
-    v_cards:=v_deck[v_pos:v_pos+v_need-1];v_pos:=v_pos+v_need;
-    insert into public.paigow_round_secrets_bpaigow01(round_id,shuffled_deck,laohe_cards,laohe_head_indices)
-    values(v_round.id,v_deck,v_cards,case when v_room.game_mode='big' then public.paigow_recommended_split_bpaigow01(v_cards) else null end);
-  else
-    insert into public.paigow_round_secrets_bpaigow01(round_id,shuffled_deck) values(v_round.id,v_deck);
+
+  v_existing := public.paigow_action_existing_bpaigow01(
+    v_character,
+    p_request_id,
+    'start_round'
+  );
+  if v_existing is not null then
+    return v_existing;
   end if;
-  update public.paigow_rooms_bpaigow01 set status='playing',first_round_started_at=coalesce(first_round_started_at,clock_timestamp()),updated_at=now() where id=p_room_id;
-  return public.paigow_action_finish_bpaigow01(v_character,p_request_id,'start_round',public.get_paigow_room_state_bpaigow01(p_room_id));
-end $$;
+
+  if not public.paigow_action_claim_bpaigow01(
+    v_character,
+    p_request_id,
+    'start_round',
+    jsonb_build_object('room_id',p_room_id)
+  ) then
+    raise exception 'PAIGOW_REQUEST_IN_PROGRESS';
+  end if;
+
+  select *
+    into v_settings
+    from public.paigow_settings_bpaigow01
+   where singleton_id=1;
+
+  select *
+    into v_room
+    from public.paigow_rooms_bpaigow01
+   where id=p_room_id
+   for update;
+
+  if v_room.id is null or v_room.status<>'waiting' then
+    raise exception 'PAIGOW_ROOM_NOT_WAITING';
+  end if;
+  if v_room.owner_character_id<>v_character then
+    raise exception 'PAIGOW_ONLY_OWNER_STARTS';
+  end if;
+  if exists(
+    select 1
+      from public.paigow_rounds_bpaigow01
+     where room_id=p_room_id
+       and phase not in ('settled','cancelled')
+  ) then
+    raise exception 'PAIGOW_ACTIVE_ROUND_EXISTS';
+  end if;
+
+  select count(*)
+    into v_count
+    from public.paigow_room_members_bpaigow01
+   where room_id=p_room_id
+     and left_at is null
+     and role='player';
+
+  if v_count < (
+    case when v_room.duel_type='laohe' then 1 else 2 end
+  ) then
+    raise exception 'PAIGOW_NOT_ENOUGH_PLAYERS';
+  end if;
+
+  if v_count > public.paigow_room_capacity_bpaigow01(
+    v_room.duel_type,
+    v_room.game_mode
+  ) then
+    raise exception 'PAIGOW_TOO_MANY_PLAYERS';
+  end if;
+
+  if exists(
+    select 1
+      from public.paigow_room_members_bpaigow01
+     where room_id=p_room_id
+       and left_at is null
+       and role='player'
+       and not ready
+  ) then
+    raise exception 'PAIGOW_PLAYERS_NOT_READY';
+  end if;
+
+  select coalesce(max(round_no),0)+1
+    into v_round_no
+    from public.paigow_rounds_bpaigow01
+   where room_id=p_room_id;
+
+  v_phase := case
+    when v_room.duel_type='pvp' and v_room.pvp_mode='rob' then 'rob'
+    else 'multiplier'
+  end;
+
+  v_deadline := clock_timestamp()+make_interval(
+    secs => case
+      when v_phase='rob' then v_settings.rob_seconds
+      when v_room.game_mode='small' then v_settings.small_multiplier_seconds
+      else v_settings.big_multiplier_seconds
+    end
+  );
+
+  insert into public.paigow_rounds_bpaigow01(
+    room_id,
+    round_no,
+    phase,
+    phase_deadline,
+    fee_carry_start
+  )
+  values(
+    p_room_id,
+    v_round_no,
+    v_phase,
+    v_deadline,
+    v_room.fee_carry_bps
+  )
+  returning * into v_round;
+
+  v_deck := public.paigow_shuffle_deck_bpaigow01();
+  v_need := case when v_room.game_mode='big' then 4 else 2 end;
+
+  -- 关键修复：record 变量改名为 v_member，查询表别名改为 rm，避免名称冲突。
+  for v_member in
+    select rm.character_id, rm.seat_no
+      from public.paigow_room_members_bpaigow01 as rm
+     where rm.room_id=p_room_id
+       and rm.left_at is null
+       and rm.role='player'
+     order by rm.seat_no
+  loop
+    v_cards := v_deck[v_pos:v_pos+v_need-1];
+    v_pos := v_pos+v_need;
+
+    insert into public.paigow_round_players_bpaigow01(
+      round_id,
+      character_id,
+      seat_no,
+      cards,
+      action_confirmed
+    )
+    values(
+      v_round.id,
+      v_member.character_id,
+      v_member.seat_no,
+      to_jsonb(v_cards),
+      false
+    );
+  end loop;
+
+  if v_room.duel_type='laohe' then
+    v_cards := v_deck[v_pos:v_pos+v_need-1];
+    v_pos := v_pos+v_need;
+
+    insert into public.paigow_round_secrets_bpaigow01(
+      round_id,
+      shuffled_deck,
+      laohe_cards,
+      laohe_head_indices
+    )
+    values(
+      v_round.id,
+      v_deck,
+      v_cards,
+      case
+        when v_room.game_mode='big'
+          then public.paigow_recommended_split_bpaigow01(v_cards)
+        else null
+      end
+    );
+  else
+    insert into public.paigow_round_secrets_bpaigow01(
+      round_id,
+      shuffled_deck
+    )
+    values(v_round.id,v_deck);
+  end if;
+
+  update public.paigow_rooms_bpaigow01
+     set status='playing',
+         first_round_started_at=coalesce(first_round_started_at,clock_timestamp()),
+         updated_at=now()
+   where id=p_room_id;
+
+  return public.paigow_action_finish_bpaigow01(
+    v_character,
+    p_request_id,
+    'start_round',
+    public.get_paigow_room_state_bpaigow01(p_room_id)
+  );
+end
+$$;
 
 commit;
 
@@ -792,7 +1097,7 @@ begin
     and not(v_room.duel_type='pvp' and v_room.pvp_mode='rob' and character_id=v_round.dealer_character_id);
   if v_pending>0 then return;end if;
   select count(*) into v_active from public.paigow_round_players_bpaigow01 where round_id=p_round_id and active_in_round;
-  if v_active<case when v_room.duel_type='laohe' then 1 else 2 end then perform public.paigow_cancel_round_internal_bpaigow01(p_round_id,'not_enough_funded_players');return;end if;
+  if v_active < (case when v_room.duel_type='laohe' then 1 else 2 end) then perform public.paigow_cancel_round_internal_bpaigow01(p_round_id,'not_enough_funded_players');return;end if;
   if v_room.game_mode='small' then perform public.paigow_settle_round_internal_bpaigow01(p_round_id);return;end if;
   select arrange_seconds into v_seconds from public.paigow_settings_bpaigow01 where singleton_id=1;
   update public.paigow_rounds_bpaigow01 set phase='arrange',phase_deadline=clock_timestamp()+make_interval(secs=>v_seconds) where id=p_round_id;
@@ -938,7 +1243,7 @@ begin
   select * into v_room from public.paigow_rooms_bpaigow01 where id=v_round.room_id for update;
   select * into v_secret from public.paigow_round_secrets_bpaigow01 where round_id=p_round_id;
   select count(*) into v_player_count from public.paigow_round_players_bpaigow01 where round_id=p_round_id and active_in_round;
-  if v_player_count<case when v_room.duel_type='laohe' then 1 else 2 end then perform public.paigow_cancel_round_internal_bpaigow01(p_round_id,'not_enough_players_at_settlement');return;end if;
+  if v_player_count < (case when v_room.duel_type='laohe' then 1 else 2 end) then perform public.paigow_cancel_round_internal_bpaigow01(p_round_id,'not_enough_players_at_settlement');return;end if;
 
   update public.paigow_round_players_bpaigow01 set payout_amount=0,net_amount=0 where round_id=p_round_id;
   for rp in select * from public.paigow_round_players_bpaigow01 where round_id=p_round_id and active_in_round order by seat_no for update loop

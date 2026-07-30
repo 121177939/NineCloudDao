@@ -1,0 +1,325 @@
+
+=== release metadata ===
+PASS required:index.html
+PASS required:404.html
+PASS required:app.js
+PASS required:styles.css
+PASS required:config.js
+PASS required:update-guard.js
+PASS required:sw.js
+PASS required:manifest.webmanifest
+PASS required:b-paigow01.js
+PASS required:b-paigow01.css
+PASS required:b-paigow01.html
+PASS required:paigow-app.js
+PASS required:paigow-app.css
+PASS required:VERSION.txt
+PASS required:CURRENT_BASELINE.json
+PASS required:release_config.json
+PASS required:V1.2_FIX2_CACHE39.txt
+PASS required:V1.2_FIX2_升级说明.md
+PASS required:docs/V1.2_FIX1_九霄灵牌规则.md
+PASS required:.github/workflows/deploy-pages.yml
+PASS required:SQL/71_V1.2_FIX1_升级前检查.sql
+PASS required:SQL/72_V1.2_FIX1_九霄灵牌正式并线.sql
+PASS required:SQL/73_V1.2_FIX1_CACHE38_正式发布门禁.sql
+PASS required:SQL/74_V1.2_FIX1_升级后检查.sql
+PASS required:SQL/75_V1.2_FIX1_紧急停用九霄灵牌.sql
+PASS required:SQL/76_V1.2_FIX1_恢复九霄灵牌.sql
+PASS required:SQL/77_V1.2_FIX1_九霄灵牌创建房间入座类型修复.sql
+PASS required:SQL/78_V1.2_FIX1_九霄灵牌开始牌局记录变量修复.sql
+PASS required:SQL/79_V1.2_FIX2_CACHE39_牌九预览界面发布门禁.sql
+PASS required:SQL/80_V1.2_FIX2_CACHE39_升级后检查.sql
+PASS version
+PASS config
+PASS release-json
+PASS baseline-json
+PASS lock-json
+PASS cache39:index.html
+PASS cache39:404.html
+PASS cache39:config.js
+PASS cache39:sw.js
+PASS cache39:manifest.webmanifest
+PASS cache39:update-guard.js
+PASS cache39:b-paigow01.html
+PASS cache39:b-paigow01.js
+PASS sw-paigow
+PASS workflow
+PASS paigow-entry
+PASS mutation-retained
+PASS casino-retained
+PASS no-preview-mock
+PASS real-rpc
+TOTAL=50 PASS=50 FAIL=0
+
+=== node syntax app.js ===
+
+=== node syntax config.js ===
+
+=== node syntax update-guard.js ===
+
+=== node syntax sw.js ===
+
+=== node syntax b-paigow01.js ===
+
+=== node syntax paigow-app.js ===
+
+=== python syntax tools/prepare_pages_site_v1_2_fix2.py ===
+
+=== python syntax tools/verify_pages_site_v1_2_fix2.py ===
+
+=== python syntax tools/verify_release_v1_2_fix2.py ===
+
+=== python syntax tools/sql_static_audit_v1_2_fix2.py ===
+
+=== python syntax tools/validate_paigow_v26_ui.py ===
+
+=== python syntax tools/ci_v1_2_fix2.py ===
+
+=== V1.2 FIX2 SQL audit ===
+PASS main-no-broken-case
+PASS main-case-parenthesized
+PASS main-hotfix77
+PASS main-hotfix78
+PASS hotfix77-idempotent
+PASS hotfix78-idempotent
+PASS gate-cache39
+PASS gate-requires-fixes
+PASS post-checks
+PASS balanced-dollar-main
+PASS balanced-dollar-gate
+TOTAL=11 PASS=11 FAIL=0
+
+=== V26 UI static audit ===
+PASS html-parse:index.html
+PASS html-parse:404.html
+PASS html-parse:b-paigow01.html
+PASS css-braces
+PASS v26-css
+PASS no-mock-data
+PASS server-authority
+PASS face-render
+TOTAL=8 PASS=8 FAIL=0
+
+=== V1.2 FIX2 feature test ===
+PASS CACHE39 build
+PASS launcher cache39
+PASS old visible turtle replaced
+PASS V26 lobby structure
+PASS V26 seat structure
+PASS V26 board structure
+PASS real RPC only
+PASS tile face pips
+PASS responsive V26 CSS
+PASS four rooms
+PASS small and big
+PASS traditional 32 tiles
+PASS secure server shuffle
+PASS private masking
+PASS hotfix77 merged
+PASS hotfix78 merged
+PASS case syntax fixed
+PASS release gate cache39
+PASS thirty percent retained
+PASS player dealer zero cover
+PASS V1.2 mutation retained
+PASS casino retained
+{
+  "ok": true,
+  "checks": 22,
+  "failed": []
+}
+
+=== regression tools/test_features_v1.js ===
+PASS snapshot rpc client
+PASS live primordial panel
+PASS exact mobile order
+PASS three columns mobile
+PASS cave rich layers
+PASS cave animations
+PASS unlearned techniques in storage
+PASS visible item name and type
+PASS 36 slots and paging
+PASS battle ranking and challenge
+PASS 80 percent cap copy preserved
+TOTAL=11 PASS=11 FAIL=0
+
+=== regression tools/test_features_v1_fix1.js ===
+PASS root element chip
+PASS fire red
+PASS yuanshen compressed ten percent
+PASS cave six by six
+PASS labels remain visible
+PASS challenge compatibility overload
+PASS friendly production error
+TOTAL=7 PASS=7 FAIL=0
+
+=== regression tools/test_features_v1_fix2.js ===
+PASS no champion copy
+PASS no champion render
+PASS battle rank private stats removed
+PASS compact public card
+PASS separate resolving popup
+PASS separate report popup
+PASS generic battle copy
+PASS css compact
+PASS css report
+{"ok":true,"checks":9}
+
+=== regression tools/test_features_v1_fix3.js ===
+PASS duel summary helper
+PASS duel excludes level
+PASS my side and opponent
+PASS log precedes controls
+PASS speed controls kept
+PASS modal grid layout
+PASS expanded log
+PASS compact controls
+PASS story names challenge relation
+PASS story weapons and cultivation
+PASS story variants
+PASS story failure isolation
+PASS no extra feed subline
+{"ok":true,"checks":13}
+
+=== regression tools/test_features_v1_1.js ===
+PASS ranking bidirectional
+PASS daily 20
+PASS cooldown 20
+PASS same opponent allowed
+PASS stage progress rates
+PASS no stage drop
+PASS equal transfer
+PASS world event correct table
+PASS history backfill
+PASS old higher-only error removed
+{"ok":true,"checks":10}
+
+=== B-COMBAT01 module audit ===
+
+=== node --check app.js ===
+
+=== node B_MODULE/B-COMBAT01/tools/test_client_bcombat01.js /mnt/data/jiuxiao_v12_fix2_cache39 ===
+{"ok":true,"checks":45}
+
+=== /opt/pyvenv/bin/python3 B_MODULE/B-COMBAT01/tools/static_audit_bcombat01.py ===
+PASS transaction
+PASS 44-stage-values
+PASS power-formula
+PASS five-elements
+PASS balanced-allocation-lock
+PASS new-character-trigger
+PASS element-rules
+PASS daily-rules
+PASS sword-heart-eight-percent
+PASS sword-heart-no-four-stat-bonus
+PASS defense-caps
+PASS cultivation-floor-one-percent
+PASS cultivation-cap-preserved
+PASS idempotency-lock
+PASS world-feed-reused
+PASS no-release-control-write
+PASS no-version-cache-write
+PASS rls-on-new-tables
+PASS precheck-required-deps
+PASS postcheck-rules
+PASS rollback-restores-sword-heart
+PASS client-rpcs
+PASS client-fallbacks
+PASS client-battle-modal
+PASS client-world-refresh
+PASS client-battle-privacy
+PASS client-css
+TOTAL=27 PASS=27 FAIL=0
+
+=== /opt/pyvenv/bin/python3 B_MODULE/B-COMBAT01/tools/test_balance_bcombat01.py ===
+B-COMBAT01 BALANCE PASS 90/90
+golden_initial_beats_middle_with_overcome: {'winner': 'attacker', 'attacker_hp': 80, 'defender_hp': 0, 'rounds': 8}
+golden_initial_loses_late_with_weak_overcome: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 754, 'rounds': 7}
+golden_late_beats_perfect_with_overcome: {'winner': 'attacker', 'attacker_hp': 176, 'defender_hp': 0, 'rounds': 8}
+golden_perfect_loses_nascent_initial: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 837, 'rounds': 8}
+golden_perfect_sword_heart_still_loses_nascent_initial: {'winner': 'defender', 'attacker_hp': 0, 'defender_hp': 662, 'rounds': 8}
+
+=== node tools/test_ranking_render_v0143.js /mnt/data/jiuxiao_v12_fix2_cache39 ===
+{"ok":true,"checks":25,"module":"V1.0 FIX2"}
+
+B-COMBAT01 CI PASS
+
+=== B-PAIGOW01 original candidate audit ===
+visible_old_turtle_removed: PASS
+new_entry: PASS
+launcher_loaded: PASS
+four_rooms: PASS
+traditional_tiles: PASS
+long_three_face: PASS
+existing_bankroll_reused: PASS
+room_limit_sql: PASS
+idle_20m_sql: PASS
+fee_250bps: PASS
+laohe_equal: PASS
+physical_tiles_32: PASS
+inline html scripts: PASS (2 blocks)
+entry replacement: PASS
+room flow: PASS
+small and big: PASS
+weak head rule: PASS
+timers: PASS
+baseline bankroll: PASS
+$ /opt/pyvenv/bin/python3 /mnt/data/jiuxiao_v12_fix2_cache39/B_MODULE/B-PAIGOW01/tools/static_audit_bpaigow01.py
+$ node --check /mnt/data/jiuxiao_v12_fix2_cache39/B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/app.js
+$ node --check /mnt/data/jiuxiao_v12_fix2_cache39/B_MODULE/B-PAIGOW01/CLIENT_CANDIDATE/b-paigow01.js
+$ /opt/pyvenv/bin/python3 /mnt/data/jiuxiao_v12_fix2_cache39/B_MODULE/B-PAIGOW01/tools/check_inline_html_js.py
+$ node /mnt/data/jiuxiao_v12_fix2_cache39/B_MODULE/B-PAIGOW01/tools/test_client_bpaigow01.js
+B-PAIGOW01 MODULE CI PASS
+
+=== build pages ===
+pages files=19
+
+=== verify pages ===
+PASS required:.nojekyll
+PASS required:index.html
+PASS required:404.html
+PASS required:styles.css
+PASS required:app.js
+PASS required:config.js
+PASS required:update-guard.js
+PASS required:sw.js
+PASS required:manifest.webmanifest
+PASS required:b-paigow01.js
+PASS required:b-paigow01.css
+PASS required:b-paigow01.html
+PASS required:paigow-app.js
+PASS required:paigow-app.css
+PASS required:VERSION.txt
+PASS required:CURRENT_BASELINE.json
+PASS required:release_config.json
+PASS required:assets/icon-192.png
+PASS required:assets/icon-512.png
+PASS required:PAGES_ARTIFACT_MANIFEST.json
+PASS version
+PASS config
+PASS index
+PASS sw
+PASS manifest-meta
+PASS hash:.nojekyll
+PASS hash:404.html
+PASS hash:CURRENT_BASELINE.json
+PASS hash:VERSION.txt
+PASS hash:app.js
+PASS hash:assets/icon-192.png
+PASS hash:assets/icon-512.png
+PASS hash:b-paigow01.css
+PASS hash:b-paigow01.html
+PASS hash:b-paigow01.js
+PASS hash:config.js
+PASS hash:index.html
+PASS hash:manifest.webmanifest
+PASS hash:paigow-app.css
+PASS hash:paigow-app.js
+PASS hash:release_config.json
+PASS hash:styles.css
+PASS hash:sw.js
+PASS hash:update-guard.js
+TOTAL=44 PASS=44 FAIL=0
+
+V1.2 FIX2 CACHE39 CI PASS

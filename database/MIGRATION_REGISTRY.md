@@ -337,3 +337,10 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 - `database/V1.2_FIX1/202607301540_v1_2_fix1_emergency_disable_paigow.sql`
 - `database/V1.2_FIX1/202607301550_v1_2_fix1_resume_paigow.sql`
 - B-PAIGOW01正式并线；后续SQL从77号追加。
+
+
+## V1.2 FIX2 CACHE39
+
+- `202607301600_v1_2_fix2_cache39_paigow_ui_release.sql`：验证77/78并提升客户端发布门禁。
+- `202607301610_v1_2_fix2_cache39_check.sql`：升级后只读检查。
+- 前端按V26预览重制，不修改牌局概率与资金结算。

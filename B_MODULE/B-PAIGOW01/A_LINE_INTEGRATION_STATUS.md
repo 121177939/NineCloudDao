@@ -1,10 +1,7 @@
-# A线正式并线状态
+# B-PAIGOW01 A线状态
 
-B-PAIGOW01已在V1.2 FIX1 CACHE38完成A线正式并线。
+B-PAIGOW01已在V1.2 FIX2 CACHE39完成V26预览界面正式并线。
 
-正式实现位于：
-- `SQL/72_V1.2_FIX1_九霄灵牌正式并线.sql`
-- 根目录 `b-paigow01.html`、`paigow-app.js`、`paigow-app.css`
-- 根目录启动器 `b-paigow01.js`、`b-paigow01.css`
-
-A线补齐了候选模块原先缺少的服务端安全洗牌、私牌遮罩、抢庄、倍率、组合、阶段推进、整桌单事务结算、请求幂等、责任资金冻结与生产页面RPC接入。原候选文件保留用于来源审计，不作为正式运行入口。
+- 根目录 `b-paigow01.html`、`paigow-app.js`、`paigow-app.css` 为正式真实RPC客户端。
+- `CLIENT_CANDIDATE` 仅作为历史候选资料，不应直接部署。
+- 正式客户端不得包含模拟玩家、模拟余额、浏览器洗牌或本地资金结算。

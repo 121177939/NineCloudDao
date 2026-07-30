@@ -1,15 +1,7 @@
 {
-  "baseline": "V1.2_FIX1_AB23_CACHE38",
-  "sourcePackage": "Jiuxiao_V1.2_FIX1_CACHE38_Full.zip",
-  "release": "V1.2 FIX1 CACHE38",
-  "cacheEpoch": 38,
-  "developmentRule": "只允许从本完整包继续开发；SQL从77号追加。",
-  "protectedAreas": [
-    "原五行克制函数",
-    "天生剑心8%条件加成",
-    "变异灵根互斥触发器",
-    "赌场资金与安全随机函数",
-    "九霄灵牌整桌原子结算与私牌遮罩",
-    "渡劫80%硬上限"
-  ]
+  "baseline": "V1.2_FIX2_AB24_CACHE39",
+  "sourcePackage": "Jiuxiao_V1.2_FIX2_CACHE39_Full.zip",
+  "release": "V1.2 FIX2 CACHE39",
+  "cacheEpoch": 39,
+  "nextSql": 81
 }
