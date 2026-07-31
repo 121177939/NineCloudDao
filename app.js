@@ -960,6 +960,7 @@
     if (!root || !state.details) return;
     root.outerHTML = cavePanelHtml(state.caveSystem || {}, state.details.inventory || [], state.techniqueLibrary || { books: [] });
     bindInventoryTechniqueActions();
+    window.dispatchEvent(new CustomEvent('jiuxiao:cave-rendered'));
   }
 
   async function refreshCultivationEffectsV0154() {
@@ -1116,7 +1117,9 @@
       method: 'POST',
       body: { p_settle_cultivation: true }
     });
-    return Array.isArray(result) ? result[0] || null : result;
+    const normalized = Array.isArray(result) ? result[0] || null : result;
+    window.dispatchEvent(new CustomEvent('jiuxiao:opportunity-settled', { detail: normalized }));
+    return normalized;
   }
 
   async function rpcAckOpportunitySummaryV4(batchId) {
@@ -6690,6 +6693,7 @@
     const fate = state.details?.fate || {};
     root.outerHTML = primordialSpiritPanelHtmlV1(spiritRoot, fate, state.battleSnapshotV1);
     bindPrimordialSpiritPanelV0155();
+    window.dispatchEvent(new CustomEvent('jiuxiao:primordial-rendered'));
   }
 
   async function refreshMyBattleSnapshotV1(force = false) {
