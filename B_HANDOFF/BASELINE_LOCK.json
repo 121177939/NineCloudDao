@@ -1,8 +1,8 @@
 {
   "ownerLine": "A",
-  "formalVersion": "V1.7.2 CACHE48",
-  "developmentLock": "V1.7.2_AB33_CACHE48",
-  "nextVersion": "1.7.3",
+  "formalVersion": "V1.7.3 CACHE49",
+  "developmentLock": "V1.7.3_AB34_CACHE49",
+  "nextVersion": "1.7.4",
   "nextSql": 104,
   "lastIntegratedBModule": "B-EQUIPMENT01",
   "bTaskStatus": "waiting_for_new_requirement",

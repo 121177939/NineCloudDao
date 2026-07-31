@@ -25,6 +25,13 @@
 - 洞府装备权威容量；
 - 词条、开孔、天品和仙品获取。
 
-## V1.7.2补充
+## V1.7.3补充
 
 正式背包容量已由30格调整为36格，并统一使用6×6界面；洞府装备不再使用第二套常驻洞府格。
+
+## V1.7.3补充：洞府版式稳定性
+
+- 禁止把随身装备背包节点插入`caveSystemRoot`或`caveStorageB01`附近；原生洞府每次重绘会替换整个根节点，动态插入会造成界面在两种版式之间闪变。
+- 随身装备背包固定从元神页独立入口打开6×6弹窗。
+- 洞府只允许`renderCaveEquipmentIntoNative()`把`location='cave'`装备填入原生空格，不得创建第二套储物面板。
+- 后续B候选不得恢复`equipmentStorageShellBEquipment01`、`cave.parentNode.insertBefore(...)`或背包/洞府双页签。

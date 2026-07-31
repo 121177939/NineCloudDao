@@ -1,24 +1,25 @@
 {
-  "version": "1.7.2",
-  "releaseLabel": "九霄问道 V1.7.2 CACHE48",
-  "sourceBaseline": "V1.7.1 CACHE47",
-  "minimumDatabaseBaseline": "V1.7.1 CACHE47 / SQL 101",
-  "databaseChange": "EQUIPMENT_STORAGE_6X6_SINGLE_CAVE_GRID_CACHE48",
-  "databaseMigration": "102_V1.7.2_装备背包36格与单洞府界面.sql",
-  "databaseReleaseGate": "102_V1.7.2_装备背包36格与单洞府界面.sql",
-  "databaseFinalCheck": "103_V1.7.2_CACHE48_升级后检查.sql",
+  "version": "1.7.3",
+  "releaseLabel": "九霄问道 V1.7.3 CACHE49",
+  "sourceBaseline": "V1.7.2 CACHE48",
+  "minimumDatabaseBaseline": "V1.7.2 CACHE48 / SQL 103",
+  "databaseChange": "NONE_FRONTEND_ONLY_EQUIPMENT_CAVE_UI_STABILITY_CACHE49",
+  "databaseMigration": null,
+  "databaseReleaseGate": null,
+  "databaseFinalCheck": null,
   "deploymentStatus": "authoritative_lean_github_deployment_package_with_b_handoff",
   "authoritativePackages": {
-    "githubDeployPackage": "Jiuxiao_V1.7.2_CACHE48_GitHub_Deploy.zip",
-    "sqlPackage": "Jiuxiao_V1.7.2_CACHE48_SQL.zip",
-    "handoffPackage": "B_HANDOFF已内置于GitHub部署包（本补丁不另发接管ZIP）",
+    "githubDeployPackage": "Jiuxiao_V1.7.3_CACHE49_GitHub_Deploy.zip",
+    "sqlPackage": "本版本无SQL包",
+    "handoffPackage": "B_HANDOFF已内置于GitHub部署包",
     "historyArchive": "沿用九霄问道_阶段式历史归档_截至V1.7.1_CACHE47_轻量版.zip"
   },
   "notes": [
-    "装备随身背包容量由30格提升为36格，固定使用6×6布局，手机端不再降为5列或4列",
-    "洞府页面只保留原生单一6×6储物格；洞府装备优先嵌入空格，溢出时通过装备匣查看",
-    "移除装备模块的第二套洞府格和背包/洞府双页签，修复洞府出现两版格子的界面错误",
-    "老何牌九继续使用服务端公平随机和既有公开规则；未加入任何隐藏胜率操控"
+    "修复装备模块把随身背包动态插入洞府根节点，导致洞府在两套版式间切换的竞态问题",
+    "洞府页面永久保持原生洞天主景、资源条、单一6×6洞府储物格和原生操作栏",
+    "随身装备背包改为元神页独立入口与6×6弹窗，不再占用或改写洞府版式",
+    "洞府装备仍只嵌入原生洞府空格；溢出装备继续通过装备匣查看",
+    "本版本只修改前端与缓存，不修改数据库、装备数值、牌九或赌场规则"
   ],
   "integratedModules": [
     "B-CAVE01",
@@ -31,18 +32,17 @@
     "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1",
     "B-EQUIPMENT01"
   ],
-  "clientRelease": "V1.7.2_CACHE48",
-  "developmentBaseline": "V1.7.2_AB33_CACHE48",
+  "clientRelease": "V1.7.3_CACHE49",
+  "developmentBaseline": "V1.7.3_AB34_CACHE49",
   "packagePolicy": {
-    "githubDelivery": "只交付GitHub运行文件、Pages工作流、单一构建脚本、部署说明及B_HANDOFF；不携带SQL与历史归档",
-    "sql": "当前版本只交付102至103号增量SQL与执行说明",
-    "handoff": "当前规则、B模块审计、最新SQL、风险与部署索引放入轻量接管资料包",
-    "history": "只追加阶段摘要和索引，不重复携带源码或旧ZIP",
-    "bHandoff": "每个GitHub部署包继续包含B_HANDOFF，且不得进入Pages正式产物"
+    "githubDelivery": "只交付GitHub运行文件、Pages工作流、单一构建脚本、部署说明及B_HANDOFF",
+    "sql": "前端补丁无数据库变更时不生成空SQL包",
+    "handoff": "每个GitHub部署包继续包含B_HANDOFF，且不得进入Pages正式产物",
+    "history": "阶段归档只在需要跨对话或阶段升级时更新"
   },
   "sqlRevision": "V1.7.2_CACHE48",
-  "cacheEpoch": 48,
-  "nextVersion": "1.7.3",
+  "cacheEpoch": 49,
+  "nextVersion": "1.7.4",
   "nextSql": 104,
   "packageRevision": 1
 }
