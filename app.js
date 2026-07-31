@@ -3711,10 +3711,8 @@
     const batchReady = batch?.status === 'ready' || Number(batch?.seconds_remaining || 0) <= 0;
     const sceneBuildings = buildings.slice(0, 6);
     const sceneSlots = [...sceneBuildings, ...Array.from({ length: Math.max(0, 6 - sceneBuildings.length) }, () => null)];
-    const resourceRows = [
-      { code: 'spirit_stone', name: '统一灵石', quantity: Number(system?.spirit_stones || 0), capacity: 0, description: '洞府、功法、坊市与赌坊共用' },
-      ...resources.filter(row => row.code !== 'spirit_stone')
-    ].slice(0, 4);
+    // V1.7.4：洞府资源条只显示洞府专属资源；统一灵石仍保留在洞府储物格与全局余额中，不在此处重复展示。
+    const resourceRows = resources.filter(row => row.code !== 'spirit_stone').slice(0, 4);
     return `
       <div id="caveSystemRoot" class="cave-system-root cave-system-b01">
         <section class="cave-scene-b01" aria-label="幽静洞窟、灵脉石台与仙府经营主景">

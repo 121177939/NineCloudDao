@@ -25,7 +25,7 @@
 - 洞府装备权威容量；
 - 词条、开孔、天品和仙品获取。
 
-## V1.7.3补充
+## V1.7.2补充
 
 正式背包容量已由30格调整为36格，并统一使用6×6界面；洞府装备不再使用第二套常驻洞府格。
 
@@ -35,3 +35,12 @@
 - 随身装备背包固定从元神页独立入口打开6×6弹窗。
 - 洞府只允许`renderCaveEquipmentIntoNative()`把`location='cave'`装备填入原生空格，不得创建第二套储物面板。
 - 后续B候选不得恢复`equipmentStorageShellBEquipment01`、`cave.parentNode.insertBefore(...)`或背包/洞府双页签。
+
+## V1.7.4补充：常驻背包与洞府资源去重
+
+- 随身装备背包固定挂载在`primordialSpiritRootV1`内，使用`equipmentBackpackInlineBEquipment01`常驻显示。
+- 禁止恢复`equipmentBackpackLauncherBEquipment01`、`data-equipment-backpack-modal`、打开按钮、关闭按钮或点击遮罩关闭逻辑。
+- 元神面板重绘后，只允许通过`jiuxiao:primordial-rendered`重新挂载常驻背包。
+- 点击空装备槽只能滚动定位到常驻背包。
+- 洞府顶部资源卡只展示洞府专属资源；统一灵石不得在该资源条重复显示。
+- 统一灵石的全局余额、洞府储物物品格与数据库资金逻辑保持不变。

@@ -1,4 +1,4 @@
-/* B-EQUIPMENT01 formal UI · V1.7.3 CACHE49 */
+/* B-EQUIPMENT01 formal UI · V1.7.4 CACHE50 */
 .equipment-slot-card-bequipment01{--grade:#8f8068;border-color:color-mix(in srgb,var(--grade) 68%,#4c4030)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--grade) 30%,transparent),inset 0 0 20px color-mix(in srgb,var(--grade) 9%,transparent)!important;min-height:108px!important}
 .equipment-slot-card-bequipment01 .equipment-icon-bequipment01{flex:0 0 auto}
 .equipment-copy-bequipment01 strong{font-size:.78rem!important;white-space:nowrap}.equipment-copy-bequipment01 strong em{font-style:normal}.equipment-copy-bequipment01 small{display:block!important;line-height:1.35!important;font-size:.66rem!important}.equipment-copy-bequipment01 i{background:linear-gradient(90deg,var(--grade),transparent)!important}
@@ -19,17 +19,16 @@
 
 .equipment-disabled-bequipment01{margin-bottom:10px;border:1px solid rgba(224,82,82,.42);background:rgba(88,27,23,.28);color:#e8b9ab;border-radius:10px;padding:9px 12px;font-size:.76rem}
 
-/* V1.7.3：洞府只保留原生单一6×6格；装备直接嵌入空格，溢出时进入装备匣。 */
+/* V1.7.4：洞府只保留原生单一6×6格；装备直接嵌入空格，溢出时进入装备匣。 */
 .equipment-cave-slot-bequipment01 .equipment-icon-bequipment01{position:absolute;left:24%;top:10%;width:52%;height:52%;font-size:.8rem}
 .equipment-cave-overflow-bequipment01{width:100%;min-height:34px;border:1px solid rgba(206,182,126,.25);border-top:0;background:rgba(201,167,95,.045);color:#bcae8a;font-size:9px}
 .equipment-cave-box-modal-bequipment01{max-width:680px!important}.equipment-cave-box-grid-bequipment01{max-height:min(62vh,620px);overflow:auto;margin-top:12px}
 @media(max-width:760px){.equipment-cave-slot-bequipment01 .equipment-icon-bequipment01{left:26%;top:8%;width:48%;height:48%;font-size:.58rem}}
 
-/* V1.7.3：随身装备背包与洞府彻底解耦。洞府永远保持原生主景+单一6×6储物格。 */
-.equipment-backpack-launcher-bequipment01{margin:10px 0 0}
-.equipment-backpack-launcher-bequipment01>button{width:100%;min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid rgba(206,182,126,.34);background:linear-gradient(90deg,rgba(91,66,31,.28),rgba(18,16,13,.78));color:#e6d3a3;padding:9px 13px;text-align:left}
-.equipment-backpack-launcher-bequipment01 b,.equipment-backpack-launcher-bequipment01 small{display:block}.equipment-backpack-launcher-bequipment01 b{font-weight:500}.equipment-backpack-launcher-bequipment01 small{margin-top:3px;color:#9f9277;font-size:.68rem}.equipment-backpack-launcher-bequipment01 em{font-style:normal;color:#e4c87c;font-size:.74rem}
-.equipment-backpack-modal-bequipment01{width:min(760px,calc(100vw - 18px))!important;max-width:760px!important;max-height:min(90vh,900px);overflow:auto}
-.equipment-backpack-modal-bequipment01>.equipment-storage-panel-bequipment01{margin-top:12px}
-@media(max-width:520px){.equipment-backpack-launcher-bequipment01{margin-top:6px}.equipment-backpack-launcher-bequipment01>button{min-height:46px;padding:7px 9px}.equipment-backpack-modal-bequipment01{width:calc(100vw - 8px)!important;max-height:94vh;padding:11px!important}}
-#equipmentStorageShellBEquipment01{display:none!important}
+/* V1.7.4：随身装备背包在元神页常驻显示，无打开、关闭或遮罩层。 */
+.equipment-backpack-inline-bequipment01{margin:12px 0 0;border:1px solid rgba(206,182,126,.3);background:linear-gradient(180deg,rgba(32,27,19,.82),rgba(14,13,10,.9));padding:10px}
+.equipment-backpack-inline-bequipment01>.equipment-storage-panel-bequipment01{margin:0}
+#equipmentBackpackLauncherBEquipment01,[data-equipment-backpack-modal],#equipmentStorageShellBEquipment01{display:none!important}
+
+
+@media(max-width:520px){.equipment-backpack-inline-bequipment01{margin-top:8px;padding:5px}}

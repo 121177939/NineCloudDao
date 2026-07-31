@@ -3594,7 +3594,7 @@ button.cave-scene-building-b01.pos-3:hover, button.cave-scene-building-b01.pos-4
 }
 .cave-scene-caption-b01 strong { color: var(--gold-bright); font-size: 16px; font-weight: 500; letter-spacing: .12em; }
 .cave-scene-caption-b01 span { color: var(--paper-muted); font-size: 9px; }
-.cave-resource-strip-b01 { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 7px; }
+.cave-resource-strip-b01 { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; }
 .cave-resource-card-b01 { min-width: 0; padding: 10px; border: 1px solid rgba(206,182,126,.23); background: linear-gradient(145deg,rgba(49,42,30,.72),rgba(15,15,13,.88)); }
 .cave-resource-card-b01 > span { display: block; color: var(--paper-muted); font-size: 9px; }
 .cave-resource-card-b01 > strong { display: block; margin-top: 5px; color: var(--paper); font-size: 13px; font-weight: 500; }

@@ -54,7 +54,7 @@
       btn.classList.add('equipment-slot-card-bequipment01');btn.style.setProperty('--grade',color(item));btn.dataset.equipmentSlot=slot;
       btn.dataset.yuanshenStat=slotMeta[slot][1];btn.dataset.yuanshenDetail=item?`${item.full_name} · ${item.grade_name} · ${item.realm_name} · ${item.main_stat_display} · ${item.socket_display}`:`${slotMeta[slot][1]}槽尚未装备。`;
       btn.innerHTML=slotCardContent(item,slot);
-      if(btn.dataset.equipmentBound!=='1'){btn.dataset.equipmentBound='1';btn.addEventListener('click',ev=>{ev.stopPropagation();const current=state.data?.equipped?.[btn.dataset.equipmentSlot];if(current)openDetail(current);else openBackpack()})}
+      if(btn.dataset.equipmentBound!=='1'){btn.dataset.equipmentBound='1';btn.addEventListener('click',ev=>{ev.stopPropagation();const current=state.data?.equipped?.[btn.dataset.equipmentSlot];if(current)openDetail(current);else focusBackpack()})}
     })
   }
   function sortItems(rows){return [...rows].sort((a,b)=>state.sort==='time'?String(b.acquired_at).localeCompare(String(a.acquired_at)):(Number(b.grade_order)-Number(a.grade_order)||Number(b.major_order)-Number(a.major_order)||String(a.full_name).localeCompare(String(b.full_name),'zh-CN')))}
@@ -86,26 +86,27 @@
   }
   function bindBackpackPanel(root){
     if(!root)return;
-    root.querySelectorAll('[data-eq-filter]').forEach(b=>{b.classList.toggle('active',b.dataset.eqFilter===state.filter);b.onclick=()=>{state.filter=b.dataset.eqFilter;openBackpack()}});
-    root.querySelector('[data-eq-sort]')?.addEventListener('click',()=>{state.sort=state.sort==='grade'?'time':'grade';openBackpack()});
+    root.querySelectorAll('[data-eq-filter]').forEach(b=>{b.classList.toggle('active',b.dataset.eqFilter===state.filter);b.onclick=()=>{state.filter=b.dataset.eqFilter;renderBackpackInline()}});
+    root.querySelector('[data-eq-sort]')?.addEventListener('click',()=>{state.sort=state.sort==='grade'?'time':'grade';renderBackpackInline()});
     root.querySelector('[data-batch-decompose]')?.addEventListener('click',openBatchDecompose);
-    root.querySelectorAll('[data-equipment-item]').forEach(b=>b.onclick=()=>{const item=allItems().find(x=>String(x.id)===b.dataset.equipmentItem);if(item){closeModal();openDetail(item)}});
+    root.querySelectorAll('[data-equipment-item]').forEach(b=>b.onclick=()=>{const item=allItems().find(x=>String(x.id)===b.dataset.equipmentItem);if(item)openDetail(item)});
     root.querySelector('[data-claim-pending]')?.addEventListener('click',()=>action('claim_pending_equipment_bequipment01',{},'待领取装备已按空位收入背包。'));
     root.querySelector('[data-equipment-material]')?.addEventListener('click',e=>openMaterial(e.currentTarget.dataset.equipmentMaterial));
   }
-  function openBackpack(){
-    const pending=itemList('pending').length;
-    modalHost().innerHTML=`<div class="modal-backdrop equipment-modal-backdrop-bequipment01" data-equipment-backpack-modal><section class="modal equipment-modal-bequipment01 equipment-backpack-modal-bequipment01" role="dialog" aria-modal="true" aria-labelledby="equipmentBackpackTitleBEquipment01"><button class="modal-close-button" data-eq-close>×</button><header><span class="equipment-icon-bequipment01">囊</span><div><span>独立装备界面 · 不改变洞府版式</span><h3 id="equipmentBackpackTitleBEquipment01">随身装备背包</h3></div></header>${state.disabled?'<div class="equipment-disabled-bequipment01">装备系统当前已停用：装备数据只读，写操作已关闭。</div>':''}${pending?`<div class="equipment-pending-bequipment01"><span>待领取装备 ${pending} 件</span><button type="button" data-claim-pending>领取到背包</button></div>`:''}${state.available?storagePanel('backpack'):'<div class="equipment-unavailable-bequipment01">装备数据库尚未完成升级。</div>'}</section></div>`;
-    const root=modalHost();root.querySelector('[data-eq-close]').onclick=closeModal;root.querySelector('.equipment-modal-backdrop-bequipment01').onclick=e=>{if(e.target===e.currentTarget)closeModal()};bindBackpackPanel(root)
-  }
-  function renderBackpackLauncher(){
+  function renderBackpackInline(){
     const root=document.getElementById('primordialSpiritRootV1');if(!root)return;
-    const cap=Math.max(36,Number(state.data?.rules?.backpack_capacity||36));const used=itemList('backpack').length+(Number(state.data?.materials?.essence_backpack||0)>0?1:0);const pending=itemList('pending').length;
-    let launcher=root.querySelector('#equipmentBackpackLauncherBEquipment01');
-    if(!launcher){launcher=document.createElement('div');launcher.id='equipmentBackpackLauncherBEquipment01';launcher.className='equipment-backpack-launcher-bequipment01';root.appendChild(launcher)}
-    launcher.innerHTML=`<button type="button" data-open-equipment-backpack><span><b>装备背包</b><small>固定6×6 · ${used}/${cap}${pending?` · 待领取${pending}`:''}</small></span><em>打开</em></button>`;
-    launcher.querySelector('[data-open-equipment-backpack]').onclick=openBackpack
+    root.querySelector('#equipmentBackpackLauncherBEquipment01')?.remove();
+    let host=root.querySelector('#equipmentBackpackInlineBEquipment01');
+    if(!host){host=document.createElement('section');host.id='equipmentBackpackInlineBEquipment01';host.className='equipment-backpack-inline-bequipment01';root.appendChild(host)}
+    const pending=itemList('pending').length;
+    host.innerHTML=`${state.disabled?'<div class="equipment-disabled-bequipment01">装备系统当前已停用：装备数据只读，写操作已关闭。</div>':''}${pending?`<div class="equipment-pending-bequipment01"><span>待领取装备 ${pending} 件</span><button type="button" data-claim-pending>领取到背包</button></div>`:''}${state.available?storagePanel('backpack'):'<div class="equipment-unavailable-bequipment01">装备数据库尚未完成升级。</div>'}`;
+    bindBackpackPanel(host)
   }
+  function focusBackpack(){
+    renderBackpackInline();
+    document.getElementById('equipmentBackpackInlineBEquipment01')?.scrollIntoView({behavior:'smooth',block:'start'})
+  }
+  function openBackpack(){focusBackpack()}
   function compare(item){const current=state.data?.equipped?.[item.slot_code];if(!current)return`当前${slotMeta[item.slot_code][1]}槽为空，穿戴后增加 ${item.main_stat_display}。`;const diff=Number(item.main_stat_value)-Number(current.main_stat_value);return`当前：${current.main_stat_display}；新装备：${item.main_stat_display}；变化：${diff>=0?'+':''}${item.slot_code==='ring'?diff.toFixed(1)+'%':Math.round(diff)}。`}
   function modalHost(){let root=document.getElementById('equipmentModalRootBEquipment01');if(!root){root=document.createElement('div');root.id='equipmentModalRootBEquipment01';document.body.appendChild(root)}return root}
   function closeModal(){modalHost().innerHTML=''}
@@ -145,7 +146,7 @@
     update();
   }
   function openMaterial(loc){const qty=Number(state.data?.materials?.[loc==='backpack'?'essence_backpack':'essence_cave']||0);modalHost().innerHTML=`<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01"><button class="modal-close-button" data-eq-close>×</button><header><span class="equipment-icon-bequipment01">粹</span><div><span>装备分解材料</span><h3>器源精粹 ×${qty.toLocaleString()}</h3></div></header><p>从废弃法器与防具中提炼出的器物本源，预留用于后续装备开孔。</p><div class="equipment-modal-actions-bequipment01"><button class="primary-btn" data-move-material>${loc==='backpack'?'存入洞府':'取回背包'}</button></div></section></div>`;const root=modalHost();root.querySelector('[data-eq-close]').onclick=closeModal;root.querySelector('[data-move-material]').onclick=()=>{const raw=prompt(`输入转移数量（1—${qty}）`,String(qty));const n=Math.floor(Number(raw));if(!Number.isFinite(n)||n<1||n>qty)return;closeModal();action('move_equipment_essence_bequipment01',{p_target_location:loc==='backpack'?'cave':'backpack',p_quantity:n},'器源精粹已转移。')}}
-  function renderAll(){document.getElementById('equipmentStorageShellBEquipment01')?.remove();renderSpiritSlots();renderBackpackLauncher();renderCaveEquipmentIntoNative();if(document.querySelector('[data-equipment-backpack-modal]'))openBackpack()}
+  function renderAll(){document.getElementById('equipmentStorageShellBEquipment01')?.remove();document.getElementById('equipmentBackpackLauncherBEquipment01')?.remove();renderSpiritSlots();renderBackpackInline();renderCaveEquipmentIntoNative()}
   function hasEquipmentSurface(){return Boolean(document.getElementById('caveStorageB01')||document.getElementById('primordialSpiritRootV1'))}
   function refreshOrRender({force=false}={}){
     if(state.data){renderAll();if(force||Date.now()-state.lastFetch>60000)refresh(force);return}
@@ -169,5 +170,5 @@
   document.addEventListener('DOMContentLoaded',()=>refreshOrRender({force:true}));
   window.addEventListener('focus',()=>{if(hasEquipmentSurface()&&Date.now()-state.lastFetch>60000)refresh(true)});
   window.addEventListener('pageshow',event=>{if(event.persisted)refreshOrRender({force:true})});
-  window.B_EQUIPMENT01={refresh,render:renderAll,openBackpack,version:'1.7.3'};
+  window.B_EQUIPMENT01={refresh,render:renderAll,openBackpack,version:'1.7.4'};
 })();

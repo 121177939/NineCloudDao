@@ -1,24 +1,25 @@
 {
-  "version": "1.7.3",
-  "releaseLabel": "九霄问道 V1.7.3 CACHE49",
-  "sourceBaseline": "V1.7.2 CACHE48",
+  "version": "1.7.4",
+  "releaseLabel": "九霄问道 V1.7.4 CACHE50",
+  "sourceBaseline": "V1.7.3 CACHE49",
   "minimumDatabaseBaseline": "V1.7.2 CACHE48 / SQL 103",
-  "databaseChange": "NONE_FRONTEND_ONLY_EQUIPMENT_CAVE_UI_STABILITY_CACHE49",
+  "databaseChange": "NONE_FRONTEND_ONLY_PERSISTENT_EQUIPMENT_BACKPACK_AND_CAVE_RESOURCE_DEDUP_CACHE50",
   "databaseMigration": null,
   "databaseReleaseGate": null,
   "databaseFinalCheck": null,
   "deploymentStatus": "authoritative_lean_github_deployment_package_with_b_handoff",
   "authoritativePackages": {
-    "githubDeployPackage": "Jiuxiao_V1.7.3_CACHE49_GitHub_Deploy.zip",
+    "githubDeployPackage": "Jiuxiao_V1.7.4_CACHE50_GitHub_Deploy.zip",
     "sqlPackage": "本版本无SQL包",
     "handoffPackage": "B_HANDOFF已内置于GitHub部署包",
     "historyArchive": "沿用九霄问道_阶段式历史归档_截至V1.7.1_CACHE47_轻量版.zip"
   },
   "notes": [
-    "修复装备模块把随身背包动态插入洞府根节点，导致洞府在两套版式间切换的竞态问题",
-    "洞府页面永久保持原生洞天主景、资源条、单一6×6洞府储物格和原生操作栏",
-    "随身装备背包改为元神页独立入口与6×6弹窗，不再占用或改写洞府版式",
-    "洞府装备仍只嵌入原生洞府空格；溢出装备继续通过装备匣查看",
+    "随身装备背包固定常驻在元神页面，保持6×6，不再提供打开、关闭、弹窗或遮罩入口",
+    "点击空装备槽只滚动定位到常驻背包；装备详情、批量分解等操作弹窗仍可正常关闭",
+    "洞府页面继续保持原生单一6×6储物格，不恢复第二套装备背包",
+    "洞府顶部资源条不再重复显示统一灵石，只显示灵蕴、灵草、灵矿等洞府专属资源",
+    "统一灵石仍保留在全局余额与洞府储物物品格中，资金数据和数据库规则未修改",
     "本版本只修改前端与缓存，不修改数据库、装备数值、牌九或赌场规则"
   ],
   "integratedModules": [
@@ -32,8 +33,8 @@
     "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1",
     "B-EQUIPMENT01"
   ],
-  "clientRelease": "V1.7.3_CACHE49",
-  "developmentBaseline": "V1.7.3_AB34_CACHE49",
+  "clientRelease": "V1.7.4_CACHE50",
+  "developmentBaseline": "V1.7.4_AB35_CACHE50",
   "packagePolicy": {
     "githubDelivery": "只交付GitHub运行文件、Pages工作流、单一构建脚本、部署说明及B_HANDOFF",
     "sql": "前端补丁无数据库变更时不生成空SQL包",
@@ -41,8 +42,8 @@
     "history": "阶段归档只在需要跨对话或阶段升级时更新"
   },
   "sqlRevision": "V1.7.2_CACHE48",
-  "cacheEpoch": 49,
-  "nextVersion": "1.7.4",
+  "cacheEpoch": 50,
+  "nextVersion": "1.7.5",
   "nextSql": 104,
   "packageRevision": 1
 }
