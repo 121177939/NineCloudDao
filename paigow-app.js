@@ -452,7 +452,12 @@
     }
 
     if (round?.phase === 'multiplier' && selfPlayer?.active && !selfPlayer.action_confirmed && !selfPlayer.is_dealer) {
-      return `<div class="phase-title">请选择倍率 ${countdown}</div><div class="mult-grid"><button class="multiplier-btn" data-multiplier="10" type="button">10倍</button><button class="multiplier-btn" data-multiplier="50" type="button">50倍</button><button class="multiplier-btn" data-multiplier="100" type="button">100倍</button></div><div class="ready-note">超时默认10倍。赌注与手续费合计不得超过开局余额30%。</div>`;
+      const blindLaohe = room.duel_type === 'laohe';
+      const title = blindLaohe ? `老何庄盲选倍率 ${countdown}` : `请选择倍率 ${countdown}`;
+      const note = blindLaohe
+        ? `${room.game_mode === 'small' ? '小牌九结算前不显示任何自己的牌。' : '大牌九选倍前不显示两张预发明牌，选倍完成进入组牌阶段后才显示本人四张牌。'}超时默认10倍。赌注与手续费合计不得超过开局余额30%。`
+        : '超时默认10倍。赌注与手续费合计不得超过开局余额30%。';
+      return `<div class="phase-title">${title}</div><div class="mult-grid"><button class="multiplier-btn" data-multiplier="10" type="button">10倍</button><button class="multiplier-btn" data-multiplier="50" type="button">50倍</button><button class="multiplier-btn" data-multiplier="100" type="button">100倍</button></div><div class="ready-note">${note}</div>`;
     }
 
     if (round?.phase === 'arrange' && selfPlayer?.active && !selfPlayer.action_confirmed) {
@@ -491,7 +496,7 @@
       ? Number(selfPlayer.net_amount || 0) === 0
         ? `<div class="self-card-note">本局平局：本金与手续费已退还</div>`
         : `<div class="self-card-note ${selfPlayer.net_amount > 0 ? 'positive' : 'negative'}">本局净胜负：${selfPlayer.net_amount > 0 ? '+' : ''}${fmt(selfPlayer.net_amount)}</div>`
-      : `<div class="self-card-note">${selfPlayer?.public_value?.label ? esc(selfPlayer.public_value.label) : arranging ? '点选两张作为较弱头牌' : cards.length ? '你的可见牌面' : '牌面尚未发放'}</div>`;
+      : `<div class="self-card-note">${selfPlayer?.public_value?.label ? esc(selfPlayer.public_value.label) : arranging ? '点选两张作为较弱头牌' : data.room.duel_type === 'laohe' && round?.phase === 'multiplier' ? (data.room.game_mode === 'small' ? '老何庄盲局：结算前不显示自己的任何牌' : '老何庄盲局：选倍前不显示两张预发明牌') : cards.length ? '你的可见牌面' : '牌面尚未发放'}</div>`;
     return `<section class="self-zone ${data.room.game_mode === 'big' ? 'big-mode-zone' : ''}">
       ${selfPlayer?.is_dealer ? '<span class="banker-corner">庄</span>' : ''}
       <div class="self-grid"><div class="self-id" data-fx-character="${esc(selfPlayer?.character_id || data.self_character_id || '')}"><div class="avatar">${esc(initials(name))}</div><strong>${esc(name)}</strong><small>${selfMember?.role === 'player' ? `${selfMember.seat_no}号席${selfMember.is_owner ? ' · 房主' : ''}` : '观战身份'}</small><span class="self-stake">${selfPlayer?.stake_amount ? `已押 ${fmt(selfPlayer.stake_amount)} ${currencyLabel(data.room.stake_type)}` : '尚未下注'}</span></div>
@@ -624,10 +629,10 @@
       : playerSeatHtml(entry, index, data)).join('');
     const deadline = deadlineMs(round);
     return `<section id="gameView">
-      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.6 CACHE44</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
+      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.6 FIX1 CACHE45</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
       ${errorHtml()}
       <main class="app-shell"><section class="room-strip"><strong>${esc(room.room_name)}</strong><div class="mode-switch room-locked"><button class="mode-btn ${room.game_mode === 'small' ? 'active' : ''}" disabled>小牌九</button><button class="mode-btn ${room.game_mode === 'big' ? 'active' : ''}" disabled>大牌九</button></div><div class="room-quick-actions"><button type="button" data-refresh-room>刷新状态</button></div><div class="room-meta"><span>底注 <b>${fmt(room.base_stake)}${currencyLabel(room.stake_type)}</b></span><span>席位 <b>${members.filter(m => m.role === 'player').length}/${roomCapacity(room)}</b></span><span>局数 <b>${round?.round_no || 0}</b></span><span>阶段 <b>${phaseLabel(round?.phase)}</b></span>${deadline ? `<span>倒计时 <b data-deadline="${deadline}">--</b></span>` : ''}<span class="room-locked-note">${duelLabel(room)}</span></div></section>
-      <div class="layout"><section class="board-frame" aria-label="九霄牌九桌"><div class="felt"><div id="opponentSeats">${opponentsHtml}</div>${selfZoneHtml(data)}</div></section><aside class="side-stack"><section class="panel"><div class="panel-head"><h3>本局概览</h3><span>${gameLabel(room)}</span></div><div class="panel-body">${metricsHtml(data)}</div></section><section class="panel"><div class="panel-head"><h3>开牌排名</h3><span>按服务端结果</span></div><div class="panel-body"><div class="rank-list">${rankHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>牌局动态</h3><span>当前状态</span></div><div class="panel-body"><div class="log-list">${logHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>玩法说明</h3><span>${duelLabel(room)}</span></div><div class="panel-body rule-note"><b>老何庄：</b>100∶100等额结算，直接使用现有赌场资金。<br><b>玩家庄：</b>选庄时冻结庄家全部可用灵石；不足赔付时按所有赢家名义利润比例分配，系统不兜底。<br><b>平局：</b>大牌九一胜一负为平局，本金与2.5%手续费全退；单手同牌及双方0点均判庄家胜。<br><b>倍率：</b>10、50、100倍；赌注与手续费合计不得超过开局余额30%。<br><b>房间：</b>首局5分钟未开始自动关闭；入座需至少持有底注10倍灵石，结算后低于门槛自动转观战。<br><b>准备：</b>入座后10秒内未准备自动离桌；全员准备后2秒自动开局。<br><b>小牌九：</b>5秒选倍，首张明牌仅牌主本人可见。<br><b>安全：</b>洗牌、私牌遮罩、阶段截止与资金结算均由数据库完成。</div></section></aside></div>
+      <div class="layout"><section class="board-frame" aria-label="九霄牌九桌"><div class="felt"><div id="opponentSeats">${opponentsHtml}</div>${selfZoneHtml(data)}</div></section><aside class="side-stack"><section class="panel"><div class="panel-head"><h3>本局概览</h3><span>${gameLabel(room)}</span></div><div class="panel-body">${metricsHtml(data)}</div></section><section class="panel"><div class="panel-head"><h3>开牌排名</h3><span>按服务端结果</span></div><div class="panel-body"><div class="rank-list">${rankHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>牌局动态</h3><span>当前状态</span></div><div class="panel-body"><div class="log-list">${logHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>玩法说明</h3><span>${duelLabel(room)}</span></div><div class="panel-body rule-note"><b>老何庄：</b>100∶100等额结算，直接使用现有赌场资金；大小牌九均采用盲牌下注，小牌九结算前不显示玩家牌面，大牌九选倍后进入组牌阶段才显示本人四张牌，老何牌面只在公开阶段显示。<br><b>玩家庄：</b>选庄时冻结庄家全部可用灵石；不足赔付时按所有赢家名义利润比例分配，系统不兜底。<br><b>平局：</b>大牌九一胜一负为平局，本金与2.5%手续费全退；单手同牌及双方0点均判庄家胜。<br><b>倍率：</b>10、50、100倍；赌注与手续费合计不得超过开局余额30%。<br><b>房间：</b>首局5分钟未开始自动关闭；入座需至少持有底注10倍灵石，结算后低于门槛自动转观战。<br><b>准备：</b>入座后10秒内未准备自动离桌；全员准备后2秒自动开局。<br><b>小牌九：</b>5秒选倍；玩家牌局首张明牌仅牌主本人可见，老何庄房则结算前完全不显示自己的牌。<br><b>安全：</b>洗牌、私牌遮罩、阶段截止与资金结算均由数据库完成。</div></section></aside></div>
       <div class="game-footer-actions"><button class="secondary-btn" type="button" data-refresh-room>刷新状态</button>${data.self_member && room.status === 'waiting' ? '<button class="secondary-btn danger-text" type="button" data-leave>离开房间</button>' : ''}</div></main>
     </section>`;
   }
@@ -747,7 +752,7 @@
     const available = Number(state.lobby?.balances?.spirit_stone || 0);
     const fundsNote = `<br><b>创建并入座要求：</b>至少${fmt(required)}灵石；当前${fmt(available)}灵石。`;
     if (rule) rule.innerHTML = (duel === 'laohe'
-      ? '<b>老何固定庄：</b>玩家与老何按100∶100等额结算，输赢直接进入现有赌场资金池。'
+      ? '<b>老何固定庄：</b>玩家与老何按100∶100等额结算，输赢直接进入现有赌场资金池；大小牌九均为盲牌下注，选倍前不显示自己的预发牌。'
       : '<b>玩家牌局：</b>入座需底注10倍灵石；玩家庄资金不足时按赢家名义利润比例赔付；大牌九平局退还本金和手续费。') + fundsNote;
     const submit = form.querySelector('.create-submit');
     if (submit) {

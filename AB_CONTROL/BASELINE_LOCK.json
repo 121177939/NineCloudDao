@@ -1,9 +1,9 @@
 {
-  "baseline": "V1.6_AB29_CACHE44",
-  "release": "V1.6 CACHE44",
-  "sourceBaseline": "V1.5_AB28_CACHE43",
-  "cacheEpoch": 44,
-  "databaseSqlRange": "71-93",
+  "baseline": "V1.6_FIX1_AB30_CACHE45",
+  "release": "V1.6 FIX1 CACHE45",
+  "sourceBaseline": "V1.6_AB29_CACHE44",
+  "cacheEpoch": 45,
+  "databaseSqlRange": "71-96",
   "protectedRules": [
     "渡劫最终成功率不超过80%",
     "历史正式SQL只追加不回写",
@@ -29,6 +29,7 @@
     "牌九Broadcast不得包含未公开骨牌、私牌、牌堆、Service Role密钥或客户端可伪造资金结果",
     "牌九权威资金、洗牌、发牌、判定与结算必须继续在PostgreSQL事务RPC内完成",
     "关闭牌九必须销毁Realtime、定时器与iframe，后台不得继续访问牌九服务",
-    "牌九大厅与房间快照函数必须保持纯读取，阶段推进只能由全局调度器或显式兜底RPC执行"
+    "牌九大厅与房间快照函数必须保持纯读取，阶段推进只能由全局调度器或显式兜底RPC执行",
+    "老何固定庄小牌九结算前不得向玩家返回任何牌面；大牌九选倍前不得返回两张预发明牌"
   ]
 }

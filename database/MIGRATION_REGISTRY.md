@@ -368,3 +368,8 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 - `database/V1.6/202607302220_v1_6_cache44_release.sql`：V1.6 CACHE44正式发布门禁。
 - `database/V1.6/202607302230_v1_6_cache44_check.sql`：V1.6 CACHE44只读升级后检查。
 
+
+## V1.6 FIX1 CACHE45
+- 94：老何庄大小牌九盲牌
+- 95：CACHE45发布门禁
+- 96：升级后检查
