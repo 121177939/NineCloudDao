@@ -1,10 +1,10 @@
-九霄问道 V1.5 CACHE43 完整部署包
+九霄问道 V1.6 CACHE44 完整部署包
 
-1. 数据库已到87号：执行SQL/88、89、90。
-2. 90号全部ok=true。
-3. 解压完整包，覆盖GitHub仓库根目录（包含.github）。
-4. 推送main，Pages来源为GitHub Actions。
+数据库：90号之后执行91、92、93。
+前端：完整包覆盖仓库根目录并推送main。
+Pages来源：GitHub Actions。
+客户端构建：v1-6-cache44
+开发基线：V1.6_AB29_CACHE44
+下一正式SQL：94
 
-客户端构建：v1-5-cache43
-开发基线：V1.5_AB28_CACHE43
-下一正式SQL：91
+生产环境必须确认pg_cron作业jiuxiao-paigow-v16-tick处于active状态。

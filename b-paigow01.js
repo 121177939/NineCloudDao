@@ -28,7 +28,7 @@
     const frame = overlay.querySelector('.b-paigow01-frame');
     lastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     if (frame && (frame.src === 'about:blank' || !frame.src.includes('b-paigow01.html'))) {
-      const params = new URLSearchParams({ embed: '1', source: String(context.source || 'casino'), v: 'v1-5-cache43' });
+      const params = new URLSearchParams({ embed: '1', source: String(context.source || 'casino'), v: 'v1-6-cache44' });
       frame.src = `b-paigow01.html?${params.toString()}`;
     }
     overlay.hidden = false;
@@ -39,6 +39,9 @@
   function close() {
     const overlay = document.getElementById(OVERLAY_ID);
     if (!overlay) return;
+    const frame = overlay.querySelector('.b-paigow01-frame');
+    try { frame?.contentWindow?.postMessage({ type: 'b-paigow01-pause' }, location.origin); } catch {}
+    if (frame) frame.src = 'about:blank';
     overlay.hidden = true;
     document.body.classList.remove('b-paigow01-open');
     if (lastFocus?.isConnected) lastFocus.focus();

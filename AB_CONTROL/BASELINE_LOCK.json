@@ -1,9 +1,9 @@
 {
-  "baseline": "V1.5_AB28_CACHE43",
-  "release": "V1.5 CACHE43",
-  "sourceBaseline": "V1.4_AB27_CACHE42",
-  "cacheEpoch": 43,
-  "databaseSqlRange": "71-90",
+  "baseline": "V1.6_AB29_CACHE44",
+  "release": "V1.6 CACHE44",
+  "sourceBaseline": "V1.5_AB28_CACHE43",
+  "cacheEpoch": 44,
+  "databaseSqlRange": "71-93",
   "protectedRules": [
     "渡劫最终成功率不超过80%",
     "历史正式SQL只追加不回写",
@@ -24,6 +24,11 @@
     "玩家庄赔付不足必须按所有赢家名义利润同比例结算且系统零兜底",
     "牌九单手同分、同牌和双方0点必须判庄家胜",
     "大牌九一胜一负为平局且2.5%手续费全退",
-    "九霄牌九修为赌局关闭时前端与服务端均不得新建修为房"
+    "九霄牌九修为赌局关闭时前端与服务端均不得新建修为房",
+    "牌九房间不得恢复每名玩家1秒轮询或大厅5秒轮询",
+    "牌九Broadcast不得包含未公开骨牌、私牌、牌堆、Service Role密钥或客户端可伪造资金结果",
+    "牌九权威资金、洗牌、发牌、判定与结算必须继续在PostgreSQL事务RPC内完成",
+    "关闭牌九必须销毁Realtime、定时器与iframe，后台不得继续访问牌九服务",
+    "牌九大厅与房间快照函数必须保持纯读取，阶段推进只能由全局调度器或显式兜底RPC执行"
   ]
 }

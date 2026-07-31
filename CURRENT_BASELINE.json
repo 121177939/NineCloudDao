@@ -1,24 +1,24 @@
 {
-  "version": "1.5.0",
-  "releaseLabel": "九霄问道 V1.5 CACHE43",
-  "sourceBaseline": "V1.4 CACHE42",
-  "minimumDatabaseBaseline": "V1.4 CACHE42",
-  "databaseChange": "V1_5_PAIGOW_BANKROLL_ENTRY_TIE_RULES_CACHE43",
-  "databaseMigration": "database/V1.5/202607301930_v1_5_paigow_bankroll_rules.sql",
-  "databaseReleaseGate": "database/V1.5/202607301940_v1_5_cache43_release.sql",
-  "databaseFinalCheck": "database/V1.5/202607301950_v1_5_cache43_check.sql",
+  "version": "1.6.0",
+  "releaseLabel": "九霄问道 V1.6 CACHE44",
+  "sourceBaseline": "V1.5 CACHE43",
+  "minimumDatabaseBaseline": "V1.5 CACHE43",
+  "databaseChange": "V1_6_PAIGOW_REALTIME_EVENT_DRIVEN_CACHE44",
+  "databaseMigration": "database/V1.6/202607302210_v1_6_paigow_event_driven.sql",
+  "databaseReleaseGate": "database/V1.6/202607302220_v1_6_cache44_release.sql",
+  "databaseFinalCheck": "database/V1.6/202607302230_v1_6_cache44_check.sql",
   "deploymentStatus": "authoritative_complete_deployment_package",
   "authoritativePackages": {
-    "completePackage": "Jiuxiao_V1.5_CACHE43_Full.zip",
-    "sqlPackage": "Jiuxiao_V1.5_CACHE43_SQL.zip"
+    "completePackage": "Jiuxiao_V1.6_CACHE44_Full.zip",
+    "sqlPackage": "Jiuxiao_V1.6_CACHE44_SQL.zip"
   },
   "notes": [
-    "牌九房第一局5分钟内未开始自动关闭并释放房名",
-    "入座需至少持有底注10倍灵石；不足只允许观战，结算后不足自动起身",
-    "玩家庄冻结选庄时全部可用灵石，赔付不足时按赢家名义利润比例分配，系统零兜底",
-    "单手没有和局：同分、同牌及双方0点均判庄家胜",
-    "大牌九一胜一负为平局，返还本金与2.5%手续费",
-    "九霄牌九暂时只开放灵石，修为赌局入口与服务端创建均关闭"
+    "牌九由每名玩家1秒轮询改为数据库事件＋Supabase Realtime私有Broadcast",
+    "大厅与房间快照严格只读，阶段超时由单一数据库Cron统一推进",
+    "普通成员与下注状态变化通过无私牌增量事件局部更新，阶段变化才读取权威快照",
+    "关闭牌九时销毁Realtime、定时器和iframe，避免小游戏在主游戏后台继续耗能",
+    "所有资金、洗牌、私牌和结算仍由PostgreSQL事务RPC权威处理",
+    "V1.5牌九资金门槛、玩家庄比例赔付、无单手和局、大牌九平局退费与修为关闭规则全部保留"
   ],
   "integratedModules": [
     "B-CAVE01",
@@ -31,16 +31,17 @@
     "B-PAIGOW01-STABLE-UI",
     "PAGES-CI-PORTABLE-V13",
     "B-PAIGOW01-AUTO-READY-PRIVATE-CARD-V14",
-    "B-PAIGOW01-BANKROLL-RULES-V15"
+    "B-PAIGOW01-BANKROLL-RULES-V15",
+    "B-PAIGOW01-REALTIME-ISOLATION-V16"
   ],
-  "clientHotfix": "V1.5_CACHE43",
-  "developmentBaseline": "V1.5_AB28_CACHE43",
+  "clientHotfix": "V1.6_CACHE44",
+  "developmentBaseline": "V1.6_AB29_CACHE44",
   "packagePolicy": {
     "delivery": "完整部署包与独立SQL包",
     "deployment": "完整包解压后覆盖GitHub仓库根目录",
-    "database": "已完成CACHE42时执行88—90；未完成时先按历史顺序执行至87"
+    "database": "已完成CACHE43时执行91—93；未完成时先按历史顺序执行至90"
   },
-  "handoffUpdatedAt": "2026-07-30T18:30:00Z",
-  "sqlRevision": "V1.5_CACHE43",
-  "cacheEpoch": 43
+  "handoffUpdatedAt": "2026-07-31T06:30:00Z",
+  "sqlRevision": "V1.6_CACHE44",
+  "cacheEpoch": 44
 }

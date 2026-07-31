@@ -361,3 +361,10 @@ V0.12.0初稿 `202607260800_v0120_market_casino.sql` 存在严重权限与规则
 
 - `202607301830_v1_2_fix3_cache40_paigow_stable_render_release.sql`：验证既有牌九RPC并发布无闪烁轮询、自定义底注客户端CACHE40。
 - `202607301840_v1_2_fix3_cache40_check.sql`：升级后只读检查；不修改牌型、概率或资金规则。
+
+## V1.6 CACHE44
+
+- `database/V1.6/202607302210_v1_6_paigow_event_driven.sql`：牌九事件版本、私有Broadcast安全增量、纯读取快照、数据库统一推进与主游戏iframe资源隔离。
+- `database/V1.6/202607302220_v1_6_cache44_release.sql`：V1.6 CACHE44正式发布门禁。
+- `database/V1.6/202607302230_v1_6_cache44_check.sql`：V1.6 CACHE44只读升级后检查。
+

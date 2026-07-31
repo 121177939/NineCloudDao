@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import sys,re
+root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve();checks=[]
+def ck(name,value): checks.append((name,bool(value)))
+def read(rel): return (root/rel).read_text('utf-8')
+main=read('SQL/91_V1.6_九霄牌九事件驱动与主游戏隔离.sql')
+gate=read('SQL/92_V1.6_CACHE44_正式发布门禁.sql')
+post=read('SQL/93_V1.6_CACHE44_升级后检查.sql')
+dbmain=read('database/V1.6/202607302210_v1_6_paigow_event_driven.sql')
+ck('sql-db-copy-identical',main==dbmain)
+ck('transaction-main',main.count('\nbegin;')>=1 and main.rstrip().endswith('commit;'))
+ck('transaction-gate','\nbegin;' in gate and gate.rstrip().endswith('commit;'))
+ck('post-read-only',post.lstrip().startswith('--') and not re.search(r'\b(insert|update|delete|alter|create|drop)\b',post.split('\n',1)[1],re.I))
+ck('balanced-dollar',all(x.count('$$')%2==0 for x in [main,gate,post]))
+ck('balanced-job-dollar',main.count('$job$')==2)
+ck('event-version-table','paigow_room_event_versions_bpaigow01' in main and 'state_version bigint' in main)
+ck('database-broadcast',all(x in main for x in ['realtime.send','paigow:room:','paigow:lobby','snapshot_required','p_delta jsonb']))
+ck('no-private-card-in-event-function',all(x not in main[main.index('create or replace function public.paigow_emit_state_event_payload'):main.index('create or replace function public.paigow_emit_state_event_v16')] for x in ['shuffled_deck','laohe_cards','round_secrets']))
+ck('safe-delta-triggers',all(x in main for x in ["'kind','member'","'kind','round_player'","tg_op<>'UPDATE'","false\n  );"]))
+ck('pure-lobby-source',all(x not in main[main.index('create or replace function public.get_paigow_lobby'):main.index('create or replace function public.get_paigow_room_state')] for x in ['paigow_cleanup_rooms_bpaigow01','paigow_prepare_waiting_room_bpaigow01']))
+room_slice=main[main.index('create or replace function public.get_paigow_room_state'):main.index('-- 自动开局内部函数')]
+ck('pure-room-source',all(x not in room_slice for x in ['paigow_prepare_waiting_room_bpaigow01','paigow_advance_room_internal']))
+ck('private-cards-retained',"v_visible:='{}'::text[]" in room_slice and 'rp.character_id=v_character' in room_slice)
+ck('global-tick',all(x in main for x in ['paigow_tick_due_rooms_bpaigow01','pg_try_advisory_xact_lock','limit 16',"'jiuxiao-paigow-v16-tick'","'1 second'"]))
+ck('one-cron-schedule',main.count("'jiuxiao-paigow-v16-tick'")>=2 and main.count('cron.schedule(')==1)
+ck('client-cannot-send','drop policy if exists paigow_v16_authenticated_send' in main and 'create policy paigow_v16_authenticated_send' not in main)
+ck('internal-revoked',all(x in main for x in ['paigow_emit_state_event_payload_v16_bpaigow01(uuid,text,jsonb,boolean)','paigow_start_round_internal_v16_bpaigow01(uuid)','paigow_advance_room_internal_v16_bpaigow01(uuid)']))
+ck('delete-safe',all(x in main for x in ['if not exists(select 1 from public.paigow_rooms_bpaigow01 where id=p_room_id)','V1_6_PAIGOW_DELETE_EVENT_WARNING']))
+ck('gate-cache44',"release_name='V1.6 CACHE44'" in gate and 'greatest(cache_epoch,44)' in gate)
+ck('post-checks',all(x in post for x in ['release_cache44','database_private_broadcast','pure_lobby_snapshot','single_global_tick','v15_money_rules_retained']))
+ck('function-count',len(re.findall(r'create or replace function',main,re.I))>=12)
+for n,v in checks: print(('PASS ' if v else 'FAIL ')+n)
+failed=[n for n,v in checks if not v]
+print(f'TOTAL={len(checks)} PASS={len(checks)-len(failed)} FAIL={len(failed)}')
+raise SystemExit(bool(failed))

@@ -17,11 +17,23 @@
     roomId: null,
     busy: false,
     selectedHead: [],
-    poll: null,
     clock: null,
+    safetyTimer: null,
+    syncTimer: null,
+    realtime: null,
+    realtimeUnsubscribe: null,
+    realtimeTopic: '',
+    realtimeStatus: 'idle',
+    lobbyEventVersion: 0,
+    roomEventVersion: 0,
+    lobbySnapshotVersion: 0,
+    roomSnapshotVersion: 0,
+    deadlineAdvanceKey: '',
+    destroyed: false,
     lastError: '',
     renderHtml: '',
-    polling: false,
+    syncing: false,
+    pendingSync: false,
     effectRoundId: null,
     wasSeated: false,
     createDraft: {
@@ -123,6 +135,7 @@
     } finally {
       state.busy = false;
       setBusyUi(false);
+      updateSnapshotVersions();
       render();
     }
   }
@@ -611,7 +624,7 @@
       : playerSeatHtml(entry, index, data)).join('');
     const deadline = deadlineMs(round);
     return `<section id="gameView">
-      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.5 CACHE43</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
+      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.6 CACHE44</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
       ${errorHtml()}
       <main class="app-shell"><section class="room-strip"><strong>${esc(room.room_name)}</strong><div class="mode-switch room-locked"><button class="mode-btn ${room.game_mode === 'small' ? 'active' : ''}" disabled>小牌九</button><button class="mode-btn ${room.game_mode === 'big' ? 'active' : ''}" disabled>大牌九</button></div><div class="room-quick-actions"><button type="button" data-refresh-room>刷新状态</button></div><div class="room-meta"><span>底注 <b>${fmt(room.base_stake)}${currencyLabel(room.stake_type)}</b></span><span>席位 <b>${members.filter(m => m.role === 'player').length}/${roomCapacity(room)}</b></span><span>局数 <b>${round?.round_no || 0}</b></span><span>阶段 <b>${phaseLabel(round?.phase)}</b></span>${deadline ? `<span>倒计时 <b data-deadline="${deadline}">--</b></span>` : ''}<span class="room-locked-note">${duelLabel(room)}</span></div></section>
       <div class="layout"><section class="board-frame" aria-label="九霄牌九桌"><div class="felt"><div id="opponentSeats">${opponentsHtml}</div>${selfZoneHtml(data)}</div></section><aside class="side-stack"><section class="panel"><div class="panel-head"><h3>本局概览</h3><span>${gameLabel(room)}</span></div><div class="panel-body">${metricsHtml(data)}</div></section><section class="panel"><div class="panel-head"><h3>开牌排名</h3><span>按服务端结果</span></div><div class="panel-body"><div class="rank-list">${rankHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>牌局动态</h3><span>当前状态</span></div><div class="panel-body"><div class="log-list">${logHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>玩法说明</h3><span>${duelLabel(room)}</span></div><div class="panel-body rule-note"><b>老何庄：</b>100∶100等额结算，直接使用现有赌场资金。<br><b>玩家庄：</b>选庄时冻结庄家全部可用灵石；不足赔付时按所有赢家名义利润比例分配，系统不兜底。<br><b>平局：</b>大牌九一胜一负为平局，本金与2.5%手续费全退；单手同牌及双方0点均判庄家胜。<br><b>倍率：</b>10、50、100倍；赌注与手续费合计不得超过开局余额30%。<br><b>房间：</b>首局5分钟未开始自动关闭；入座需至少持有底注10倍灵石，结算后低于门槛自动转观战。<br><b>准备：</b>入座后10秒内未准备自动离桌；全员准备后2秒自动开局。<br><b>小牌九：</b>5秒选倍，首张明牌仅牌主本人可见。<br><b>安全：</b>洗牌、私牌遮罩、阶段截止与资金结算均由数据库完成。</div></section></aside></div>
@@ -653,6 +666,37 @@
     syncCreateForm();
   }
 
+  function activeDeadline() {
+    if (!state.roomId || !state.room) return null;
+    const round = state.room.round;
+    if (round?.phase_deadline && !['settled', 'cancelled'].includes(round.phase)) {
+      return { key: `round:${round.id}:${round.phase}:${round.phase_deadline}`, at: new Date(round.phase_deadline).getTime() };
+    }
+    const room = state.room.room;
+    const selfMember = state.room.self_member;
+    const candidates = [
+      room?.auto_start_at ? { key: `auto:${room.id}:${room.auto_start_at}`, at: new Date(room.auto_start_at).getTime() } : null,
+      selfMember?.ready_deadline && selfMember?.role === 'player' && !selfMember?.ready
+        ? { key: `ready:${room.id}:${selfMember.ready_deadline}`, at: new Date(selfMember.ready_deadline).getTime() }
+        : null,
+      room?.first_round_started_at == null && room?.idle_expires_at
+        ? { key: `idle:${room.id}:${room.idle_expires_at}`, at: new Date(room.idle_expires_at).getTime() }
+        : null
+    ].filter(item => item && Number.isFinite(item.at));
+    return candidates.sort((a, b) => a.at - b.at)[0] || null;
+  }
+
+  function scheduleDeadlineAdvance() {
+    const due = activeDeadline();
+    if (!due || due.at > Date.now() || state.deadlineAdvanceKey === due.key || state.destroyed) return;
+    state.deadlineAdvanceKey = due.key;
+    window.setTimeout(async () => {
+      if (state.destroyed || !state.roomId) return;
+      try { await syncRoomSnapshot({ advance: true, reason: 'deadline_fallback' }); }
+      catch (error) { console.debug('[牌九] 阶段到期兜底暂不可用', error?.message || error); }
+    }, 350);
+  }
+
   function updateCountdown() {
     document.querySelectorAll('[data-deadline]').forEach(el => {
       const seconds = Math.max(0, Math.ceil((Number(el.dataset.deadline) - Date.now()) / 1000));
@@ -665,6 +709,7 @@
       el.textContent = seconds > 0 ? `首局倒计时 ${minutes}:${String(rest).padStart(2, '0')}` : '即将自动关闭';
       el.classList.toggle('expiring', seconds <= 180);
     });
+    scheduleDeadlineAdvance();
   }
 
   function captureCreateDraft(form) {
@@ -713,27 +758,25 @@
     }
   }
 
-  async function loadLobby() {
-    state.lobby = await rpc('get_paigow_lobby_bpaigow01');
-    if (state.lobby.status !== 'active') throw new Error('PAIGOW_DISABLED');
-    render();
+  function updateSnapshotVersions() {
+    const lobbyVersion = Number(state.lobby?.event_version || 0);
+    const roomVersion = Number(state.room?.event_version || 0);
+    if (Number.isFinite(lobbyVersion)) {
+      state.lobbyEventVersion = Math.max(state.lobbyEventVersion, lobbyVersion);
+      state.lobbySnapshotVersion = Math.max(state.lobbySnapshotVersion, lobbyVersion);
+    }
+    if (Number.isFinite(roomVersion)) {
+      state.roomEventVersion = Math.max(state.roomEventVersion, roomVersion);
+      state.roomSnapshotVersion = Math.max(state.roomSnapshotVersion, roomVersion);
+    }
   }
 
-  async function loadRoom(advance = false) {
-    if (!state.roomId) return;
+  function applyRoomSnapshot(snapshot) {
     const previouslySeated = state.room?.self_member?.role === 'player' || state.wasSeated;
-    state.room = advance
-      ? await rpc('advance_paigow_round_bpaigow01', { p_room_id: state.roomId })
-      : await rpc('get_paigow_room_state_bpaigow01', { p_room_id: state.roomId });
-    if (state.room?.room?.status === 'closed') {
-      state.roomId = null;
-      state.room = null;
-      state.wasSeated = false;
-      toast('房间已关闭或被房主删除。');
-      await loadLobby();
-      startPolling();
-      return;
-    }
+    state.room = snapshot;
+    updateSnapshotVersions();
+    if (state.room?.room?.status === 'closed') return 'closed';
+
     if (previouslySeated && !state.room?.self_member) {
       state.wasSeated = false;
       toast('你已因10秒内未准备而自动退出对局。');
@@ -743,8 +786,8 @@
     } else {
       state.wasSeated = state.room?.self_member?.role === 'player';
     }
-    if (!state.lobby) await loadLobby();
-    else {
+
+    if (state.lobby && state.room?.room) {
       state.lobby.balances[state.room.room.stake_type] = state.room.self_balance;
       state.lobby.bankrolls[state.room.room.stake_type] = state.room.bankroll_balance;
     }
@@ -752,31 +795,225 @@
     if (state.room.round?.phase === 'arrange' && self?.cards?.length === 4 && state.selectedHead.length !== 2) {
       state.selectedHead = recommend(self.cards);
     }
-    render();
+    const due = activeDeadline();
+    if (!due || due.at > Date.now()) state.deadlineAdvanceKey = '';
+    return 'active';
   }
 
-  async function pollOnce() {
-    if (state.busy || state.polling) return;
-    state.polling = true;
+  function queuePendingSync() {
+    state.pendingSync = true;
+  }
+
+  function drainPendingSync() {
+    if (!state.pendingSync || state.destroyed) return;
+    state.pendingSync = false;
+    scheduleSnapshot(state.roomId ? 'room' : 'lobby');
+  }
+
+  async function syncLobbySnapshot({ reason = 'snapshot', bypassLock = false } = {}) {
+    if (state.destroyed) return null;
+    if (!bypassLock && state.syncing) {
+      queuePendingSync();
+      return null;
+    }
+    if (!bypassLock) state.syncing = true;
     try {
-      state.lastError = '';
-      if (state.roomId) await loadRoom(true);
-      else await loadLobby();
-    } catch (error) {
-      const message = errorText(error);
-      if (message !== state.lastError) toast(message);
-      state.lastError = message;
+      const snapshot = await rpc('get_paigow_lobby_bpaigow01');
+      if (snapshot.status !== 'active') throw new Error('PAIGOW_DISABLED');
+      state.lobby = snapshot;
+      updateSnapshotVersions();
       render();
+      return snapshot;
     } finally {
-      state.polling = false;
+      if (!bypassLock) {
+        state.syncing = false;
+        drainPendingSync();
+      }
     }
   }
 
-  function startPolling() {
-    clearInterval(state.poll);
+  async function syncRoomSnapshot({ advance = false, reason = 'snapshot' } = {}) {
+    if (state.destroyed || !state.roomId) return null;
+    if (state.syncing) {
+      queuePendingSync();
+      return null;
+    }
+    state.syncing = true;
+    try {
+      const snapshot = advance
+        ? await rpc('advance_paigow_round_bpaigow01', { p_room_id: state.roomId })
+        : await rpc('get_paigow_room_state_bpaigow01', { p_room_id: state.roomId });
+      const status = applyRoomSnapshot(snapshot);
+      if (status === 'closed') {
+        state.roomId = null;
+        state.room = null;
+        state.wasSeated = false;
+        state.roomEventVersion = 0;
+        state.roomSnapshotVersion = 0;
+        toast('房间已关闭或被房主删除。');
+        switchRealtimeTopic();
+        await syncLobbySnapshot({ reason: 'room_closed', bypassLock: true });
+        return null;
+      }
+      if (!state.lobby) await syncLobbySnapshot({ reason: 'room_balance_seed', bypassLock: true });
+      render();
+      return snapshot;
+    } finally {
+      state.syncing = false;
+      drainPendingSync();
+    }
+  }
+
+  function scheduleSnapshot(scope, version = 0) {
+    if (state.destroyed) return;
+    const numericVersion = Number(version || 0);
+    if (scope === 'room' && numericVersion && numericVersion <= state.roomSnapshotVersion) return;
+    if (scope === 'lobby' && numericVersion && numericVersion <= state.lobbySnapshotVersion) return;
+    if (state.syncing) {
+      queuePendingSync();
+      return;
+    }
+    clearTimeout(state.syncTimer);
+    state.syncTimer = setTimeout(async () => {
+      state.syncTimer = null;
+      if (scope === 'room' && numericVersion && numericVersion <= state.roomSnapshotVersion) return;
+      if (scope === 'lobby' && numericVersion && numericVersion <= state.lobbySnapshotVersion) return;
+      try {
+        if (state.roomId) await syncRoomSnapshot({ reason: `realtime_${scope}` });
+        else await syncLobbySnapshot({ reason: `realtime_${scope}` });
+      } catch (error) {
+        console.debug('[牌九] Realtime快照同步失败', error?.message || error);
+      }
+    }, 90);
+  }
+
+  function applyRealtimeDelta(payload) {
+    if (!state.roomId || !state.room || payload?.snapshot_required !== false) return false;
+    const delta = payload?.delta || {};
+    const kind = String(delta.kind || '');
+    if (!kind) return false;
+
+    if (kind === 'room' && delta.room) {
+      state.room.room = { ...(state.room.room || {}), ...delta.room };
+      if (state.room.room.status === 'closed') return false;
+    } else if (kind === 'member') {
+      const characterId = String(delta.character_id || '');
+      const after = delta.after && typeof delta.after === 'object' ? delta.after : null;
+      const members = Array.isArray(state.room.members) ? [...state.room.members] : [];
+      const index = members.findIndex(member => String(member.character_id) === characterId);
+      const removed = !after || after.left_at;
+      if (removed) {
+        if (index >= 0) members.splice(index, 1);
+      } else {
+        const member = {
+          ...(index >= 0 ? members[index] : {}),
+          ...after,
+          is_self: characterId === String(state.room.self_character_id),
+          is_owner: characterId === String(state.room.room?.owner_character_id)
+        };
+        if (index >= 0) members[index] = member;
+        else members.push(member);
+      }
+      members.sort((a, b) => Number(a.seat_no ?? 99) - Number(b.seat_no ?? 99));
+      state.room.members = members;
+      if (characterId === String(state.room.self_character_id)) {
+        const wasPlayer = state.room.self_member?.role === 'player' || state.wasSeated;
+        state.room.self_member = removed ? null : {
+          ...(state.room.self_member || {}),
+          ...after,
+          is_owner: characterId === String(state.room.room?.owner_character_id)
+        };
+        if (wasPlayer && removed) toast('你已离开当前牌桌。');
+        else if (wasPlayer && after?.role === 'spectator') toast('当前灵石低于房间底注10倍，已自动起身转为观战。');
+        state.wasSeated = after?.role === 'player';
+      }
+    } else if (kind === 'round_player') {
+      const after = delta.after && typeof delta.after === 'object' ? delta.after : null;
+      const players = state.room.round?.players;
+      if (!after || !Array.isArray(players)) return false;
+      const player = players.find(item => String(item.character_id) === String(delta.character_id));
+      if (!player) return false;
+      Object.assign(player, after);
+    } else {
+      return false;
+    }
+
+    const roomVersion = Number(payload.room_version || 0);
+    if (Number.isFinite(roomVersion)) {
+      state.roomEventVersion = Math.max(state.roomEventVersion, roomVersion);
+      state.room.event_version = state.roomEventVersion;
+    }
+    render();
+    return true;
+  }
+
+  function realtimeHandler(message) {
+    const payload = message?.payload || {};
+    if (state.roomId) {
+      if (payload.room_id && String(payload.room_id) !== String(state.roomId)) return;
+      if (applyRealtimeDelta(payload)) return;
+      scheduleSnapshot('room', payload.room_version);
+    } else {
+      scheduleSnapshot('lobby', payload.lobby_version);
+    }
+  }
+
+  function ensureRealtimeClient() {
+    if (state.realtime || state.destroyed) return state.realtime;
+    const Client = window.JiuxiaoPaigowRealtimeClient;
+    if (typeof Client !== 'function') {
+      state.realtimeStatus = 'unavailable';
+      return null;
+    }
+    state.realtime = new Client({
+      url,
+      key,
+      getAccessToken: () => session()?.access_token || '',
+      onStatus: status => {
+        state.realtimeStatus = status;
+        if (status === 'subscribed') scheduleSnapshot(state.roomId ? 'room' : 'lobby');
+      }
+    });
+    return state.realtime;
+  }
+
+  function switchRealtimeTopic() {
+    if (state.realtimeUnsubscribe) {
+      state.realtimeUnsubscribe();
+      state.realtimeUnsubscribe = null;
+    }
+    state.realtimeTopic = state.roomId ? `paigow:room:${state.roomId}` : 'paigow:lobby';
+    const client = ensureRealtimeClient();
+    if (client) state.realtimeUnsubscribe = client.subscribe(state.realtimeTopic, realtimeHandler);
+    startSafetyResync();
+  }
+
+  function startSafetyResync() {
+    clearInterval(state.safetyTimer);
     clearInterval(state.clock);
-    state.poll = setInterval(pollOnce, state.roomId ? 1000 : 5000);
     state.clock = setInterval(updateCountdown, 250);
+    state.safetyTimer = setInterval(async () => {
+      if (state.destroyed || document.hidden || state.busy || state.syncing) return;
+      try {
+        if (state.roomId) await syncRoomSnapshot({ reason: 'safety_resync' });
+        else await syncLobbySnapshot({ reason: 'safety_resync' });
+      } catch (error) {
+        console.debug('[牌九] 安全校准暂不可用', error?.message || error);
+      }
+    }, state.roomId ? 60000 : 120000);
+  }
+
+  async function loadLobby() {
+    return syncLobbySnapshot({ reason: 'manual' });
+  }
+
+  async function loadRoom(advance = false) {
+    return syncRoomSnapshot({ advance, reason: advance ? 'manual_advance' : 'manual' });
+  }
+
+  function startPolling() {
+    // 兼容旧调用名：V1.6已取消1秒/5秒轮询，改为Realtime事件＋低频安全校准。
+    switchRealtimeTopic();
   }
 
   function openRoom(id) {
@@ -785,10 +1022,13 @@
     state.selectedHead = [];
     state.effectRoundId = null;
     state.wasSeated = false;
+    state.roomEventVersion = 0;
+    state.roomSnapshotVersion = 0;
+    state.deadlineAdvanceKey = '';
     render();
+    switchRealtimeTopic();
     action(async () => {
-      await loadRoom(true);
-      startPolling();
+      await loadRoom(false);
     });
   }
 
@@ -932,13 +1172,30 @@
     });
   });
 
+  function shutdownPaigowRuntime() {
+    if (state.destroyed) return;
+    state.destroyed = true;
+    clearTimeout(state.syncTimer);
+    clearInterval(state.safetyTimer);
+    clearInterval(state.clock);
+    if (state.realtimeUnsubscribe) state.realtimeUnsubscribe();
+    state.realtimeUnsubscribe = null;
+    state.realtime?.destroy?.();
+    state.realtime = null;
+    state.pendingSync = false;
+  }
+
   window.addEventListener('message', event => {
     if (event.data?.type === 'b-paigow01-refresh') action(() => state.roomId ? loadRoom(true) : loadLobby());
+    if (event.data?.type === 'b-paigow01-pause') shutdownPaigowRuntime();
   });
-  window.addEventListener('beforeunload', () => {
-    clearInterval(state.poll);
-    clearInterval(state.clock);
-  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden || state.destroyed) return;
+    state.realtime?.refreshAuth?.();
+    scheduleSnapshot(state.roomId ? 'room' : 'lobby');
+  }, { passive: true });
+  window.addEventListener('beforeunload', shutdownPaigowRuntime, { once: true });
+  window.addEventListener('pagehide', shutdownPaigowRuntime, { once: true });
 
   render();
   action(async () => {

@@ -671,3 +671,5 @@ button:disabled{pointer-events:none;}
 @media(prefers-reduced-motion:reduce){
   .pg-resource-fx-layer{display:none!important}
 }
+
+/* V1.6 CACHE44：Realtime事件驱动、增量座位状态、低频安全校准与iframe关闭即停机。 */

@@ -1,0 +1,3 @@
+V1.6 CACHE44执行顺序：91 → 92 → 93。
+93号所有ok必须为true，再覆盖部署完整前端包。
+91号需要Supabase项目支持pg_cron与Realtime Broadcast。
