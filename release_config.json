@@ -1,8 +1,10 @@
 {
-  "version": "V1.6 FIX1",
-  "releaseLabel": "V1.6 FIX1 CACHE45",
-  "clientBuild": "v1-6-fix1-cache45",
-  "cacheEpoch": 45,
-  "minimumDatabaseBaseline": "V1.6 CACHE44",
-  "sqlRevision": "V1.6_FIX1_CACHE45"
+  "version": "V1.7",
+  "releaseLabel": "V1.7 CACHE46",
+  "clientBuild": "v1-7-cache46",
+  "cacheEpoch": 46,
+  "minimumDatabaseBaseline": "V1.6 FIX1 CACHE45",
+  "sqlRevision": "V1.7_CACHE46",
+  "nextVersion": "1.7.1",
+  "nextSql": 99
 }

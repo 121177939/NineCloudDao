@@ -1,22 +1,24 @@
 {
-  "version": "1.6.1",
-  "releaseLabel": "九霄问道 V1.6 FIX1 CACHE45",
-  "sourceBaseline": "V1.6 CACHE44",
-  "minimumDatabaseBaseline": "V1.6 CACHE44",
-  "databaseChange": "V1_6_FIX1_LAOHE_BLIND_CARDS_CACHE45",
-  "databaseMigration": "database/V1.6_FIX1/202607310655_v1_6_fix1_laohe_blind_cards.sql",
-  "databaseReleaseGate": "database/V1.6_FIX1/202607310700_v1_6_fix1_cache45_release.sql",
-  "databaseFinalCheck": "database/V1.6_FIX1/202607310705_v1_6_fix1_cache45_check.sql",
-  "deploymentStatus": "authoritative_complete_deployment_package",
+  "version": "1.7.0",
+  "releaseLabel": "九霄问道 V1.7 CACHE46",
+  "sourceBaseline": "V1.6 FIX1 CACHE45",
+  "minimumDatabaseBaseline": "V1.6 FIX1 CACHE45",
+  "databaseChange": "V1_7_RELEASE_AND_DELIVERY_BASELINE_CACHE46",
+  "databaseMigration": null,
+  "databaseReleaseGate": "97_V1.7_CACHE46_轻量交付发布门禁.sql",
+  "databaseFinalCheck": "98_V1.7_CACHE46_升级后检查.sql",
+  "deploymentStatus": "authoritative_lean_github_deployment_package_with_b_handoff",
   "authoritativePackages": {
-    "completePackage": "Jiuxiao_V1.6_FIX1_CACHE45_Full.zip",
-    "sqlPackage": "Jiuxiao_V1.6_FIX1_CACHE45_SQL.zip"
+    "githubDeployPackage": "Jiuxiao_V1.7_CACHE46_GitHub_Deploy.zip",
+    "handoffPackage": "九霄问道_轻量接管资料包_V1.7_CACHE46.zip",
+    "historyArchive": "九霄问道_阶段式历史归档_截至V1.7_CACHE46_轻量版.zip"
   },
   "notes": [
-    "老何庄小牌九结算前不显示玩家自己的任何牌",
-    "老何庄大牌九选倍前不显示两张预发明牌，进入组牌阶段后显示本人四张牌",
-    "老何牌面只在公开阶段返回",
-    "V1.6事件驱动、单一Cron、权威资金结算与私牌隔离保持不变"
+    "V1.7不改游戏数值与牌九结算，继承V1.6 FIX1全部正式规则",
+    "GitHub部署包保留运行文件、Pages工作流、单一构建检查脚本和B_HANDOFF协作文档",
+    "B_HANDOFF可直接发给B作为正式源码基线与任务规范，但不会进入Pages正式产物",
+    "SQL、历史说明、测试日志、B候选源码和旧版本资料不再重复放入GitHub部署包",
+    "后续补丁版本依次使用1.7.1、1.7.2；每次正式前端发布继续递增CACHE"
   ],
   "integratedModules": [
     "B-CAVE01",
@@ -28,14 +30,19 @@
     "B-PAIGOW01-REALTIME-ISOLATION-V16",
     "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1"
   ],
-  "clientHotfix": "V1.6_FIX1_CACHE45",
-  "developmentBaseline": "V1.6_FIX1_AB30_CACHE45",
+  "clientRelease": "V1.7_CACHE46",
+  "developmentBaseline": "V1.7_AB31_CACHE46",
   "packagePolicy": {
-    "delivery": "完整部署包与独立SQL包",
-    "deployment": "完整包解压后覆盖GitHub仓库根目录",
-    "database": "已完成CACHE44时执行94—96；未完成时先按历史顺序执行至93"
+    "githubDelivery": "交付GitHub运行文件、工作流、构建脚本、部署说明及B_HANDOFF协作文档；B_HANDOFF不得进入Pages产物",
+    "handoff": "当前规则、最新增量SQL、风险、职责与交付索引放入轻量接管资料包",
+    "history": "阶段摘要和历史索引放入轻量历史归档，不重复携带源码与旧ZIP",
+    "deployment": "解压GitHub部署包后覆盖仓库根目录，必须包含隐藏目录.github",
+    "bHandoff": "后续每个GitHub部署包必须包含B_HANDOFF目录：当前基线、任务单、开发模板、交付清单、禁止事项和锁文件"
   },
-  "handoffUpdatedAt": "2026-07-31T06:55:00Z",
-  "sqlRevision": "V1.6_FIX1_CACHE45",
-  "cacheEpoch": 45
+  "handoffUpdatedAt": "2026-07-31T07:42:00Z",
+  "sqlRevision": "V1.7_CACHE46",
+  "cacheEpoch": 46,
+  "nextVersion": "1.7.1",
+  "nextSql": 99,
+  "packageRevision": 2
 }
