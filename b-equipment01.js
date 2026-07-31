@@ -61,25 +61,43 @@
   function filtered(rows){return sortItems(rows.filter(x=>state.filter==='all'||x.slot_code===state.filter))}
   function gridItem(item){return `<button type="button" class="equipment-grid-item-bequipment01" style="--grade:${esc(color(item))}" data-equipment-item="${esc(item.id)}" aria-label="${esc(item.full_name)}，${esc(item.grade_name)}"><span class="equipment-grid-lock-bequipment01">${item.is_locked?'锁':''}</span>${itemIcon(item)}<strong>${esc(item.short_name)}</strong><span class="equipment-grade-bequipment01">${esc(item.grade_name)}</span><small>${esc(item.realm_name)} · ${esc(item.main_stat_display)}</small><em>${esc(item.socket_display)}</em></button>`}
   function materialItem(q,loc){if(Number(q)<=0)return'';return `<button type="button" class="equipment-grid-item-bequipment01 material" data-equipment-material="${loc}"><span class="equipment-icon-bequipment01">粹</span><strong>器源精粹</strong><small>开孔预留材料</small><em>×${Number(q).toLocaleString()}</em></button>`}
-  function storagePanel(location){
-    const cap=Number(state.data?.rules?.backpack_capacity||30);const allRows=itemList(location);const rows=filtered(allRows);const material=Number(state.data?.materials?.[location==='backpack'?'essence_backpack':'essence_cave']||0);
-    const used=allRows.length+(material>0?1:0);const limit=location==='backpack'?cap:Math.max(36,Math.ceil(Math.max(1,used)/36)*36);const showMaterial=state.filter==='all';const visibleUsed=rows.length+(showMaterial&&material>0?1:0);const empty=state.filter==='all'?Math.max(0,Math.min(location==='backpack'?cap:36,limit-visibleUsed)):0;
-    return `<section class="equipment-storage-panel-bequipment01" data-equipment-panel="${location}"><div class="equipment-storage-head-bequipment01"><strong>${location==='backpack'?'随身背包':'洞府装备'}</strong><span>${location==='backpack'?`${used}/${cap}`:`${used}件装备/材料`} · 装备一件一格</span></div><div class="equipment-filter-bequipment01"><button data-eq-filter="all">全部</button>${Object.entries(slotMeta).map(([k,v])=>`<button data-eq-filter="${k}">${v[1]}</button>`).join('')}<button data-eq-sort>${state.sort==='grade'?'恢复所得顺序':'一键整理'}</button>${location==='backpack'?'<button class="batch-decompose-bequipment01" data-batch-decompose>批量分解</button>':''}</div><div class="equipment-grid-bequipment01">${rows.map(gridItem).join('')}${showMaterial?materialItem(material,location):''}${Array.from({length:empty},()=>'<div class="equipment-grid-empty-bequipment01">道</div>').join('')}</div></section>`
+  function storagePanel(location='backpack'){
+    const cap=Math.max(36,Number(state.data?.rules?.backpack_capacity||36));const allRows=itemList('backpack');const rows=filtered(allRows);const material=Number(state.data?.materials?.essence_backpack||0);
+    const used=allRows.length+(material>0?1:0);const showMaterial=state.filter==='all';const visibleUsed=rows.length+(showMaterial&&material>0?1:0);const empty=Math.max(0,cap-visibleUsed);
+    return `<section class="equipment-storage-panel-bequipment01" data-equipment-panel="backpack"><div class="equipment-storage-head-bequipment01"><strong>随身背包</strong><span>${used}/${cap} · 固定6×6 · 装备一件一格</span></div><div class="equipment-filter-bequipment01"><button data-eq-filter="all">全部</button>${Object.entries(slotMeta).map(([k,v])=>`<button data-eq-filter="${k}">${v[1]}</button>`).join('')}<button data-eq-sort>${state.sort==='grade'?'恢复所得顺序':'一键整理'}</button><button class="batch-decompose-bequipment01" data-batch-decompose>批量分解</button></div><div class="equipment-grid-bequipment01">${rows.map(gridItem).join('')}${showMaterial?materialItem(material,'backpack'):''}${Array.from({length:empty},()=>'<div class="equipment-grid-empty-bequipment01">道</div>').join('')}</div></section>`
+  }
+  function caveEquipmentSlot(item){
+    const rarity={yellow:'uncommon',mystic:'rare',earth:'epic',heaven:'legendary',immortal:'legendary'}[item?.grade_code]||'uncommon';
+    return `<button type="button" class="cave-item-slot-b01 rarity-${rarity} equipment-cave-slot-bequipment01" data-equipment-cave-item="${esc(item.id)}" aria-label="洞府装备，${esc(item.full_name)}，${esc(item.grade_name)}"><span class="cave-item-aura-b01" aria-hidden="true"></span>${itemIcon(item)}<span class="cave-item-name-b01">${esc(item.short_name)}</span><span class="cave-item-type-b01">${esc(item.grade_name)} · ${esc(slotMeta[item.slot_code]?.[1]||'装备')}</span><strong class="cave-item-quantity-b01">器</strong></button>`
+  }
+  function openCaveEquipmentBox(items=itemList('cave')){
+    const rows=sortItems(items);const cap=Math.max(36,Math.ceil(Math.max(1,rows.length)/36)*36);const empty=Math.max(0,cap-rows.length);
+    modalHost().innerHTML=`<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01 equipment-cave-box-modal-bequipment01" role="dialog" aria-modal="true"><button class="modal-close-button" data-eq-close>×</button><header><span class="equipment-icon-bequipment01">藏</span><div><span>洞府储物中的装备</span><h3>装备匣 · ${rows.length}件</h3></div></header><div class="equipment-grid-bequipment01 equipment-cave-box-grid-bequipment01">${rows.map(gridItem).join('')}${Array.from({length:empty},()=>'<div class="equipment-grid-empty-bequipment01">道</div>').join('')}</div></section></div>`;
+    const root=modalHost();root.querySelector('[data-eq-close]').onclick=closeModal;root.querySelector('.equipment-modal-backdrop-bequipment01').onclick=e=>{if(e.target===e.currentTarget)closeModal()};root.querySelectorAll('[data-equipment-item]').forEach(b=>b.onclick=()=>{const item=allItems().find(x=>String(x.id)===b.dataset.equipmentItem);if(item){closeModal();openDetail(item)}})
+  }
+  function renderCaveEquipmentIntoNative(){
+    const cave=document.getElementById('caveStorageB01');const grid=cave?.querySelector('.cave-storage-grid-b01');if(!cave||!grid||!state.available)return;
+    grid.querySelectorAll('[data-equipment-cave-item]').forEach(node=>node.remove());cave.querySelector('[data-equipment-cave-overflow]')?.remove();
+    const rows=sortItems(itemList('cave'));const empties=[...grid.querySelectorAll('.cave-item-slot-b01.empty')];const visible=rows.slice(0,empties.length);
+    visible.forEach((item,index)=>{empties[index].outerHTML=caveEquipmentSlot(item)});
+    grid.querySelectorAll('[data-equipment-cave-item]').forEach(b=>b.onclick=()=>{const item=allItems().find(x=>String(x.id)===b.dataset.equipmentCaveItem);if(item)openDetail(item)});
+    const head=cave.querySelector('.cave-storage-head-b01 span');if(head){const base=head.dataset.equipmentBaseText||head.textContent.replace(/ · 洞府装备 \d+$/,'');head.dataset.equipmentBaseText=base;head.textContent=`${base} · 洞府装备 ${rows.length}`}
+    if(rows.length>visible.length){const overflow=document.createElement('button');overflow.type='button';overflow.className='equipment-cave-overflow-bequipment01';overflow.dataset.equipmentCaveOverflow='1';overflow.textContent=`另有 ${rows.length-visible.length} 件洞府装备，打开装备匣`;overflow.onclick=()=>openCaveEquipmentBox(rows);grid.insertAdjacentElement('afterend',overflow)}
   }
   function renderStorage(){
     const cave=document.getElementById('caveStorageB01');if(!cave)return;
     let shell=document.getElementById('equipmentStorageShellBEquipment01');
     if(!shell){shell=document.createElement('section');shell.id='equipmentStorageShellBEquipment01';shell.className='equipment-storage-shell-bequipment01';cave.parentNode.insertBefore(shell,cave)}
     const pending=itemList('pending').length;
-    shell.innerHTML=`${state.disabled?'<div class="equipment-disabled-bequipment01">装备系统当前已停用：装备数据只读，写操作已关闭。</div>':''}<nav class="equipment-storage-tabs-bequipment01"><button class="${state.view==='backpack'?'active':''}" data-eq-view="backpack">背包 <small>${itemList('backpack').length}/${Number(state.data?.rules?.backpack_capacity||30)}</small></button><button class="${state.view==='cave'?'active':''}" data-eq-view="cave">洞府 <small>${itemList('cave').length}</small></button></nav>${pending?`<div class="equipment-pending-bequipment01"><span>待领取装备 ${pending} 件</span><button type="button" data-claim-pending>领取到背包</button></div>`:''}${state.available?storagePanel(state.view):'<div class="equipment-unavailable-bequipment01">装备数据库尚未完成升级，原洞府功能保持可用。</div>'}`;
-    cave.hidden=state.available&&state.view==='backpack';
-    shell.querySelectorAll('[data-eq-view]').forEach(b=>b.onclick=()=>{state.view=b.dataset.eqView;renderStorage()});
+    shell.innerHTML=`${state.disabled?'<div class="equipment-disabled-bequipment01">装备系统当前已停用：装备数据只读，写操作已关闭。</div>':''}${pending?`<div class="equipment-pending-bequipment01"><span>待领取装备 ${pending} 件</span><button type="button" data-claim-pending>领取到背包</button></div>`:''}${state.available?storagePanel('backpack'):'<div class="equipment-unavailable-bequipment01">装备数据库尚未完成升级，原洞府功能保持可用。</div>'}`;
+    cave.hidden=false;
     shell.querySelectorAll('[data-eq-filter]').forEach(b=>{b.classList.toggle('active',b.dataset.eqFilter===state.filter);b.onclick=()=>{state.filter=b.dataset.eqFilter;renderStorage()}});
     shell.querySelector('[data-eq-sort]')?.addEventListener('click',()=>{state.sort=state.sort==='grade'?'time':'grade';renderStorage()});
     shell.querySelector('[data-batch-decompose]')?.addEventListener('click',openBatchDecompose);
     shell.querySelectorAll('[data-equipment-item]').forEach(b=>b.onclick=()=>{const item=allItems().find(x=>String(x.id)===b.dataset.equipmentItem);if(item)openDetail(item)});
     shell.querySelector('[data-claim-pending]')?.addEventListener('click',()=>action('claim_pending_equipment_bequipment01',{},'待领取装备已按空位收入背包。'));
     shell.querySelector('[data-equipment-material]')?.addEventListener('click',e=>openMaterial(e.currentTarget.dataset.equipmentMaterial));
+    renderCaveEquipmentIntoNative();
   }
   function compare(item){const current=state.data?.equipped?.[item.slot_code];if(!current)return`当前${slotMeta[item.slot_code][1]}槽为空，穿戴后增加 ${item.main_stat_display}。`;const diff=Number(item.main_stat_value)-Number(current.main_stat_value);return`当前：${current.main_stat_display}；新装备：${item.main_stat_display}；变化：${diff>=0?'+':''}${item.slot_code==='ring'?diff.toFixed(1)+'%':Math.round(diff)}。`}
   function modalHost(){let root=document.getElementById('equipmentModalRootBEquipment01');if(!root){root=document.createElement('div');root.id='equipmentModalRootBEquipment01';document.body.appendChild(root)}return root}
@@ -144,5 +162,5 @@
   document.addEventListener('DOMContentLoaded',()=>refreshOrRender({force:true}));
   window.addEventListener('focus',()=>{if(hasEquipmentSurface()&&Date.now()-state.lastFetch>60000)refresh(true)});
   window.addEventListener('pageshow',event=>{if(event.persisted)refreshOrRender({force:true})});
-  window.B_EQUIPMENT01={refresh,render:renderAll,version:'1.7.1'};
+  window.B_EQUIPMENT01={refresh,render:renderAll,version:'1.7.2'};
 })();

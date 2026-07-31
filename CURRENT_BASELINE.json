@@ -1,27 +1,24 @@
 {
-  "version": "1.7.1",
-  "releaseLabel": "九霄问道 V1.7.1 CACHE47",
-  "sourceBaseline": "V1.7 CACHE46",
-  "minimumDatabaseBaseline": "V1.7 CACHE46 / SQL 98",
-  "databaseChange": "B_EQUIPMENT01_FORMAL_INTEGRATION_CACHE47",
-  "databaseMigration": "99_V1.7.1_B-EQUIPMENT01_五部位装备正式并线.sql",
-  "databaseReleaseGate": "100_V1.7.1_CACHE47_正式发布门禁.sql",
-  "databaseFinalCheck": "101_V1.7.1_CACHE47_升级后检查.sql",
+  "version": "1.7.2",
+  "releaseLabel": "九霄问道 V1.7.2 CACHE48",
+  "sourceBaseline": "V1.7.1 CACHE47",
+  "minimumDatabaseBaseline": "V1.7.1 CACHE47 / SQL 101",
+  "databaseChange": "EQUIPMENT_STORAGE_6X6_SINGLE_CAVE_GRID_CACHE48",
+  "databaseMigration": "102_V1.7.2_装备背包36格与单洞府界面.sql",
+  "databaseReleaseGate": "102_V1.7.2_装备背包36格与单洞府界面.sql",
+  "databaseFinalCheck": "103_V1.7.2_CACHE48_升级后检查.sql",
   "deploymentStatus": "authoritative_lean_github_deployment_package_with_b_handoff",
   "authoritativePackages": {
-    "githubDeployPackage": "Jiuxiao_V1.7.1_CACHE47_GitHub_Deploy.zip",
-    "sqlPackage": "Jiuxiao_V1.7.1_CACHE47_SQL.zip",
-    "handoffPackage": "九霄问道_轻量接管资料包_V1.7.1_CACHE47.zip",
-    "historyArchive": "九霄问道_阶段式历史归档_截至V1.7.1_CACHE47_轻量版.zip"
+    "githubDeployPackage": "Jiuxiao_V1.7.2_CACHE48_GitHub_Deploy.zip",
+    "sqlPackage": "Jiuxiao_V1.7.2_CACHE48_SQL.zip",
+    "handoffPackage": "B_HANDOFF已内置于GitHub部署包（本补丁不另发接管ZIP）",
+    "historyArchive": "沿用九霄问道_阶段式历史归档_截至V1.7.1_CACHE47_轻量版.zip"
   },
   "notes": [
-    "正式接入B-EQUIPMENT01五部位装备系统：武器、衣服、裤子、鞋子、戒指",
-    "装备模板共132件；第一阶段只开放黄品、玄品、地品获取，天品与仙品仅保留模板",
-    "地品、天品、仙品趋吉机缘成功时有30%概率互斥转为装备奖励，不与原功法、灵石、修为奖励叠加",
-    "背包30格，满时装备进入待领取；支持洞府转移、锁定、穿戴、卸下与分解器源精粹",
-    "四项装备属性同步B-COMBAT01；戒指只增加本命五行最终伤害，不改变五行克制且不计入常驻战力",
-    "修复B候选中的角色状态、会话误封、metadata覆盖、机缘/战斗仅参考未实接及全局轮询性能问题",
-    "装备客户端改为主游戏事件触发，不使用全局fetch劫持、MutationObserver或周期轮询"
+    "装备随身背包容量由30格提升为36格，固定使用6×6布局，手机端不再降为5列或4列",
+    "洞府页面只保留原生单一6×6储物格；洞府装备优先嵌入空格，溢出时通过装备匣查看",
+    "移除装备模块的第二套洞府格和背包/洞府双页签，修复洞府出现两版格子的界面错误",
+    "老何牌九继续使用服务端公平随机和既有公开规则；未加入任何隐藏胜率操控"
   ],
   "integratedModules": [
     "B-CAVE01",
@@ -34,18 +31,18 @@
     "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1",
     "B-EQUIPMENT01"
   ],
-  "clientRelease": "V1.7.1_CACHE47",
-  "developmentBaseline": "V1.7.1_AB32_CACHE47",
+  "clientRelease": "V1.7.2_CACHE48",
+  "developmentBaseline": "V1.7.2_AB33_CACHE48",
   "packagePolicy": {
     "githubDelivery": "只交付GitHub运行文件、Pages工作流、单一构建脚本、部署说明及B_HANDOFF；不携带SQL与历史归档",
-    "sql": "当前版本只交付99至101号增量SQL与执行说明",
+    "sql": "当前版本只交付102至103号增量SQL与执行说明",
     "handoff": "当前规则、B模块审计、最新SQL、风险与部署索引放入轻量接管资料包",
     "history": "只追加阶段摘要和索引，不重复携带源码或旧ZIP",
     "bHandoff": "每个GitHub部署包继续包含B_HANDOFF，且不得进入Pages正式产物"
   },
-  "sqlRevision": "V1.7.1_CACHE47",
-  "cacheEpoch": 47,
-  "nextVersion": "1.7.2",
-  "nextSql": 102,
+  "sqlRevision": "V1.7.2_CACHE48",
+  "cacheEpoch": 48,
+  "nextVersion": "1.7.3",
+  "nextSql": 104,
   "packageRevision": 1
 }

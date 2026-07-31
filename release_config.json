@@ -1,10 +1,10 @@
 {
-  "version": "V1.7.1",
-  "releaseLabel": "V1.7.1 CACHE47",
-  "clientBuild": "v1-7-1-cache47",
-  "cacheEpoch": 47,
-  "minimumDatabaseBaseline": "V1.7 CACHE46 / SQL 98",
-  "sqlRevision": "V1.7.1_CACHE47",
-  "nextVersion": "1.7.2",
-  "nextSql": 102
+  "version": "V1.7.2",
+  "releaseLabel": "V1.7.2 CACHE48",
+  "clientBuild": "v1-7-2-cache48",
+  "cacheEpoch": 48,
+  "minimumDatabaseBaseline": "V1.7.1 CACHE47 / SQL 101",
+  "sqlRevision": "V1.7.2_CACHE48",
+  "nextVersion": "1.7.3",
+  "nextSql": 104
 }
