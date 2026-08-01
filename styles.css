@@ -4467,7 +4467,7 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
 }
 .battle-talent-line-v12 { color:#cdb9e8; font-size:10px; line-height:1.55; }
 
-/* V1.7.5.1 CACHE52 · 灵骰问道公共牌桌：复用鱼虾轻量牌桌结构，只补九门布局与骰面。 */
+/* V1.7.5.2 CACHE53 · 灵骰问道公共牌桌：复用鱼虾轻量牌桌结构，只补九门布局与骰面。 */
 .dice-target-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .dice-target-card { min-height: 98px; }
 .dice-choice-seal {

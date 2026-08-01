@@ -1,8 +1,8 @@
 {
-  "version": "V1.7.5.1",
-  "releaseLabel": "V1.7.5.1 CACHE52",
-  "clientBuild": "v1-7-5-1-cache52",
-  "cacheEpoch": 52,
+  "version": "V1.7.5.2",
+  "releaseLabel": "V1.7.5.2 CACHE53",
+  "clientBuild": "v1-7-5-2-cache53",
+  "cacheEpoch": 53,
   "minimumDatabaseBaseline": "V1.7.5 CACHE51 / SQL 106",
   "sqlRevision": "V1.7.5_CACHE51",
   "migrationSql": null,
@@ -10,5 +10,5 @@
   "finalCheckSql": null,
   "nextVersion": "1.7.6",
   "nextSql": 107,
-  "frontendHotfix": "SPIRIT_DICE_WIN_GLOW_CACHE52"
+  "frontendHotfix": "SPIRIT_DICE_LOCAL_WIN_GLOW_CACHE53"
 }
