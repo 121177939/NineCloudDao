@@ -1,15 +1,15 @@
 {
   "ownerLine": "A",
-  "formalVersion": "V1.7.5.3 CACHE54",
-  "developmentLock": "V1.7.5.3_AB39_CACHE54",
-  "nextVersion": "1.7.6",
-  "nextSql": 107,
-  "lastIntegratedBModule": "B-EQUIPMENT01",
+  "formalVersion": "V1.7.6 CACHE55",
+  "developmentLock": "V1.7.6_AB40_CACHE55",
+  "nextVersion": "1.7.7",
+  "nextSql": 110,
+  "lastIntegratedBModule": "B-PAIGOW02-UI01",
   "bTaskStatus": "waiting_for_new_requirement",
   "bModulesAreCandidates": true,
   "historicalSqlImmutable": true,
   "githubPackageIsAuthoritativeSource": true,
   "bHandoffFolderMustBeIncludedInFutureDeployPackages": true,
   "bHandoffExcludedFromPagesArtifact": true,
-  "casinoPublicTableBaseline": "V1.7.5_CACHE51"
+  "casinoPublicTableBaseline": "V1.7.6_CACHE55"
 }

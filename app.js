@@ -144,6 +144,8 @@
     spiritDiceBetFlushTimer: null,
     spiritDiceLastBetMessage: '',
     spiritDiceAcceptedBetRounds: {},
+    spiritDiceLastFullHistoryAt: 0,
+    spiritDiceBoundaryHistoryLimit: 1,
     marketSyncing: false,
     marketSyncTimer: null,
     worldEvents: null,
@@ -6381,6 +6383,34 @@
     }
   }
 
+  // V1.7.6 CACHE55：下注成功只补丁当前九门数字与余额，不再 replaceWith 整块灵骰DOM。
+  function patchSpiritDiceBetDomV176() {
+    const root = document.getElementById('spiritDiceRoot');
+    const payload = state.spiritDiceState;
+    if (!root || !payload?.round) return;
+    const draft = spiritDiceDraftV175();
+    const myBets = Array.isArray(payload.my_bets) ? payload.my_bets : [];
+    const totals = Array.isArray(payload.round_totals) ? payload.round_totals : [];
+    root.querySelectorAll('[data-dice-choice]').forEach(button => {
+      const code = button.dataset.diceChoice || '';
+      const meta = button.querySelector('.fish-target-meta');
+      const bet = spiritDiceBetLookupV175(myBets, draft.stakeType, code);
+      const mine = Number(bet?.stake_amount || 0);
+      const total = spiritDiceRoundTotalV175(totals, draft.stakeType, code);
+      if (meta) {
+        const values = meta.querySelectorAll('b');
+        if (values[0]) values[0].textContent = formatNumber(mine);
+        if (values[1]) values[1].textContent = formatNumber(total);
+      }
+      button.dataset.diceHasBet = spiritDiceHasAcceptedBetV175(payload.round.id, code) ? '1' : '0';
+    });
+    root.querySelectorAll('[data-spirit-stone-balance]').forEach(node => {
+      node.textContent = formatNumber(payload.character?.spirit_stones || 0);
+    });
+    updateSpiritDiceQueueFeedbackV175(state.spiritDiceLastBetMessage);
+    updateSpiritDiceClockV175();
+  }
+
   async function processSpiritDiceQueueV175() {
     if (state.spiritDiceBetProcessing) return;
     const queue = spiritDiceQueueV175();
@@ -6402,9 +6432,8 @@
         const message=translateError(error); state.spiritDiceLastBetMessage=`本批落注失败：${message}`; showToast(message,'error');
         if (String(error?.message||error).includes('DICE_BETTING_CLOSED')) state.spiritDiceBetQueue=state.spiritDiceBetQueue.filter(item=>item.roundId!==first.roundId);
       }
-      renderSpiritDicePanelV175();
-      startSpiritDiceTimerV175();
-      updateSpiritDiceQueueFeedbackV175(state.spiritDiceLastBetMessage);
+      patchSpiritDiceBetDomV176();
+      if (!state.spiritDiceTimer) startSpiritDiceTimerV175();
     } finally {
       state.spiritDiceBetProcessing=false;
       // 批量下注RPC已返回最新可用余额，避免每批再追加两次余额/修为请求。
@@ -6507,13 +6536,25 @@
     current.replaceWith(next); bindMarketActions(); updateSpiritDiceClockV175();
   }
 
-  async function refreshSpiritDiceStateV175(silent=false) {
+  function mergeSpiritDiceHistoryV176(previous = [], incoming = []) {
+    const map = new Map();
+    [...(Array.isArray(incoming) ? incoming : []), ...(Array.isArray(previous) ? previous : [])].forEach(item => {
+      const key = String(item?.round_no ?? '');
+      if (key && !map.has(key)) map.set(key, item);
+    });
+    return [...map.values()].sort((a,b)=>Number(b?.round_no||0)-Number(a?.round_no||0)).slice(0,20);
+  }
+
+  async function refreshSpiritDiceStateV175(silent=false, historyLimit=20, mergeHistory=false) {
     if (state.spiritDiceSyncing||state.spiritDiceBetProcessing||!state.character||document.hidden) return state.spiritDiceState;
     state.spiritDiceSyncing=true;
     try {
-      const payload=await rpcGetSpiritDiceStateV175(20);
+      const previousHistory = Array.isArray(state.spiritDiceState?.history) ? state.spiritDiceState.history : [];
+      const payload=await rpcGetSpiritDiceStateV175(historyLimit);
       if (payload) {
+        if (mergeHistory && previousHistory.length) payload.history = mergeSpiritDiceHistoryV176(previousHistory, payload.history);
         payload.client_fetched_at=Date.now(); state.spiritDiceState=payload;
+        if (Number(historyLimit) >= 20) state.spiritDiceLastFullHistoryAt = Date.now();
         const activeRoundId=String(payload.round?.id||'');
         if (activeRoundId) {
           const localBucket=state.spiritDiceAcceptedBetRounds?.[activeRoundId]||{};
@@ -6532,13 +6573,30 @@
   }
 
   function stopSpiritDiceTimerV175() {
-    if (state.spiritDiceTimer) clearInterval(state.spiritDiceTimer);
+    if (state.spiritDiceTimer) clearTimeout(state.spiritDiceTimer);
     if (state.spiritDiceBoundaryRefreshTimer) clearTimeout(state.spiritDiceBoundaryRefreshTimer);
     state.spiritDiceTimer=null; state.spiritDiceBoundaryRefreshTimer=null; state.spiritDiceRefreshGuard=false;
   }
+  function scheduleSpiritDiceClockV176(delay=500) {
+    if (state.spiritDiceTimer) clearTimeout(state.spiritDiceTimer);
+    state.spiritDiceTimer=setTimeout(() => {
+      state.spiritDiceTimer=null;
+      updateSpiritDiceClockV175();
+      const round=state.spiritDiceState?.round;
+      if (!document.getElementById('spiritDiceRoot') || !round) return;
+      const fetchedAt=Number(state.spiritDiceState?.client_fetched_at||Date.now());
+      const serverBase=Date.parse(state.spiritDiceState?.server_now||'')||Date.now();
+      const now=serverBase+(Date.now()-fetchedAt);
+      const reveal=Date.parse(round.reveal_at||'')||0;
+      const settle=Date.parse(round.settles_at||'')||0;
+      // 只有约1秒开骰动画窗口提高到160ms，其余时间500ms即可满足秒级倒计时。
+      const nextDelay = reveal && settle && now>=reveal-180 && now<settle+120 ? 160 : 500;
+      scheduleSpiritDiceClockV176(nextDelay);
+    }, Math.max(80,Number(delay)||500));
+  }
   function startSpiritDiceTimerV175() {
     stopSpiritDiceTimerV175(); if (!document.getElementById('spiritDiceRoot')) return;
-    state.spiritDiceTimer=setInterval(updateSpiritDiceClockV175,250); updateSpiritDiceClockV175();
+    updateSpiritDiceClockV175(); scheduleSpiritDiceClockV176(500);
   }
   function updateSpiritDiceClockV175() {
     const root=document.getElementById('spiritDiceRoot'); const payload=state.spiritDiceState; const round=payload?.round; if (!root||!round) return;
@@ -6568,11 +6626,11 @@
     const needsRefresh=phase==='next'||(phase==='revealing'&&(!Array.isArray(round.results)||!round.results.length));
     if(needsRefresh&&!state.spiritDiceRefreshGuard&&!state.spiritDiceSyncing&&!state.spiritDiceBoundaryRefreshTimer){
       state.spiritDiceRefreshGuard=true;
-      // 多人在线时错开阶段边界请求，避免10秒整点产生请求尖峰；最大仅延迟200ms，不改变权威封盘时间。
-      const jitter=40+Math.floor(Math.random()*161);
+      // CACHE55：120～620ms错峰，并且边界只取1条历史；首次进入才读取完整20局。
+      const jitter=120+Math.floor(Math.random()*501);
       state.spiritDiceBoundaryRefreshTimer=setTimeout(()=>{
         state.spiritDiceBoundaryRefreshTimer=null;
-        refreshSpiritDiceStateV175(true).finally(()=>{state.spiritDiceRefreshGuard=false;});
+        refreshSpiritDiceStateV175(true,state.spiritDiceBoundaryHistoryLimit||1,true).finally(()=>{state.spiritDiceRefreshGuard=false;});
       },jitter);
     }
   }
@@ -7863,18 +7921,26 @@
     }
   }
 
+  // V1.7.6 CACHE55：公共赌场桌运行期间暂停与当前牌桌无关的后台网络同步。
+  // 本地修为/洞府倒计时继续运行；离开公共桌后原有定时器会自然恢复联网同步。
+  function casinoPublicTableActiveV176() {
+    if (document.hidden || state.marketView !== 'casino' || state.casinoView !== 'house') return false;
+    const game = state.casinoDrafts?.house?.game || 'spirit_dice';
+    return game === 'spirit_dice' || game === 'fish_shrimp';
+  }
+
   function startCultivationLoop() {
     stopCultivationLoop();
     state.cultivationTicker = setInterval(updateLiveCultivationDisplay, 250);
-    state.cultivationSyncTimer = setInterval(() => syncCultivation(true), 15000);
-    state.opportunityPollTimer = setInterval(refreshOpportunity, 10000);
+    state.cultivationSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) syncCultivation(true); }, 15000);
+    state.opportunityPollTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshOpportunity(); }, 10000);
     state.opportunityCountdownTimer = setInterval(updateOpportunityCountdown, 1000);
     state.caveCountdownTimer = setInterval(updateCaveCountdown, 1000);
-    state.caveSyncTimer = setInterval(() => refreshCaveSystem(true), 60000);
-    state.techniqueSyncTimer = setInterval(() => refreshTechniqueSystem(false), 60000);
-    state.heavenBalanceSyncTimer = setInterval(() => refreshHeavenBalance(true), 60000);
-    state.npcSocialSyncTimer = setInterval(() => refreshNpcSocial(true), 60000);
-    state.sectSystemSyncTimer = setInterval(() => refreshSectSystem(true), 60000);
+    state.caveSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshCaveSystem(true); }, 60000);
+    state.techniqueSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshTechniqueSystem(false); }, 60000);
+    state.heavenBalanceSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshHeavenBalance(true); }, 60000);
+    state.npcSocialSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshNpcSocial(true); }, 60000);
+    state.sectSystemSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshSectSystem(true); }, 60000);
     state.marketSyncTimer = setInterval(() => {
       if (document.hidden || state.marketView !== 'casino') return;
       const publicGame = state.casinoView === 'house' ? (state.casinoDrafts?.house?.game || 'spirit_dice') : '';
@@ -7882,8 +7948,8 @@
       if (publicGame === 'spirit_dice' || publicGame === 'fish_shrimp') return;
       refreshMarketSystem(true);
     }, 10000);
-    state.worldEventsSyncTimer = setInterval(() => { if (!document.hidden) refreshWorldEvents(true); }, 10000);
-    state.divineNoticeTimer = setInterval(() => checkDivineNotice(true), 10000);
+    state.worldEventsSyncTimer = setInterval(() => { if (!document.hidden && !casinoPublicTableActiveV176()) refreshWorldEvents(true); }, 10000);
+    state.divineNoticeTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) checkDivineNotice(true); }, 10000);
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
     updateCaveCountdown();

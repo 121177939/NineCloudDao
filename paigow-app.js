@@ -32,6 +32,8 @@
     destroyed: false,
     lastError: '',
     renderHtml: '',
+    renderFrame: null,
+    lastSnapshotAt: 0,
     syncing: false,
     pendingSync: false,
     effectRoundId: null,
@@ -629,7 +631,7 @@
       : playerSeatHtml(entry, index, data)).join('');
     const deadline = deadlineMs(round);
     return `<section id="gameView">
-      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.7.5.3 CACHE54</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
+      <header class="topbar"><div class="brand"><button class="back-btn" type="button" data-back-lobby aria-label="返回房间大厅">×</button><span class="brand-seal">道</span><div class="brand-copy"><strong>${esc(room.room_name)} · ${duelShort(room)}</strong><small>${gameLabel(room)} · 传统32张骨牌 · 服务端权威结算 · V1.7.6 CACHE55</small></div></div><div class="top-actions"><span class="balance-chip">${currencyLabel(room.stake_type)} <b>${fmt(data.self_balance)}</b></span><button class="menu-btn" type="button" data-refresh-room aria-label="刷新">↻</button></div></header>
       ${errorHtml()}
       <main class="app-shell"><section class="room-strip"><strong>${esc(room.room_name)}</strong><div class="mode-switch room-locked"><button class="mode-btn ${room.game_mode === 'small' ? 'active' : ''}" disabled>小牌九</button><button class="mode-btn ${room.game_mode === 'big' ? 'active' : ''}" disabled>大牌九</button></div><div class="room-quick-actions"><button type="button" data-refresh-room>刷新状态</button></div><div class="room-meta"><span>底注 <b>${fmt(room.base_stake)}${currencyLabel(room.stake_type)}</b></span><span>席位 <b>${members.filter(m => m.role === 'player').length}/${roomCapacity(room)}</b></span><span>局数 <b>${round?.round_no || 0}</b></span><span>阶段 <b>${phaseLabel(round?.phase)}</b></span>${deadline ? `<span>倒计时 <b data-deadline="${deadline}">--</b></span>` : ''}<span class="room-locked-note">${duelLabel(room)}</span></div></section>
       <div class="layout"><section class="board-frame" aria-label="九霄牌九桌"><div class="felt"><div id="opponentSeats">${opponentsHtml}</div>${selfZoneHtml(data)}</div></section><aside class="side-stack"><section class="panel"><div class="panel-head"><h3>本局概览</h3><span>${gameLabel(room)}</span></div><div class="panel-body">${metricsHtml(data)}</div></section><section class="panel"><div class="panel-head"><h3>开牌排名</h3><span>按服务端结果</span></div><div class="panel-body"><div class="rank-list">${rankHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>牌局动态</h3><span>当前状态</span></div><div class="panel-body"><div class="log-list">${logHtml(data)}</div></div></section><section class="panel"><div class="panel-head"><h3>玩法说明</h3><span>${duelLabel(room)}</span></div><div class="panel-body rule-note"><b>老何庄：</b>100∶100等额结算，直接使用现有赌场资金；大小牌九均采用盲牌下注，小牌九结算前不显示玩家牌面，大牌九选倍后进入组牌阶段才显示本人四张牌，老何牌面只在公开阶段显示。<br><b>玩家庄：</b>选庄时冻结庄家全部可用灵石；不足赔付时按所有赢家名义利润比例分配，系统不兜底。<br><b>平局：</b>大牌九一胜一负为平局，本金与2.5%手续费全退；单手同牌及双方0点均判庄家胜。<br><b>倍率：</b>10、50、100倍；赌注与手续费合计不得超过开局余额30%。<br><b>房间：</b>首局5分钟未开始自动关闭；入座需至少持有底注10倍灵石，结算后低于门槛自动转观战。<br><b>准备：</b>入座后10秒内未准备自动离桌；全员准备后2秒自动开局。<br><b>小牌九：</b>5秒选倍；玩家牌局首张明牌仅牌主本人可见，老何庄房则结算前完全不显示自己的牌。<br><b>安全：</b>洗牌、私牌遮罩、阶段截止与资金结算均由数据库完成。</div></section></aside></div>
@@ -671,6 +673,15 @@
     syncCreateForm();
   }
 
+  // V1.7.6 CACHE55：Realtime突发事件只在下一帧合并重绘一次，避免多人同时准备/选倍时连续innerHTML。
+  function scheduleRenderV176() {
+    if (state.destroyed || state.renderFrame) return;
+    state.renderFrame = requestAnimationFrame(() => {
+      state.renderFrame = null;
+      render();
+    });
+  }
+
   function activeDeadline() {
     if (!state.roomId || !state.room) return null;
     const round = state.room.round;
@@ -695,11 +706,12 @@
     const due = activeDeadline();
     if (!due || due.at > Date.now() || state.deadlineAdvanceKey === due.key || state.destroyed) return;
     state.deadlineAdvanceKey = due.key;
+    const jitter = 220 + Math.floor(Math.random() * 561);
     window.setTimeout(async () => {
       if (state.destroyed || !state.roomId) return;
-      try { await syncRoomSnapshot({ advance: true, reason: 'deadline_fallback' }); }
+      try { await syncRoomSnapshot({ advance: true, reason: 'deadline_fallback_v176' }); }
       catch (error) { console.debug('[牌九] 阶段到期兜底暂不可用', error?.message || error); }
-    }, 350);
+    }, jitter);
   }
 
   function updateCountdown() {
@@ -827,7 +839,8 @@
       if (snapshot.status !== 'active') throw new Error('PAIGOW_DISABLED');
       state.lobby = snapshot;
       updateSnapshotVersions();
-      render();
+      state.lastSnapshotAt = Date.now();
+      scheduleRenderV176();
       return snapshot;
     } finally {
       if (!bypassLock) {
@@ -846,7 +859,7 @@
     state.syncing = true;
     try {
       const snapshot = advance
-        ? await rpc('advance_paigow_round_bpaigow01', { p_room_id: state.roomId })
+        ? await rpc('advance_paigow_round_v176', { p_room_id: state.roomId })
         : await rpc('get_paigow_room_state_bpaigow01', { p_room_id: state.roomId });
       const status = applyRoomSnapshot(snapshot);
       if (status === 'closed') {
@@ -861,7 +874,8 @@
         return null;
       }
       if (!state.lobby) await syncLobbySnapshot({ reason: 'room_balance_seed', bypassLock: true });
-      render();
+      state.lastSnapshotAt = Date.now();
+      scheduleRenderV176();
       return snapshot;
     } finally {
       state.syncing = false;
@@ -879,6 +893,9 @@
       return;
     }
     clearTimeout(state.syncTimer);
+    // CACHE55：快照RPC最多约每420ms一次；Realtime可直接应用的轻量delta不受此限制。
+    const sinceLast = Date.now() - Number(state.lastSnapshotAt || 0);
+    const snapshotDelay = Math.max(220, 420 - Math.max(0, sinceLast));
     state.syncTimer = setTimeout(async () => {
       state.syncTimer = null;
       if (scope === 'room' && numericVersion && numericVersion <= state.roomSnapshotVersion) return;
@@ -889,7 +906,7 @@
       } catch (error) {
         console.debug('[牌九] Realtime快照同步失败', error?.message || error);
       }
-    }, 90);
+    }, snapshotDelay);
   }
 
   function applyRealtimeDelta(payload) {
@@ -948,7 +965,7 @@
       state.roomEventVersion = Math.max(state.roomEventVersion, roomVersion);
       state.room.event_version = state.roomEventVersion;
     }
-    render();
+    scheduleRenderV176();
     return true;
   }
 
@@ -996,7 +1013,7 @@
   function startSafetyResync() {
     clearInterval(state.safetyTimer);
     clearInterval(state.clock);
-    state.clock = setInterval(updateCountdown, 250);
+    state.clock = setInterval(updateCountdown, 500);
     state.safetyTimer = setInterval(async () => {
       if (state.destroyed || document.hidden || state.busy || state.syncing) return;
       try {
@@ -1005,7 +1022,7 @@
       } catch (error) {
         console.debug('[牌九] 安全校准暂不可用', error?.message || error);
       }
-    }, state.roomId ? 60000 : 120000);
+    }, state.roomId ? 90000 : 180000);
   }
 
   async function loadLobby() {
@@ -1181,6 +1198,8 @@
     if (state.destroyed) return;
     state.destroyed = true;
     clearTimeout(state.syncTimer);
+    if (state.renderFrame) cancelAnimationFrame(state.renderFrame);
+    state.renderFrame = null;
     clearInterval(state.safetyTimer);
     clearInterval(state.clock);
     if (state.realtimeUnsubscribe) state.realtimeUnsubscribe();

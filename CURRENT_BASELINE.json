@@ -1,25 +1,26 @@
 {
-  "version": "1.7.5.3",
-  "releaseLabel": "九霄问道 V1.7.5.3 CACHE54",
-  "sourceBaseline": "V1.7.5 CACHE51",
+  "version": "1.7.6",
+  "releaseLabel": "九霄问道 V1.7.6 CACHE55",
+  "sourceBaseline": "V1.7.5.3 CACHE54",
   "minimumDatabaseBaseline": "V1.7.5 CACHE51 / SQL 106",
-  "databaseChange": "NONE_FRONTEND_HOTFIX_SPIRIT_DICE_GLOW_DEPLOY_FIX_CACHE54",
-  "databaseMigration": null,
-  "databaseReleaseGate": null,
-  "databaseFinalCheck": null,
+  "databaseChange": "V1.7.6_MULTIPLAYER_TABLE_PERFORMANCE_AND_B_PAIGOW02_UI",
+  "databaseMigration": "107_V1.7.6_多人牌桌性能重构.sql",
+  "databaseReleaseGate": "108_V1.7.6_CACHE55_正式发布门禁.sql",
+  "databaseFinalCheck": "109_V1.7.6_CACHE55_升级后检查.sql",
   "deploymentStatus": "authoritative_lean_github_deployment_package_with_b_handoff",
   "authoritativePackages": {
-    "githubDeployPackage": "Jiuxiao_V1.7.5.3_CACHE54_GitHub_Deploy.zip",
-    "sqlPackage": "沿用V1.7.5 CACHE51 SQL；本热修无SQL",
+    "githubDeployPackage": "Jiuxiao_V1.7.6_CACHE55_GitHub_Deploy.zip",
+    "sqlPackage": "Jiuxiao_V1.7.6_CACHE55_SQL.zip",
     "handoffPackage": "B_HANDOFF已内置于GitHub部署包",
     "historyArchive": "沿用九霄问道_阶段式历史归档_截至V1.7.1_CACHE47_轻量版.zip"
   },
   "notes": [
-    "修复CACHE53部署工作流仍调用已不存在的build_pages_v1_7_5_1.py，导致GitHub Actions构建失败、线上继续停留旧前端的问题。",
-    "灵骰中奖高亮改为服务端my_bets与本机已确认批次双源识别，不再依赖当前灵石/修为筛选或旧DOM data属性。",
-    "中奖时同时挂载win与dice-win-glow，并显式覆盖disabled透明度，视觉与鱼虾灵局金色发光一致。",
-    "不修改V1.7.5 CACHE51数据库、赔率、开奖、联合庄、奖池或资金结算规则；本热修无SQL。",
-    "继续保持120ms批量下注、本地倒计时、阶段边界同步及无1秒数据库轮询。"
+    "正式并入B-PAIGOW02_UI01，替换九霄灵牌视觉层；B02本身无fetch/XMLHttpRequest/WebSocket/setInterval/MutationObserver，不改变牌九权威规则。",
+    "灵骰多人性能重构：已存在轮次走无锁快路径；旧局维护使用try advisory lock；最近20局历史改为集合聚合；系统庄共享赌场资金锁缩到事务末尾责任确认临界区。",
+    "灵骰前端下注成功只局部更新余额、本人下注和全场目标，不再每批replaceWith整张牌桌；阶段边界只拉取1条历史并增量合并；倒计时采用自适应本地定时器。",
+    "九霄灵牌客户端将Realtime突发事件按动画帧合并重绘，阶段到期兜底使用advance_paigow_round_v176非阻塞推进；安全校准频率降低。",
+    "灵骰/鱼虾公共桌打开时暂停非紧急后台网络同步，退出后恢复；不增加1秒数据库轮询。",
+    "V1.7.6不修改V1.7.5的灵骰/鱼虾赔率、玩家庄100:97.5、联合庄、奖池、牌九发牌/私牌/结算规则。"
   ],
   "integratedModules": [
     "B-CAVE01",
@@ -31,19 +32,20 @@
     "B-PAIGOW01-V26-UI",
     "B-PAIGOW01-REALTIME-ISOLATION-V16",
     "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1",
-    "B-EQUIPMENT01"
+    "B-EQUIPMENT01",
+    "B-PAIGOW02-UI01"
   ],
-  "clientRelease": "V1.7.5.3_CACHE54",
-  "developmentBaseline": "V1.7.5.3_AB39_CACHE54",
+  "clientRelease": "V1.7.6_CACHE55",
+  "developmentBaseline": "V1.7.6_AB40_CACHE55",
   "packagePolicy": {
     "githubDelivery": "只交付GitHub运行文件、Pages工作流、单一构建脚本、部署说明及B_HANDOFF",
     "sql": "数据库变更使用独立增量SQL包，禁止将SQL塞入GitHub Pages部署包",
     "handoff": "每个GitHub部署包继续包含B_HANDOFF，且不得进入Pages正式产物",
     "history": "阶段归档只在需要跨对话或阶段升级时更新"
   },
-  "sqlRevision": "V1.7.5_CACHE51",
-  "cacheEpoch": 54,
-  "nextVersion": "1.7.6",
-  "nextSql": 107,
-  "packageRevision": 3
+  "sqlRevision": "V1.7.6_CACHE55",
+  "cacheEpoch": 55,
+  "nextVersion": "1.7.7",
+  "nextSql": 110,
+  "packageRevision": 1
 }

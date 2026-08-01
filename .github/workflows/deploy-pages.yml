@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V1.7.5.3 to GitHub Pages
+name: Deploy NineCloudDao V1.7.6 to GitHub Pages
 
 on:
   push:
@@ -31,11 +31,11 @@ jobs:
           node-version: "20"
       - name: Check JavaScript syntax
         run: |
-          for f in app.js config.js update-guard.js sw.js b-paigow01.js b-equipment01.js paigow-realtime.js paigow-app.js; do
+          for f in app.js config.js update-guard.js sw.js b-paigow01.js b-equipment01.js paigow-realtime.js paigow-app.js b-paigow02-ui.js; do
             node --check "$f"
           done
       - name: Build lean Pages artifact
-        run: python3 tools/build_pages_v1_7_5_3.py . .pages-site
+        run: python3 tools/build_pages_v1_7_6.py . .pages-site
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload GitHub Pages artifact

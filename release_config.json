@@ -1,14 +1,14 @@
 {
-  "version": "V1.7.5.3",
-  "releaseLabel": "V1.7.5.3 CACHE54",
-  "clientBuild": "v1-7-5-3-cache54",
-  "cacheEpoch": 54,
+  "version": "V1.7.6",
+  "releaseLabel": "V1.7.6 CACHE55",
+  "clientBuild": "v1-7-6-cache55",
+  "cacheEpoch": 55,
   "minimumDatabaseBaseline": "V1.7.5 CACHE51 / SQL 106",
-  "sqlRevision": "V1.7.5_CACHE51",
-  "migrationSql": null,
-  "releaseGateSql": null,
-  "finalCheckSql": null,
-  "nextVersion": "1.7.6",
-  "nextSql": 107,
-  "frontendHotfix": "SPIRIT_DICE_GLOW_DEPLOY_FIX_CACHE54"
+  "sqlRevision": "V1.7.6_CACHE55",
+  "migrationSql": "107_V1.7.6_多人牌桌性能重构.sql",
+  "releaseGateSql": "108_V1.7.6_CACHE55_正式发布门禁.sql",
+  "finalCheckSql": "109_V1.7.6_CACHE55_升级后检查.sql",
+  "nextVersion": "1.7.7",
+  "nextSql": 110,
+  "feature": "MULTIPLAYER_TABLE_PERFORMANCE_BPAIGOW02_UI"
 }
