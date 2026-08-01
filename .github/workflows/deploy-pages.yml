@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V1.7.7 to GitHub Pages
+name: Deploy NineCloudDao V1.7.7 FIX1 to GitHub Pages
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
             node --check "$f"
           done
       - name: Build lean Pages artifact
-        run: python3 tools/build_pages_v1_7_7.py . .pages-site
+        run: python3 tools/build_pages_v1_7_7_fix1.py . .pages-site
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload GitHub Pages artifact
