@@ -215,7 +215,7 @@
     .primary-btn{background:linear-gradient(135deg,#d3b36b,#b58a40);border-color:#dfc177;color:#17120b;font-weight:700}
     .primary-btn:hover:not(:disabled){transform:translateY(-1px);background:linear-gradient(135deg,#e1c47b,#c59b50)}
     .ghost-btn{background:transparent;border-color:var(--line)}
-    .mult-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+    .mult-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
     .multiplier-btn{background:rgba(13,12,10,.5);border-color:var(--line);color:var(--gold-bright);font-size:18px;font-weight:600}
     .multiplier-btn:hover:not(:disabled){border-color:var(--gold-bright);background:rgba(201,167,95,.12);transform:translateY(-1px)}
     .ready-note{padding:10px;border:1px solid rgba(143,186,154,.42);background:rgba(143,186,154,.08);color:#b8d6c0;text-align:center;font-size:12px;line-height:1.55}

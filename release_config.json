@@ -1,14 +1,16 @@
 {
-  "version": "V1.7.6",
-  "releaseLabel": "V1.7.6 CACHE55",
-  "clientBuild": "v1-7-6-cache55",
-  "cacheEpoch": 55,
-  "minimumDatabaseBaseline": "V1.7.5 CACHE51 / SQL 106",
-  "sqlRevision": "V1.7.6_CACHE55",
-  "migrationSql": "107_V1.7.6_多人牌桌性能重构.sql",
-  "releaseGateSql": "108_V1.7.6_CACHE55_正式发布门禁.sql",
-  "finalCheckSql": "109_V1.7.6_CACHE55_升级后检查.sql",
-  "nextVersion": "1.7.7",
-  "nextSql": 110,
-  "feature": "MULTIPLAYER_TABLE_PERFORMANCE_BPAIGOW02_UI"
+  "version": "V1.7.7",
+  "releaseLabel": "V1.7.7 CACHE56",
+  "clientBuild": "v1-7-7-cache56",
+  "cacheEpoch": 56,
+  "minimumDatabaseBaseline": "V1.7.6 CACHE55 / SQL 109",
+  "sqlRevision": "V1.7.7_CACHE56",
+  "precheckSql": "110_V1.7.7_升级前检查.sql",
+  "migrationSql": "111_V1.7.7_牌九10_30_50_100倍率兼容.sql",
+  "releaseGateSql": "112_V1.7.7_CACHE56_正式发布门禁.sql",
+  "finalCheckSql": "113_V1.7.7_CACHE56_升级后检查.sql",
+  "nextVersion": "1.7.8",
+  "nextSql": 114,
+  "feature": "B_PAIGOW02_UI02_PARITY_AND_MULTIPLIER_10_30_50_100",
+  "packageRevision": 1
 }

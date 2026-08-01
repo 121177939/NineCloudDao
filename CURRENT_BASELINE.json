@@ -1,26 +1,27 @@
 {
-  "version": "1.7.6",
-  "releaseLabel": "九霄问道 V1.7.6 CACHE55",
-  "sourceBaseline": "V1.7.5.3 CACHE54",
-  "minimumDatabaseBaseline": "V1.7.5 CACHE51 / SQL 106",
-  "databaseChange": "V1.7.6_MULTIPLAYER_TABLE_PERFORMANCE_AND_B_PAIGOW02_UI",
-  "databaseMigration": "107_V1.7.6_多人牌桌性能重构.sql",
-  "databaseReleaseGate": "108_V1.7.6_CACHE55_正式发布门禁.sql",
-  "databaseFinalCheck": "109_V1.7.6_CACHE55_升级后检查.sql",
-  "deploymentStatus": "authoritative_lean_github_deployment_package_with_b_handoff",
+  "version": "1.7.7",
+  "releaseLabel": "九霄问道 V1.7.7 CACHE56",
+  "sourceBaseline": "V1.7.6 CACHE55",
+  "minimumDatabaseBaseline": "V1.7.6 CACHE55 / SQL 109",
+  "databaseChange": "V1.7.7_B_PAIGOW02_UI02_AND_MULTIPLIER_10_30_50_100",
+  "databasePrecheck": "110_V1.7.7_升级前检查.sql",
+  "databaseMigration": "111_V1.7.7_牌九10_30_50_100倍率兼容.sql",
+  "databaseReleaseGate": "112_V1.7.7_CACHE56_正式发布门禁.sql",
+  "databaseFinalCheck": "113_V1.7.7_CACHE56_升级后检查.sql",
+  "deploymentStatus": "authoritative_full_github_deployment_package_pending_production_sql_execution",
   "authoritativePackages": {
-    "githubDeployPackage": "Jiuxiao_V1.7.6_CACHE55_GitHub_Deploy.zip",
-    "sqlPackage": "Jiuxiao_V1.7.6_CACHE55_SQL.zip",
+    "githubDeployPackage": "Jiuxiao_V1.7.7_CACHE56_GitHub_Deploy.zip",
+    "sqlPackage": "Jiuxiao_V1.7.7_CACHE56_SQL.zip",
+    "completeDeliveryPackage": "Jiuxiao_V1.7.7_CACHE56_完整交付包.zip",
     "handoffPackage": "B_HANDOFF已内置于GitHub部署包",
-    "historyArchive": "沿用九霄问道_阶段式历史归档_截至V1.7.1_CACHE47_轻量版.zip"
+    "historyArchive": "九霄问道_阶段式历史归档_截至V1.7.6_CACHE55_轻量版.zip"
   },
   "notes": [
-    "正式并入B-PAIGOW02_UI01，替换九霄灵牌视觉层；B02本身无fetch/XMLHttpRequest/WebSocket/setInterval/MutationObserver，不改变牌九权威规则。",
-    "灵骰多人性能重构：已存在轮次走无锁快路径；旧局维护使用try advisory lock；最近20局历史改为集合聚合；系统庄共享赌场资金锁缩到事务末尾责任确认临界区。",
-    "灵骰前端下注成功只局部更新余额、本人下注和全场目标，不再每批replaceWith整张牌桌；阶段边界只拉取1条历史并增量合并；倒计时采用自适应本地定时器。",
-    "九霄灵牌客户端将Realtime突发事件按动画帧合并重绘，阶段到期兜底使用advance_paigow_round_v176非阻塞推进；安全校准频率降低。",
-    "灵骰/鱼虾公共桌打开时暂停非紧急后台网络同步，退出后恢复；不增加1秒数据库轮询。",
-    "V1.7.6不修改V1.7.5的灵骰/鱼虾赔率、玩家庄100:97.5、联合庄、奖池、牌九发牌/私牌/结算规则。"
+    "以V1.7.6 CACHE55为唯一母包，保留灵骰与牌九多人性能、Realtime、阶段推进、私牌遮罩、资金结算及全部既有功能代码。",
+    "B-PAIGOW02-UI02在A线版本升级和页面生成完成后最后应用；正式包内b-paigow01.html已经包含UI02内嵌标记，后续不得再运行旧模板覆盖该页面。",
+    "牌九选倍调整为10、30、50、100倍，默认超时仍为10倍；赌注与手续费合计不得超过开局余额30%的既有规则保持不变。",
+    "SQL 111采用受保护的定义迁移：仅在生产函数或牌九CHECK约束中识别到旧10/50/100白名单时替换为10/30/50/100；无法识别时整笔事务报错回滚。",
+    "不修改灵骰、鱼虾蟹、玩家庄100:97.5、联合庄、奖池及其他牌九结算规则。"
   ],
   "integratedModules": [
     "B-CAVE01",
@@ -33,19 +34,21 @@
     "B-PAIGOW01-REALTIME-ISOLATION-V16",
     "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1",
     "B-EQUIPMENT01",
-    "B-PAIGOW02-UI01"
+    "B-PAIGOW02-UI01",
+    "B-PAIGOW02-UI02"
   ],
-  "clientRelease": "V1.7.6_CACHE55",
-  "developmentBaseline": "V1.7.6_AB40_CACHE55",
+  "clientRelease": "V1.7.7_CACHE56",
+  "developmentBaseline": "V1.7.7_AB41_CACHE56",
   "packagePolicy": {
     "githubDelivery": "只交付GitHub运行文件、Pages工作流、单一构建脚本、部署说明及B_HANDOFF",
     "sql": "数据库变更使用独立增量SQL包，禁止将SQL塞入GitHub Pages部署包",
     "handoff": "每个GitHub部署包继续包含B_HANDOFF，且不得进入Pages正式产物",
+    "ui02": "UI02必须在页面生成后最后接入，禁止旧模板再次生成b-paigow01.html",
     "history": "阶段归档只在需要跨对话或阶段升级时更新"
   },
-  "sqlRevision": "V1.7.6_CACHE55",
-  "cacheEpoch": 55,
-  "nextVersion": "1.7.7",
-  "nextSql": 110,
+  "sqlRevision": "V1.7.7_CACHE56",
+  "cacheEpoch": 56,
+  "nextVersion": "1.7.8",
+  "nextSql": 114,
   "packageRevision": 1
 }
