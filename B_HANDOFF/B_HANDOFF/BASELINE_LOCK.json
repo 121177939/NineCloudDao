@@ -1,0 +1,15 @@
+{
+  "ownerLine": "A",
+  "formalVersion": "V1.7.5.2 CACHE53",
+  "developmentLock": "V1.7.5.2_AB38_CACHE53",
+  "nextVersion": "1.7.6",
+  "nextSql": 107,
+  "lastIntegratedBModule": "B-EQUIPMENT01",
+  "bTaskStatus": "waiting_for_new_requirement",
+  "bModulesAreCandidates": true,
+  "historicalSqlImmutable": true,
+  "githubPackageIsAuthoritativeSource": true,
+  "bHandoffFolderMustBeIncludedInFutureDeployPackages": true,
+  "bHandoffExcludedFromPagesArtifact": true,
+  "casinoPublicTableBaseline": "V1.7.5_CACHE51"
+}

@@ -1,0 +1,49 @@
+{
+  "version": "1.7.5.2",
+  "releaseLabel": "九霄问道 V1.7.5.2 CACHE53",
+  "sourceBaseline": "V1.7.5 CACHE51",
+  "minimumDatabaseBaseline": "V1.7.5 CACHE51 / SQL 106",
+  "databaseChange": "NONE_FRONTEND_HOTFIX_SPIRIT_DICE_LOCAL_WIN_GLOW_CACHE53",
+  "databaseMigration": null,
+  "databaseReleaseGate": null,
+  "databaseFinalCheck": null,
+  "deploymentStatus": "authoritative_lean_github_deployment_package_with_b_handoff",
+  "authoritativePackages": {
+    "githubDeployPackage": "Jiuxiao_V1.7.5.2_CACHE53_GitHub_Deploy.zip",
+    "sqlPackage": "沿用V1.7.5 CACHE51 SQL；本热修无SQL",
+    "handoffPackage": "B_HANDOFF已内置于GitHub部署包",
+    "historyArchive": "沿用九霄问道_阶段式历史归档_截至V1.7.1_CACHE47_轻量版.zip"
+  },
+  "notes": [
+    "修复大、小、豹子、数字1至6在结算明细result_count缺失或未回填时，实际中奖但下注格不亮的问题。",
+    "不修改V1.7.5 CACHE51的10秒公共牌桌、赔率、联合庄、奖池、数据库函数或资金结算规则。",
+    "继续保持120ms批量下注、本地倒计时、阶段边界同步及无1秒数据库轮询。",
+    "CACHE53为纯前端热修：灵骰三颗公共骰全部停定后，直接用已公开结果与本人已接受下注在本机切换win发光边框，不再等待服务端is_settled。",
+    "CACHE53不新增数据库轮询、不修改赔率/开奖/联合庄/资金结算，也不需要SQL。"
+  ],
+  "integratedModules": [
+    "B-CAVE01",
+    "B-COMBAT01",
+    "CASINO-FIX1",
+    "CASINO-PUBLIC-TABLE-V175",
+    "MUTATION-ROOTS-V12",
+    "B-PAIGOW01",
+    "B-PAIGOW01-V26-UI",
+    "B-PAIGOW01-REALTIME-ISOLATION-V16",
+    "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1",
+    "B-EQUIPMENT01"
+  ],
+  "clientRelease": "V1.7.5.2_CACHE53",
+  "developmentBaseline": "V1.7.5.2_AB38_CACHE53",
+  "packagePolicy": {
+    "githubDelivery": "只交付GitHub运行文件、Pages工作流、单一构建脚本、部署说明及B_HANDOFF",
+    "sql": "数据库变更使用独立增量SQL包，禁止将SQL塞入GitHub Pages部署包",
+    "handoff": "每个GitHub部署包继续包含B_HANDOFF，且不得进入Pages正式产物",
+    "history": "阶段归档只在需要跨对话或阶段升级时更新"
+  },
+  "sqlRevision": "V1.7.5_CACHE51",
+  "cacheEpoch": 53,
+  "nextVersion": "1.7.6",
+  "nextSql": 107,
+  "packageRevision": 2
+}
