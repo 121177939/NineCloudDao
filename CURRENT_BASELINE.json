@@ -1,30 +1,24 @@
 {
-  "version": "1.7.5",
-  "releaseLabel": "九霄问道 V1.7.5 CACHE51",
-  "sourceBaseline": "V1.7.4 CACHE50",
-  "minimumDatabaseBaseline": "V1.7.2 CACHE48 / SQL 103",
-  "databaseChange": "CASINO_PUBLIC_DICE_BATCH_SINGLE_DEALER_JOINT_HOUSE_POOL_DRAW_CACHE51",
-  "databaseMigration": "104_V1.7.5_灵骰公共牌桌与联合庄资金结算.sql",
-  "databaseReleaseGate": "105_V1.7.5_CACHE51_正式切换与发布门禁.sql",
-  "databaseFinalCheck": "106_V1.7.5_CACHE51_升级后检查.sql",
+  "version": "1.7.5.1",
+  "releaseLabel": "九霄问道 V1.7.5.1 CACHE52",
+  "sourceBaseline": "V1.7.5 CACHE51",
+  "minimumDatabaseBaseline": "V1.7.5 CACHE51 / SQL 106",
+  "databaseChange": "NONE_FRONTEND_HOTFIX_SPIRIT_DICE_WIN_GLOW_CACHE52",
+  "databaseMigration": null,
+  "databaseReleaseGate": null,
+  "databaseFinalCheck": null,
   "deploymentStatus": "authoritative_lean_github_deployment_package_with_b_handoff",
   "authoritativePackages": {
-    "githubDeployPackage": "Jiuxiao_V1.7.5_CACHE51_GitHub_Deploy.zip",
-    "sqlPackage": "Jiuxiao_V1.7.5_CACHE51_SQL.zip",
+    "githubDeployPackage": "Jiuxiao_V1.7.5.1_CACHE52_GitHub_Deploy.zip",
+    "sqlPackage": "沿用V1.7.5 CACHE51 SQL；本热修无SQL",
     "handoffPackage": "B_HANDOFF已内置于GitHub部署包",
     "historyArchive": "沿用九霄问道_阶段式历史归档_截至V1.7.1_CACHE47_轻量版.zip"
   },
   "notes": [
-    "灵骰问道改为10秒公共牌桌：一名庄家对多名闲家，同轮所有玩家共用同一组三骰，可押大、小、豹子及1至6。",
-    "多人下注采用120ms点击合并与批量RPC；倒计时本地计算，只在阶段边界刷新，不使用1秒数据库轮询。",
-    "开奖/换局边界权威同步增加40～200ms客户端抖动，削平多人同时在线的整点请求尖峰；服务器封盘时间不受影响。",
-    "多人性能：荷老公共桌下注不锁共享round行；下注RPC只返回本批轻量增量，避免持有赌场资金锁时聚合整桌与20局历史。",
-    "鱼虾灵局与灵骰公共牌桌只允许一个当前庄家；玩家庄存在时闲家不能另选荷老。",
-    "荷老系统庄按100:95体系：鱼虾95/190/285；灵骰大小95、数字95/190/285、任意豹子3325。",
-    "玩家庄对称100:97.5；输家承担标准责任100%，赢家取得97.5%，2.5%进入赌场。",
-    "玩家庄不能独立承保但可承担50%时，本轮后续触发玩家庄+荷老50/50联合庄；下一轮玩家自动下庄并按角色冷却30分钟。",
-    "赌场无正利润时本期不向奖池追加利润，但已有奖池仍照常开奖；正利润仍按50%分配到奖池。",
-    "九霄灵牌规则本版本不修改；V1.7.4装备常驻背包与洞府单一储物格规则继续保留。"
+    "CACHE52为纯前端热修：灵骰问道命中下注门时，直接依据本局公共三骰结果计算命中状态，并复用鱼虾灵局同一win发光边框。",
+    "修复大、小、豹子、数字1至6在结算明细result_count缺失或未回填时，实际中奖但下注格不亮的问题。",
+    "不修改V1.7.5 CACHE51的10秒公共牌桌、赔率、联合庄、奖池、数据库函数或资金结算规则。",
+    "继续保持120ms批量下注、本地倒计时、阶段边界同步及无1秒数据库轮询。"
   ],
   "integratedModules": [
     "B-CAVE01",
@@ -38,8 +32,8 @@
     "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1",
     "B-EQUIPMENT01"
   ],
-  "clientRelease": "V1.7.5_CACHE51",
-  "developmentBaseline": "V1.7.5_AB36_CACHE51",
+  "clientRelease": "V1.7.5.1_CACHE52",
+  "developmentBaseline": "V1.7.5.1_AB37_CACHE52",
   "packagePolicy": {
     "githubDelivery": "只交付GitHub运行文件、Pages工作流、单一构建脚本、部署说明及B_HANDOFF",
     "sql": "数据库变更使用独立增量SQL包，禁止将SQL塞入GitHub Pages部署包",
@@ -47,7 +41,7 @@
     "history": "阶段归档只在需要跨对话或阶段升级时更新"
   },
   "sqlRevision": "V1.7.5_CACHE51",
-  "cacheEpoch": 51,
+  "cacheEpoch": 52,
   "nextVersion": "1.7.6",
   "nextSql": 107,
   "packageRevision": 1

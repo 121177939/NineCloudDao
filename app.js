@@ -6186,6 +6186,21 @@
     return SPIRIT_DICE_TARGETS_V175.find(item => item[0] === code) || ['unknown','?','未知'];
   }
 
+  // V1.7.5.1 CACHE52：灵骰命中高亮直接按本局公共三骰结果计算，
+  // 不依赖结算明细里的 result_count；这样大/小/豹子/数字命中都能和鱼虾灵局复用同一 .win 发光边框。
+  function spiritDiceChoiceHitV175(results, choiceCode) {
+    const dice = Array.isArray(results) ? results.map(Number).filter(v => Number.isInteger(v) && v >= 1 && v <= 6) : [];
+    if (dice.length !== 3) return false;
+    const triple = dice[0] === dice[1] && dice[1] === dice[2];
+    const total = dice[0] + dice[1] + dice[2];
+    if (choiceCode === 'triple') return triple;
+    if (choiceCode === 'big') return !triple && total >= 11 && total <= 17;
+    if (choiceCode === 'small') return !triple && total >= 4 && total <= 10;
+    const match = /^face([1-6])$/.exec(String(choiceCode || ''));
+    if (match) return dice.includes(Number(match[1]));
+    return false;
+  }
+
   function spiritDiceDraftV175() {
     if (!state.spiritDiceDraft || typeof state.spiritDiceDraft !== 'object') {
       state.spiritDiceDraft = { stakeType: 'spirit_stone', quantity: 100, multiplier: 1 };
@@ -6432,7 +6447,11 @@
       const myAmount=Number(bet?.stake_amount||0);
       const total=spiritDiceRoundTotalV175(totals,draft.stakeType,code);
       const pending=spiritDiceQueuedAmountV175(round.id,houseMode,draft.stakeType,code);
-      const hit=Boolean(round.is_settled&&myAmount>0&&Number(bet?.result_count||0)>0);
+      const hit=Boolean(
+        round.is_settled &&
+        myAmount>0 &&
+        (Number(bet?.result_count||0)>0 || spiritDiceChoiceHitV175(results,code))
+      );
       return `<button type="button" class="fish-target-card dice-target-card ${hit?'win':''} ${pending>0?'queued':''}" data-dice-choice="${code}" ${open?'':'disabled'}><div class="fish-target-head"><span class="dice-choice-seal">${code.startsWith('face')?name:(code==='triple'?'豹':name)}</span><div><strong>${name}</strong><small>${note}</small></div></div><div class="fish-target-meta"><span>我的下注 <b>${formatNumber(myAmount)}</b></span><span>全场总额 <b>${formatNumber(total)}</b></span></div><em class="fish-target-pending" data-dice-pending>${pending>0?`待提交 +${formatNumber(pending)}`:''}</em></button>`;
     }).join('');
     const latest=history.find(item=>item?.has_bets)||null;
