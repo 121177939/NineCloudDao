@@ -143,6 +143,7 @@
     spiritDiceBetProcessing: false,
     spiritDiceBetFlushTimer: null,
     spiritDiceLastBetMessage: '',
+    spiritDiceAcceptedBetRounds: {},
     marketSyncing: false,
     marketSyncTimer: null,
     worldEvents: null,
@@ -5879,6 +5880,7 @@
     if (!Array.isArray(current.my_bets)) current.my_bets = [];
     if (!Array.isArray(current.round_totals)) current.round_totals = [];
     const accepted = Array.isArray(payload.accepted_bets) ? payload.accepted_bets : [];
+    spiritDiceRememberAcceptedBetsV175(payload.round_id || current.round?.id, accepted);
     accepted.forEach(row => {
       const item = { ...row, stake_amount: Number(row.stake_amount || 0), net_profit: 0, result_count: null, is_settled: false };
       current.my_bets.push(item);
@@ -6186,7 +6188,7 @@
     return SPIRIT_DICE_TARGETS_V175.find(item => item[0] === code) || ['unknown','?','未知'];
   }
 
-  // V1.7.5.2 CACHE53：灵骰命中高亮直接按本局公共三骰结果计算，
+  // V1.7.5.3 CACHE54：灵骰命中高亮直接按本局公共三骰结果计算，
   // 不依赖结算明细里的 result_count；这样大/小/豹子/数字命中都能和鱼虾灵局复用同一 .win 发光边框。
   function spiritDiceChoiceHitV175(results, choiceCode) {
     const dice = Array.isArray(results) ? results.map(Number).filter(v => Number.isInteger(v) && v >= 1 && v <= 6) : [];
@@ -6199,6 +6201,33 @@
     const match = /^face([1-6])$/.exec(String(choiceCode || ''));
     if (match) return dice.includes(Number(match[1]));
     return false;
+  }
+
+  // V1.7.5.3 CACHE54：本人已接受下注使用“服务端my_bets + 本机已确认批次”双源判断。
+  // 不再依赖当前灵石/修为切换，也不依赖DOM上一次重绘留下的data属性。
+  function spiritDiceRememberAcceptedBetsV175(roundId, rows = []) {
+    const id = String(roundId || '');
+    if (!id) return;
+    if (!state.spiritDiceAcceptedBetRounds || typeof state.spiritDiceAcceptedBetRounds !== 'object') {
+      state.spiritDiceAcceptedBetRounds = {};
+    }
+    const bucket = state.spiritDiceAcceptedBetRounds[id] || {};
+    (Array.isArray(rows) ? rows : []).forEach(row => {
+      const code = String(row?.choice_code || '');
+      const amount = Number(row?.stake_amount || 0);
+      if (code && amount > 0) bucket[code] = Number(bucket[code] || 0) + amount;
+    });
+    state.spiritDiceAcceptedBetRounds = { [id]: bucket };
+  }
+
+  function spiritDiceHasAcceptedBetV175(roundId, choiceCode) {
+    const id = String(roundId || '');
+    const code = String(choiceCode || '');
+    if (!id || !code) return false;
+    const serverHas = (Array.isArray(state.spiritDiceState?.my_bets) ? state.spiritDiceState.my_bets : [])
+      .some(row => String(row?.choice_code || '') === code && Number(row?.stake_amount || 0) > 0);
+    if (serverHas) return true;
+    return Number(state.spiritDiceAcceptedBetRounds?.[id]?.[code] || 0) > 0;
   }
 
   function spiritDiceDraftV175() {
@@ -6447,13 +6476,14 @@
       const myAmount=Number(bet?.stake_amount||0);
       const total=spiritDiceRoundTotalV175(totals,draft.stakeType,code);
       const pending=spiritDiceQueuedAmountV175(round.id,houseMode,draft.stakeType,code);
+      const hasAcceptedBet=spiritDiceHasAcceptedBetV175(round.id,code);
       const hit=Boolean(
-        myAmount>0 &&
+        hasAcceptedBet &&
         results.length===3 &&
         (round.is_settled || round.phase==='settled') &&
         spiritDiceChoiceHitV175(results,code)
       );
-      return `<button type="button" class="fish-target-card dice-target-card ${hit?'win':''} ${pending>0?'queued':''}" data-dice-choice="${code}" data-dice-has-bet="${myAmount>0?'1':'0'}" ${open?'':'disabled'}><div class="fish-target-head"><span class="dice-choice-seal">${code.startsWith('face')?name:(code==='triple'?'豹':name)}</span><div><strong>${name}</strong><small>${note}</small></div></div><div class="fish-target-meta"><span>我的下注 <b>${formatNumber(myAmount)}</b></span><span>全场总额 <b>${formatNumber(total)}</b></span></div><em class="fish-target-pending" data-dice-pending>${pending>0?`待提交 +${formatNumber(pending)}`:''}</em></button>`;
+      return `<button type="button" class="fish-target-card dice-target-card ${hit?'win dice-win-glow':''} ${pending>0?'queued':''}" data-dice-choice="${code}" data-dice-has-bet="${hasAcceptedBet?'1':'0'}" ${open?'':'disabled'}><div class="fish-target-head"><span class="dice-choice-seal">${code.startsWith('face')?name:(code==='triple'?'豹':name)}</span><div><strong>${name}</strong><small>${note}</small></div></div><div class="fish-target-meta"><span>我的下注 <b>${formatNumber(myAmount)}</b></span><span>全场总额 <b>${formatNumber(total)}</b></span></div><em class="fish-target-pending" data-dice-pending>${pending>0?`待提交 +${formatNumber(pending)}`:''}</em></button>`;
     }).join('');
     const latest=history.find(item=>item?.has_bets)||null;
     const latestDetail=latest?`<div class="fish-latest-result"><div class="fish-result-title">第${escapeHtml(latest.round_no)}局 · 开出 ${(latest.results||[]).join('、')}</div>${(latest.items||[]).map(row=>{const net=Number(row.net_profit||0);return `<div class="fish-settlement-line"><span>${escapeHtml(spiritDiceTargetMetaV175(row.choice_code)[1])}：${formatNumber(row.stake_amount||0)} ${row.stake_type==='cultivation'?'修为':'灵石'}</span><b class="${net>=0?'positive':'negative'}">${net>=0?'赢':'输'} ${formatNumber(Math.abs(net))}</b></div>`;}).join('')}</div>`:'<div class="empty-state">尚无个人结算明细。</div>';
@@ -6484,6 +6514,12 @@
       const payload=await rpcGetSpiritDiceStateV175(20);
       if (payload) {
         payload.client_fetched_at=Date.now(); state.spiritDiceState=payload;
+        const activeRoundId=String(payload.round?.id||'');
+        if (activeRoundId) {
+          const localBucket=state.spiritDiceAcceptedBetRounds?.[activeRoundId]||{};
+          state.spiritDiceAcceptedBetRounds={ [activeRoundId]: localBucket };
+          spiritDiceRememberAcceptedBetsV175(activeRoundId,payload.my_bets||[]);
+        }
         if (payload.character&&state.marketSystem?.character) {
           state.marketSystem.character.spirit_stones=Number(payload.character.spirit_stones||0);
           state.marketSystem.character.cultivation_available=Number(payload.character.cultivation_available||0);
@@ -6514,15 +6550,19 @@
     const badge=document.getElementById('dicePhaseBadge'); const text=document.getElementById('dicePhaseText'); const count=document.getElementById('diceCountdown'); const progress=document.getElementById('diceProgressFill');
     if(badge)badge.textContent=info[0]; if(text)text.textContent=info[1]; if(count)count.textContent=`${countdown}秒`; if(progress)progress.style.width=`${Math.max(0,Math.min(100,elapsed/10*100))}%`;
     root.querySelectorAll('[data-dice-die-index]').forEach(node=>{const index=Number(node.dataset.diceDieIndex||0);const value=node.dataset.resultValue||'';const visible=value&&elapsed>=8+index*0.28;node.classList.toggle('rolling',phase!=='betting'&&!visible);node.classList.toggle('stopped',Boolean(visible));const inner=node.firstElementChild;if(inner)inner.innerHTML=visible?spiritDiceGlyphV175(value):'<span class="fish-die-idle">骰</span>';});
-    // CACHE53：命中边框不再等待服务端 settlement 状态。三颗骰子全部停定后，
+    // CACHE54：命中边框不再等待服务端 settlement 状态。三颗骰子全部停定后，
     // 直接使用本局已经公开的公共结果 + 本人已接受下注在本机计算命中。
     // 这样不新增任何数据库请求，也不会因为10秒公共桌的 settlement 边界错过发光阶段。
     const revealComplete=Array.isArray(round.results)&&round.results.length===3&&elapsed>=8.56;
     root.querySelectorAll('[data-dice-choice]').forEach(button=>{
       button.disabled=phase!=='betting';
-      const hasBet=button.dataset.diceHasBet==='1';
-      const shouldGlow=Boolean(revealComplete&&hasBet&&spiritDiceChoiceHitV175(round.results,button.dataset.diceChoice));
+      const choiceCode=button.dataset.diceChoice||'';
+      const hasBet=spiritDiceHasAcceptedBetV175(round.id,choiceCode);
+      const shouldGlow=Boolean(revealComplete&&hasBet&&spiritDiceChoiceHitV175(round.results,choiceCode));
+      button.dataset.diceHasBet=hasBet?'1':'0';
       button.classList.toggle('win',shouldGlow);
+      button.classList.toggle('dice-win-glow',shouldGlow);
+      button.setAttribute('aria-current',shouldGlow?'true':'false');
     });
     // 10秒公共桌每轮最多在开奖边界与下一轮边界各取一次权威状态，不做逐秒/结算阶段轮询。
     const needsRefresh=phase==='next'||(phase==='revealing'&&(!Array.isArray(round.results)||!round.results.length));

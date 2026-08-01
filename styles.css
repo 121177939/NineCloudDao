@@ -4467,9 +4467,26 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
 }
 .battle-talent-line-v12 { color:#cdb9e8; font-size:10px; line-height:1.55; }
 
-/* V1.7.5.2 CACHE53 · 灵骰问道公共牌桌：复用鱼虾轻量牌桌结构，只补九门布局与骰面。 */
+/* V1.7.5.3 CACHE54 · 灵骰问道公共牌桌：复用鱼虾轻量牌桌结构，只补九门布局与骰面。 */
 .dice-target-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .dice-target-card { min-height: 98px; }
+
+/* CACHE54：灵骰中奖态显式覆盖disabled通用透明度，并保留和鱼虾灵局一致的金色发光。 */
+.dice-target-card.dice-win-glow,
+.dice-target-card.dice-win-glow:disabled {
+  opacity: 1 !important;
+  border-color: rgba(241,211,147,.96) !important;
+  box-shadow: 0 0 0 1px rgba(241,211,147,.25),0 0 11px rgba(241,211,147,.5),0 0 23px rgba(201,167,95,.28),inset 0 0 20px rgba(241,211,147,.07) !important;
+  animation: fishWinningGlow 1.1s ease-in-out infinite alternate !important;
+}
+.dice-target-card.dice-win-glow::after {
+  content: '命中';
+  display: block;
+  margin-top: 5px;
+  color: #ead49f;
+  font-size: 7px;
+  text-align: right;
+}
 .dice-choice-seal {
   width: 34px;
   height: 34px;

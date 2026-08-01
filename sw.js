@@ -1,24 +1,24 @@
-const CACHE_NAME = 'nine-cloud-dao-v1.7.5.1-cache53';
+const CACHE_NAME = 'nine-cloud-dao-v1.7.5.3-cache54';
 const CACHE_PREFIX = 'nine-cloud-dao-';
 const NAVIGATION_FALLBACK = './index.html';
 const APP_SHELL = [
   './index.html',
   './404.html',
-  './styles.css?v=v1-7-5-2-cache53',
-  './config.js?v=v1-7-5-2-cache53',
-  './update-guard.js?v=v1-7-5-2-cache53',
-  './app.js?v=v1-7-5-2-cache53',
-  './manifest.webmanifest?v=v1-7-5-2-cache53',
-  './assets/icon-192.png?v=v1-7-5-2-cache53',
-  './assets/icon-512.png?v=v1-7-5-2-cache53',
-  './b-paigow01.css?v=v1-7-5-2-cache53',
-  './b-equipment01.css?v=v1-7-5-2-cache53',
-  './b-equipment01.js?v=v1-7-5-2-cache53',
-  './b-paigow01.js?v=v1-7-5-2-cache53',
-  './b-paigow01.html?v=v1-7-5-2-cache53',
-  './paigow-app.css?v=v1-7-5-2-cache53',
-  './paigow-realtime.js?v=v1-7-5-2-cache53',
-  './paigow-app.js?v=v1-7-5-2-cache53'
+  './styles.css?v=v1-7-5-3-cache54',
+  './config.js?v=v1-7-5-3-cache54',
+  './update-guard.js?v=v1-7-5-3-cache54',
+  './app.js?v=v1-7-5-3-cache54',
+  './manifest.webmanifest?v=v1-7-5-3-cache54',
+  './assets/icon-192.png?v=v1-7-5-3-cache54',
+  './assets/icon-512.png?v=v1-7-5-3-cache54',
+  './b-paigow01.css?v=v1-7-5-3-cache54',
+  './b-equipment01.css?v=v1-7-5-3-cache54',
+  './b-equipment01.js?v=v1-7-5-3-cache54',
+  './b-paigow01.js?v=v1-7-5-3-cache54',
+  './b-paigow01.html?v=v1-7-5-3-cache54',
+  './paigow-app.css?v=v1-7-5-3-cache54',
+  './paigow-realtime.js?v=v1-7-5-3-cache54',
+  './paigow-app.js?v=v1-7-5-3-cache54'
 ];
 
 self.addEventListener('message', event => {

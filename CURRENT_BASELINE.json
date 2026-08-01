@@ -1,25 +1,25 @@
 {
-  "version": "1.7.5.2",
-  "releaseLabel": "九霄问道 V1.7.5.2 CACHE53",
+  "version": "1.7.5.3",
+  "releaseLabel": "九霄问道 V1.7.5.3 CACHE54",
   "sourceBaseline": "V1.7.5 CACHE51",
   "minimumDatabaseBaseline": "V1.7.5 CACHE51 / SQL 106",
-  "databaseChange": "NONE_FRONTEND_HOTFIX_SPIRIT_DICE_LOCAL_WIN_GLOW_CACHE53",
+  "databaseChange": "NONE_FRONTEND_HOTFIX_SPIRIT_DICE_GLOW_DEPLOY_FIX_CACHE54",
   "databaseMigration": null,
   "databaseReleaseGate": null,
   "databaseFinalCheck": null,
   "deploymentStatus": "authoritative_lean_github_deployment_package_with_b_handoff",
   "authoritativePackages": {
-    "githubDeployPackage": "Jiuxiao_V1.7.5.2_CACHE53_GitHub_Deploy.zip",
+    "githubDeployPackage": "Jiuxiao_V1.7.5.3_CACHE54_GitHub_Deploy.zip",
     "sqlPackage": "沿用V1.7.5 CACHE51 SQL；本热修无SQL",
     "handoffPackage": "B_HANDOFF已内置于GitHub部署包",
     "historyArchive": "沿用九霄问道_阶段式历史归档_截至V1.7.1_CACHE47_轻量版.zip"
   },
   "notes": [
-    "修复大、小、豹子、数字1至6在结算明细result_count缺失或未回填时，实际中奖但下注格不亮的问题。",
-    "不修改V1.7.5 CACHE51的10秒公共牌桌、赔率、联合庄、奖池、数据库函数或资金结算规则。",
-    "继续保持120ms批量下注、本地倒计时、阶段边界同步及无1秒数据库轮询。",
-    "CACHE53为纯前端热修：灵骰三颗公共骰全部停定后，直接用已公开结果与本人已接受下注在本机切换win发光边框，不再等待服务端is_settled。",
-    "CACHE53不新增数据库轮询、不修改赔率/开奖/联合庄/资金结算，也不需要SQL。"
+    "修复CACHE53部署工作流仍调用已不存在的build_pages_v1_7_5_1.py，导致GitHub Actions构建失败、线上继续停留旧前端的问题。",
+    "灵骰中奖高亮改为服务端my_bets与本机已确认批次双源识别，不再依赖当前灵石/修为筛选或旧DOM data属性。",
+    "中奖时同时挂载win与dice-win-glow，并显式覆盖disabled透明度，视觉与鱼虾灵局金色发光一致。",
+    "不修改V1.7.5 CACHE51数据库、赔率、开奖、联合庄、奖池或资金结算规则；本热修无SQL。",
+    "继续保持120ms批量下注、本地倒计时、阶段边界同步及无1秒数据库轮询。"
   ],
   "integratedModules": [
     "B-CAVE01",
@@ -33,8 +33,8 @@
     "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1",
     "B-EQUIPMENT01"
   ],
-  "clientRelease": "V1.7.5.2_CACHE53",
-  "developmentBaseline": "V1.7.5.2_AB38_CACHE53",
+  "clientRelease": "V1.7.5.3_CACHE54",
+  "developmentBaseline": "V1.7.5.3_AB39_CACHE54",
   "packagePolicy": {
     "githubDelivery": "只交付GitHub运行文件、Pages工作流、单一构建脚本、部署说明及B_HANDOFF",
     "sql": "数据库变更使用独立增量SQL包，禁止将SQL塞入GitHub Pages部署包",
@@ -42,8 +42,8 @@
     "history": "阶段归档只在需要跨对话或阶段升级时更新"
   },
   "sqlRevision": "V1.7.5_CACHE51",
-  "cacheEpoch": 53,
+  "cacheEpoch": 54,
   "nextVersion": "1.7.6",
   "nextSql": 107,
-  "packageRevision": 2
+  "packageRevision": 3
 }
