@@ -170,5 +170,5 @@
   document.addEventListener('DOMContentLoaded',()=>refreshOrRender({force:true}));
   window.addEventListener('focus',()=>{if(hasEquipmentSurface()&&Date.now()-state.lastFetch>60000)refresh(true)});
   window.addEventListener('pageshow',event=>{if(event.persisted)refreshOrRender({force:true})});
-  window.B_EQUIPMENT01={refresh,render:renderAll,openBackpack,version:'1.7.4'};
+  window.B_EQUIPMENT01={refresh,render:renderAll,openBackpack,version:'1.7.5'};
 })();
