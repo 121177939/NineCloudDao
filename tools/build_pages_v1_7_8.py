@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib, json, shutil, sys
 root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve();out=Path(sys.argv[2] if len(sys.argv)>2 else '.pages-site').resolve()
-required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json','b-paigow01.js','b-paigow01.css','b-paigow01.html','b-equipment01.js','b-equipment01.css','b-secret-realm01.js','b-secret-realm01.css','paigow-realtime.js','paigow-app.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js','assets/icon-192.png','assets/icon-512.png']
+required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json','b-paigow01.js','b-paigow01.css','b-paigow01.html','b-equipment01.js','b-equipment01.css','b-secret-realm01.js','b-secret-realm01.css','paigow-realtime.js','paigow-app.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js','assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']
 for rel in required:
     if not (root/rel).is_file():raise SystemExit(f'MISSING:{rel}')
 for rel in ['gm-admin.html','gm-admin.css','gm-admin.js','gm-operations.html','GM入口说明.txt']:
@@ -10,17 +10,19 @@ for rel in ['gm-admin.html','gm-admin.css','gm-admin.js','gm-operations.html','G
 def text(rel):return (root/rel).read_text('utf-8')
 app=text('app.js');pg=text('paigow-app.js');b02=text('b-paigow02-ui.js');sw=text('sw.js');workflow=text('.github/workflows/deploy-pages.yml');baseline=json.loads(text('CURRENT_BASELINE.json'));release=json.loads(text('release_config.json'))
 runtime=['index.html','404.html','app.js','styles.css','config.js','update-guard.js','sw.js','manifest.webmanifest','b-paigow01.html','b-paigow01.js','b-equipment01.css','b-equipment01.js','b-secret-realm01.css','b-secret-realm01.js','paigow-app.js','paigow-realtime.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js']
-texts=[text(x) for x in runtime];text_blob='\n'.join(texts);build_id='v1-7-8-3-cache58-swordheart1';label='V1.7.8.3 CACHE58'
+texts=[text(x) for x in runtime];text_blob='\n'.join(texts);build_id='v1-7-9-cache59-secretclaim2-history5';label='V1.7.9 CACHE59'
 checks={
-'version':text('VERSION.txt').strip()=='V1.7.8.3',
-'config':all(t in text('config.js') for t in ["version: '1.7.8.3'","releaseLabel: 'V1.7.8.3 CACHE58'","buildId: 'v1-7-8-3-cache58-swordheart1'",'cacheEpoch: 58']),
-'deployment-enabled':baseline.get('deploymentStatus')=='formal_release' and release.get('deploymentAllowed') is True and baseline.get('sqlRevision')=='117-125',
+'version':text('VERSION.txt').strip()=='V1.7.9',
+'config':all(t in text('config.js') for t in ["version: '1.7.9'","releaseLabel: 'V1.7.9 CACHE59'","buildId: 'v1-7-9-cache59-secretclaim2-history5'",'cacheEpoch: 59']),
+'deployment-enabled':baseline.get('deploymentStatus')=='formal_release' and release.get('deploymentAllowed') is True and baseline.get('sqlRevision')=='130R2-133',
 'local-gm-mode':baseline.get('gmDeliveryMode')=='local_only' and release.get('gmDeliveryMode')=='local_only',
-'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.7.8.3 CACHE58 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
-'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.7.8.3-cache58-swordheart1',f'b-secret-realm01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations']),
+'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.7.9 CACHE59 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
+'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.7.9-cache59-secretclaim2-history5',f'b-secret-realm01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations']),
 'secret-realm-nav':all(t in app for t in ["['secret_realm', '秘', '秘境']",'id="secretRealmSection"','jiuxiao:secret-realm-rendered']),
-'secret-realm-rpc':all(t in text('b-secret-realm01.js') for t in ['get_secret_realm_state_bsecretrealm01','enter_secret_realm_bsecretrealm01','settle_secret_realm_progress_bsecretrealm01']),
+'secret-realm-rpc':all(t in text('b-secret-realm01.js') for t in ['get_secret_realm_state_bsecretrealm01','enter_secret_realm_bsecretrealm01','settle_secret_realm_progress_bsecretrealm01','claim_secret_realm_rewards_bsecretrealm01','get_secret_realm_history_bsecretrealm01']),
 'secret-realm-live-config':all(t in text('b-secret-realm01.js') for t in ['live_config?.depths','equipmentRateText(data)','配置纪元']),
+'secret-realm-cache59':all(t in text('b-secret-realm01.js') for t in ['pendingClaimHtml','领取全部奖励','opponentFactsHtml','原结果10%']) and 'secret-realm-portal.webp' in sw,
+'secret-realm-history5':all(t in text('b-secret-realm01.js') for t in ['秘境历史','最近5轮','get_secret_realm_history_bsecretrealm01','state.history.slice(0, 5)']),
 'paigow-version':label in pg,
 'paigow-multipliers':all(t in pg for t in ['data-multiplier="10"','data-multiplier="30"','data-multiplier="50"','data-multiplier="100"','10、30、50、100倍']),
 'paigow-ui03':all(t in text('b-paigow01.html') for t in ['<html class="b-paigow02-ui b-paigow02-ui03"',f'b-paigow02-ui03.css?v={build_id}',f'paigow-app.js?v={build_id}']),

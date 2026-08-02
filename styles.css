@@ -4526,7 +4526,7 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
 }
 
 
-/* V1.7.8.3 CACHE58 UIFIX3 · 元神手机端常驻人物属性栏（独立于装备槽卡片） */
+/* V1.7.9 CACHE59 UIFIX3 · 元神手机端常驻人物属性栏（独立于装备槽卡片） */
 .yuanshen-live-rail-v178{display:none}
 @media (max-width:620px){
   .yuanshen-stage-v0155{position:relative;padding-top:10px}
@@ -4610,7 +4610,7 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
 }
 
 
-/* V1.7.8.3 CACHE58 UIFIX3 · 元神间距与功法道卷手机排版 */
+/* V1.7.9 CACHE59 UIFIX3 · 元神间距与功法道卷手机排版 */
 #primordialSpiritRootV1 .yuanshen-stage-v0155{
   padding-bottom:14px;
 }
@@ -4680,7 +4680,7 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
   .technique-book-actions button{font-size:11px;padding-inline:5px}
 }
 
-/* V1.7.8.3 CACHE58 CAVEUI1 · 洞府底部功能区默认显示 */
+/* V1.7.9 CACHE59 CAVEUI1 · 洞府底部功能区默认显示 */
 .cave-workbench-b01[hidden],
 .cave-workbench-b01 [data-cave-workbench-panel][hidden] {
   display: none !important;

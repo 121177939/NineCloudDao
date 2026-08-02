@@ -186,6 +186,7 @@
   }
   window.addEventListener('jiuxiao:cave-rendered',()=>refreshOrRender());
   window.addEventListener('jiuxiao:primordial-rendered',()=>refreshOrRender());
+  window.addEventListener('jiuxiao:secret-realm-claimed',()=>refreshOrRender({force:true}));
   window.addEventListener('jiuxiao:opportunity-settled',event=>{
     const payload=event?.detail||null;const equipment=opportunityEquipment(payload);
     const itemId=equipment?.item?.id||equipment?.item_id||null;

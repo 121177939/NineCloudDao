@@ -1,34 +1,35 @@
 {
-  "version": "V1.7.8.3",
-  "releaseLabel": "V1.7.8.3 CACHE58",
-  "buildId": "v1-7-8-3-cache58-swordheart1",
-  "cacheEpoch": 58,
-  "minimumDatabaseBaseline": "V1.7.7 FIX1 CACHE57 / SQL 116",
-  "sqlRevision": "117-125",
+  "version": "V1.7.9",
+  "releaseLabel": "V1.7.9 CACHE59",
+  "buildId": "v1-7-9-cache59-secretclaim2-history5",
+  "cacheEpoch": 59,
+  "minimumDatabaseBaseline": "V1.7.8.3 CACHE58 / SQL128",
+  "sqlRevision": "130R2-133",
   "migrationSql": [
-    "117_V1.7.8_B-SECRETREALM01_正式安装.sql",
-    "118_V1.7.8_GM-CONTROL01_ADMIN9_正式安装.sql"
+    "130_V1.7.9_秘境领取平衡与历史5轮_安装_R2.sql"
   ],
-  "releaseGateSql": "119_V1.7.8_CACHE58_正式发布门禁.sql",
-  "finalCheckSql": "126_V1.7.8.3_天生剑心升级后检查.sql",
-  "rollbackSql": "121_V1.7.8_CACHE58_安全关闭与回滚.sql",
+  "releaseGateSql": "131_V1.7.9_CACHE59_正式发布门禁_R2.sql",
+  "finalCheckSql": "132_V1.7.9_CACHE59_升级后检查_R2.sql",
+  "rollbackSql": "133_V1.7.9_CACHE59_安全回滚.sql",
   "features": [
-    "B_SECRETREALM01_FORMAL",
-    "GM_CONTROL01_ADMIN9"
+    "B_SECRETREALM01_MANUAL_CLAIM",
+    "SECRET_REALM_MONSTER_FACTS",
+    "SECRET_REALM_NEWS_VARIANTS",
+    "SECRET_REALM_REWARD_20_PERCENT_OF_OLD",
+    "SECRET_REALM_HISTORY_LATEST_5"
   ],
   "gmEntry": "local-package/gm-admin.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "SWORDHEART1_SWORD_WEAPON_ONLY",
-  "databaseRelease": "V1.7.8.3 CACHE58",
+  "clientHotfix": "SECRETCLAIM2-HISTORY5",
+  "databaseRelease": "V1.7.9 CACHE59",
   "notes": [
-    "天生剑心仍在最终伤害层提供8%加成，不增加面板道攻或战力",
-    "天生剑心角色只需装备weapon_kind=sword的剑类武器即可触发",
-    "不再要求装备或使用剑系功法，任意攻伐功法均可获得剑心最终伤害加成",
-    "保留V1.7.8.2洞府默认功能区与此前全部前端修复"
-  ],
-  "patchSql": [
-    "125_V1.7.8.3_天生剑心剑武器触发.sql"
+    "秘境探索页加入动态界门场景画面，填充原顶部空白区域",
+    "离境、妖兽战败或玩家战败后，全部资源必须手动领取，领取前禁止下一次秘境",
+    "修为和灵石由旧版机缘结果50%下调到10%，即旧版收益的20%",
+    "日志显示妖兽境界、五行、类型、战力与四维属性",
+    "九霄界闻使用多组结局文案，妖兽战败明确显示怪物名称",
+    "玩家端新增秘境历史，按需读取并仅显示最近5轮完整过程"
   ]
 }

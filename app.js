@@ -3792,7 +3792,7 @@
       </div>`}`;
   }
 
-  // V1.7.8.3 CACHE58 CAVEUI1：洞府底部功能区默认显示“建筑”页。
+  // V1.7.9 CACHE59 CAVEUI1：洞府底部功能区默认显示“建筑”页。
   function showCaveWorkbenchB01(panelName = 'buildings', buildingCode = '') {
     const workbench = document.getElementById('caveWorkbenchB01');
     if (!workbench) return;
@@ -7284,7 +7284,7 @@
 
 
 
-  // V1.7.8.3 CACHE58 SWORDHEART1：天生剑心只需装备剑类武器即可触发最终伤害加成。
+  // V1.7.9 CACHE59 SWORDHEART1：天生剑心只需装备剑类武器即可触发最终伤害加成。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
@@ -7857,6 +7857,12 @@
     bindBazaarActions();
     bindMobileDashboardNav();
     window.dispatchEvent(new CustomEvent('jiuxiao:secret-realm-rendered'));
+    if (!window.__secretRealmClaimSyncBoundV179) {
+      window.__secretRealmClaimSyncBoundV179 = true;
+      window.addEventListener('jiuxiao:secret-realm-claimed', async () => {
+        await Promise.allSettled([syncCultivation(true), refreshCaveSystem(true), refreshHeavenBalance(true), refreshWorldEvents(true)]);
+      });
+    }
     const manualSyncBtn = document.getElementById('manualSyncBtn');
     if (manualSyncBtn && manualSyncBtn.dataset.bound !== '1') {
       manualSyncBtn.dataset.bound = '1';
@@ -8235,7 +8241,7 @@
     }
   }
 
-  // V1.7.8.3 CACHE58 UIFIX3：穿戴/卸下后以服务端快照为准，多次确认并同步战力榜缓存。
+  // V1.7.9 CACHE59 UIFIX3：穿戴/卸下后以服务端快照为准，多次确认并同步战力榜缓存。
   const battleSnapshotSignatureV178 = snapshot => [
     snapshot?.attack,
     snapshot?.defense,

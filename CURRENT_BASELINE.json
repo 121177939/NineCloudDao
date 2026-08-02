@@ -1,16 +1,15 @@
 {
-  "version": "1.7.8.3",
-  "releaseLabel": "九霄问道 V1.7.8.3 CACHE58",
-  "sourceBaseline": "V1.7.7 FIX1 CACHE57",
-  "minimumDatabaseBaseline": "V1.7.7 FIX1 CACHE57 / SQL 116",
+  "version": "1.7.9",
+  "releaseLabel": "九霄问道 V1.7.9 CACHE59",
+  "sourceBaseline": "V1.7.8.3 CACHE58",
+  "minimumDatabaseBaseline": "V1.7.8.3 CACHE58 / SQL128",
   "deploymentStatus": "formal_release",
   "databaseMigrations": [
-    "117_V1.7.8_B-SECRETREALM01_正式安装.sql",
-    "118_V1.7.8_GM-CONTROL01_ADMIN9_正式安装.sql"
+    "130_V1.7.9_秘境领取平衡与历史5轮_安装_R2.sql"
   ],
-  "databaseReleaseGate": "119_V1.7.8_CACHE58_正式发布门禁.sql",
-  "databaseFinalCheck": "126_V1.7.8.3_天生剑心升级后检查.sql",
-  "databaseSafeRollback": "121_V1.7.8_CACHE58_安全关闭与回滚.sql",
+  "databaseReleaseGate": "131_V1.7.9_CACHE59_正式发布门禁_R2.sql",
+  "databaseFinalCheck": "132_V1.7.9_CACHE59_升级后检查_R2.sql",
+  "databaseSafeRollback": "133_V1.7.9_CACHE59_安全回滚.sql",
   "modules": [
     "B-EQUIPMENT01",
     "B-PAIGOW02-UI03",
@@ -18,31 +17,21 @@
     "GM-CONTROL01-ADMIN9"
   ],
   "confirmedRules": [
-    "仅开放炼气至渡劫九个秘境，地仙与天仙定义保留但禁用。",
-    "每只妖兽分别抽取同品级含修为与含灵石的正式趋吉结果，执行常规0.9至1.1浮动后各取50%，向下取整且最低1。",
-    "秘境不继承限时活动、VIP或运营倍率。",
-    "装备基础概率读取机缘装备基础概率并除以5；发布基准30%对应单只6%。",
-    "初期玄品、中期地品、后期天品、圆满仙品；不改变原机缘装备映射。",
-    "天品与仙品只通过秘境专用来源生成，不打开全局acquisition_enabled。",
-    "ADMIN9直接读取真实生产配置表，服务端校验、审计、并发保护与安全回滚；函数源码只读。",
-    "元神页手机端常驻显示道攻、道御、生机、身法、战力与增伤；穿戴或卸下装备后服务端快照多次确认并实时重绘。",
-    "元神装备区底部说明改为正常文档流，缩短与随身背包之间的空白。",
-    "功法道卷兑换灵石后只刷新真实藏经架、功法、灵石与市坊数据，不再调用未定义函数。",
-    "功法道卷研习与兑换按钮在手机端横向并排，禁止中文逐字竖排。",
-    "洞府底部功能区默认显示建筑页；无需先点击灵脉或矿室，点击具体建筑仅用于定位相应建筑卡片。",
-    "天生剑心最终伤害加成为8%；命格角色只需装备剑类武器即可触发，不再要求剑系功法；加成不增加面板道攻或战力。"
+    "秘境探索页加入动态界门场景画面，填充原顶部空白区域",
+    "离境、妖兽战败或玩家战败后，全部资源必须手动领取，领取前禁止下一次秘境",
+    "修为和灵石由旧版机缘结果50%下调到10%，即旧版收益的20%",
+    "日志显示妖兽境界、五行、类型、战力与四维属性",
+    "九霄界闻使用多组结局文案，妖兽战败明确显示怪物名称",
+    "玩家端秘境历史按需读取，仅显示当前角色最近5轮完整过程"
   ],
   "gmEntry": "local-package/gm-admin.html",
-  "clientRelease": "V1.7.8.3_CACHE58",
-  "developmentBaseline": "V1.7.8.3_AB46_ADMIN9_CACHE58",
-  "cacheEpoch": 58,
-  "sqlRevision": "117-125",
+  "clientRelease": "V1.7.9_CACHE59",
+  "developmentBaseline": "V1.7.9_AB47_ADMIN9_CACHE59",
+  "cacheEpoch": 59,
+  "sqlRevision": "130R2-133",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "SWORDHEART1_SWORD_WEAPON_ONLY",
-  "clientBuild": "v1-7-8-3-cache58-swordheart1",
-  "databaseRelease": "V1.7.8.3 CACHE58",
-  "databasePatches": [
-    "125_V1.7.8.3_天生剑心剑武器触发.sql"
-  ]
+  "clientHotfix": "SECRETCLAIM2-HISTORY5",
+  "clientBuild": "v1-7-9-cache59-secretclaim2-history5",
+  "databaseRelease": "V1.7.9 CACHE59"
 }
