@@ -24,7 +24,8 @@
     "装备基础概率读取机缘装备基础概率并除以5；发布基准30%对应单只6%。",
     "初期玄品、中期地品、后期天品、圆满仙品；不改变原机缘装备映射。",
     "天品与仙品只通过秘境专用来源生成，不打开全局acquisition_enabled。",
-    "ADMIN9直接读取真实生产配置表，服务端校验、审计、并发保护与安全回滚；函数源码只读。"
+    "ADMIN9直接读取真实生产配置表，服务端校验、审计、并发保护与安全回滚；函数源码只读。",
+    "元神页手机端常驻显示道攻、道御、生机、身法、战力与增伤；穿戴或卸下装备后服务端快照多次确认并实时重绘。"
   ],
   "gmEntry": "local-package/gm-admin.html",
   "clientRelease": "V1.7.8_CACHE58",
@@ -32,5 +33,7 @@
   "cacheEpoch": 58,
   "sqlRevision": "117-121",
   "gmDeliveryMode": "local_only",
-  "gmPublicDeployment": false
+  "gmPublicDeployment": false,
+  "clientHotfix": "EQUIPFIX2_ATTRPANEL",
+  "clientBuild": "v1-7-8-cache58-equipfix2"
 }

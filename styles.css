@@ -4524,3 +4524,87 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
   .dice-target-card { min-height: 94px; padding: 6px; }
   .dice-choice-seal { width: 29px; height: 29px; font-size: 12px; }
 }
+
+
+/* V1.7.8 CACHE58 EQUIPFIX2 · 元神手机端常驻人物属性栏（独立于装备槽卡片） */
+.yuanshen-live-rail-v178{display:none}
+@media (max-width:620px){
+  .yuanshen-stage-v0155{position:relative;padding-top:10px}
+  .yuanshen-core-v0155{min-height:378px}
+  .yuanshen-live-rail-v178{
+    position:absolute;
+    z-index:8;
+    top:42px;
+    width:clamp(64px,19vw,100px);
+    height:264px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:8px;
+    pointer-events:none;
+  }
+  .yuanshen-live-rail-v178.left{left:7px}
+  .yuanshen-live-rail-v178.right{right:7px}
+  .yuanshen-live-row-v178{
+    position:relative;
+    min-height:74px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:3px;
+    padding:8px 6px;
+    border:1px solid rgba(206,182,126,.3);
+    background:linear-gradient(180deg,rgba(17,14,9,.88),rgba(7,7,5,.78));
+    box-shadow:inset 0 0 18px rgba(201,167,95,.035),0 5px 18px rgba(0,0,0,.22);
+    text-align:center;
+    overflow:hidden;
+  }
+  .yuanshen-live-rail-v178.left .yuanshen-live-row-v178{border-left:2px solid rgba(218,184,91,.72)}
+  .yuanshen-live-rail-v178.right .yuanshen-live-row-v178{border-right:2px solid rgba(218,184,91,.72)}
+  .yuanshen-live-row-v178::after{
+    content:"";
+    position:absolute;
+    left:18%;right:18%;bottom:0;
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(232,205,128,.45),transparent);
+  }
+  .yuanshen-live-row-v178 span{
+    color:#b8aa86;
+    font-size:10px;
+    line-height:1.15;
+    letter-spacing:.08em;
+    white-space:nowrap;
+  }
+  .yuanshen-live-row-v178 span::after{content:"："}
+  .yuanshen-live-row-v178 strong{
+    color:#ecd17f;
+    font-size:clamp(13px,3.4vw,17px);
+    line-height:1.1;
+    font-weight:600;
+    font-variant-numeric:tabular-nums;
+    text-shadow:0 0 9px rgba(224,190,93,.2);
+    white-space:nowrap;
+  }
+  .yuanshen-live-row-v178 small{
+    display:block;
+    color:#80775f;
+    font-size:6.5px;
+    line-height:1.25;
+    white-space:normal;
+  }
+  .yuanshen-live-row-v178.attack strong{color:#edbd7f}
+  .yuanshen-live-row-v178.defense strong{color:#d9d0aa}
+  .yuanshen-live-row-v178.vitality strong{color:#c99a91}
+  .yuanshen-live-row-v178.agility strong{color:#a8cbbb}
+  .yuanshen-live-row-v178.power strong{color:#f0d68b}
+  .yuanshen-live-row-v178.bonus strong{color:#c9a4e7}
+}
+@media (max-width:390px){
+  .yuanshen-core-v0155{min-height:345px}
+  .yuanshen-live-rail-v178{top:35px;height:238px;width:62px;gap:6px}
+  .yuanshen-live-rail-v178.left{left:4px}.yuanshen-live-rail-v178.right{right:4px}
+  .yuanshen-live-row-v178{min-height:68px;padding:6px 3px}
+  .yuanshen-live-row-v178 span{font-size:8px}
+  .yuanshen-live-row-v178 strong{font-size:12px}
+  .yuanshen-live-row-v178 small{font-size:5.5px}
+}

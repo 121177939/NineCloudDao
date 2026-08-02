@@ -1,7 +1,7 @@
 {
   "version": "V1.7.8",
   "releaseLabel": "V1.7.8 CACHE58",
-  "buildId": "v1-7-8-cache58",
+  "buildId": "v1-7-8-cache58-equipfix2",
   "cacheEpoch": 58,
   "minimumDatabaseBaseline": "V1.7.7 FIX1 CACHE57 / SQL 116",
   "sqlRevision": "117-121",
@@ -19,5 +19,6 @@
   "gmEntry": "local-package/gm-admin.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
-  "gmPublicDeployment": false
+  "gmPublicDeployment": false,
+  "clientHotfix": "EQUIPFIX2_ATTRPANEL"
 }

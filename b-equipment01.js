@@ -34,9 +34,34 @@
     catch(e){state.available=false;renderAll();return null}
     finally{state.loading=false}
   }
+  async function refreshBattleSnapshotAfterLoadout(actionName){
+    if(!['equip_item_bequipment01','unequip_item_bequipment01'].includes(actionName))return null;
+    try{
+      if(typeof window.JIUXIAO_REFRESH_BATTLE_SNAPSHOT_V1==='function'){
+        return await window.JIUXIAO_REFRESH_BATTLE_SNAPSHOT_V1({reason:'equipment',action:actionName});
+      }
+      window.dispatchEvent(new CustomEvent('jiuxiao:equipment-loadout-changed',{detail:{action:actionName}}));
+      return null;
+    }catch(error){
+      console.warn('[B-EQUIPMENT01] 战斗属性即时刷新失败，将在下次页面同步时重试：',error?.message||error);
+      window.dispatchEvent(new CustomEvent('jiuxiao:equipment-loadout-changed',{detail:{action:actionName,retry:true}}));
+      return null;
+    }
+  }
   async function action(name,body,success){
     if(state.disabled){toast('装备系统当前已停用。','error');return}
-    try{await rpc(name,{...body,p_request_id:uuid()});await refresh(true);if(success)toast(success)}catch(e){toast(errorText(e),'error');await refresh(true)}
+    try{
+      await rpc(name,{...body,p_request_id:uuid()});
+      await refresh(true);
+      const snapshot=await refreshBattleSnapshotAfterLoadout(name);
+      if(success){
+        const powerText=['equip_item_bequipment01','unequip_item_bequipment01'].includes(name)&&Number.isFinite(Number(snapshot?.power))?` 当前战力 ${Number(snapshot.power).toLocaleString('zh-CN')}。`:'';
+        toast(`${success}${['equip_item_bequipment01','unequip_item_bequipment01'].includes(name)?' 战斗属性已实时更新。':''}${powerText}`);
+      }
+    }catch(e){
+      toast(errorText(e),'error');
+      await refresh(true);
+    }
   }
   function color(item){return item?.grade_color||gradeColors[item?.grade_code]||'#8f8068'}
   function itemIcon(item){return `<span class="equipment-icon-bequipment01" style="--grade:${esc(color(item))}">${esc(item?.icon_glyph||slotMeta[item?.slot_code]?.[0]||'器')}</span>`}
@@ -170,5 +195,5 @@
   document.addEventListener('DOMContentLoaded',()=>refreshOrRender({force:true}));
   window.addEventListener('focus',()=>{if(hasEquipmentSurface()&&Date.now()-state.lastFetch>60000)refresh(true)});
   window.addEventListener('pageshow',event=>{if(event.persisted)refreshOrRender({force:true})});
-  window.B_EQUIPMENT01={refresh,render:renderAll,openBackpack,version:'1.7.5'};
+  window.B_EQUIPMENT01={refresh,render:renderAll,openBackpack,version:'1.7.8-equip-refresh-r2'};
 })();

@@ -1329,7 +1329,14 @@
   }
 
   async function rpcGetMyBattleSnapshotV1() {
-    const result = await restFetch('rpc/get_my_battle_snapshot_v1', { method: 'POST', body: {} });
+    const result = await restFetch('rpc/get_my_battle_snapshot_v1', {
+      method: 'POST',
+      body: {},
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        Pragma: 'no-cache'
+      }
+    });
     return Array.isArray(result) ? result[0] || null : result;
   }
 
@@ -7249,10 +7256,44 @@
           <small>当前 · <b>${escapeHtml(displayValue)}</b></small>
         </span>
       </button>`;
+    const liveValue = key => ready ? formatNumber(snapshot[key] || 0) : (snapshot?.status === 'unavailable' ? '不可用' : '同步中');
+    const liveDetail = (baseKey, equipmentKey, equipmentLabel) => ready
+      ? `基础 ${formatNumber(snapshot[baseKey] || 0)}${Number(snapshot[equipmentKey] || 0) ? ` + ${equipmentLabel} ${formatNumber(snapshot[equipmentKey] || 0)}` : ` · ${equipmentLabel} 0`}`
+      : '等待服务端权威属性';
+    const liveRow = (key, label, detail, tone = '') => `
+      <div class="yuanshen-live-row-v178 ${tone}" data-live-stat="${escapeHtml(key)}">
+        <span>${escapeHtml(label)}</span>
+        <strong>${escapeHtml(liveValue(key))}</strong>
+        <small>${escapeHtml(detail)}</small>
+      </div>`;
+    const equipmentElementBonus = ready ? Math.max(0, Number(snapshot.equipment_element_bonus || 0)) : 0;
+    const permanentBonus = ready
+      ? (snapshot.sword_heart_active
+        ? 8
+        : (snapshot.mutation_active ? Math.round(Number(snapshot.mutation_final_damage_bonus || 0.08) * 100) : 0))
+      : 0;
+    const bonusTotal = equipmentElementBonus + permanentBonus;
+    const bonusDetail = ready
+      ? [equipmentElementBonus ? `戒指 ${formatNumber(equipmentElementBonus)}%` : '', permanentBonus ? `${snapshot.sword_heart_active ? '剑心' : '变异'} ${formatNumber(permanentBonus)}%` : ''].filter(Boolean).join(' + ') || '暂无常驻增伤'
+      : '等待服务端权威属性';
     return `
       <div id="primordialSpiritRootV1" class="yuanshen-shell-v0155">
         <div class="yuanshen-stage-v0155" aria-label="元神战斗属性总览">
           <div class="yuanshen-beam-field-v0155" aria-hidden="true"></div>
+          <aside class="yuanshen-live-rail-v178 left" aria-label="当前攻击与防御属性">
+            ${liveRow('attack', '道攻', liveDetail('base_attack', 'effective_weapon_attack', '武器'), 'attack')}
+            ${liveRow('defense', '道御', liveDetail('base_defense', 'effective_armor_defense', '衣服'), 'defense')}
+            ${liveRow('power', '战力', ready ? '装备变化后实时重算' : '等待服务端权威属性', 'power')}
+          </aside>
+          <aside class="yuanshen-live-rail-v178 right" aria-label="当前生机与身法属性">
+            ${liveRow('vitality', '生机', liveDetail('base_vitality', 'effective_armor_vitality', '裤子'), 'vitality')}
+            ${liveRow('agility', '身法', liveDetail('base_agility', 'effective_armor_agility', '鞋子'), 'agility')}
+            <div class="yuanshen-live-row-v178 bonus" data-live-stat="damage_bonus">
+              <span>增伤</span>
+              <strong>${ready ? `+${formatNumber(bonusTotal)}%` : (snapshot?.status === 'unavailable' ? '不可用' : '同步中')}</strong>
+              <small>${escapeHtml(bonusDetail)}</small>
+            </div>
+          </aside>
           ${card('left-1', '攻', '道攻', value('attack'), ready ? `境界基础 ${formatNumber(snapshot.base_attack || 0)}，武器有效加成 ${formatNumber(snapshot.effective_weapon_attack || 0)}。` : '正在读取服务端权威战斗快照。')}
           ${card('left-2', '御', '道御', value('defense'), ready ? `境界基础 ${formatNumber(snapshot.base_defense || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_defense || 0)}。` : '正在读取服务端权威战斗快照。')}
           ${card('left-3', '战', '战力', value('power'), '战力 = 道攻×10 + 道御×8 + 生机×1.5 + 身法×5；综合评分不直接决定胜负。')}
@@ -8137,6 +8178,50 @@
       document.getElementById('retryBtn').addEventListener('click', () => enterGame());
     }
   }
+
+  // V1.7.8 CACHE58 EQUIPFIX2：穿戴/卸下后以服务端快照为准，多次确认并同步战力榜缓存。
+  const battleSnapshotSignatureV178 = snapshot => [
+    snapshot?.attack,
+    snapshot?.defense,
+    snapshot?.vitality,
+    snapshot?.agility,
+    snapshot?.power,
+    snapshot?.effective_weapon_attack,
+    snapshot?.effective_armor_defense,
+    snapshot?.effective_armor_vitality,
+    snapshot?.effective_armor_agility,
+    snapshot?.equipment_element_bonus
+  ].map(value => Number(value || 0)).join('|');
+
+  const waitForBattleSnapshotV178 = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+
+  window.JIUXIAO_REFRESH_BATTLE_SNAPSHOT_V1 = async function (options = {}) {
+    if (!state.character) return null;
+    const previousSignature = battleSnapshotSignatureV178(state.battleSnapshotV1);
+    const delays = options?.reason === 'equipment' ? [0, 260, 760] : [0];
+    let latest = state.battleSnapshotV1;
+    for (let index = 0; index < delays.length; index += 1) {
+      if (delays[index] > 0) await waitForBattleSnapshotV178(delays[index]);
+      let waitCount = 0;
+      while (state.battleSnapshotSyncingV1 && waitCount < 30) {
+        await waitForBattleSnapshotV178(50);
+        waitCount += 1;
+      }
+      state.battleSnapshotV1 = null;
+      latest = await refreshMyBattleSnapshotV1(true);
+      const currentSignature = battleSnapshotSignatureV178(latest);
+      if (index > 0 && currentSignature !== previousSignature) break;
+    }
+    refreshRankingBoard('battle', false, true).catch(() => {});
+    window.dispatchEvent(new CustomEvent('jiuxiao:battle-snapshot-updated', { detail: latest || null }));
+    return latest;
+  };
+
+  window.addEventListener('jiuxiao:equipment-loadout-changed', event => {
+    window.JIUXIAO_REFRESH_BATTLE_SNAPSHOT_V1({ reason: 'equipment', action: event?.detail?.action || '' }).catch(error => {
+      console.warn('[九霄问道] 装备变化后的战斗属性刷新失败：', error?.message || error);
+    });
+  });
 
   async function bootstrap() {
     if (!SUPABASE_URL || !API_KEY) {

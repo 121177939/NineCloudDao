@@ -6,7 +6,7 @@ window.GAME_CONFIG = Object.freeze({
   gameName: '九霄问道',
   version: '1.7.8',
   releaseLabel: 'V1.7.8 CACHE58',
-  buildId: 'v1-7-8-cache58',
+  buildId: 'v1-7-8-cache58-equipfix2',
   cacheEpoch: 58,
   worldCode: 'jiuxiao_world_1'
 });
