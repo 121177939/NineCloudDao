@@ -4526,7 +4526,7 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
 }
 
 
-/* V1.7.8 CACHE58 EQUIPFIX2 · 元神手机端常驻人物属性栏（独立于装备槽卡片） */
+/* V1.7.8.1 CACHE58 UIFIX3 · 元神手机端常驻人物属性栏（独立于装备槽卡片） */
 .yuanshen-live-rail-v178{display:none}
 @media (max-width:620px){
   .yuanshen-stage-v0155{position:relative;padding-top:10px}
@@ -4607,4 +4607,75 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
   .yuanshen-live-row-v178 span{font-size:8px}
   .yuanshen-live-row-v178 strong{font-size:12px}
   .yuanshen-live-row-v178 small{font-size:5.5px}
+}
+
+
+/* V1.7.8.1 CACHE58 UIFIX3 · 元神间距与功法道卷手机排版 */
+#primordialSpiritRootV1 .yuanshen-stage-v0155{
+  padding-bottom:14px;
+}
+#primordialSpiritRootV1 .yuanshen-detail-v0155{
+  position:relative;
+  left:auto;
+  right:auto;
+  bottom:auto;
+  min-height:30px;
+  margin:0 10px 5px;
+  padding:6px 9px;
+  border-top:1px solid rgba(206,182,126,.18);
+  line-height:1.45;
+}
+.technique-book-actions{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:7px;
+  min-width:96px;
+  align-content:center;
+}
+.technique-book-actions button{
+  width:100%;
+  min-width:0;
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+  white-space:nowrap;
+  word-break:keep-all;
+  overflow-wrap:normal;
+  line-height:1.2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.technique-book-redeem{min-height:40px;padding:8px 10px}
+@media(max-width:760px){
+  #primordialSpiritRootV1 .yuanshen-stage-v0155{padding-bottom:7px}
+  #primordialSpiritRootV1 .yuanshen-detail-v0155{
+    min-height:24px;
+    margin:0 7px 3px;
+    padding:4px 7px;
+    font-size:8px;
+  }
+  .equipment-backpack-inline-bequipment01{margin-top:3px!important}
+  .technique-book-card{
+    grid-template-columns:36px minmax(0,1fr)!important;
+    align-items:center;
+  }
+  .technique-book-actions{
+    grid-column:1 / -1;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    width:100%;
+    min-width:0;
+    gap:6px;
+    margin-top:3px;
+  }
+  .technique-book-actions button{
+    min-height:40px;
+    padding:7px 8px;
+    font-size:12px;
+  }
+}
+@media(max-width:380px){
+  .technique-book-card{grid-template-columns:32px minmax(0,1fr)!important}
+  .technique-book-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .technique-book-action,.technique-book-redeem{grid-column:auto!important;width:100%!important}
+  .technique-book-actions button{font-size:11px;padding-inline:5px}
 }

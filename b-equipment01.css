@@ -32,3 +32,6 @@
 
 
 @media(max-width:520px){.equipment-backpack-inline-bequipment01{margin-top:8px;padding:5px}}
+
+/* V1.7.8.1 UIFIX3：随身背包紧贴元神信息区。 */
+@media(max-width:760px){.equipment-backpack-inline-bequipment01{margin-top:3px!important;padding-top:5px}}

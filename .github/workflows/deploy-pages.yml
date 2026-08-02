@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V1.7.8 to GitHub Pages
+name: Deploy NineCloudDao V1.7.8.1 to GitHub Pages
 
 on:
   push:

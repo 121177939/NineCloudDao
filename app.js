@@ -2927,6 +2927,25 @@
   }
 
 
+  async function refreshTechniqueLibrary(rebind = true) {
+    if (!state.character) return state.techniqueLibrary;
+    try {
+      const library = await rpcGetTechniqueLibraryV1();
+      state.techniqueLibrary = library || { status: 'unavailable', books: [] };
+      if (state.details) state.details.techniqueLibrary = state.techniqueLibrary;
+      if (document.getElementById('caveSystemRoot')) {
+        renderCaveSystemFromState();
+      } else if (rebind) {
+        bindInventoryTechniqueActions();
+      }
+      return state.techniqueLibrary;
+    } catch (error) {
+      console.error(error);
+      return state.techniqueLibrary;
+    }
+  }
+
+
   async function refreshExclusiveTechniqueSystem(rebind = false, force = false) {
     if (!state.character) return state.exclusiveTechniqueSystem;
     if (!force && (state.techniqueUpgradeProcessing || state.techniqueUpgradeQueue.length)) return state.exclusiveTechniqueSystem;
@@ -4121,6 +4140,8 @@
       });
     }
     document.querySelectorAll('[data-redeem-technique-book]').forEach(button => {
+      if (button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
       button.addEventListener('click', async () => {
         const name = button.dataset.techniqueName || '功法道卷';
         const held = Math.max(1, Number(button.dataset.techniqueQuantity || 1));
@@ -4135,7 +4156,12 @@
         try {
           const result = await rpcRedeemTechniqueBookV0152(button.dataset.redeemTechniqueBook, quantity);
           showToast(`兑换成功，获得 ${formatNumber(result?.spirit_stones_gained || total)} 灵石。`);
-          await Promise.all([refreshTechniqueLibrary(true), refreshMarketSystem(true), refreshTechniqueSystem(true)]);
+          await Promise.all([
+            refreshTechniqueLibrary(true),
+            refreshMarketSystem(true),
+            refreshTechniqueSystem(true),
+            refreshSpiritStoneBalanceV0141(true)
+          ]);
         } catch (error) { showToast(translateError(error)); }
         finally { button.disabled = false; }
       });
@@ -8179,7 +8205,7 @@
     }
   }
 
-  // V1.7.8 CACHE58 EQUIPFIX2：穿戴/卸下后以服务端快照为准，多次确认并同步战力榜缓存。
+  // V1.7.8.1 CACHE58 UIFIX3：穿戴/卸下后以服务端快照为准，多次确认并同步战力榜缓存。
   const battleSnapshotSignatureV178 = snapshot => [
     snapshot?.attack,
     snapshot?.defense,

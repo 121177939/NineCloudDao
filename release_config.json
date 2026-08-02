@@ -1,7 +1,7 @@
 {
-  "version": "V1.7.8",
-  "releaseLabel": "V1.7.8 CACHE58",
-  "buildId": "v1-7-8-cache58-equipfix2",
+  "version": "V1.7.8.1",
+  "releaseLabel": "V1.7.8.1 CACHE58",
+  "buildId": "v1-7-8-1-cache58-uifix3",
   "cacheEpoch": 58,
   "minimumDatabaseBaseline": "V1.7.7 FIX1 CACHE57 / SQL 116",
   "sqlRevision": "117-121",
@@ -20,5 +20,11 @@
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPFIX2_ATTRPANEL"
+  "clientHotfix": "UIFIX3_YUANSHEN_TECHNIQUE",
+  "databaseRelease": "V1.7.8 CACHE58",
+  "notes": [
+    "缩短元神装备区与随身背包间距",
+    "修复功法道卷兑换灵石后的未定义刷新函数",
+    "功法道卷操作按钮改为横向中文显示"
+  ]
 }

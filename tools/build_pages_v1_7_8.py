@@ -10,14 +10,14 @@ for rel in ['gm-admin.html','gm-admin.css','gm-admin.js','gm-operations.html','G
 def text(rel):return (root/rel).read_text('utf-8')
 app=text('app.js');pg=text('paigow-app.js');b02=text('b-paigow02-ui.js');sw=text('sw.js');workflow=text('.github/workflows/deploy-pages.yml');baseline=json.loads(text('CURRENT_BASELINE.json'));release=json.loads(text('release_config.json'))
 runtime=['index.html','404.html','app.js','styles.css','config.js','update-guard.js','sw.js','manifest.webmanifest','b-paigow01.html','b-paigow01.js','b-equipment01.css','b-equipment01.js','b-secret-realm01.css','b-secret-realm01.js','paigow-app.js','paigow-realtime.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js']
-texts=[text(x) for x in runtime];build_id='v1-7-8-cache58-equipfix2';label='V1.7.8 CACHE58'
+texts=[text(x) for x in runtime];text_blob='\n'.join(texts);build_id='v1-7-8-1-cache58-uifix3';label='V1.7.8.1 CACHE58'
 checks={
-'version':text('VERSION.txt').strip()=='V1.7.8',
-'config':all(t in text('config.js') for t in ["version: '1.7.8'","releaseLabel: 'V1.7.8 CACHE58'","buildId: 'v1-7-8-cache58-equipfix2'",'cacheEpoch: 58']),
+'version':text('VERSION.txt').strip()=='V1.7.8.1',
+'config':all(t in text('config.js') for t in ["version: '1.7.8.1'","releaseLabel: 'V1.7.8.1 CACHE58'","buildId: 'v1-7-8-1-cache58-uifix3'",'cacheEpoch: 58']),
 'deployment-enabled':baseline.get('deploymentStatus')=='formal_release' and release.get('deploymentAllowed') is True and baseline.get('sqlRevision')=='117-121',
 'local-gm-mode':baseline.get('gmDeliveryMode')=='local_only' and release.get('gmDeliveryMode')=='local_only',
-'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.7.8 CACHE58 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
-'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.7.8-cache58-equipfix2',f'b-secret-realm01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations']),
+'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.7.8.1 CACHE58 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
+'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.7.8.1-cache58-uifix3',f'b-secret-realm01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations']),
 'secret-realm-nav':all(t in app for t in ["['secret_realm', '秘', '秘境']",'id="secretRealmSection"','jiuxiao:secret-realm-rendered']),
 'secret-realm-rpc':all(t in text('b-secret-realm01.js') for t in ['get_secret_realm_state_bsecretrealm01','enter_secret_realm_bsecretrealm01','settle_secret_realm_progress_bsecretrealm01']),
 'secret-realm-live-config':all(t in text('b-secret-realm01.js') for t in ['live_config?.depths','equipmentRateText(data)','配置纪元']),
@@ -27,7 +27,7 @@ checks={
 'b02-no-network':all(t not in b02 for t in ['fetch(','XMLHttpRequest','WebSocket','setInterval(','MutationObserver']),
 'workflow-builder':'python3 tools/build_pages_v1_7_8.py' in workflow,
 'workflow-js':'gm-admin.js' not in workflow and 'b-secret-realm01.js' in workflow,
-'no-old-build':not any('v1-7-7-fix1-cache57' in x for x in texts),
+'no-old-build':not any(x in text_blob for x in ['v1-7-7-fix1-cache57','v1-7-8-cache58-equipfix2']),
 'no-conflicts':not any('<<<<<<<' in x or '>>>>>>>' in x for x in texts)}
 failed=[k for k,v in checks.items() if not v]
 for k,v in checks.items():print(('PASS ' if v else 'FAIL ')+k)
