@@ -1,0 +1,36 @@
+{
+  "version": "1.7.8",
+  "releaseLabel": "九霄问道 V1.7.8 CACHE58",
+  "sourceBaseline": "V1.7.7 FIX1 CACHE57",
+  "minimumDatabaseBaseline": "V1.7.7 FIX1 CACHE57 / SQL 116",
+  "deploymentStatus": "formal_release",
+  "databaseMigrations": [
+    "117_V1.7.8_B-SECRETREALM01_正式安装.sql",
+    "118_V1.7.8_GM-CONTROL01_ADMIN9_正式安装.sql"
+  ],
+  "databaseReleaseGate": "119_V1.7.8_CACHE58_正式发布门禁.sql",
+  "databaseFinalCheck": "120_V1.7.8_CACHE58_升级后检查.sql",
+  "databaseSafeRollback": "121_V1.7.8_CACHE58_安全关闭与回滚.sql",
+  "modules": [
+    "B-EQUIPMENT01",
+    "B-PAIGOW02-UI03",
+    "B-SECRETREALM01",
+    "GM-CONTROL01-ADMIN9"
+  ],
+  "confirmedRules": [
+    "仅开放炼气至渡劫九个秘境，地仙与天仙定义保留但禁用。",
+    "每只妖兽分别抽取同品级含修为与含灵石的正式趋吉结果，执行常规0.9至1.1浮动后各取50%，向下取整且最低1。",
+    "秘境不继承限时活动、VIP或运营倍率。",
+    "装备基础概率读取机缘装备基础概率并除以5；发布基准30%对应单只6%。",
+    "初期玄品、中期地品、后期天品、圆满仙品；不改变原机缘装备映射。",
+    "天品与仙品只通过秘境专用来源生成，不打开全局acquisition_enabled。",
+    "ADMIN9直接读取真实生产配置表，服务端校验、审计、并发保护与安全回滚；函数源码只读。"
+  ],
+  "gmEntry": "local-package/gm-admin.html",
+  "clientRelease": "V1.7.8_CACHE58",
+  "developmentBaseline": "V1.7.8_AB43_ADMIN9_CACHE58",
+  "cacheEpoch": 58,
+  "sqlRevision": "117-121",
+  "gmDeliveryMode": "local_only",
+  "gmPublicDeployment": false
+}

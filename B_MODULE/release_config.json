@@ -1,0 +1,23 @@
+{
+  "version": "V1.7.8",
+  "releaseLabel": "V1.7.8 CACHE58",
+  "buildId": "v1-7-8-cache58-equipfix1",
+  "cacheEpoch": 58,
+  "minimumDatabaseBaseline": "V1.7.7 FIX1 CACHE57 / SQL 116",
+  "sqlRevision": "117-121",
+  "migrationSql": [
+    "117_V1.7.8_B-SECRETREALM01_正式安装.sql",
+    "118_V1.7.8_GM-CONTROL01_ADMIN9_正式安装.sql"
+  ],
+  "releaseGateSql": "119_V1.7.8_CACHE58_正式发布门禁.sql",
+  "finalCheckSql": "120_V1.7.8_CACHE58_升级后检查.sql",
+  "rollbackSql": "121_V1.7.8_CACHE58_安全关闭与回滚.sql",
+  "features": [
+    "B_SECRETREALM01_FORMAL",
+    "GM_CONTROL01_ADMIN9"
+  ],
+  "gmEntry": "local-package/gm-admin.html",
+  "deploymentAllowed": true,
+  "gmDeliveryMode": "local_only",
+  "gmPublicDeployment": false
+}
