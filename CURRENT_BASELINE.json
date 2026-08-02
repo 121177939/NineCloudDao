@@ -1,55 +1,36 @@
 {
-  "version": "1.7.7 FIX1",
-  "releaseLabel": "九霄问道 V1.7.7 FIX1 CACHE57",
-  "sourceBaseline": "V1.7.7 CACHE56",
-  "minimumDatabaseBaseline": "V1.7.7 CACHE56 / SQL 113 R2",
-  "databaseChange": "UI_ONLY_RELEASE_MARKER_NO_SCHEMA_CHANGE",
-  "databasePrecheck": "114_V1.7.7_FIX1_升级前检查.sql",
-  "databaseMigration": null,
-  "databaseReleaseGate": "115_V1.7.7_FIX1_CACHE57_正式发布门禁.sql",
-  "databaseFinalCheck": "116_V1.7.7_FIX1_CACHE57_升级后检查.sql",
-  "deploymentStatus": "authoritative_full_github_deployment_package_pending_release_gate",
-  "authoritativePackages": {
-    "githubDeployPackage": "Jiuxiao_V1.7.7_FIX1_CACHE57_GitHub_Deploy.zip",
-    "sqlPackage": "Jiuxiao_V1.7.7_FIX1_CACHE57_SQL.zip",
-    "completeDeliveryPackage": "Jiuxiao_V1.7.7_FIX1_CACHE57_完整交付包.zip",
-    "handoffPackage": "B_HANDOFF已内置于GitHub部署包",
-    "historyArchive": "九霄问道_阶段式历史归档_截至V1.7.6_CACHE55_轻量版.zip"
-  },
-  "notes": [
-    "以已经完成数据库R2的V1.7.7 CACHE56为唯一母包；保留10/30/50/100倍率、资金、手续费、私牌遮罩、Realtime和V1.7.6多人性能代码。",
-    "UI03直接接入正式paigow-app.js动态牌桌：新增手机紧凑工具栏、桌心阶段提示、沿桌席位、底部自家牌区及按需信息抽屉。",
-    "手机端不再默认显示大块本局概览/排名/动态侧栏；点击谱或讯才打开，不删除数据与规则说明。",
-    "本版不修改任何牌九RPC或数据库结算函数；SQL 114/115/116只负责生产前检查、CACHE57发布门禁与升级后检查。",
-    "不得再次运行旧模板覆盖b-paigow01.html；UI03样式必须作为最后加载的牌桌视觉层。"
+  "version": "1.7.8",
+  "releaseLabel": "九霄问道 V1.7.8 CACHE58",
+  "sourceBaseline": "V1.7.7 FIX1 CACHE57",
+  "minimumDatabaseBaseline": "V1.7.7 FIX1 CACHE57 / SQL 116",
+  "deploymentStatus": "formal_release",
+  "databaseMigrations": [
+    "117_V1.7.8_B-SECRETREALM01_正式安装.sql",
+    "118_V1.7.8_GM-CONTROL01_ADMIN9_正式安装.sql"
   ],
-  "integratedModules": [
-    "B-CAVE01",
-    "B-COMBAT01",
-    "CASINO-FIX1",
-    "CASINO-PUBLIC-TABLE-V175",
-    "MUTATION-ROOTS-V12",
-    "B-PAIGOW01",
-    "B-PAIGOW01-V26-UI",
-    "B-PAIGOW01-REALTIME-ISOLATION-V16",
-    "B-PAIGOW01-LAOHE-BLIND-CARDS-V16-FIX1",
+  "databaseReleaseGate": "119_V1.7.8_CACHE58_正式发布门禁.sql",
+  "databaseFinalCheck": "120_V1.7.8_CACHE58_升级后检查.sql",
+  "databaseSafeRollback": "121_V1.7.8_CACHE58_安全关闭与回滚.sql",
+  "modules": [
     "B-EQUIPMENT01",
-    "B-PAIGOW02-UI01",
-    "B-PAIGOW02-UI02",
-    "B-PAIGOW02-UI03-RUNTIME-PARITY"
+    "B-PAIGOW02-UI03",
+    "B-SECRETREALM01",
+    "GM-CONTROL01-ADMIN9"
   ],
-  "clientRelease": "V1.7.7_FIX1_CACHE57",
-  "developmentBaseline": "V1.7.7_FIX1_AB42_CACHE57",
-  "packagePolicy": {
-    "githubDelivery": "只交付GitHub运行文件、Pages工作流、构建脚本、部署说明及B_HANDOFF",
-    "sql": "UI修复不修改业务Schema；独立SQL仅更新发布门禁，禁止将SQL塞入Pages产物",
-    "handoff": "GitHub部署包包含B_HANDOFF，但B_HANDOFF不得进入Pages正式产物",
-    "ui03": "UI03必须最后加载；禁止旧模板或旧PATCH_ROOT覆盖正式b-paigow01.html",
-    "history": "阶段归档在下一次正式历史归档更新时补记CACHE57"
-  },
-  "sqlRevision": "V1.7.7_FIX1_CACHE57",
-  "cacheEpoch": 57,
-  "nextVersion": "1.7.8",
-  "nextSql": 117,
-  "packageRevision": 1
+  "confirmedRules": [
+    "仅开放炼气至渡劫九个秘境，地仙与天仙定义保留但禁用。",
+    "每只妖兽分别抽取同品级含修为与含灵石的正式趋吉结果，执行常规0.9至1.1浮动后各取50%，向下取整且最低1。",
+    "秘境不继承限时活动、VIP或运营倍率。",
+    "装备基础概率读取机缘装备基础概率并除以5；发布基准30%对应单只6%。",
+    "初期玄品、中期地品、后期天品、圆满仙品；不改变原机缘装备映射。",
+    "天品与仙品只通过秘境专用来源生成，不打开全局acquisition_enabled。",
+    "ADMIN9直接读取真实生产配置表，服务端校验、审计、并发保护与安全回滚；函数源码只读。"
+  ],
+  "gmEntry": "local-package/gm-admin.html",
+  "clientRelease": "V1.7.8_CACHE58",
+  "developmentBaseline": "V1.7.8_AB43_ADMIN9_CACHE58",
+  "cacheEpoch": 58,
+  "sqlRevision": "117-121",
+  "gmDeliveryMode": "local_only",
+  "gmPublicDeployment": false
 }

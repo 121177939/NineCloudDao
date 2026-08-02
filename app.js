@@ -5183,6 +5183,7 @@
     const type = String(eventType || '');
     if (type.startsWith('breakthrough')) return '劫';
     if (type.startsWith('opportunity')) return '缘';
+    if (type.startsWith('secret_realm')) return '秘';
     if (type.startsWith('casino')) return '赌';
     if (type.startsWith('admin')) return '罚';
     return '闻';
@@ -5277,7 +5278,7 @@
             <button class="bazaar-entry-button" type="button" data-bazaar-target="casino"><span aria-hidden="true">赌</span><strong>赌坊</strong><small>一筹问造化</small></button>
             <button class="bazaar-entry-button" type="button" data-bazaar-target="treasure"><span aria-hidden="true">珍</span><strong>珍宝阁</strong><small>渡境 · 洗灵</small></button>
           </div>
-          <section class="bazaar-world-section" aria-labelledby="worldEventsHeading"><div class="bazaar-world-heading"><div><span>天道传音</span><h4 id="worldEventsHeading">九霄界闻</h4></div><small>突破 · 机缘 · 赌坊 · 天道裁决</small></div>${worldEventsPanelHtml(worldEvents || { status: 'loading', entries: [] })}</section>
+          <section class="bazaar-world-section" aria-labelledby="worldEventsHeading"><div class="bazaar-world-heading"><div><span>天道传音</span><h4 id="worldEventsHeading">九霄界闻</h4></div><small>突破 · 机缘 · 秘境 · 赌坊</small></div>${worldEventsPanelHtml(worldEvents || { status: 'loading', entries: [] })}</section>
         </div>`;
     }
     const pageMeta = { ranking: ['天命榜', '修为、财富与战力总览'], casino: ['赌坊 · 万运博弈楼', '灵石 · 修为 · 造化彩池'], treasure: ['珍宝阁', '渡境清元丹 · 洗灵丹'] }[safeView];
@@ -7339,6 +7340,7 @@
       ['primordial', '元', '元神'],
       ['techniques', '法', '功法'],
       ['cave', '府', '洞府'],
+      ['secret_realm', '秘', '秘境'],
       ['market', '市', '市坊'],
       ['social', '人', '红尘'],
       ['sect', '宗', '宗门'],
@@ -7617,6 +7619,7 @@
             <a href="#primordialSpiritSection">元神</a>
             <a href="#talentSection">功法</a>
             <a href="#inventorySection">洞府</a>
+            <a href="#secretRealmSection">秘境</a>
             <a href="#marketSection">市坊</a>
             <a href="#npcSocialSection">红尘录</a>
             <a href="#sectSystemSection">宗门</a>
@@ -7704,6 +7707,11 @@
           ${cavePanelHtml(caveSystem, inventory, techniqueLibrary)}
         </section>
 
+        <section id="secretRealmSection" class="panel" data-mobile-screen="secret_realm">
+          <div class="panel-title"><h3>秘境</h3><span class="badge">全天半小时公共场 · 每日10次</span></div>
+          <div id="secretRealmRootBSecretRealm01"><div class="empty-state">正在感应本轮秘境……</div></div>
+        </section>
+
         <section id="opportunitySection" class="double-panel-grid breakthrough-only-grid">
           <section id="breakthroughPanel" class="panel progression-panel mobile-panel-card" data-mobile-screen="cultivation">
             ${breakthroughPanelHtml(breakthrough, c.cultivation)}
@@ -7756,6 +7764,7 @@
     bindSectSystemActions();
     bindBazaarActions();
     bindMobileDashboardNav();
+    window.dispatchEvent(new CustomEvent('jiuxiao:secret-realm-rendered'));
     const manualSyncBtn = document.getElementById('manualSyncBtn');
     if (manualSyncBtn && manualSyncBtn.dataset.bound !== '1') {
       manualSyncBtn.dataset.bound = '1';

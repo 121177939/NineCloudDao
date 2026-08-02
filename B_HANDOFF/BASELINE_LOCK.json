@@ -1,9 +1,28 @@
 {
-  "formalBaseline": "V1.7.7 FIX1 CACHE57",
-  "developmentLock": "V1.7.7_FIX1_AB42_CACHE57",
-  "sourceBaseline": "V1.7.7 CACHE56",
-  "nextFormalVersion": "V1.7.8",
-  "nextSql": 117,
-  "lastIntegratedModule": "B-PAIGOW02-UI03-RUNTIME-PARITY",
-  "rule": "B模块不得直接覆盖A线正式母包；UI候选必须由A线在版本生成后最后移植，并通过正式动态页面门禁。"
+  "project": "九霄问道",
+  "formalVersion": "V1.7.8 CACHE58",
+  "developmentBaseline": "V1.7.8_AB43_ADMIN9_CACHE58",
+  "sourceBaseline": "V1.7.7 FIX1 CACHE57",
+  "databaseSql": [
+    "117",
+    "118",
+    "119",
+    "120",
+    "121"
+  ],
+  "activeModules": [
+    "B-EQUIPMENT01",
+    "B-PAIGOW02-UI03",
+    "B-SECRETREALM01",
+    "GM-CONTROL01-ADMIN9"
+  ],
+  "rules": [
+    "秘境仅开放炼气至渡劫",
+    "后期天品圆满仙品为秘境专属来源",
+    "原机缘装备映射不变",
+    "ADMIN9直接读取真实生产配置",
+    "函数源码只读"
+  ],
+  "gmDeliveryMode": "local_only",
+  "gmPublicDeployment": false
 }

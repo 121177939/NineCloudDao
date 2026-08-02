@@ -1,6 +1,6 @@
 # B-PAIGOW02-UI03 正式接入审计
 
-- 正式基线：`V1.7.7 FIX1 CACHE57`
+- 正式基线：`V1.7.8 CACHE58`
 - 来源基线：`V1.7.7 CACHE56`
 - 开发锁：`V1.7.7_FIX1_AB42_CACHE57`
 
