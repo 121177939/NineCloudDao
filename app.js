@@ -3792,7 +3792,7 @@
       </div>`}`;
   }
 
-  // V1.7.8.2 CACHE58 CAVEUI1：洞府底部功能区默认显示“建筑”页。
+  // V1.7.8.3 CACHE58 CAVEUI1：洞府底部功能区默认显示“建筑”页。
   function showCaveWorkbenchB01(panelName = 'buildings', buildingCode = '') {
     const workbench = document.getElementById('caveWorkbenchB01');
     if (!workbench) return;
@@ -7284,16 +7284,19 @@
 
 
 
+  // V1.7.8.3 CACHE58 SWORDHEART1：天生剑心只需装备剑类武器即可触发最终伤害加成。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
     const fateName = fate.name || snapshot?.fate_name || '未定命格';
     const ready = snapshot && snapshot.status !== 'unavailable' && Number.isFinite(Number(snapshot.attack));
     const value = key => ready ? formatNumber(snapshot[key] || 0) : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
+    const swordHeartBonusPercent = ready ? Math.max(0, Number(snapshot.sword_heart_final_damage_bonus ?? 0.08) * 100) : 0;
+    const mutationBonusPercent = ready ? Math.max(0, Number(snapshot.mutation_final_damage_bonus ?? 0.08) * 100) : 0;
     const bonusValue = ready
       ? (snapshot.sword_heart_active
-        ? '剑心 +8%'
-        : (snapshot.mutation_active ? `变异·${snapshot.mutation_name || '未知'} +8%` : `五行 · ${snapshot.element_name || '未定'}`))
+        ? `剑心 +${formatNumber(swordHeartBonusPercent, 2)}%`
+        : (snapshot.mutation_active ? `变异·${snapshot.mutation_name || '未知'} +${formatNumber(mutationBonusPercent, 2)}%` : `五行 · ${snapshot.element_name || '未定'}`))
       : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
     const card = (position, icon, name, displayValue, detail) => `
       <button class="yuanshen-stat-card-v0155 ${position}" type="button" data-yuanshen-stat="${escapeHtml(name)}" data-yuanshen-detail="${escapeHtml(detail)}">
@@ -7317,8 +7320,8 @@
     const equipmentElementBonus = ready ? Math.max(0, Number(snapshot.equipment_element_bonus || 0)) : 0;
     const permanentBonus = ready
       ? (snapshot.sword_heart_active
-        ? 8
-        : (snapshot.mutation_active ? Math.round(Number(snapshot.mutation_final_damage_bonus || 0.08) * 100) : 0))
+        ? swordHeartBonusPercent
+        : (snapshot.mutation_active ? mutationBonusPercent : 0))
       : 0;
     const bonusTotal = equipmentElementBonus + permanentBonus;
     const bonusDetail = ready
@@ -7375,7 +7378,7 @@
 
           ${card('right-1', '生', '生机', value('vitality'), ready ? `境界基础 ${formatNumber(snapshot.base_vitality || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_vitality || 0)}。` : '正在读取服务端权威战斗快照。')}
           ${card('right-2', '身', '身法', value('agility'), ready ? `境界基础 ${formatNumber(snapshot.base_agility || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_agility || 0)}；第一版用于决定先手。` : '正在读取服务端权威战斗快照。')}
-          ${card('right-3', '元', '加成', bonusValue, ready ? `本命五行为“${snapshot.element_name || '未定'}”，继续使用原五行克制。${snapshot.mutation_active ? `变异灵根已显化为“${snapshot.mutation_name || '未知'}”，只在最终伤害层提高8%，不建立新克制。` : `灵根“${rootName}”只影响修炼速度。`}命格“${fateName}”${snapshot.sword_heart_active ? '已满足剑类武器与剑系功法条件，最终剑伤 +8%。' : snapshot.mutation_active ? '与变异灵根互斥，不会叠加剑心加成。' : '当前没有常驻四属性加成。'}` : '正在读取五行、命格、装备与功法加成。')}
+          ${card('right-3', '元', '加成', bonusValue, ready ? `本命五行为“${snapshot.element_name || '未定'}”，继续使用原五行克制。${snapshot.mutation_active ? `变异灵根已显化为“${snapshot.mutation_name || '未知'}”，只在最终伤害层提高${formatNumber(mutationBonusPercent, 2)}%，不建立新克制。` : `灵根“${rootName}”只影响修炼速度。`}命格“${fateName}”${snapshot.sword_heart_active ? `已装备剑类武器，所有战斗攻击的最终伤害 +${formatNumber(swordHeartBonusPercent, 2)}%；无需使用剑系功法。` : snapshot.fate_code === 'sword_heart' ? '当前未装备剑类武器，剑心增伤尚未触发。' : snapshot.mutation_active ? '变异灵根增伤已生效。' : '当前没有常驻四属性加成。'}` : '正在读取五行、命格、装备与功法加成。')}
         </div>
         <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；当前武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
       </div>`;
@@ -8232,7 +8235,7 @@
     }
   }
 
-  // V1.7.8.2 CACHE58 UIFIX3：穿戴/卸下后以服务端快照为准，多次确认并同步战力榜缓存。
+  // V1.7.8.3 CACHE58 UIFIX3：穿戴/卸下后以服务端快照为准，多次确认并同步战力榜缓存。
   const battleSnapshotSignatureV178 = snapshot => [
     snapshot?.attack,
     snapshot?.defense,

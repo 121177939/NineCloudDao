@@ -10,14 +10,14 @@ for rel in ['gm-admin.html','gm-admin.css','gm-admin.js','gm-operations.html','G
 def text(rel):return (root/rel).read_text('utf-8')
 app=text('app.js');pg=text('paigow-app.js');b02=text('b-paigow02-ui.js');sw=text('sw.js');workflow=text('.github/workflows/deploy-pages.yml');baseline=json.loads(text('CURRENT_BASELINE.json'));release=json.loads(text('release_config.json'))
 runtime=['index.html','404.html','app.js','styles.css','config.js','update-guard.js','sw.js','manifest.webmanifest','b-paigow01.html','b-paigow01.js','b-equipment01.css','b-equipment01.js','b-secret-realm01.css','b-secret-realm01.js','paigow-app.js','paigow-realtime.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js']
-texts=[text(x) for x in runtime];text_blob='\n'.join(texts);build_id='v1-7-8-2-cache58-caveui1';label='V1.7.8.2 CACHE58'
+texts=[text(x) for x in runtime];text_blob='\n'.join(texts);build_id='v1-7-8-3-cache58-swordheart1';label='V1.7.8.3 CACHE58'
 checks={
-'version':text('VERSION.txt').strip()=='V1.7.8.2',
-'config':all(t in text('config.js') for t in ["version: '1.7.8.2'","releaseLabel: 'V1.7.8.2 CACHE58'","buildId: 'v1-7-8-2-cache58-caveui1'",'cacheEpoch: 58']),
-'deployment-enabled':baseline.get('deploymentStatus')=='formal_release' and release.get('deploymentAllowed') is True and baseline.get('sqlRevision')=='117-121',
+'version':text('VERSION.txt').strip()=='V1.7.8.3',
+'config':all(t in text('config.js') for t in ["version: '1.7.8.3'","releaseLabel: 'V1.7.8.3 CACHE58'","buildId: 'v1-7-8-3-cache58-swordheart1'",'cacheEpoch: 58']),
+'deployment-enabled':baseline.get('deploymentStatus')=='formal_release' and release.get('deploymentAllowed') is True and baseline.get('sqlRevision')=='117-125',
 'local-gm-mode':baseline.get('gmDeliveryMode')=='local_only' and release.get('gmDeliveryMode')=='local_only',
-'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.7.8.2 CACHE58 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
-'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.7.8.2-cache58-caveui1',f'b-secret-realm01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations']),
+'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.7.8.3 CACHE58 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
+'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.7.8.3-cache58-swordheart1',f'b-secret-realm01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations']),
 'secret-realm-nav':all(t in app for t in ["['secret_realm', '秘', '秘境']",'id="secretRealmSection"','jiuxiao:secret-realm-rendered']),
 'secret-realm-rpc':all(t in text('b-secret-realm01.js') for t in ['get_secret_realm_state_bsecretrealm01','enter_secret_realm_bsecretrealm01','settle_secret_realm_progress_bsecretrealm01']),
 'secret-realm-live-config':all(t in text('b-secret-realm01.js') for t in ['live_config?.depths','equipmentRateText(data)','配置纪元']),
@@ -29,6 +29,7 @@ checks={
 'workflow-js':'gm-admin.js' not in workflow and 'b-secret-realm01.js' in workflow,
 'no-old-build':not any(x in text_blob for x in ['v1-7-7-fix1-cache57','v1-7-8-cache58-equipfix2']),
 'cave-workbench-default-visible':all(t in app for t in ['showCaveWorkbenchB01','caveWorkbenchB01\" class=\"cave-workbench-b01\" aria-hidden=\"false','不再依赖先点击灵脉或矿室']) and '<div data-cave-workbench-panel=\"buildings\">' in app,
+'sword-heart-ui':all(t in app for t in ['只需装备剑类武器即可触发最终伤害加成','无需使用剑系功法','当前未装备剑类武器，剑心增伤尚未触发']),
 'no-conflicts':not any('<<<<<<<' in x or '>>>>>>>' in x for x in texts)}
 failed=[k for k,v in checks.items() if not v]
 for k,v in checks.items():print(('PASS ' if v else 'FAIL ')+k)

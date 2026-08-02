@@ -1,16 +1,16 @@
 {
-  "version": "V1.7.8.2",
-  "releaseLabel": "V1.7.8.2 CACHE58",
-  "buildId": "v1-7-8-2-cache58-caveui1",
+  "version": "V1.7.8.3",
+  "releaseLabel": "V1.7.8.3 CACHE58",
+  "buildId": "v1-7-8-3-cache58-swordheart1",
   "cacheEpoch": 58,
   "minimumDatabaseBaseline": "V1.7.7 FIX1 CACHE57 / SQL 116",
-  "sqlRevision": "117-121",
+  "sqlRevision": "117-125",
   "migrationSql": [
     "117_V1.7.8_B-SECRETREALM01_正式安装.sql",
     "118_V1.7.8_GM-CONTROL01_ADMIN9_正式安装.sql"
   ],
   "releaseGateSql": "119_V1.7.8_CACHE58_正式发布门禁.sql",
-  "finalCheckSql": "120_V1.7.8_CACHE58_升级后检查.sql",
+  "finalCheckSql": "126_V1.7.8.3_天生剑心升级后检查.sql",
   "rollbackSql": "121_V1.7.8_CACHE58_安全关闭与回滚.sql",
   "features": [
     "B_SECRETREALM01_FORMAL",
@@ -20,12 +20,15 @@
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "CAVEUI1_DEFAULT_WORKBENCH",
-  "databaseRelease": "V1.7.8 CACHE58",
+  "clientHotfix": "SWORDHEART1_SWORD_WEAPON_ONLY",
+  "databaseRelease": "V1.7.8.3 CACHE58",
   "notes": [
-    "洞府底部功能区默认显示，不再要求先点击灵脉或矿室",
-    "默认打开“建筑”页，并保留炼丹、藏经切换",
-    "点击灵脉、矿室等建筑时自动定位对应建筑卡片",
-    "保留V1.7.8.1元神间距、装备实时刷新与功法兑换修复"
+    "天生剑心仍在最终伤害层提供8%加成，不增加面板道攻或战力",
+    "天生剑心角色只需装备weapon_kind=sword的剑类武器即可触发",
+    "不再要求装备或使用剑系功法，任意攻伐功法均可获得剑心最终伤害加成",
+    "保留V1.7.8.2洞府默认功能区与此前全部前端修复"
+  ],
+  "patchSql": [
+    "125_V1.7.8.3_天生剑心剑武器触发.sql"
   ]
 }
