@@ -3792,6 +3792,31 @@
       </div>`}`;
   }
 
+  // V1.7.8.2 CACHE58 CAVEUI1：洞府底部功能区默认显示“建筑”页。
+  function showCaveWorkbenchB01(panelName = 'buildings', buildingCode = '') {
+    const workbench = document.getElementById('caveWorkbenchB01');
+    if (!workbench) return;
+    workbench.hidden = false;
+    workbench.removeAttribute('hidden');
+    workbench.setAttribute('aria-hidden', 'false');
+    workbench.querySelectorAll('[data-cave-workbench-panel]').forEach(panel => {
+      const isActive = panel.dataset.caveWorkbenchPanel === panelName;
+      panel.hidden = !isActive;
+      if (isActive) panel.removeAttribute('hidden');
+      else panel.setAttribute('hidden', '');
+    });
+    workbench.querySelectorAll('[data-cave-open-panel]').forEach(tab => tab.classList.toggle('active', tab.dataset.caveOpenPanel === panelName));
+    workbench.querySelectorAll('[data-cave-building-card]').forEach(card => card.classList.toggle('focused', Boolean(buildingCode) && card.dataset.caveBuildingCard === buildingCode));
+  }
+
+  function closeCaveWorkbenchB01() {
+    const workbench = document.getElementById('caveWorkbenchB01');
+    if (!workbench) return;
+    workbench.hidden = true;
+    workbench.setAttribute('hidden', '');
+    workbench.setAttribute('aria-hidden', 'true');
+  }
+
   function cavePanelHtml(system, inventory, techniqueLibrary = state.techniqueLibrary || { books: [] }) {
     const resources = Array.isArray(system?.resources) ? system.resources : [];
     const buildings = Array.isArray(system?.buildings) ? system.buildings : [];
@@ -3850,14 +3875,14 @@
           <button id="tidyCaveStorageB01" class="ghost-btn" type="button">${state.caveInventorySortMode === 'tidy' ? '恢复顺序' : '整理储物'}</button>
         </div>
 
-        <section id="caveWorkbenchB01" class="cave-workbench-b01" hidden>
+        <section id="caveWorkbenchB01" class="cave-workbench-b01" aria-hidden="false">
           <button class="cave-workbench-close-b01" type="button" data-close-cave-workbench aria-label="关闭洞府功能面板">×</button>
           <nav class="cave-workbench-tabs-b01" aria-label="洞府功能切换">
-            <button type="button" data-cave-open-panel="buildings">建筑</button>
+            <button class="active" type="button" data-cave-open-panel="buildings">建筑</button>
             <button type="button" data-cave-open-panel="alchemy">炼丹</button>
             <button type="button" data-cave-open-panel="library">藏经</button>
           </nav>
-          <div data-cave-workbench-panel="buildings" hidden>${caveBuildingWorkbenchHtmlB01(system, buildings)}</div>
+          <div data-cave-workbench-panel="buildings">${caveBuildingWorkbenchHtmlB01(system, buildings)}</div>
           <div data-cave-workbench-panel="alchemy" hidden>${caveAlchemyWorkbenchHtmlB01(system, recipes, batch, maxBatch, batchReady)}</div>
           <div data-cave-workbench-panel="library" hidden>${techniqueLibraryHtml(techniqueLibrary)}</div>
         </section>
@@ -4097,9 +4122,7 @@
         }
         const workbench = document.getElementById('caveWorkbenchB01');
         if (!workbench) return;
-        workbench.hidden = false;
-        workbench.querySelectorAll('[data-cave-workbench-panel]').forEach(panel => { panel.hidden = panel.dataset.caveWorkbenchPanel !== panelName; });
-        workbench.querySelectorAll('[data-cave-building-card]').forEach(card => card.classList.toggle('focused', Boolean(button.dataset.caveBuildingCode) && card.dataset.caveBuildingCard === button.dataset.caveBuildingCode));
+        showCaveWorkbenchB01(panelName, button.dataset.caveBuildingCode || '');
         workbench.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });
     });
@@ -4108,8 +4131,7 @@
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
       button.addEventListener('click', () => {
-        const workbench = document.getElementById('caveWorkbenchB01');
-        if (workbench) workbench.hidden = true;
+        closeCaveWorkbenchB01();
       });
     });
 
@@ -7882,6 +7904,7 @@
     };
 
     const apply = (tab = state.activeMobileTab || 'cultivation', shouldScroll = false) => {
+      const previousTab = state.activeMobileTab || 'cultivation';
       state.activeMobileTab = tab;
       const tabbedMode = window.matchMedia('(max-width: 760px), (min-width: 1024px)').matches;
       screens.forEach(screen => {
@@ -7891,6 +7914,10 @@
       const desiredPage = pageIndexForTab(tab);
       if (tabbedMode && viewport) requestAnimationFrame(() => showPage(desiredPage, shouldScroll ? 'smooth' : 'auto'));
       if (tabbedMode && shouldScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+      // 洞府页每次进入都默认展示建筑管理区；不再依赖先点击灵脉或矿室。
+      if (tab === 'cave' && (previousTab !== 'cave' || shouldScroll)) {
+        requestAnimationFrame(() => showCaveWorkbenchB01('buildings'));
+      }
     };
 
     buttons.forEach(button => {
@@ -8205,7 +8232,7 @@
     }
   }
 
-  // V1.7.8.1 CACHE58 UIFIX3：穿戴/卸下后以服务端快照为准，多次确认并同步战力榜缓存。
+  // V1.7.8.2 CACHE58 UIFIX3：穿戴/卸下后以服务端快照为准，多次确认并同步战力榜缓存。
   const battleSnapshotSignatureV178 = snapshot => [
     snapshot?.attack,
     snapshot?.defense,

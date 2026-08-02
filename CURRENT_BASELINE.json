@@ -1,6 +1,6 @@
 {
-  "version": "1.7.8.1",
-  "releaseLabel": "九霄问道 V1.7.8.1 CACHE58",
+  "version": "1.7.8.2",
+  "releaseLabel": "九霄问道 V1.7.8.2 CACHE58",
   "sourceBaseline": "V1.7.7 FIX1 CACHE57",
   "minimumDatabaseBaseline": "V1.7.7 FIX1 CACHE57 / SQL 116",
   "deploymentStatus": "formal_release",
@@ -28,16 +28,17 @@
     "元神页手机端常驻显示道攻、道御、生机、身法、战力与增伤；穿戴或卸下装备后服务端快照多次确认并实时重绘。",
     "元神装备区底部说明改为正常文档流，缩短与随身背包之间的空白。",
     "功法道卷兑换灵石后只刷新真实藏经架、功法、灵石与市坊数据，不再调用未定义函数。",
-    "功法道卷研习与兑换按钮在手机端横向并排，禁止中文逐字竖排。"
+    "功法道卷研习与兑换按钮在手机端横向并排，禁止中文逐字竖排。",
+    "洞府底部功能区默认显示建筑页；无需先点击灵脉或矿室，点击具体建筑仅用于定位相应建筑卡片。"
   ],
   "gmEntry": "local-package/gm-admin.html",
-  "clientRelease": "V1.7.8.1_CACHE58",
-  "developmentBaseline": "V1.7.8.1_AB44_ADMIN9_CACHE58",
+  "clientRelease": "V1.7.8.2_CACHE58",
+  "developmentBaseline": "V1.7.8.2_AB45_ADMIN9_CACHE58",
   "cacheEpoch": 58,
   "sqlRevision": "117-121",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "UIFIX3_YUANSHEN_TECHNIQUE",
-  "clientBuild": "v1-7-8-1-cache58-uifix3",
+  "clientHotfix": "CAVEUI1_DEFAULT_WORKBENCH",
+  "clientBuild": "v1-7-8-2-cache58-caveui1",
   "databaseRelease": "V1.7.8 CACHE58"
 }
