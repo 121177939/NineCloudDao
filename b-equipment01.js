@@ -306,8 +306,12 @@
     return sortItems(rows.filter(item => state.filter === 'all' || item.slot_code === state.filter));
   }
 
+  function gridSocketDisplay(item) {
+    return `孔位 ${Number(item?.socket_content_count || 0)}/${Number(item?.total_socket_capacity || 0)}`;
+  }
+
   function gridItem(item) {
-    return `<button type="button" class="equipment-grid-item-bequipment01" style="--grade:${esc(color(item))}" data-equipment-item="${esc(item.id)}" aria-label="${esc(item.full_name)}，${esc(item.grade_name)}，强化+${Number(item.enhancement_level || 0)}"><span class="equipment-grid-lock-bequipment01">${item.is_locked ? '锁' : ''}</span>${enhancementBadge(item)}${itemIcon(item)}<strong>${esc(item.short_name)}</strong><span class="equipment-grade-bequipment01">${esc(item.grade_name)}</span><em>${esc(item.socket_display)}</em></button>`;
+    return `<button type="button" class="equipment-grid-item-bequipment01" style="--grade:${esc(color(item))}" data-equipment-item="${esc(item.id)}" aria-label="${esc(item.full_name)}，${esc(item.grade_name)}，强化+${Number(item.enhancement_level || 0)}"><span class="equipment-grid-lock-bequipment01">${item.is_locked ? '锁' : ''}</span>${enhancementBadge(item)}${itemIcon(item)}<strong>${esc(item.short_name)}</strong><span class="equipment-grade-bequipment01">${esc(item.grade_name)}</span><em>${esc(gridSocketDisplay(item))}</em></button>`;
   }
 
   function resourceStrip() {

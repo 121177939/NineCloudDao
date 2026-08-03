@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V1.8.0 CACHE62 to GitHub Pages
+name: Deploy NineCloudDao V1.8.0 CACHE64 to GitHub Pages
 
 on:
   push:
