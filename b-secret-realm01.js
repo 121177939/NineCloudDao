@@ -239,7 +239,7 @@
     return rows.map(row => `
       <div class="secret-realm-material-bsecretrealm01">
         <span>${esc(String(row.name || materialName(row.code)).slice(0, 1))}</span>
-        <div><strong>${esc(row.name || materialName(row.code))}</strong><small>${['百炼玄晶','兵魄道玉','护道灵玉'].includes(row.name || materialName(row.code)) ? '当前只可获得，暂未开放使用' : '秘境普通材料'}</small></div>
+        <div><strong>${esc(row.name || materialName(row.code))}</strong><small>秘境材料 · 数量随机缘境界基数成长</small></div>
         <b>×${formatNumber(row.quantity)}</b>
       </div>
     `).join('');
@@ -495,7 +495,7 @@
         </div>
       </section>
       <div class="secret-realm-two-column-bsecretrealm01">
-        <section class="secret-realm-box-bsecretrealm01"><header><strong>临时材料</strong><span>强化石与属性石暂不可使用</span></header>${materialCardsHtml(rewards)}</section>
+        <section class="secret-realm-box-bsecretrealm01"><header><strong>临时材料</strong><span>触发概率沿用原配置，数量按当前境界机缘基数成长</span></header>${materialCardsHtml(rewards)}</section>
         <section class="secret-realm-box-bsecretrealm01"><header><strong>临时装备</strong><span>天品、仙品同样处于夺宝风险</span></header>${equipmentCardsHtml(rewards)}</section>
       </div>
       <section class="secret-realm-box-bsecretrealm01"><header><strong>本轮秘境日志</strong><span>妖兽修为、五行、类型与四维均由服务端显示</span></header><div class="secret-realm-log-list-bsecretrealm01">${eventRowsHtml(run.events || [])}</div></section>
@@ -518,7 +518,7 @@
           <span>${esc(realm.name || '当前境界秘境')}</span>
           <h4>${esc(realm.secret_name || '秘境')}</h4>
           <p>${esc(realm.description || '半小时公共秘境，全服同境界修士可能在其中相遇。')}</p>
-          <div class="secret-realm-tags-bsecretrealm01"><span>奖励倍率 ×${formatNumber(realm.reward_multiplier || 1)}</span><span>只可进入当前大境界</span><span>炼气至渡劫已开放</span></div>
+          <div class="secret-realm-tags-bsecretrealm01"><span>奖励 ${formatNumber(number(data.rules?.reward_global_multiplier || 1) * 100, 2)}%</span><span>怪物强度 ${formatNumber(number(data.rules?.monster_strength_multiplier || 1) * 100, 2)}%</span><span>只可进入当前大境界</span></div>
         </div>
         <div class="secret-realm-session-card-bsecretrealm01">
           <span>当前公共场次</span>
@@ -548,8 +548,8 @@
           <p><b>妖兽战败</b>立即结束本轮，但保留当前秘境全部所得。</p>
           <p><b>玩家战败</b>失去本轮堆叠所得50%，每件临时装备独立50%概率易主。</p>
           <p><b>真实战斗</b>玩家碰撞完全复用天命榜战斗核心，使用进入时锁定的真实属性快照。</p>
-          <p><b>机缘折算</b>每只妖兽先执行当前机缘常规结果，再按后台比例结算；CACHE59正式值为原结果10%，相较旧版减少80%，向下取整且最低1。</p><p><b>装备品级</b>${equipmentRateText(data)}；初期玄品、中期地品、后期天品、圆满仙品，品级不重掷。</p>
-          <p><b>统一领取</b>离境、战败或夺宝结束后，所有修为、灵石、材料与装备必须手动领取；领取前不能进入下一次秘境。</p><p><b>成长材料</b>百炼玄晶、兵魄道玉、护道灵玉可先获得，强化与属性功能暂不开放。</p>
+          <p><b>机缘折算</b>初期、中期、后期、圆满妖兽分别对应玄品、地品、天品、仙品趋吉机缘；每只妖兽发放对应完整机缘结果的五分之一，再乘后台秘境奖励整体倍率。</p><p><b>装备品级</b>${equipmentRateText(data)}；初期玄品、中期地品、后期天品、圆满仙品，装备掉落规则本次不变。</p>
+          <p><b>统一领取</b>离境、战败或夺宝结束后，所有修为、灵石、材料与装备必须手动领取；领取前不能进入下一次秘境。</p><p><b>材料成长</b>材料触发概率与种类沿用现有配置；触发数量以炼气10—15为基础，按每次大境界突破时的机缘基数增长比例累计提升，并受秘境奖励整体倍率影响。</p>
         </div>
       </section>
       <section class="secret-realm-box-bsecretrealm01"><header><strong>${esc(realm.secret_name || '秘境')}怪物图鉴</strong><span>同阶段不同名字只改变属性倾向，不改变掉率</span></header>${monsterRowsHtml(data.monsters || [])}</section>

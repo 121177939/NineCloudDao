@@ -1,29 +1,33 @@
 {
-  "version": "V1.8.0",
-  "releaseLabel": "V1.8.0 CACHE64",
-  "buildId": "v1-8-0-cache64-equipment-enhance1-uifix4",
-  "cacheEpoch": 64,
+  "version": "V1.8.1",
+  "releaseLabel": "V1.8.1 CACHE65",
+  "buildId": "v1-8-1-cache65-secret-realm-reward2",
+  "cacheEpoch": 65,
   "minimumDatabaseBaseline": "V1.7.9 CACHE59 / SQL130R2-133 + ADMIN9 R8 FIX1 / SQL134-141",
-  "sqlRevision": "143-149",
+  "sqlRevision": "143-155",
   "migrationSql": [
-    "143_V1.8.0_装备分解与强化系统_安装.sql"
+    "143_V1.8.0_装备分解与强化系统_安装.sql",
+    "150_V1.8.1_秘境机缘同步奖励与全局倍率_安装.sql"
   ],
-  "releaseGateSql": "144_V1.8.0_CACHE60_正式发布门禁.sql",
-  "finalCheckSql": "145_V1.8.0_CACHE60_升级后检查.sql",
+  "releaseGateSql": "151_V1.8.1_CACHE65_正式发布门禁.sql",
+  "finalCheckSql": "152_V1.8.1_CACHE65_升级后检查.sql",
   "rollbackSql": "149_V1.8.0_CACHE60_强化功能安全停用.sql",
   "features": [
     "UNIVERSAL_EQUIPMENT_ESSENCE",
     "EQUIPMENT_ENHANCEMENT_0_TO_10",
     "ENHANCEMENT_FAILURE_DESTROYS_ITEM_AND_SOCKETS",
     "QUALITY_BASE_SOCKETS",
-    "ADMIN9_R9_ENHANCEMENT_CONTROL"
+    "ADMIN9_R10_ENHANCEMENT_CONTROL",
+    "SECRET_REALM_OPPORTUNITY_ONE_FIFTH",
+    "SECRET_REALM_REALM_BASIS_MATERIAL_GROWTH",
+    "SECRET_REALM_GLOBAL_REWARD_AND_MONSTER_MULTIPLIERS"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R9_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R10_手机直用版.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPMENT-GRID-UIFIX4",
-  "databaseRelease": "V1.8.0 CACHE60",
+  "clientHotfix": "SECRET-REALM-REWARD2",
+  "databaseRelease": "V1.8.1 CACHE65",
   "notes": [
     "器源为全游戏通用材料，旧器源精粹数量原样继承",
     "黄玄地天仙分解与单次强化器源均为1/2/4/8/16",
@@ -33,8 +37,11 @@
     "普通装备累计加成3/6/9/12/15/21/28/36/45/55百分比；戒指使用一半倍率",
     "品级基础孔位黄1玄2地3天4仙5；+6/+8/+10各追加1孔",
     "GM可调整全服强化概率并直接升降指定玩家单件装备强化等级",
-    "CACHE64 UIFIX4：不改变背包6×6格子尺寸，小格隐藏境界与主属性参数，仅显示强化角标、图标、名称、品级与孔位占用（已用/总数）"
+    "CACHE64 UIFIX4：不改变背包6×6格子尺寸，小格隐藏境界与主属性参数，仅显示强化角标、图标、名称、品级与孔位占用（已用/总数）",
+    "秘境单怪修为灵石为对应品级完整机缘的五分之一",
+    "材料以炼气10-15为基础随机缘跨境界比例成长",
+    "ADMIN9 R10可整体调整秘境奖励与怪物强度，默认均为100%，装备掉落不变"
   ],
-  "gmVersion": "ADMIN9 R9",
+  "gmVersion": "ADMIN9 R10",
   "handoffRevision": "R6-2026-08-03"
 }
