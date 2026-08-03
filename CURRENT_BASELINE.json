@@ -1,6 +1,6 @@
 {
   "version": "1.8.2",
-  "releaseLabel": "九霄问道 V1.8.2 CACHE73",
+  "releaseLabel": "九霄问道 V1.8.2 CACHE74",
   "sourceBaseline": "V1.8.2 CACHE66",
   "minimumDatabaseBaseline": "V1.7.9 CACHE59 / SQL130R2-133 + ADMIN9 R8 FIX1 / SQL134-141",
   "deploymentStatus": "formal_release",
@@ -38,20 +38,21 @@
     "戒指4%在剑心或变异灵根生效时为4.4%，戒指5%为5.5%；无戒指时无额外伤害",
     "天生剑心仍需装备剑类武器；剑心与变异灵根不叠加",
     "装备强化视觉：+1至+5保留静态单圈；+6至+7原内圈旋转；+8至+9内圈静止并新增当前品级色外圈旋转；+10内圈静止，外圈改为黄玄地天仙五色连续渐变旋转",
-    "CACHE73 UIFIX1修复强化旋转圆环未以图标中心为旋转轴导致的偏移与文字遮挡；特效规则与数值不变"
+    "CACHE73 UIFIX1修复强化旋转圆环未以图标中心为旋转轴导致的偏移与文字遮挡；特效规则与数值不变",
+    "CACHE74 UIFIX2移除已穿戴装备大卡片的境界行，手机端装备图标与文字整体下移，确保+10外圈完整显示"
   ],
   "gmEntry": "九霄问道_ADMIN9_R11_FIX1_手机直用版.html",
-  "clientRelease": "V1.8.2_CACHE73",
-  "developmentBaseline": "V1.8.2_AB57_ADMIN9_CACHE73",
-  "cacheEpoch": 73,
+  "clientRelease": "V1.8.2_CACHE74",
+  "developmentBaseline": "V1.8.2_AB58_ADMIN9_CACHE74",
+  "cacheEpoch": 74,
   "sqlRevision": "143-162",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPMENT-FX1-UIFIX1",
-  "clientBuild": "v1-8-2-cache73-equipmentfx1-uifix1",
+  "clientHotfix": "EQUIPMENT-FX1-UIFIX2",
+  "clientBuild": "v1-8-2-cache74-equipmentfx1-uifix2",
   "databaseRelease": "V1.8.2 CACHE66",
   "gmVersion": "ADMIN9 R11 FIX1",
   "gmSqlRevision": "160-162",
-  "handoffRevision": "R8-2026-08-03",
+  "handoffRevision": "R9-2026-08-03",
   "deploymentVerification": "本次为纯前端装备强化特效更新；数据库已完成SQL157-162时无需新增SQL。首次跨版本升级仍按143、150、157及对应门禁/检查顺序执行。"
 }

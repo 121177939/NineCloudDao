@@ -1,4 +1,4 @@
-/* B-EQUIPMENT01 · V1.8.2 CACHE73 equipment-grid UIFIX3 */
+/* B-EQUIPMENT01 · V1.8.2 CACHE74 equipment-grid UIFIX3 */
 .equipment-slot-card-bequipment01{--grade:#8f8068;border-color:color-mix(in srgb,var(--grade) 68%,#4c4030)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--grade) 30%,transparent),inset 0 0 20px color-mix(in srgb,var(--grade) 9%,transparent)!important;min-height:108px!important}
 .equipment-slot-card-bequipment01 .equipment-icon-bequipment01{flex:0 0 auto}
 .equipment-copy-bequipment01 strong{font-size:.78rem!important;white-space:nowrap}.equipment-copy-bequipment01 strong em{font-style:normal}.equipment-copy-bequipment01 small{display:block!important;line-height:1.35!important;font-size:.66rem!important}.equipment-copy-bequipment01 i{background:linear-gradient(90deg,var(--grade),transparent)!important}
@@ -36,7 +36,7 @@
 /* V1.7.8.2 UIFIX3：随身背包紧贴元神信息区。 */
 @media(max-width:760px){.equipment-backpack-inline-bequipment01{margin-top:3px!important;padding-top:5px}}
 
-/* V1.8.2 CACHE73 UIFIX3：背包装备小格显示孔位占用（已用/总数），已穿戴大卡片保持原显示。 */
+/* V1.8.2 CACHE74 UIFIX3：背包装备小格显示孔位占用（已用/总数），已穿戴大卡片保持原显示。 */
 .equipment-enhancement-badge-bequipment01{position:absolute;left:3px;top:3px;z-index:2;min-width:25px;padding:2px 4px;border:1px solid rgba(245,210,111,.7);background:rgba(52,33,10,.92);color:#ffe59a;font-size:.55rem;line-height:1;border-radius:999px;box-shadow:0 0 8px rgba(242,208,107,.28)}
 .equipment-cave-slot-bequipment01 .equipment-enhancement-badge-bequipment01{left:2px;top:2px}
 .equipment-resource-strip-bequipment01{width:calc(100% - 18px);margin:9px;display:grid;grid-template-columns:auto auto 1fr;gap:10px;align-items:center;border:1px solid rgba(111,174,156,.42);background:linear-gradient(90deg,rgba(34,75,65,.28),rgba(20,17,12,.82));color:#d8cfad;padding:8px 10px;text-align:left}
@@ -73,7 +73,7 @@
   .equipment-enhancement-badge-bequipment01{min-width:13px;padding:1px;font-size:.30rem}
 }
 
-/* V1.8.2 CACHE73 EQUIPMENT-FX1-UIFIX1：装备强化双圈定位修复。
+/* V1.8.2 CACHE74 EQUIPMENT-FX1-UIFIX2：装备强化双圈定位修复。
    +1～+5：沿用原始静态单圈；
    +6～+7：原内圈旋转；
    +8～+9：内圈静止，新增当前品级色外圈旋转；
@@ -167,3 +167,9 @@
 }
 
 /* CACHE73 UIFIX1：旋转圆环始终以装备图标中心为旋转轴，禁止绕图标偏移并遮挡名称。 */
+
+/* V1.8.2 CACHE74 EQUIPMENT-FX1-UIFIX2：手机端已穿戴大卡片移除境界行，内容整体下移，确保强化圆环完整显示。 */
+@media(max-width:620px){
+  .equipment-slot-card-bequipment01 .equipment-icon-bequipment01{transform:translateY(4px)}
+  .equipment-slot-card-bequipment01 .equipment-copy-bequipment01{transform:translateY(4px)}
+}

@@ -1,8 +1,8 @@
 {
   "version": "V1.8.2",
-  "releaseLabel": "V1.8.2 CACHE73",
-  "buildId": "v1-8-2-cache73-equipmentfx1-uifix1",
-  "cacheEpoch": 73,
+  "releaseLabel": "V1.8.2 CACHE74",
+  "buildId": "v1-8-2-cache74-equipmentfx1-uifix2",
+  "cacheEpoch": 74,
   "minimumDatabaseBaseline": "V1.7.9 CACHE59 / SQL130R2-133 + ADMIN9 R8 FIX1 / SQL134-141",
   "sqlRevision": "143-162",
   "migrationSql": [
@@ -31,7 +31,7 @@
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPMENT-FX1-UIFIX1",
+  "clientHotfix": "EQUIPMENT-FX1-UIFIX2",
   "databaseRelease": "V1.8.2 CACHE66",
   "notes": [
     "器源为全游戏通用材料，旧器源精粹数量原样继承",
@@ -48,8 +48,9 @@
     "ADMIN9 R11可整体调整秘境奖励与怪物强度，装备掉落不变",
     "天生剑心与变异灵根只将戒指本命五行增伤效果提高10%，不再固定增加最终伤害",
     "戒指4%变4.4%，戒指5%变5.5%；无戒指时无额外伤害；两种天赋不叠加",
-    "装备强化视觉：+1至+5静态单圈；+6至+7内圈旋转；+8至+9新增当前品级色旋转外圈；+10改为五种品级色连续渐变外圈"
+    "装备强化视觉：+1至+5静态单圈；+6至+7内圈旋转；+8至+9新增当前品级色旋转外圈；+10改为五种品级色连续渐变外圈",
+    "CACHE74 UIFIX2：已穿戴装备大卡片移除境界行，手机端内容下移并完整显示强化圆环"
   ],
   "gmVersion": "ADMIN9 R11 FIX1",
-  "handoffRevision": "R8-2026-08-03"
+  "handoffRevision": "R9-2026-08-03"
 }

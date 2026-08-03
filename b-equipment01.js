@@ -271,7 +271,7 @@
     if (!item) {
       return `<span class="yuanshen-sigil-v0155 equipment-empty-icon-bequipment01" aria-hidden="true">${emptyGlyph}</span><span class="yuanshen-stat-copy-v0155"><strong>${label}：未装备</strong><i></i><small>空槽 · 点击查看背包</small></span>`;
     }
-    return `${itemIcon(item)}<span class="yuanshen-stat-copy-v0155 equipment-copy-bequipment01"><strong>${esc(itemEnhancementName(item))}：<em style="color:${esc(color(item))}">${esc(item.grade_name)}</em></strong><i></i><small>${esc(item.realm_name)}</small><small>${esc(item.main_stat_display)}</small><small>${esc(item.socket_display)}</small></span>`;
+    return `${itemIcon(item)}<span class="yuanshen-stat-copy-v0155 equipment-copy-bequipment01"><strong>${esc(itemEnhancementName(item))}：<em style="color:${esc(color(item))}">${esc(item.grade_name)}</em></strong><i></i><small>${esc(item.main_stat_display)}</small><small>${esc(item.socket_display)}</small></span>`;
   }
 
   function renderSpiritSlots() {
