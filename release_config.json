@@ -1,16 +1,17 @@
 {
-  "version": "V1.8.1",
-  "releaseLabel": "V1.8.1 CACHE65",
-  "buildId": "v1-8-1-cache65-secret-realm-reward2",
-  "cacheEpoch": 65,
+  "version": "V1.8.2",
+  "releaseLabel": "V1.8.2 CACHE66",
+  "buildId": "v1-8-2-cache66-ring-talent1",
+  "cacheEpoch": 66,
   "minimumDatabaseBaseline": "V1.7.9 CACHE59 / SQL130R2-133 + ADMIN9 R8 FIX1 / SQL134-141",
-  "sqlRevision": "143-155",
+  "sqlRevision": "143-162",
   "migrationSql": [
     "143_V1.8.0_装备分解与强化系统_安装.sql",
-    "150_V1.8.1_秘境机缘同步奖励与全局倍率_安装.sql"
+    "150_V1.8.1_秘境机缘同步奖励与全局倍率_安装.sql",
+    "157_V1.8.2_剑心异灵根戒指效果增幅_安装.sql"
   ],
-  "releaseGateSql": "151_V1.8.1_CACHE65_正式发布门禁.sql",
-  "finalCheckSql": "152_V1.8.1_CACHE65_升级后检查.sql",
+  "releaseGateSql": "158_V1.8.2_CACHE66_正式发布门禁.sql",
+  "finalCheckSql": "159_V1.8.2_CACHE66_升级后检查_只读.sql",
   "rollbackSql": "149_V1.8.0_CACHE60_强化功能安全停用.sql",
   "features": [
     "UNIVERSAL_EQUIPMENT_ESSENCE",
@@ -20,14 +21,17 @@
     "ADMIN9_R10_ENHANCEMENT_CONTROL",
     "SECRET_REALM_OPPORTUNITY_ONE_FIFTH",
     "SECRET_REALM_REALM_BASIS_MATERIAL_GROWTH",
-    "SECRET_REALM_GLOBAL_REWARD_AND_MONSTER_MULTIPLIERS"
+    "SECRET_REALM_GLOBAL_REWARD_AND_MONSTER_MULTIPLIERS",
+    "BATTLE_RING_ELEMENT_BONUS_AUTHORITY",
+    "SWORD_HEART_RING_EFFECT_AMPLIFICATION",
+    "MUTATION_RING_EFFECT_AMPLIFICATION"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R10_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R11_手机直用版.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "SECRET-REALM-REWARD2",
-  "databaseRelease": "V1.8.1 CACHE65",
+  "clientHotfix": "RING-TALENT1",
+  "databaseRelease": "V1.8.2 CACHE66",
   "notes": [
     "器源为全游戏通用材料，旧器源精粹数量原样继承",
     "黄玄地天仙分解与单次强化器源均为1/2/4/8/16",
@@ -40,8 +44,10 @@
     "CACHE64 UIFIX4：不改变背包6×6格子尺寸，小格隐藏境界与主属性参数，仅显示强化角标、图标、名称、品级与孔位占用（已用/总数）",
     "秘境单怪修为灵石为对应品级完整机缘的五分之一",
     "材料以炼气10-15为基础随机缘跨境界比例成长",
-    "ADMIN9 R10可整体调整秘境奖励与怪物强度，默认均为100%，装备掉落不变"
+    "ADMIN9 R11可整体调整秘境奖励与怪物强度，装备掉落不变",
+    "天生剑心与变异灵根只将戒指本命五行增伤效果提高10%，不再固定增加最终伤害",
+    "戒指4%变4.4%，戒指5%变5.5%；无戒指时无额外伤害；两种天赋不叠加"
   ],
-  "gmVersion": "ADMIN9 R10",
-  "handoffRevision": "R6-2026-08-03"
+  "gmVersion": "ADMIN9 R11",
+  "handoffRevision": "R7-2026-08-03"
 }

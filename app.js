@@ -4754,12 +4754,18 @@
       : multiplier < 1
         ? `${escapeHtml(attacker.element_name || '')}行受${escapeHtml(defender.element_name || '')}行压制，伤害降低${formatNumber((1 - multiplier) * 100, 0)}%。`
         : '五行未形成直接克制，本次伤害不作修正。';
-    const mutationMultiplier = Number(action?.mutation_multiplier || 1);
-    const talentLine = mutationMultiplier > 1
-      ? `变异灵根（${escapeHtml(action?.mutation_name || attacker?.mutation_name || '异')}）在最终伤害层提高${formatNumber((mutationMultiplier - 1) * 100, 0)}%。`
-      : Number(action?.sword_heart_multiplier || 1) > 1
-        ? `天生剑心在最终伤害层提高${formatNumber((Number(action.sword_heart_multiplier) - 1) * 100, 0)}%。`
-        : '';
+    const ringBasePercent = Math.max(0, Number(action?.ring_base_percent ?? action?.equipment_element_bonus ?? attacker?.equipment_element_bonus ?? 0));
+    const ringEffectivePercent = Math.max(0, Number(action?.ring_effective_percent ?? ringBasePercent));
+    const talentRatePercent = Math.max(0, Number(action?.talent_ring_amplification_rate || 0) * 100);
+    const talentSource = String(action?.talent_source || '');
+    const talentLabel = talentSource === 'mutation'
+      ? `变异灵根（${escapeHtml(action?.mutation_name || attacker?.mutation_name || '异')}）`
+      : (talentSource === 'sword_heart' ? '天生剑心' : '');
+    const talentLine = talentLabel
+      ? (ringBasePercent > 0
+        ? `${talentLabel}使戒指效果提高${formatNumber(talentRatePercent, 2)}%，本次戒指增伤由${formatNumber(ringBasePercent, 2)}%提升至${formatNumber(ringEffectivePercent, 2)}%。`
+        : `${talentLabel}可使戒指效果提高${formatNumber(talentRatePercent, 2)}%，但当前没有戒指增伤，因此不产生额外伤害。`)
+      : (ringBasePercent > 0 ? `戒指提供${formatNumber(ringEffectivePercent, 2)}%本命五行最终伤害加成。` : '');
     return `
       <article class="battle-action-bcombat01 ${action?.defeated ? 'is-finisher' : ''}">
         <header><span>第 ${formatNumber(action?.round || 1)} 回合</span><strong>${escapeHtml(action?.attacker_name || '')} 出手</strong></header>
@@ -7284,19 +7290,28 @@
 
 
 
-  // V1.7.9 CACHE59 SWORDHEART1：天生剑心只需装备剑类武器即可触发最终伤害加成。
+  // V1.8.2 CACHE66 RING-TALENT1：天生剑心与变异灵根只放大戒指本命五行增伤，默认提高10%。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
     const fateName = fate.name || snapshot?.fate_name || '未定命格';
     const ready = snapshot && snapshot.status !== 'unavailable' && Number.isFinite(Number(snapshot.attack));
     const value = key => ready ? formatNumber(snapshot[key] || 0) : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
-    const swordHeartBonusPercent = ready ? Math.max(0, Number(snapshot.sword_heart_final_damage_bonus ?? 0.08) * 100) : 0;
-    const mutationBonusPercent = ready ? Math.max(0, Number(snapshot.mutation_final_damage_bonus ?? 0.08) * 100) : 0;
+    const ringBasePercent = ready ? Math.max(0, Number(snapshot.equipment_element_bonus || 0)) : 0;
+    const talentRate = ready
+      ? Math.max(0, Number(snapshot.talent_ring_amplification_rate ?? (snapshot.sword_heart_active
+        ? snapshot.sword_heart_final_damage_bonus
+        : (snapshot.mutation_active ? snapshot.mutation_final_damage_bonus : 0)) ?? 0))
+      : 0;
+    const talentRatePercent = talentRate * 100;
+    const ringEffectivePercent = ready
+      ? Math.max(0, Number(snapshot.effective_equipment_element_bonus ?? (ringBasePercent * (1 + talentRate))))
+      : 0;
+    const talentName = snapshot?.sword_heart_active ? '剑心' : (snapshot?.mutation_active ? `变异·${snapshot.mutation_name || '未知'}` : '');
     const bonusValue = ready
-      ? (snapshot.sword_heart_active
-        ? `剑心 +${formatNumber(swordHeartBonusPercent, 2)}%`
-        : (snapshot.mutation_active ? `变异·${snapshot.mutation_name || '未知'} +${formatNumber(mutationBonusPercent, 2)}%` : `五行 · ${snapshot.element_name || '未定'}`))
+      ? (talentName
+        ? `${talentName} · 戒指×${formatNumber(1 + talentRate, 2)}`
+        : (ringBasePercent > 0 ? `戒指 +${formatNumber(ringBasePercent, 2)}%` : `五行 · ${snapshot.element_name || '未定'}`))
       : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
     const card = (position, icon, name, displayValue, detail) => `
       <button class="yuanshen-stat-card-v0155 ${position}" type="button" data-yuanshen-stat="${escapeHtml(name)}" data-yuanshen-detail="${escapeHtml(detail)}">
@@ -7317,15 +7332,13 @@
         <strong>${escapeHtml(liveValue(key))}</strong>
         <small>${escapeHtml(detail)}</small>
       </div>`;
-    const equipmentElementBonus = ready ? Math.max(0, Number(snapshot.equipment_element_bonus || 0)) : 0;
-    const permanentBonus = ready
-      ? (snapshot.sword_heart_active
-        ? swordHeartBonusPercent
-        : (snapshot.mutation_active ? mutationBonusPercent : 0))
-      : 0;
-    const bonusTotal = equipmentElementBonus + permanentBonus;
+    const bonusTotal = ringEffectivePercent;
     const bonusDetail = ready
-      ? [equipmentElementBonus ? `戒指 ${formatNumber(equipmentElementBonus)}%` : '', permanentBonus ? `${snapshot.sword_heart_active ? '剑心' : '变异'} ${formatNumber(permanentBonus)}%` : ''].filter(Boolean).join(' + ') || '暂无常驻增伤'
+      ? (talentName
+        ? (ringBasePercent > 0
+          ? `戒指 ${formatNumber(ringBasePercent, 2)}% × ${talentName} ${formatNumber(1 + talentRate, 2)} = ${formatNumber(ringEffectivePercent, 2)}%`
+          : `${talentName}可使戒指效果提高${formatNumber(talentRatePercent, 2)}%，但当前没有戒指增伤`)
+        : (ringBasePercent > 0 ? `戒指 ${formatNumber(ringBasePercent, 2)}%` : '暂无常驻增伤'))
       : '等待服务端权威属性';
     return `
       <div id="primordialSpiritRootV1" class="yuanshen-shell-v0155">
@@ -7378,7 +7391,7 @@
 
           ${card('right-1', '生', '生机', value('vitality'), ready ? `境界基础 ${formatNumber(snapshot.base_vitality || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_vitality || 0)}。` : '正在读取服务端权威战斗快照。')}
           ${card('right-2', '身', '身法', value('agility'), ready ? `境界基础 ${formatNumber(snapshot.base_agility || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_agility || 0)}；第一版用于决定先手。` : '正在读取服务端权威战斗快照。')}
-          ${card('right-3', '元', '加成', bonusValue, ready ? `本命五行为“${snapshot.element_name || '未定'}”，继续使用原五行克制。${snapshot.mutation_active ? `变异灵根已显化为“${snapshot.mutation_name || '未知'}”，只在最终伤害层提高${formatNumber(mutationBonusPercent, 2)}%，不建立新克制。` : `灵根“${rootName}”只影响修炼速度。`}命格“${fateName}”${snapshot.sword_heart_active ? `已装备剑类武器，所有战斗攻击的最终伤害 +${formatNumber(swordHeartBonusPercent, 2)}%；无需使用剑系功法。` : snapshot.fate_code === 'sword_heart' ? '当前未装备剑类武器，剑心增伤尚未触发。' : snapshot.mutation_active ? '变异灵根增伤已生效。' : '当前没有常驻四属性加成。'}` : '正在读取五行、命格、装备与功法加成。')}
+          ${card('right-3', '元', '加成', bonusValue, ready ? `本命五行为“${snapshot.element_name || '未定'}”，继续使用原五行克制。${snapshot.mutation_active ? `变异灵根已显化为“${snapshot.mutation_name || '未知'}”，使戒指本命五行增伤效果提高${formatNumber(talentRatePercent, 2)}%；戒指${formatNumber(ringBasePercent, 2)}%实际为${formatNumber(ringEffectivePercent, 2)}%。` : `灵根“${rootName}”只影响修炼速度。`}命格“${fateName}”${snapshot.sword_heart_active ? `已装备剑类武器，剑心使戒指效果提高${formatNumber(talentRatePercent, 2)}%；戒指${formatNumber(ringBasePercent, 2)}%实际为${formatNumber(ringEffectivePercent, 2)}%，无需使用剑系功法。` : snapshot.fate_code === 'sword_heart' ? '当前未装备剑类武器，剑心戒指增幅尚未触发。' : snapshot.mutation_active ? '变异灵根戒指增幅已生效。' : '当前没有天赋戒指增幅。'}没有戒指增伤时，剑心与变异灵根不会额外增加伤害。` : '正在读取五行、命格、装备与功法加成。')}
         </div>
         <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；当前武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
       </div>`;
@@ -8252,7 +8265,9 @@
     snapshot?.effective_armor_defense,
     snapshot?.effective_armor_vitality,
     snapshot?.effective_armor_agility,
-    snapshot?.equipment_element_bonus
+    snapshot?.equipment_element_bonus,
+    snapshot?.effective_equipment_element_bonus,
+    snapshot?.talent_ring_amplification_rate
   ].map(value => Number(value || 0)).join('|');
 
   const waitForBattleSnapshotV178 = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
