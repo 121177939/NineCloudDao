@@ -1,8 +1,8 @@
 {
   "version": "V1.8.2",
-  "releaseLabel": "V1.8.2 CACHE72",
-  "buildId": "v1-8-2-cache72-equipmentfx1",
-  "cacheEpoch": 72,
+  "releaseLabel": "V1.8.2 CACHE73",
+  "buildId": "v1-8-2-cache73-equipmentfx1-uifix1",
+  "cacheEpoch": 73,
   "minimumDatabaseBaseline": "V1.7.9 CACHE59 / SQL130R2-133 + ADMIN9 R8 FIX1 / SQL134-141",
   "sqlRevision": "143-162",
   "migrationSql": [
@@ -31,7 +31,7 @@
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPMENT-FX1",
+  "clientHotfix": "EQUIPMENT-FX1-UIFIX1",
   "databaseRelease": "V1.8.2 CACHE66",
   "notes": [
     "器源为全游戏通用材料，旧器源精粹数量原样继承",

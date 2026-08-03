@@ -7290,7 +7290,7 @@
 
 
 
-  // V1.8.2 CACHE72 RING-TALENT1：天生剑心与变异灵根只放大戒指本命五行增伤，默认提高10%。
+  // V1.8.2 CACHE73 RING-TALENT1：天生剑心与变异灵根只放大戒指本命五行增伤，默认提高10%。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
