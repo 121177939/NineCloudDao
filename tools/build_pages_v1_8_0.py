@@ -4,8 +4,8 @@ import hashlib, json, shutil, sys
 
 root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve()
 out=Path(sys.argv[2] if len(sys.argv)>2 else '.pages-site').resolve()
-build_id='v1-8-2-cache75-equipmentfx1-uifix3'
-label='V1.8.2 CACHE75'
+build_id='v1-8-2-cache76-equipmentfx1-uifix4'
+label='V1.8.2 CACHE76'
 required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json','b-paigow01.js','b-paigow01.css','b-paigow01.html','b-equipment01.js','b-equipment01.css','b-secret-realm01.js','b-secret-realm01.css','paigow-realtime.js','paigow-app.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js','assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']
 for rel in required:
     if not (root/rel).is_file(): raise SystemExit(f'MISSING:{rel}')
@@ -17,13 +17,13 @@ baseline=json.loads(text('CURRENT_BASELINE.json')); release=json.loads(text('rel
 runtime=['index.html','404.html','app.js','styles.css','config.js','update-guard.js','sw.js','manifest.webmanifest','b-paigow01.html','b-paigow01.js','b-equipment01.css','b-equipment01.js','b-secret-realm01.css','b-secret-realm01.js','paigow-app.js','paigow-realtime.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js']
 texts=[text(x) for x in runtime]; blob='\n'.join(texts)
 checks={
- 'version':text('VERSION.txt').splitlines()[0].strip()=='V1.8.2 CACHE75' and build_id in text('VERSION.txt'),
- 'config':all(t in text('config.js') for t in ["version: '1.8.2'","releaseLabel: 'V1.8.2 CACHE75'",f"buildId: '{build_id}'",'cacheEpoch: 75']),
+ 'version':text('VERSION.txt').splitlines()[0].strip()=='V1.8.2 CACHE76' and build_id in text('VERSION.txt'),
+ 'config':all(t in text('config.js') for t in ["version: '1.8.2'","releaseLabel: 'V1.8.2 CACHE76'",f"buildId: '{build_id}'",'cacheEpoch: 76']),
  'deployment-enabled':baseline.get('deploymentStatus')=='formal_release' and release.get('deploymentAllowed') is True and baseline.get('sqlRevision')=='143-162',
  'local-gm-mode':baseline.get('gmDeliveryMode')=='local_only' and release.get('gmDeliveryMode')=='local_only',
- 'baseline-lock':baseline.get('developmentBaseline')=='V1.8.2_AB59_ADMIN9_CACHE75' and baseline.get('gmVersion')=='ADMIN9 R11 FIX1',
- 'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.8.2 CACHE75 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
- 'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.8.2-cache75-equipmentfx1-uifix3',f'b-equipment01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations','ADMIN9']),
+ 'baseline-lock':baseline.get('developmentBaseline')=='V1.8.2_AB60_ADMIN9_CACHE76' and baseline.get('gmVersion')=='ADMIN9 R11 FIX1',
+ 'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.8.2 CACHE76 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
+ 'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.8.2-cache76-equipmentfx1-uifix4',f'b-equipment01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations','ADMIN9']),
  'enhancement-state-rpc':'get_equipment_enhancement_state_v180' in equipment,
  'enhancement-action-rpc':'enhance_equipment_v180' in equipment and 'decompose_equipment_v180' in equipment,
  'enhancement-copy':all(t in equipment for t in ['我命由我不由天','我再回去考虑考虑','装备、已有强化等级、全部孔位','器源']),
@@ -33,6 +33,7 @@ checks={
  'ring-talent1':all(t in app for t in ['戒指效果提高','本次戒指增伤由','effective_equipment_element_bonus','talent_ring_amplification_rate']) and all(t in json.dumps(baseline,ensure_ascii=False) for t in ['戒指4%在剑心或变异灵根生效时为4.4%','剑心与变异灵根不叠加']),
  'equipment-fx1':all(t in equipment for t in ['function equipmentEffectTier(item)','equipment-effect-tier6-bequipment01','equipment-effect-tier8-bequipment01','equipment-effect-tier10-bequipment01']) and all(t in text('b-equipment01.css') for t in ['CACHE75 EQUIPMENT-FX1-UIFIX3','equipmentFxInnerSpinBEquipment01','equipmentFxOuterSpinBEquipment01','#c99a32 0%','#4f86d9 20%','#925fd1 40%','#e05252 60%','#f2d06b 80%']),
  'equipped-card-uifix2':'CACHE75 EQUIPMENT-FX1-UIFIX3' in text('b-equipment01.css') and '<small>${esc(item.realm_name)}</small><small>${esc(item.main_stat_display)}</small>' not in equipment and '<small>${esc(item.main_stat_display)}</small><small>${esc(item.socket_display)}</small>' in equipment and 'translateY(4px)' in text('b-equipment01.css'),
+ 'equipment-grid-icon-uifix4':'CACHE76 EQUIPMENT-FX1-UIFIX4' in text('b-equipment01.css') and 'transform:translateY(-2px)' in text('b-equipment01.css'),
  'equipment-grid-grade-corner':all(t in equipment for t in ['function gridGradeCornerLabel(item)','equipment-grade-corner-bequipment01','<em>${esc(gridSocketDisplay(item))}</em>']) and '<span class="equipment-grade-bequipment01">${esc(item.grade_name)}</span>' not in equipment and all(t in text('b-equipment01.css') for t in ['CACHE75 EQUIPMENT-FX1-UIFIX3','equipment-grade-corner-bequipment01','right:3px;top:3px']),
  'secret-realm-nav':all(t in app for t in ["['secret_realm', '秘', '秘境']",'id="secretRealmSection"','jiuxiao:secret-realm-rendered']),
  'workflow-builder':'python3 tools/build_pages_v1_8_0.py' in workflow,

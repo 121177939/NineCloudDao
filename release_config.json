@@ -1,8 +1,8 @@
 {
   "version": "V1.8.2",
-  "releaseLabel": "V1.8.2 CACHE75",
-  "buildId": "v1-8-2-cache75-equipmentfx1-uifix3",
-  "cacheEpoch": 75,
+  "releaseLabel": "V1.8.2 CACHE76",
+  "buildId": "v1-8-2-cache76-equipmentfx1-uifix4",
+  "cacheEpoch": 76,
   "minimumDatabaseBaseline": "V1.7.9 CACHE59 / SQL130R2-133 + ADMIN9 R8 FIX1 / SQL134-141",
   "sqlRevision": "143-162",
   "migrationSql": [
@@ -31,7 +31,7 @@
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPMENT-FX1-UIFIX3",
+  "clientHotfix": "EQUIPMENT-FX1-UIFIX4",
   "databaseRelease": "V1.8.2 CACHE66",
   "notes": [
     "器源为全游戏通用材料，旧器源精粹数量原样继承",
@@ -50,7 +50,8 @@
     "戒指4%变4.4%，戒指5%变5.5%；无戒指时无额外伤害；两种天赋不叠加",
     "装备强化视觉：+1至+5静态单圈；+6至+7内圈旋转；+8至+9新增当前品级色旋转外圈；+10改为五种品级色连续渐变外圈",
     "CACHE75 UIFIX3：已穿戴装备大卡片移除境界行，手机端内容下移并完整显示强化圆环",
-    "CACHE75 UIFIX3：背包装备小格移除独立品级行，品级以右上角黄/玄/地/天/仙单字角标显示，固定6×6与格子尺寸不变"
+    "CACHE75 UIFIX3：背包装备小格移除独立品级行，品级以右上角黄/玄/地/天/仙单字角标显示，固定6×6与格子尺寸不变",
+    "CACHE76 UIFIX4：手机端背包装备小格的装备圆圈整体上移2px，避免遮挡装备名称且不超出格子边界；大卡片不变"
   ],
   "gmVersion": "ADMIN9 R11 FIX1",
   "handoffRevision": "R9-2026-08-03"
