@@ -318,8 +318,14 @@
     return `孔位 ${Number(item?.socket_content_count || 0)}/${Number(item?.total_socket_capacity || 0)}`;
   }
 
+  function gridGradeCornerLabel(item) {
+    const name = String(item?.grade_name || '').trim();
+    if (!name) return '';
+    return name.endsWith('品') ? name.slice(0, -1) : name.slice(0, 1);
+  }
+
   function gridItem(item) {
-    return `<button type="button" class="equipment-grid-item-bequipment01" style="--grade:${esc(color(item))}" data-equipment-item="${esc(item.id)}" aria-label="${esc(item.full_name)}，${esc(item.grade_name)}，强化+${Number(item.enhancement_level || 0)}"><span class="equipment-grid-lock-bequipment01">${item.is_locked ? '锁' : ''}</span>${enhancementBadge(item)}${itemIcon(item)}<strong>${esc(item.short_name)}</strong><span class="equipment-grade-bequipment01">${esc(item.grade_name)}</span><em>${esc(gridSocketDisplay(item))}</em></button>`;
+    return `<button type="button" class="equipment-grid-item-bequipment01" style="--grade:${esc(color(item))}" data-equipment-item="${esc(item.id)}" aria-label="${esc(item.full_name)}，${esc(item.grade_name)}，强化+${Number(item.enhancement_level || 0)}"><span class="equipment-grade-corner-bequipment01" aria-hidden="true">${esc(gridGradeCornerLabel(item))}</span><span class="equipment-grid-lock-bequipment01">${item.is_locked ? '锁' : ''}</span>${enhancementBadge(item)}${itemIcon(item)}<strong>${esc(item.short_name)}</strong><em>${esc(gridSocketDisplay(item))}</em></button>`;
   }
 
   function resourceStrip() {
