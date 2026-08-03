@@ -28,7 +28,7 @@
     const frame = overlay.querySelector('.b-paigow01-frame');
     lastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     if (frame && (frame.src === 'about:blank' || !frame.src.includes('b-paigow01.html'))) {
-      const params = new URLSearchParams({ embed: '1', source: String(context.source || 'casino'), v: 'v1-8-2-cache66-ring-talent1', ui: 'b-paigow02-ui03' });
+      const params = new URLSearchParams({ embed: '1', source: String(context.source || 'casino'), v: 'v1-8-2-cache72-equipmentfx1', ui: 'b-paigow02-ui03' });
       frame.src = `b-paigow01.html?${params.toString()}`;
     }
     overlay.hidden = false;

@@ -1,2 +1,2 @@
-V1.8.2 CACHE66
-v1-8-2-cache66-ring-talent1
+V1.8.2 CACHE72
+v1-8-2-cache72-equipmentfx1

@@ -2,7 +2,7 @@
   'use strict';
 
   const MODULE = 'B-EQUIPMENT01';
-  const VERSION = '1.8.0-enhance1';
+  const VERSION = '1.8.2-equipmentfx1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
@@ -249,8 +249,16 @@
     return item?.grade_color || gradeColors[item?.grade_code] || '#8f8068';
   }
 
+  function equipmentEffectTier(item) {
+    const level = Number(item?.enhancement_level || 0);
+    if (level >= 10) return 'equipment-effect-bequipment01 equipment-effect-tier10-bequipment01';
+    if (level >= 8) return 'equipment-effect-bequipment01 equipment-effect-tier8-bequipment01';
+    if (level >= 6) return 'equipment-effect-bequipment01 equipment-effect-tier6-bequipment01';
+    return '';
+  }
+
   function itemIcon(item) {
-    return `<span class="equipment-icon-bequipment01" style="--grade:${esc(color(item))}">${esc(item?.icon_glyph || slotMeta[item?.slot_code]?.[0] || '器')}</span>`;
+    return `<span class="equipment-icon-bequipment01 ${equipmentEffectTier(item)}" style="--grade:${esc(color(item))}">${esc(item?.icon_glyph || slotMeta[item?.slot_code]?.[0] || '器')}</span>`;
   }
 
   function enhancementBadge(item) {

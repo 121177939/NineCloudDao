@@ -1,7 +1,7 @@
 {
   "version": "1.8.2",
-  "releaseLabel": "九霄问道 V1.8.2 CACHE66",
-  "sourceBaseline": "V1.8.1 CACHE65",
+  "releaseLabel": "九霄问道 V1.8.2 CACHE72",
+  "sourceBaseline": "V1.8.2 CACHE66",
   "minimumDatabaseBaseline": "V1.7.9 CACHE59 / SQL130R2-133 + ADMIN9 R8 FIX1 / SQL134-141",
   "deploymentStatus": "formal_release",
   "databaseMigrations": [
@@ -17,7 +17,8 @@
     "B-PAIGOW02-UI03",
     "B-SECRETREALM01-REWARD2",
     "B-COMBAT01-RING-TALENT1",
-    "GM-CONTROL01-ADMIN9-R11"
+    "GM-CONTROL01-ADMIN9-R11-FIX1",
+    "B-EQUIPMENT01-FX1"
   ],
   "confirmedRules": [
     "器源为全游戏通用材料，旧器源精粹数量原样继承",
@@ -35,20 +36,21 @@
     "秘境奖励与怪物强度可由ADMIN9 R11整体按百分比调整；装备掉落不变",
     "天生剑心与变异灵根不再固定增加最终伤害，只将戒指本命五行增伤效果提高10%",
     "戒指4%在剑心或变异灵根生效时为4.4%，戒指5%为5.5%；无戒指时无额外伤害",
-    "天生剑心仍需装备剑类武器；剑心与变异灵根不叠加"
+    "天生剑心仍需装备剑类武器；剑心与变异灵根不叠加",
+    "装备强化视觉：+1至+5保留静态单圈；+6至+7原内圈旋转；+8至+9内圈静止并新增当前品级色外圈旋转；+10内圈静止，外圈改为黄玄地天仙五色连续渐变旋转"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R11_手机直用版.html",
-  "clientRelease": "V1.8.2_CACHE66",
-  "developmentBaseline": "V1.8.2_AB55_ADMIN9_CACHE66",
-  "cacheEpoch": 66,
+  "gmEntry": "九霄问道_ADMIN9_R11_FIX1_手机直用版.html",
+  "clientRelease": "V1.8.2_CACHE72",
+  "developmentBaseline": "V1.8.2_AB56_ADMIN9_CACHE72",
+  "cacheEpoch": 72,
   "sqlRevision": "143-162",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "RING-TALENT1",
-  "clientBuild": "v1-8-2-cache66-ring-talent1",
+  "clientHotfix": "EQUIPMENT-FX1",
+  "clientBuild": "v1-8-2-cache72-equipmentfx1",
   "databaseRelease": "V1.8.2 CACHE66",
-  "gmVersion": "ADMIN9 R11",
+  "gmVersion": "ADMIN9 R11 FIX1",
   "gmSqlRevision": "160-162",
-  "handoffRevision": "R7-2026-08-03",
-  "deploymentVerification": "先执行SQL157，再部署CACHE66前端，执行SQL158门禁与SQL159检查；GM执行SQL160并运行SQL161、SQL162。"
+  "handoffRevision": "R8-2026-08-03",
+  "deploymentVerification": "本次为纯前端装备强化特效更新；数据库已完成SQL157-162时无需新增SQL。首次跨版本升级仍按143、150、157及对应门禁/检查顺序执行。"
 }

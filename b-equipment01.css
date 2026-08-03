@@ -1,4 +1,4 @@
-/* B-EQUIPMENT01 · V1.8.2 CACHE66 equipment-grid UIFIX3 */
+/* B-EQUIPMENT01 · V1.8.2 CACHE72 equipment-grid UIFIX3 */
 .equipment-slot-card-bequipment01{--grade:#8f8068;border-color:color-mix(in srgb,var(--grade) 68%,#4c4030)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--grade) 30%,transparent),inset 0 0 20px color-mix(in srgb,var(--grade) 9%,transparent)!important;min-height:108px!important}
 .equipment-slot-card-bequipment01 .equipment-icon-bequipment01{flex:0 0 auto}
 .equipment-copy-bequipment01 strong{font-size:.78rem!important;white-space:nowrap}.equipment-copy-bequipment01 strong em{font-style:normal}.equipment-copy-bequipment01 small{display:block!important;line-height:1.35!important;font-size:.66rem!important}.equipment-copy-bequipment01 i{background:linear-gradient(90deg,var(--grade),transparent)!important}
@@ -36,7 +36,7 @@
 /* V1.7.8.2 UIFIX3：随身背包紧贴元神信息区。 */
 @media(max-width:760px){.equipment-backpack-inline-bequipment01{margin-top:3px!important;padding-top:5px}}
 
-/* V1.8.2 CACHE66 UIFIX3：背包装备小格显示孔位占用（已用/总数），已穿戴大卡片保持原显示。 */
+/* V1.8.2 CACHE72 UIFIX3：背包装备小格显示孔位占用（已用/总数），已穿戴大卡片保持原显示。 */
 .equipment-enhancement-badge-bequipment01{position:absolute;left:3px;top:3px;z-index:2;min-width:25px;padding:2px 4px;border:1px solid rgba(245,210,111,.7);background:rgba(52,33,10,.92);color:#ffe59a;font-size:.55rem;line-height:1;border-radius:999px;box-shadow:0 0 8px rgba(242,208,107,.28)}
 .equipment-cave-slot-bequipment01 .equipment-enhancement-badge-bequipment01{left:2px;top:2px}
 .equipment-resource-strip-bequipment01{width:calc(100% - 18px);margin:9px;display:grid;grid-template-columns:auto auto 1fr;gap:10px;align-items:center;border:1px solid rgba(111,174,156,.42);background:linear-gradient(90deg,rgba(34,75,65,.28),rgba(20,17,12,.82));color:#d8cfad;padding:8px 10px;text-align:left}
@@ -71,4 +71,95 @@
   .equipment-grade-bequipment01{font-size:.35rem;line-height:1}
   .equipment-grid-item-bequipment01 em{font-size:.38rem;line-height:1}
   .equipment-enhancement-badge-bequipment01{min-width:13px;padding:1px;font-size:.30rem}
+}
+
+/* V1.8.2 CACHE72 EQUIPMENT-FX1：装备强化双圈正式特效。
+   +1～+5：沿用原始静态单圈；
+   +6～+7：原内圈旋转；
+   +8～+9：内圈静止，新增当前品级色外圈旋转；
+   +10：内圈静止，外圈改为黄玄地天仙五色连续渐变旋转。 */
+.equipment-icon-bequipment01.equipment-effect-bequipment01{
+  position:relative;isolation:isolate;overflow:visible;
+  text-shadow:none!important;filter:none!important;
+}
+.equipment-icon-bequipment01.equipment-effect-bequipment01::before,
+.equipment-icon-bequipment01.equipment-effect-bequipment01::after{
+  content:"";position:absolute;left:50%;top:50%;border-radius:50%;
+  pointer-events:none;box-sizing:border-box;
+}
+/* +6～+7：原本的一个圈自己转动，不新增第二圈，不加光晕。 */
+.equipment-icon-bequipment01.equipment-effect-tier6-bequipment01{
+  border-color:transparent!important;box-shadow:none!important;
+}
+.equipment-icon-bequipment01.equipment-effect-tier6-bequipment01::before{
+  width:calc(100% + 4px);height:calc(100% + 4px);padding:2px;z-index:1;
+  background:conic-gradient(from 0deg,
+    color-mix(in srgb,var(--grade) 42%,#17110d) 0%,
+    var(--grade) 18%,
+    color-mix(in srgb,var(--grade) 82%,#fff) 30%,
+    var(--grade) 44%,
+    color-mix(in srgb,var(--grade) 36%,#17110d) 62%,
+    var(--grade) 82%,
+    color-mix(in srgb,var(--grade) 42%,#17110d) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:equipmentFxInnerSpinBEquipment01 2.25s linear infinite;
+}
+.equipment-icon-bequipment01.equipment-effect-tier6-bequipment01::after{display:none}
+/* +8～+9：原内圈保持静止，外圈使用当前装备品级色旋转。 */
+.equipment-icon-bequipment01.equipment-effect-tier8-bequipment01{
+  border-color:var(--grade)!important;box-shadow:none!important;
+}
+.equipment-icon-bequipment01.equipment-effect-tier8-bequipment01::before{display:none}
+.equipment-icon-bequipment01.equipment-effect-tier8-bequipment01::after{
+  width:calc(100% + 16px);height:calc(100% + 16px);padding:2px;z-index:1;
+  background:conic-gradient(from 0deg,
+    color-mix(in srgb,var(--grade) 30%,#15100d) 0%,
+    var(--grade) 19%,
+    color-mix(in srgb,var(--grade) 84%,#fff) 31%,
+    var(--grade) 48%,
+    color-mix(in srgb,var(--grade) 32%,#15100d) 66%,
+    var(--grade) 84%,
+    color-mix(in srgb,var(--grade) 30%,#15100d) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:equipmentFxOuterSpinBEquipment01 2.65s linear infinite;
+}
+/* +10：原内圈静止，外圈为五种装备品级色的连续渐变。 */
+.equipment-icon-bequipment01.equipment-effect-tier10-bequipment01{
+  border-color:var(--grade)!important;box-shadow:none!important;
+}
+.equipment-icon-bequipment01.equipment-effect-tier10-bequipment01::before{display:none}
+.equipment-icon-bequipment01.equipment-effect-tier10-bequipment01::after{
+  width:calc(100% + 16px);height:calc(100% + 16px);padding:2px;z-index:1;
+  background:conic-gradient(from 0deg,
+    #c99a32 0%,
+    #4f86d9 20%,
+    #925fd1 40%,
+    #e05252 60%,
+    #f2d06b 80%,
+    #c99a32 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:equipmentFxOuterSpinBEquipment01 2.85s linear infinite;
+}
+@keyframes equipmentFxInnerSpinBEquipment01{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+@keyframes equipmentFxOuterSpinBEquipment01{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+/* 背包固定6×6小格只缩小外圈尺寸，不改变格子大小与文字排版。 */
+@media(max-width:760px){
+  .equipment-grid-item-bequipment01 .equipment-icon-bequipment01.equipment-effect-tier6-bequipment01::before{
+    width:calc(100% + 3px);height:calc(100% + 3px);padding:1.5px
+  }
+  .equipment-grid-item-bequipment01 .equipment-icon-bequipment01.equipment-effect-tier8-bequipment01::after,
+  .equipment-grid-item-bequipment01 .equipment-icon-bequipment01.equipment-effect-tier10-bequipment01::after{
+    width:calc(100% + 10px);height:calc(100% + 10px);padding:1.5px
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .equipment-icon-bequipment01.equipment-effect-bequipment01::before,
+  .equipment-icon-bequipment01.equipment-effect-bequipment01::after{animation:none!important}
 }
