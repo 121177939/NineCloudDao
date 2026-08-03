@@ -1,8 +1,8 @@
 {
   "version": "V1.8.0",
-  "releaseLabel": "V1.8.0 CACHE60",
-  "buildId": "v1-8-0-cache60-equipment-enhance1",
-  "cacheEpoch": 60,
+  "releaseLabel": "V1.8.0 CACHE62",
+  "buildId": "v1-8-0-cache62-equipment-enhance1-uifix2",
+  "cacheEpoch": 62,
   "minimumDatabaseBaseline": "V1.7.9 CACHE59 / SQL130R2-133 + ADMIN9 R8 FIX1 / SQL134-141",
   "sqlRevision": "143-149",
   "migrationSql": [
@@ -22,7 +22,7 @@
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPMENT-ENHANCE1",
+  "clientHotfix": "EQUIPMENT-GRID-UIFIX2",
   "databaseRelease": "V1.8.0 CACHE60",
   "notes": [
     "器源为全游戏通用材料，旧器源精粹数量原样继承",
@@ -32,8 +32,9 @@
     "强化失败装备、全部孔位内容、器源与灵石永久消失",
     "普通装备累计加成3/6/9/12/15/21/28/36/45/55百分比；戒指使用一半倍率",
     "品级基础孔位黄1玄2地3天4仙5；+6/+8/+10各追加1孔",
-    "GM可调整全服强化概率并直接升降指定玩家单件装备强化等级"
+    "GM可调整全服强化概率并直接升降指定玩家单件装备强化等级",
+    "CACHE62 UIFIX2：不改变背包6×6格子尺寸，小格隐藏境界与主属性参数，仅显示强化角标、图标、名称、品级和孔位"
   ],
   "gmVersion": "ADMIN9 R9",
-  "handoffRevision": "R4-2026-08-03"
+  "handoffRevision": "R6-2026-08-03"
 }

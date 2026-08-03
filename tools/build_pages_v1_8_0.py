@@ -4,8 +4,8 @@ import hashlib, json, shutil, sys
 
 root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve()
 out=Path(sys.argv[2] if len(sys.argv)>2 else '.pages-site').resolve()
-build_id='v1-8-0-cache60-equipment-enhance1'
-label='V1.8.0 CACHE60'
+build_id='v1-8-0-cache62-equipment-enhance1-uifix2'
+label='V1.8.0 CACHE62'
 required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json','b-paigow01.js','b-paigow01.css','b-paigow01.html','b-equipment01.js','b-equipment01.css','b-secret-realm01.js','b-secret-realm01.css','paigow-realtime.js','paigow-app.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js','assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']
 for rel in required:
     if not (root/rel).is_file(): raise SystemExit(f'MISSING:{rel}')
@@ -18,16 +18,17 @@ runtime=['index.html','404.html','app.js','styles.css','config.js','update-guard
 texts=[text(x) for x in runtime]; blob='\n'.join(texts)
 checks={
  'version':text('VERSION.txt').strip()=='V1.8.0',
- 'config':all(t in text('config.js') for t in ["version: '1.8.0'","releaseLabel: 'V1.8.0 CACHE60'",f"buildId: '{build_id}'",'cacheEpoch: 60']),
+ 'config':all(t in text('config.js') for t in ["version: '1.8.0'","releaseLabel: 'V1.8.0 CACHE62'",f"buildId: '{build_id}'",'cacheEpoch: 62']),
  'deployment-enabled':baseline.get('deploymentStatus')=='formal_release' and release.get('deploymentAllowed') is True and baseline.get('sqlRevision')=='143-149',
  'local-gm-mode':baseline.get('gmDeliveryMode')=='local_only' and release.get('gmDeliveryMode')=='local_only',
- 'baseline-lock':baseline.get('developmentBaseline')=='V1.8.0_AB49_ADMIN9_CACHE60' and baseline.get('gmVersion')=='ADMIN9 R9',
- 'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.8.0 CACHE60 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
- 'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.8.0-cache60-equipment-enhance1',f'b-equipment01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations','ADMIN9']),
+ 'baseline-lock':baseline.get('developmentBaseline')=='V1.8.0_AB51_ADMIN9_CACHE62' and baseline.get('gmVersion')=='ADMIN9 R9',
+ 'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.8.0 CACHE62 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
+ 'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.8.0-cache62-equipment-enhance1-uifix2',f'b-equipment01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations','ADMIN9']),
  'enhancement-state-rpc':'get_equipment_enhancement_state_v180' in equipment,
  'enhancement-action-rpc':'enhance_equipment_v180' in equipment and 'decompose_equipment_v180' in equipment,
  'enhancement-copy':all(t in equipment for t in ['我命由我不由天','我再回去考虑考虑','装备、已有强化等级、全部孔位','器源']),
  'enhancement-rules':all(t in equipment for t in ['yellow: 1, mystic: 2, earth: 4, heaven: 8, immortal: 16','targetLevel','ring_cumulative_percent']),
+ 'equipment-grid-uifix':all(t in text('b-equipment01.css') for t in ['CACHE62 UIFIX2','-webkit-line-clamp:2','font-size:.30rem']) and '<small>${esc(item.realm_name)} · ${esc(item.main_stat_display)}</small>' not in equipment and '<span class="equipment-grade-bequipment01">${esc(item.grade_name)}</span><em>${esc(item.socket_display)}</em>' in equipment,
  'secret-realm-nav':all(t in app for t in ["['secret_realm', '秘', '秘境']",'id="secretRealmSection"','jiuxiao:secret-realm-rendered']),
  'workflow-builder':'python3 tools/build_pages_v1_8_0.py' in workflow,
  'workflow-js':'gm-admin.js' not in workflow and 'b-equipment01.js' in workflow,

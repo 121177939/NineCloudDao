@@ -307,7 +307,7 @@
   }
 
   function gridItem(item) {
-    return `<button type="button" class="equipment-grid-item-bequipment01" style="--grade:${esc(color(item))}" data-equipment-item="${esc(item.id)}" aria-label="${esc(item.full_name)}，${esc(item.grade_name)}，强化+${Number(item.enhancement_level || 0)}"><span class="equipment-grid-lock-bequipment01">${item.is_locked ? '锁' : ''}</span>${enhancementBadge(item)}${itemIcon(item)}<strong>${esc(item.short_name)}</strong><span class="equipment-grade-bequipment01">${esc(item.grade_name)}</span><small>${esc(item.realm_name)} · ${esc(item.main_stat_display)}</small><em>${esc(item.socket_display)}</em></button>`;
+    return `<button type="button" class="equipment-grid-item-bequipment01" style="--grade:${esc(color(item))}" data-equipment-item="${esc(item.id)}" aria-label="${esc(item.full_name)}，${esc(item.grade_name)}，强化+${Number(item.enhancement_level || 0)}"><span class="equipment-grid-lock-bequipment01">${item.is_locked ? '锁' : ''}</span>${enhancementBadge(item)}${itemIcon(item)}<strong>${esc(item.short_name)}</strong><span class="equipment-grade-bequipment01">${esc(item.grade_name)}</span><em>${esc(item.socket_display)}</em></button>`;
   }
 
   function resourceStrip() {

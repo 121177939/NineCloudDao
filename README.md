@@ -1,6 +1,6 @@
-# 九霄问道 V1.8.0 CACHE60
+# 九霄问道 V1.8.0 CACHE62
 
-当前公开游戏基线：`v1-8-0-cache60-equipment-enhance1`。
+当前公开游戏基线：`v1-8-0-cache62-equipment-enhance1-uifix2`。
 
 ## 本次正式更新
 
@@ -27,3 +27,11 @@
 
 GitHub Pages公开包只包含游戏静态资源；不得放入GM单HTML、SQL或 `service_role`/Secret key。
 GM入口：`ADMIN9 R9 · 九霄问道_ADMIN9_R9_手机直用版.html`，仅本地打开。
+
+## CACHE62 UIFIX2
+
+- 保持随身背包固定6×6格子尺寸不变。
+- 小格不再显示装备境界和主属性参数。
+- 小格仅保留强化角标、装备图标、装备名称、品级和孔位。
+- 强化角标继续使用缩小后的样式，避免遮挡装备名称。
+- 本次仅修改前端显示，不需要执行新增SQL；数据库仍为V1.8.0 CACHE60 / SQL143-149。

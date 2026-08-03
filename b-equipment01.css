@@ -1,4 +1,4 @@
-/* B-EQUIPMENT01 · V1.8.0 CACHE60 universal essence and equipment enhancement */
+/* B-EQUIPMENT01 · V1.8.0 CACHE62 equipment-grid UIFIX2 */
 .equipment-slot-card-bequipment01{--grade:#8f8068;border-color:color-mix(in srgb,var(--grade) 68%,#4c4030)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--grade) 30%,transparent),inset 0 0 20px color-mix(in srgb,var(--grade) 9%,transparent)!important;min-height:108px!important}
 .equipment-slot-card-bequipment01 .equipment-icon-bequipment01{flex:0 0 auto}
 .equipment-copy-bequipment01 strong{font-size:.78rem!important;white-space:nowrap}.equipment-copy-bequipment01 strong em{font-style:normal}.equipment-copy-bequipment01 small{display:block!important;line-height:1.35!important;font-size:.66rem!important}.equipment-copy-bequipment01 i{background:linear-gradient(90deg,var(--grade),transparent)!important}
@@ -36,7 +36,7 @@
 /* V1.7.8.2 UIFIX3：随身背包紧贴元神信息区。 */
 @media(max-width:760px){.equipment-backpack-inline-bequipment01{margin-top:3px!important;padding-top:5px}}
 
-/* V1.8.0 CACHE60：通用器源、装备强化、失败毁装与强化孔位。 */
+/* V1.8.0 CACHE62 UIFIX2：背包装备小格隐藏境界与属性参数。 */
 .equipment-enhancement-badge-bequipment01{position:absolute;left:3px;top:3px;z-index:2;min-width:25px;padding:2px 4px;border:1px solid rgba(245,210,111,.7);background:rgba(52,33,10,.92);color:#ffe59a;font-size:.55rem;line-height:1;border-radius:999px;box-shadow:0 0 8px rgba(242,208,107,.28)}
 .equipment-cave-slot-bequipment01 .equipment-enhancement-badge-bequipment01{left:2px;top:2px}
 .equipment-resource-strip-bequipment01{width:calc(100% - 18px);margin:9px;display:grid;grid-template-columns:auto auto 1fr;gap:10px;align-items:center;border:1px solid rgba(111,174,156,.42);background:linear-gradient(90deg,rgba(34,75,65,.28),rgba(20,17,12,.82));color:#d8cfad;padding:8px 10px;text-align:left}
@@ -57,3 +57,18 @@
 .equipment-enhance-actions-bequipment01{display:grid!important;grid-template-columns:1fr 1fr}.equipment-enhance-actions-bequipment01 .fate{font-weight:800;letter-spacing:.06em;min-height:46px}.equipment-insufficient-note-bequipment01{color:#e69a8e!important;text-align:center;margin:9px 0 0!important}
 .equipment-result-modal-bequipment01{max-width:520px!important;text-align:center}.equipment-result-modal-bequipment01 header{justify-content:center}.equipment-result-sigil-bequipment01{width:62px;height:62px;border:2px solid currentColor;border-radius:50%;display:grid;place-items:center;font-size:1.8rem;font-family:serif}.equipment-result-modal-bequipment01.success .equipment-result-sigil-bequipment01{color:#e6c66e;box-shadow:0 0 25px rgba(230,198,110,.3)}.equipment-result-modal-bequipment01.destroyed .equipment-result-sigil-bequipment01{color:#df7667;box-shadow:0 0 25px rgba(223,118,103,.3)}.equipment-result-modal-bequipment01>p{margin:18px 0!important}.equipment-result-modal-bequipment01 .equipment-modal-actions-bequipment01>*{width:100%}
 @media(max-width:620px){.equipment-resource-strip-bequipment01{grid-template-columns:1fr 1fr}.equipment-resource-strip-bequipment01 small{grid-column:1/3;justify-self:start}.equipment-enhance-levels-bequipment01{gap:6px}.equipment-enhance-levels-bequipment01>div{padding:9px 5px}.equipment-enhance-levels-bequipment01 strong{font-size:1.45rem}.equipment-enhance-actions-bequipment01{grid-template-columns:1fr!important}}
+/* CACHE62 UIFIX2：不改变6×6格子尺寸；小格仅显示强化、图标、名称、品级与孔位。 */
+.equipment-grid-item-bequipment01 strong{line-height:1.05}
+.equipment-enhancement-badge-bequipment01{left:2px;top:2px;min-width:18px;padding:1px 3px;font-size:.44rem;line-height:1}
+@media(max-width:760px){
+  .equipment-grid-item-bequipment01 strong{width:100%;font-size:.49rem;line-height:1.02;white-space:normal;overflow:hidden;text-overflow:clip;word-break:break-all;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .equipment-grade-bequipment01{font-size:.42rem;line-height:1}
+  .equipment-enhancement-badge-bequipment01{left:1px;top:1px;min-width:15px;padding:1px 2px;font-size:.36rem}
+}
+@media(max-width:420px){
+  .equipment-grid-item-bequipment01{gap:0}
+  .equipment-grid-item-bequipment01 strong{font-size:.39rem;line-height:1}
+  .equipment-grade-bequipment01{font-size:.35rem;line-height:1}
+  .equipment-grid-item-bequipment01 em{font-size:.38rem;line-height:1}
+  .equipment-enhancement-badge-bequipment01{min-width:13px;padding:1px;font-size:.30rem}
+}
