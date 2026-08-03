@@ -1,37 +1,43 @@
 {
-  "version": "1.7.9",
-  "releaseLabel": "九霄问道 V1.7.9 CACHE59",
-  "sourceBaseline": "V1.7.8.3 CACHE58",
-  "minimumDatabaseBaseline": "V1.7.8.3 CACHE58 / SQL128",
+  "version": "1.8.0",
+  "releaseLabel": "九霄问道 V1.8.0 CACHE60",
+  "sourceBaseline": "V1.7.9 CACHE59",
+  "minimumDatabaseBaseline": "V1.7.9 CACHE59 / SQL130R2-133 + ADMIN9 R8 FIX1 / SQL134-141",
   "deploymentStatus": "formal_release",
   "databaseMigrations": [
-    "130_V1.7.9_秘境领取平衡与历史5轮_安装_R2.sql"
+    "143_V1.8.0_装备分解与强化系统_安装.sql"
   ],
-  "databaseReleaseGate": "131_V1.7.9_CACHE59_正式发布门禁_R2.sql",
-  "databaseFinalCheck": "132_V1.7.9_CACHE59_升级后检查_R2.sql",
-  "databaseSafeRollback": "133_V1.7.9_CACHE59_安全回滚.sql",
+  "databaseReleaseGate": "144_V1.8.0_CACHE60_正式发布门禁.sql",
+  "databaseFinalCheck": "145_V1.8.0_CACHE60_升级后检查.sql",
+  "databaseSafeRollback": "149_V1.8.0_CACHE60_强化功能安全停用.sql",
   "modules": [
-    "B-EQUIPMENT01",
+    "B-EQUIPMENT01-ENHANCE1",
     "B-PAIGOW02-UI03",
     "B-SECRETREALM01",
-    "GM-CONTROL01-ADMIN9"
+    "GM-CONTROL01-ADMIN9-R9"
   ],
   "confirmedRules": [
-    "秘境探索页加入动态界门场景画面，填充原顶部空白区域",
-    "离境、妖兽战败或玩家战败后，全部资源必须手动领取，领取前禁止下一次秘境",
-    "修为和灵石由旧版机缘结果50%下调到10%，即旧版收益的20%",
-    "日志显示妖兽境界、五行、类型、战力与四维属性",
-    "九霄界闻使用多组结局文案，妖兽战败明确显示怪物名称",
-    "玩家端秘境历史按需读取，仅显示当前角色最近5轮完整过程"
+    "器源为全游戏通用材料，旧器源精粹数量原样继承",
+    "黄玄地天仙分解与单次强化器源均为1/2/4/8/16",
+    "装备强化最高+10；成功率98/95/93/90/80/50/35/20/10/5百分比",
+    "强化灵石按目标等级每级100万递增；器源消耗不随强化等级增加",
+    "强化失败装备、全部孔位内容、器源与灵石永久消失",
+    "普通装备累计加成3/6/9/12/15/21/28/36/45/55百分比；戒指使用一半倍率",
+    "品级基础孔位黄1玄2地3天4仙5；+6/+8/+10各追加1孔",
+    "GM可调整全服强化概率并直接升降指定玩家单件装备强化等级"
   ],
-  "gmEntry": "local-package/gm-admin.html",
-  "clientRelease": "V1.7.9_CACHE59",
-  "developmentBaseline": "V1.7.9_AB47_ADMIN9_CACHE59",
-  "cacheEpoch": 59,
-  "sqlRevision": "130R2-133",
+  "gmEntry": "九霄问道_ADMIN9_R9_手机直用版.html",
+  "clientRelease": "V1.8.0_CACHE60",
+  "developmentBaseline": "V1.8.0_AB49_ADMIN9_CACHE60",
+  "cacheEpoch": 60,
+  "sqlRevision": "143-149",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "SECRETCLAIM2-HISTORY5",
-  "clientBuild": "v1-7-9-cache59-secretclaim2-history5",
-  "databaseRelease": "V1.7.9 CACHE59"
+  "clientHotfix": "EQUIPMENT-ENHANCE1",
+  "clientBuild": "v1-8-0-cache60-equipment-enhance1",
+  "databaseRelease": "V1.8.0 CACHE60",
+  "gmVersion": "ADMIN9 R9",
+  "gmSqlRevision": "146-148",
+  "handoffRevision": "R4-2026-08-03",
+  "deploymentVerification": "先执行SQL143，再部署前端，执行SQL144门禁与SQL145检查；GM执行SQL146并运行SQL147、SQL148。"
 }

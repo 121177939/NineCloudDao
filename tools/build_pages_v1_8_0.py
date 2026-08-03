@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import hashlib, json, shutil, sys
+
+root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve()
+out=Path(sys.argv[2] if len(sys.argv)>2 else '.pages-site').resolve()
+build_id='v1-8-0-cache60-equipment-enhance1'
+label='V1.8.0 CACHE60'
+required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json','b-paigow01.js','b-paigow01.css','b-paigow01.html','b-equipment01.js','b-equipment01.css','b-secret-realm01.js','b-secret-realm01.css','paigow-realtime.js','paigow-app.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js','assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']
+for rel in required:
+    if not (root/rel).is_file(): raise SystemExit(f'MISSING:{rel}')
+for rel in ['gm-admin.html','gm-admin.css','gm-admin.js','gm-operations.html','GM入口说明.txt']:
+    if (root/rel).exists(): raise SystemExit(f'LOCAL_GM_ASSET_NOT_ALLOWED_IN_PUBLIC_PAGES:{rel}')
+def text(rel): return (root/rel).read_text('utf-8')
+app=text('app.js'); equipment=text('b-equipment01.js'); sw=text('sw.js'); workflow=text('.github/workflows/deploy-pages.yml')
+baseline=json.loads(text('CURRENT_BASELINE.json')); release=json.loads(text('release_config.json'))
+runtime=['index.html','404.html','app.js','styles.css','config.js','update-guard.js','sw.js','manifest.webmanifest','b-paigow01.html','b-paigow01.js','b-equipment01.css','b-equipment01.js','b-secret-realm01.css','b-secret-realm01.js','paigow-app.js','paigow-realtime.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js']
+texts=[text(x) for x in runtime]; blob='\n'.join(texts)
+checks={
+ 'version':text('VERSION.txt').strip()=='V1.8.0',
+ 'config':all(t in text('config.js') for t in ["version: '1.8.0'","releaseLabel: 'V1.8.0 CACHE60'",f"buildId: '{build_id}'",'cacheEpoch: 60']),
+ 'deployment-enabled':baseline.get('deploymentStatus')=='formal_release' and release.get('deploymentAllowed') is True and baseline.get('sqlRevision')=='143-149',
+ 'local-gm-mode':baseline.get('gmDeliveryMode')=='local_only' and release.get('gmDeliveryMode')=='local_only',
+ 'baseline-lock':baseline.get('developmentBaseline')=='V1.8.0_AB49_ADMIN9_CACHE60' and baseline.get('gmVersion')=='ADMIN9 R9',
+ 'index-assets':all(t in text('index.html') for t in ['<!-- version: V1.8.0 CACHE60 -->',f'b-secret-realm01.js?v={build_id}',f'b-equipment01.js?v={build_id}',f'b-paigow01.js?v={build_id}']),
+ 'service-worker':all(t in sw for t in ['nine-cloud-dao-v1.8.0-cache60-equipment-enhance1',f'b-equipment01.js?v={build_id}',f'paigow-app.js?v={build_id}']) and all(t not in sw for t in ['gm-admin','gm-operations','ADMIN9']),
+ 'enhancement-state-rpc':'get_equipment_enhancement_state_v180' in equipment,
+ 'enhancement-action-rpc':'enhance_equipment_v180' in equipment and 'decompose_equipment_v180' in equipment,
+ 'enhancement-copy':all(t in equipment for t in ['我命由我不由天','我再回去考虑考虑','装备、已有强化等级、全部孔位','器源']),
+ 'enhancement-rules':all(t in equipment for t in ['yellow: 1, mystic: 2, earth: 4, heaven: 8, immortal: 16','targetLevel','ring_cumulative_percent']),
+ 'secret-realm-nav':all(t in app for t in ["['secret_realm', '秘', '秘境']",'id="secretRealmSection"','jiuxiao:secret-realm-rendered']),
+ 'workflow-builder':'python3 tools/build_pages_v1_8_0.py' in workflow,
+ 'workflow-js':'gm-admin.js' not in workflow and 'b-equipment01.js' in workflow,
+ 'no-old-build':build_id in blob and not any(x in blob for x in ['v1-7-7-fix1-cache57','v1-7-8-cache58-equipfix2','v1-7-9-cache59-secretclaim2-history5']),
+ 'no-conflicts':not any('<<<<<<<' in x or '>>>>>>>' in x for x in texts),
+ 'no-secrets':'sb_secret_' not in blob.lower()
+}
+failed=[k for k,v in checks.items() if not v]
+for k,v in checks.items(): print(('PASS ' if v else 'FAIL ')+k)
+if failed: raise SystemExit('VERSION_CHECK_FAILED:'+','.join(failed))
+if out.exists(): shutil.rmtree(out)
+out.mkdir(parents=True)
+for rel in required:
+    src=root/rel; dst=out/rel; dst.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(src,dst)
+manifest=[]
+for path in sorted(x for x in out.rglob('*') if x.is_file()):
+    if path.is_symlink(): raise SystemExit(f'SYMLINK_NOT_ALLOWED:{path}')
+    manifest.append({'path':path.relative_to(out).as_posix(),'size':path.stat().st_size,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+(out/'PAGES_ARTIFACT_MANIFEST.json').write_text(json.dumps({'version':label,'clientBuild':build_id,'deploymentAllowed':True,'gmDeliveryMode':'local_only','files':manifest},ensure_ascii=False,indent=2)+'\n','utf-8')
+if any(out.rglob('*.sql')): raise SystemExit('SQL_NOT_ALLOWED_IN_PAGES')
+if (out/'B_HANDOFF').exists(): raise SystemExit('B_HANDOFF_NOT_ALLOWED_IN_PAGES')
+if any((out/x).exists() for x in ['gm-admin.html','gm-admin.css','gm-admin.js','gm-operations.html']): raise SystemExit('LOCAL_GM_ASSET_LEAKED_TO_PAGES')
+print(f'{label} public production pages build PASS files={len(manifest)}')
