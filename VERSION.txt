@@ -1,2 +1,2 @@
-V1.8.2 CACHE76
-v1-8-2-cache76-equipmentfx1-uifix4
+V1.8.3 CACHE77
+v1-8-3-cache77-mutationatk1

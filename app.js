@@ -7290,28 +7290,34 @@
 
 
 
-  // V1.8.2 CACHE76 RING-TALENT1：天生剑心与变异灵根只放大戒指本命五行增伤，默认提高10%。
+  // V1.8.3 CACHE77 MUTATION-ATTACK1：风、冰、雷变异灵根只使境界基础道攻提高8%；不再放大戒指。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
     const fateName = fate.name || snapshot?.fate_name || '未定命格';
     const ready = snapshot && snapshot.status !== 'unavailable' && Number.isFinite(Number(snapshot.attack));
     const value = key => ready ? formatNumber(snapshot[key] || 0) : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
+    const mutationBaseRate = ready && snapshot?.mutation_active
+      ? Math.max(0, Number(snapshot.mutation_base_stat_bonus ?? 0.08))
+      : 0;
+    const mutationBaseRatePercent = mutationBaseRate * 100;
+    const mutationBaseMultiplier = ready && snapshot?.mutation_active
+      ? Math.max(1, Number(snapshot.mutation_base_stat_multiplier ?? (1 + mutationBaseRate)))
+      : 1;
     const ringBasePercent = ready ? Math.max(0, Number(snapshot.equipment_element_bonus || 0)) : 0;
-    const talentRate = ready
-      ? Math.max(0, Number(snapshot.talent_ring_amplification_rate ?? (snapshot.sword_heart_active
-        ? snapshot.sword_heart_final_damage_bonus
-        : (snapshot.mutation_active ? snapshot.mutation_final_damage_bonus : 0)) ?? 0))
+    const swordRate = ready && snapshot?.sword_heart_active
+      ? Math.max(0, Number(snapshot.talent_ring_amplification_rate ?? snapshot.sword_heart_final_damage_bonus ?? 0))
       : 0;
-    const talentRatePercent = talentRate * 100;
+    const swordRatePercent = swordRate * 100;
     const ringEffectivePercent = ready
-      ? Math.max(0, Number(snapshot.effective_equipment_element_bonus ?? (ringBasePercent * (1 + talentRate))))
+      ? Math.max(0, Number(snapshot.effective_equipment_element_bonus ?? (ringBasePercent * (1 + swordRate))))
       : 0;
-    const talentName = snapshot?.sword_heart_active ? '剑心' : (snapshot?.mutation_active ? `变异·${snapshot.mutation_name || '未知'}` : '');
     const bonusValue = ready
-      ? (talentName
-        ? `${talentName} · 戒指×${formatNumber(1 + talentRate, 2)}`
-        : (ringBasePercent > 0 ? `戒指 +${formatNumber(ringBasePercent, 2)}%` : `五行 · ${snapshot.element_name || '未定'}`))
+      ? (snapshot?.mutation_active
+        ? `变异·${snapshot.mutation_name || '未知'} · 道攻×${formatNumber(mutationBaseMultiplier, 2)}`
+        : (snapshot?.sword_heart_active
+          ? `剑心 · 戒指×${formatNumber(1 + swordRate, 2)}`
+          : (ringBasePercent > 0 ? `戒指 +${formatNumber(ringBasePercent, 2)}%` : `五行 · ${snapshot.element_name || '未定'}`)))
       : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
     const card = (position, icon, name, displayValue, detail) => `
       <button class="yuanshen-stat-card-v0155 ${position}" type="button" data-yuanshen-stat="${escapeHtml(name)}" data-yuanshen-detail="${escapeHtml(detail)}">
@@ -7323,43 +7329,55 @@
         </span>
       </button>`;
     const liveValue = key => ready ? formatNumber(snapshot[key] || 0) : (snapshot?.status === 'unavailable' ? '不可用' : '同步中');
-    const liveDetail = (baseKey, equipmentKey, equipmentLabel) => ready
-      ? `基础 ${formatNumber(snapshot[baseKey] || 0)}${Number(snapshot[equipmentKey] || 0) ? ` + ${equipmentLabel} ${formatNumber(snapshot[equipmentKey] || 0)}` : ` · ${equipmentLabel} 0`}`
-      : '等待服务端权威属性';
+    const liveDetail = (baseKey, realmBaseKey, equipmentKey, equipmentLabel) => {
+      if (!ready) return '等待服务端权威属性';
+      const baseValue = Number(snapshot[baseKey] || 0);
+      const realmBaseValue = Number(snapshot[realmBaseKey] ?? baseValue);
+      const equipmentValue = Number(snapshot[equipmentKey] || 0);
+      const baseText = snapshot?.mutation_active && baseKey === 'base_attack'
+        ? `境界 ${formatNumber(realmBaseValue)} × ${formatNumber(mutationBaseMultiplier, 2)} = 基础 ${formatNumber(baseValue)}`
+        : `境界基础 ${formatNumber(baseValue)}`;
+      return `${baseText}${equipmentValue ? ` + ${equipmentLabel} ${formatNumber(equipmentValue)}` : ` · ${equipmentLabel} 0`}`;
+    };
     const liveRow = (key, label, detail, tone = '') => `
       <div class="yuanshen-live-row-v178 ${tone}" data-live-stat="${escapeHtml(key)}">
         <span>${escapeHtml(label)}</span>
         <strong>${escapeHtml(liveValue(key))}</strong>
         <small>${escapeHtml(detail)}</small>
       </div>`;
-    const bonusTotal = ringEffectivePercent;
+    const bonusLabel = snapshot?.mutation_active ? '异灵根' : '增伤';
+    const bonusDisplay = ready
+      ? (snapshot?.mutation_active ? `+${formatNumber(mutationBaseRatePercent, 2)}%` : `+${formatNumber(ringEffectivePercent, 2)}%`)
+      : (snapshot?.status === 'unavailable' ? '不可用' : '同步中');
     const bonusDetail = ready
-      ? (talentName
-        ? (ringBasePercent > 0
-          ? `戒指 ${formatNumber(ringBasePercent, 2)}% × ${talentName} ${formatNumber(1 + talentRate, 2)} = ${formatNumber(ringEffectivePercent, 2)}%`
-          : `${talentName}可使戒指效果提高${formatNumber(talentRatePercent, 2)}%，但当前没有戒指增伤`)
-        : (ringBasePercent > 0 ? `戒指 ${formatNumber(ringBasePercent, 2)}%` : '暂无常驻增伤'))
+      ? (snapshot?.mutation_active
+        ? `境界基础道攻 × ${formatNumber(mutationBaseMultiplier, 2)}；道御、生机、身法以及装备、强化、功法和戒指数值不参与该8%计算${ringBasePercent > 0 ? `；当前戒指仍独立提供${formatNumber(ringEffectivePercent, 2)}%增伤` : ''}`
+        : (snapshot?.sword_heart_active
+          ? (ringBasePercent > 0
+            ? `戒指 ${formatNumber(ringBasePercent, 2)}% × 剑心 ${formatNumber(1 + swordRate, 2)} = ${formatNumber(ringEffectivePercent, 2)}%`
+            : `剑心可使戒指效果提高${formatNumber(swordRatePercent, 2)}%，但当前没有戒指增伤`)
+          : (ringBasePercent > 0 ? `戒指 ${formatNumber(ringBasePercent, 2)}%` : '暂无常驻增伤')))
       : '等待服务端权威属性';
     return `
       <div id="primordialSpiritRootV1" class="yuanshen-shell-v0155">
         <div class="yuanshen-stage-v0155" aria-label="元神战斗属性总览">
           <div class="yuanshen-beam-field-v0155" aria-hidden="true"></div>
           <aside class="yuanshen-live-rail-v178 left" aria-label="当前攻击与防御属性">
-            ${liveRow('attack', '道攻', liveDetail('base_attack', 'effective_weapon_attack', '武器'), 'attack')}
-            ${liveRow('defense', '道御', liveDetail('base_defense', 'effective_armor_defense', '衣服'), 'defense')}
-            ${liveRow('power', '战力', ready ? '装备变化后实时重算' : '等待服务端权威属性', 'power')}
+            ${liveRow('attack', '道攻', liveDetail('base_attack', 'realm_base_attack', 'effective_weapon_attack', '武器'), 'attack')}
+            ${liveRow('defense', '道御', liveDetail('base_defense', 'realm_base_defense', 'effective_armor_defense', '衣服'), 'defense')}
+            ${liveRow('power', '战力', ready ? '基础属性与装备变化后实时重算' : '等待服务端权威属性', 'power')}
           </aside>
           <aside class="yuanshen-live-rail-v178 right" aria-label="当前生机与身法属性">
-            ${liveRow('vitality', '生机', liveDetail('base_vitality', 'effective_armor_vitality', '裤子'), 'vitality')}
-            ${liveRow('agility', '身法', liveDetail('base_agility', 'effective_armor_agility', '鞋子'), 'agility')}
-            <div class="yuanshen-live-row-v178 bonus" data-live-stat="damage_bonus">
-              <span>增伤</span>
-              <strong>${ready ? `+${formatNumber(bonusTotal)}%` : (snapshot?.status === 'unavailable' ? '不可用' : '同步中')}</strong>
+            ${liveRow('vitality', '生机', liveDetail('base_vitality', 'realm_base_vitality', 'effective_armor_vitality', '裤子'), 'vitality')}
+            ${liveRow('agility', '身法', liveDetail('base_agility', 'realm_base_agility', 'effective_armor_agility', '鞋子'), 'agility')}
+            <div class="yuanshen-live-row-v178 bonus" data-live-stat="mutation_or_damage_bonus">
+              <span>${escapeHtml(bonusLabel)}</span>
+              <strong>${escapeHtml(bonusDisplay)}</strong>
               <small>${escapeHtml(bonusDetail)}</small>
             </div>
           </aside>
-          ${card('left-1', '攻', '道攻', value('attack'), ready ? `境界基础 ${formatNumber(snapshot.base_attack || 0)}，武器有效加成 ${formatNumber(snapshot.effective_weapon_attack || 0)}。` : '正在读取服务端权威战斗快照。')}
-          ${card('left-2', '御', '道御', value('defense'), ready ? `境界基础 ${formatNumber(snapshot.base_defense || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_defense || 0)}。` : '正在读取服务端权威战斗快照。')}
+          ${card('left-1', '攻', '道攻', value('attack'), ready ? `${liveDetail('base_attack', 'realm_base_attack', 'effective_weapon_attack', '武器')}。` : '正在读取服务端权威战斗快照。')}
+          ${card('left-2', '御', '道御', value('defense'), ready ? `${liveDetail('base_defense', 'realm_base_defense', 'effective_armor_defense', '法衣')}。` : '正在读取服务端权威战斗快照。')}
           ${card('left-3', '战', '战力', value('power'), '战力 = 道攻×10 + 道御×8 + 生机×1.5 + 身法×5；综合评分不直接决定胜负。')}
 
           <section class="yuanshen-core-v0155" aria-label="元神运转功法动画">
@@ -7383,17 +7401,17 @@
             </div>
             <div class="yuanshen-core-copy-v0155">
               <h4>元神显化 · 战意流转</h4>
-              <p>${ready ? `${escapeHtml(snapshot.realm || '未知境界')} · 本命${escapeHtml(snapshot.element_name || '未定')}行` : '神识内守，周天自转'}</p>
+              <p>${ready ? `${escapeHtml(snapshot.realm || '未知境界')} · 本命${escapeHtml(snapshot.element_name || '未定')}行${snapshot?.mutation_active ? ` · 变异${mutationAttributeHtmlV12(snapshot)}` : ''}` : '神识内守，周天自转'}</p>
               <span>道攻 / 道御 / 生机 / 身法</span>
               <em>${ready ? `常驻战力 ${formatNumber(snapshot.power || 0)}` : '战斗属性正在与云端同步'}</em>
             </div>
           </section>
 
-          ${card('right-1', '生', '生机', value('vitality'), ready ? `境界基础 ${formatNumber(snapshot.base_vitality || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_vitality || 0)}。` : '正在读取服务端权威战斗快照。')}
-          ${card('right-2', '身', '身法', value('agility'), ready ? `境界基础 ${formatNumber(snapshot.base_agility || 0)}，法衣有效加成 ${formatNumber(snapshot.effective_armor_agility || 0)}；第一版用于决定先手。` : '正在读取服务端权威战斗快照。')}
-          ${card('right-3', '元', '加成', bonusValue, ready ? `本命五行为“${snapshot.element_name || '未定'}”，继续使用原五行克制。${snapshot.mutation_active ? `变异灵根已显化为“${snapshot.mutation_name || '未知'}”，使戒指本命五行增伤效果提高${formatNumber(talentRatePercent, 2)}%；戒指${formatNumber(ringBasePercent, 2)}%实际为${formatNumber(ringEffectivePercent, 2)}%。` : `灵根“${rootName}”只影响修炼速度。`}命格“${fateName}”${snapshot.sword_heart_active ? `已装备剑类武器，剑心使戒指效果提高${formatNumber(talentRatePercent, 2)}%；戒指${formatNumber(ringBasePercent, 2)}%实际为${formatNumber(ringEffectivePercent, 2)}%，无需使用剑系功法。` : snapshot.fate_code === 'sword_heart' ? '当前未装备剑类武器，剑心戒指增幅尚未触发。' : snapshot.mutation_active ? '变异灵根戒指增幅已生效。' : '当前没有天赋戒指增幅。'}没有戒指增伤时，剑心与变异灵根不会额外增加伤害。` : '正在读取五行、命格、装备与功法加成。')}
+          ${card('right-1', '生', '生机', value('vitality'), ready ? `${liveDetail('base_vitality', 'realm_base_vitality', 'effective_armor_vitality', '法衣')}。` : '正在读取服务端权威战斗快照。')}
+          ${card('right-2', '身', '身法', value('agility'), ready ? `${liveDetail('base_agility', 'realm_base_agility', 'effective_armor_agility', '鞋履')}；身法用于决定先手。` : '正在读取服务端权威战斗快照。')}
+          ${card('right-3', '元', '加成', bonusValue, ready ? `本命五行为“${snapshot.element_name || '未定'}”，继续使用原五行克制。${snapshot?.mutation_active ? `变异灵根已显化为“${snapshot.mutation_name || '未知'}”，境界提供的基础道攻提高${formatNumber(mutationBaseRatePercent, 2)}%；道御、生机、身法以及装备、强化、功法与戒指不乘该倍率。` : `灵根“${rootName}”只影响修炼速度。`}命格“${fateName}”${snapshot.sword_heart_active ? `已装备剑类武器，剑心使戒指效果提高${formatNumber(swordRatePercent, 2)}%；戒指${formatNumber(ringBasePercent, 2)}%实际为${formatNumber(ringEffectivePercent, 2)}%，无需使用剑系功法。` : snapshot.fate_code === 'sword_heart' ? '当前未装备剑类武器，剑心戒指增幅尚未触发。' : '当前没有剑心戒指增幅。'}变异灵根不再放大戒指效果。` : '正在读取五行、命格、装备与功法加成。')}
         </div>
-        <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；当前武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
+        <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；当前武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。${snapshot?.mutation_active ? `变异${escapeHtml(snapshot.mutation_name || '异')}灵根境界基础道攻倍率为×${formatNumber(mutationBaseMultiplier, 2)}。` : ''}` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
       </div>`;
   }
 
@@ -7784,7 +7802,7 @@
             <article class="path-card">
               <span>先天灵根 · ${escapeHtml(root.rarity || '未知')}</span>
               <strong>${escapeHtml(root.name || '未测')}</strong>
-              <p>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)}。灵根只影响修炼速度，不参与五行战斗克制，也不影响资源收益。${escapeHtml(root.description || '')}</p>
+              <p>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)}。风、冰、雷变异灵根额外使境界基础道攻提高8%；道御、生机、身法不加成，也不放大装备、强化、功法或戒指，不参与五行克制。其他灵根只影响修炼速度。${escapeHtml(root.description || '')}</p>
             </article>
             <article class="path-card">
               <span>降生命格 · ${escapeHtml(fate.rarity || '未知')}</span>
