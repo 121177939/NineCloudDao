@@ -7290,7 +7290,7 @@
 
 
 
-  // V1.8.3 CACHE77 MUTATION-ATTACK1：风、冰、雷变异灵根只使境界基础道攻提高8%；不再放大戒指。
+  // V1.8.3 CACHE78 ESSENCE10-UIFIX1：异灵根基础道攻规则不变；精简元神加成栏说明。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
@@ -7314,7 +7314,7 @@
       : 0;
     const bonusValue = ready
       ? (snapshot?.mutation_active
-        ? `变异·${snapshot.mutation_name || '未知'} · 道攻×${formatNumber(mutationBaseMultiplier, 2)}`
+        ? `变异·${snapshot.mutation_name || '未知'} · 道攻+${formatNumber(mutationBaseRatePercent, 2)}%`
         : (snapshot?.sword_heart_active
           ? `剑心 · 戒指×${formatNumber(1 + swordRate, 2)}`
           : (ringBasePercent > 0 ? `戒指 +${formatNumber(ringBasePercent, 2)}%` : `五行 · ${snapshot.element_name || '未定'}`)))
@@ -7351,7 +7351,7 @@
       : (snapshot?.status === 'unavailable' ? '不可用' : '同步中');
     const bonusDetail = ready
       ? (snapshot?.mutation_active
-        ? `境界基础道攻 × ${formatNumber(mutationBaseMultiplier, 2)}；道御、生机、身法以及装备、强化、功法和戒指数值不参与该8%计算${ringBasePercent > 0 ? `；当前戒指仍独立提供${formatNumber(ringEffectivePercent, 2)}%增伤` : ''}`
+        ? `基攻+${formatNumber(mutationBaseRatePercent, 2)}%${ringBasePercent > 0 ? ` · 戒指+${formatNumber(ringEffectivePercent, 2)}%` : ''}`
         : (snapshot?.sword_heart_active
           ? (ringBasePercent > 0
             ? `戒指 ${formatNumber(ringBasePercent, 2)}% × 剑心 ${formatNumber(1 + swordRate, 2)} = ${formatNumber(ringEffectivePercent, 2)}%`
@@ -7409,9 +7409,9 @@
 
           ${card('right-1', '生', '生机', value('vitality'), ready ? `${liveDetail('base_vitality', 'realm_base_vitality', 'effective_armor_vitality', '法衣')}。` : '正在读取服务端权威战斗快照。')}
           ${card('right-2', '身', '身法', value('agility'), ready ? `${liveDetail('base_agility', 'realm_base_agility', 'effective_armor_agility', '鞋履')}；身法用于决定先手。` : '正在读取服务端权威战斗快照。')}
-          ${card('right-3', '元', '加成', bonusValue, ready ? `本命五行为“${snapshot.element_name || '未定'}”，继续使用原五行克制。${snapshot?.mutation_active ? `变异灵根已显化为“${snapshot.mutation_name || '未知'}”，境界提供的基础道攻提高${formatNumber(mutationBaseRatePercent, 2)}%；道御、生机、身法以及装备、强化、功法与戒指不乘该倍率。` : `灵根“${rootName}”只影响修炼速度。`}命格“${fateName}”${snapshot.sword_heart_active ? `已装备剑类武器，剑心使戒指效果提高${formatNumber(swordRatePercent, 2)}%；戒指${formatNumber(ringBasePercent, 2)}%实际为${formatNumber(ringEffectivePercent, 2)}%，无需使用剑系功法。` : snapshot.fate_code === 'sword_heart' ? '当前未装备剑类武器，剑心戒指增幅尚未触发。' : '当前没有剑心戒指增幅。'}变异灵根不再放大戒指效果。` : '正在读取五行、命格、装备与功法加成。')}
+          ${card('right-3', '元', '加成', bonusValue, ready ? `${snapshot?.mutation_active ? `基攻+${formatNumber(mutationBaseRatePercent, 2)}%` : `本命${snapshot.element_name || '未定'}行`}${ringBasePercent > 0 ? ` · 戒指+${formatNumber(ringEffectivePercent, 2)}%` : ''}${snapshot.sword_heart_active ? ' · 剑心' : ''}` : '读取中')}
         </div>
-        <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；当前武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。${snapshot?.mutation_active ? `变异${escapeHtml(snapshot.mutation_name || '异')}灵根境界基础道攻倍率为×${formatNumber(mutationBaseMultiplier, 2)}。` : ''}` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
+        <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。${snapshot?.mutation_active ? `异灵根基础道攻+${formatNumber(mutationBaseRatePercent, 2)}%。` : ''}` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
       </div>`;
   }
 

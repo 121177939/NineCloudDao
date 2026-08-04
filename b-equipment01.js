@@ -2,7 +2,7 @@
   'use strict';
 
   const MODULE = 'B-EQUIPMENT01';
-  const VERSION = '1.8.2-equipmentfx1';
+  const VERSION = '1.8.3-cache78-decompose10-uifix1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
@@ -15,7 +15,8 @@
   const gradeColors = {
     yellow: '#C99A32', mystic: '#4F86D9', earth: '#925FD1', heaven: '#E05252', immortal: '#F2D06B'
   };
-  const gradeEssence = { yellow: 1, mystic: 2, earth: 4, heaven: 8, immortal: 16 };
+  const gradeDecomposeEssence = { yellow: 10, mystic: 20, earth: 40, heaven: 80, immortal: 160 };
+  const gradeEnhancementEssence = { yellow: 1, mystic: 2, earth: 4, heaven: 8, immortal: 16 };
   const gradeBaseSockets = { yellow: 1, mystic: 2, earth: 3, heaven: 4, immortal: 5 };
   const slotMeta = {
     weapon: ['攻', '武器', '道攻'],
@@ -52,6 +53,33 @@
   };
   const device = () => localStorage.getItem(deviceKey) || '';
   const nfmt = value => Number(value || 0).toLocaleString('zh-CN');
+
+  function configuredGradeDecomposeEssence(gradeCode) {
+    const rule = state.enhancement?.grade_rules?.[gradeCode] || {};
+    const configured = Number(rule.decompose_essence ?? rule.essence);
+    if (Number.isFinite(configured) && configured > 0) return configured;
+    const fallback = Number(gradeDecomposeEssence[gradeCode]);
+    return Number.isFinite(fallback) && fallback > 0 ? fallback : 0;
+  }
+
+  function configuredGradeEnhancementEssence(gradeCode) {
+    const configured = Number(state.enhancement?.grade_rules?.[gradeCode]?.enhancement_essence_cost);
+    if (Number.isFinite(configured) && configured > 0) return configured;
+    const fallback = Number(gradeEnhancementEssence[gradeCode]);
+    return Number.isFinite(fallback) && fallback > 0 ? fallback : 0;
+  }
+
+  function gradeDecomposeSummary() {
+    return ['yellow', 'mystic', 'earth', 'heaven', 'immortal']
+      .map(code => nfmt(configuredGradeDecomposeEssence(code)))
+      .join('、');
+  }
+
+  function gradeEnhancementSummary() {
+    return ['yellow', 'mystic', 'earth', 'heaven', 'immortal']
+      .map(code => nfmt(configuredGradeEnhancementEssence(code)))
+      .join('、');
+  }
 
   function toast(message, type = 'success') {
     const element = document.getElementById('toast');
@@ -146,7 +174,7 @@
     merged.socket_capacity = merged.total_socket_capacity;
     merged.opened_sockets = Number(merged.opened_sockets ?? merged.total_socket_capacity);
     merged.socket_content_count = Number(merged.socket_content_count || 0);
-    merged.decompose_essence = Number(gradeEssence[merged.grade_code] ?? merged.decompose_essence ?? 0);
+    merged.decompose_essence = Number(configuredGradeDecomposeEssence(merged.grade_code) || merged.decompose_essence || 0);
     merged.main_stat_display = formatMainStat(merged, merged.main_stat_value);
     merged.socket_display = `孔位 ${merged.total_socket_capacity}${merged.socket_content_count > 0 ? ` · 已用 ${merged.socket_content_count}` : ''}`;
     return merged;
@@ -331,7 +359,7 @@
   function resourceStrip() {
     const essence = Number(state.data?.materials?.essence || 0);
     const stones = Number(state.data?.materials?.spirit_stones || 0);
-    return `<button type="button" class="equipment-resource-strip-bequipment01" data-equipment-material="universal"><span><i>源</i><b>器源</b><strong>×${nfmt(essence)}</strong></span><span><i>灵</i><b>灵石</b><strong>×${nfmt(stones)}</strong></span><small>器源全境界、全部位通用；品级决定分解产出与强化消耗。</small></button>`;
+    return `<button type="button" class="equipment-resource-strip-bequipment01" data-equipment-material="universal"><span><i>源</i><b>器源</b><strong>×${nfmt(essence)}</strong></span><span><i>灵</i><b>灵石</b><strong>×${nfmt(stones)}</strong></span><small>器源全境界、全部位通用；分解产出由GM配置，强化消耗保持原品级基数。</small></button>`;
   }
 
   function storagePanel() {
@@ -563,7 +591,7 @@
   function openMaterial() {
     const essence = Number(state.data?.materials?.essence || 0);
     const stones = Number(state.data?.materials?.spirit_stones || 0);
-    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01"><button class="modal-close-button" data-eq-close>×</button><header><span class="equipment-icon-bequipment01">源</span><div><span>装备分解与强化材料</span><h3>器源 ×${nfmt(essence)}</h3></div></header><p>器源由所有境界、所有部位的装备分解获得，全游戏通用。黄、玄、地、天、仙品装备分别分解获得1、2、4、8、16器源；强化对应品级装备每次消耗相同数量。</p><dl><div><dt>当前器源</dt><dd>${nfmt(essence)}</dd></div><div><dt>当前灵石</dt><dd>${nfmt(stones)}</dd></div><div><dt>旧材料处理</dt><dd>旧“器源精粹”数量已原样继承为器源</dd></div></dl></section></div>`;
+    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01"><button class="modal-close-button" data-eq-close>×</button><header><span class="equipment-icon-bequipment01">源</span><div><span>装备分解与强化材料</span><h3>器源 ×${nfmt(essence)}</h3></div></header><p>器源由所有境界、所有部位的装备分解获得，全游戏通用。当前黄、玄、地、天、仙品分解分别获得${gradeDecomposeSummary()}器源，强化一次分别消耗${gradeEnhancementSummary()}器源。默认一件装备约可提供10次同品级强化尝试；分解产出可由GM即时调整。</p><dl><div><dt>当前器源</dt><dd>${nfmt(essence)}</dd></div><div><dt>当前灵石</dt><dd>${nfmt(stones)}</dd></div><div><dt>旧材料处理</dt><dd>旧“器源精粹”数量已原样继承为器源</dd></div></dl></section></div>`;
     bindBackdrop(modalHost());
   }
 
@@ -579,7 +607,7 @@
     const targetLevel = Number(item.enhancement_level || 0) + 1;
     const level = enhancementLevelConfig(targetLevel);
     if (!level || targetLevel > 10) { toast('该装备已经强化至最高等级 +10。', 'error'); return; }
-    const essenceCost = Number(gradeEssence[item.grade_code] || item.decompose_essence || 0);
+    const essenceCost = Number(configuredGradeEnhancementEssence(item.grade_code) || 0);
     const essenceOwned = Number(state.data?.materials?.essence || 0);
     const stoneCost = Number(level.spirit_stone_cost || 0);
     const stonesOwned = Number(state.data?.materials?.spirit_stones || 0);
