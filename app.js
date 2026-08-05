@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V1.8.3 CACHE81：沿用CACHE80低频同步，并接入B-SECT01。
+  // V1.8.3 CACHE82：沿用CACHE80低频同步，并接入B-SECT01。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,
@@ -7341,7 +7341,7 @@
 
 
 
-  // V1.8.3 CACHE81：异灵根与持剑天生剑心均使用境界基础道攻加成。
+  // V1.8.3 CACHE82：异灵根与持剑天生剑心均使用境界基础道攻加成。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
@@ -7901,7 +7901,7 @@
         </section>
 
         <section id="sectSystemSection" class="panel" data-mobile-screen="sect">
-          <div class="panel-title"><h3>宗门</h3><span class="badge">宗主 · 弟子 · 修炼</span></div>
+          <div class="panel-title"><h3>宗门</h3><span class="badge">世界宗门 · 市集 · 晋升试炼</span></div>
           <div id="sectV2RootBSect01"><div class="empty-state">正在查阅宗门名册……</div></div>
         </section>
 
@@ -7952,7 +7952,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -7991,7 +7991,7 @@
         if (force || staleForE80(state.npcSocialFetchedAt)) tasks.push(refreshNpcSocial(true));
         break;
       case 'sect':
-        if (force || staleForE80(state.sectSystemFetchedAt)) tasks.push(refreshSectSystem(true));
+        window.dispatchEvent(new CustomEvent('jiuxiao:sect-v2-refresh'));
         break;
       default:
         break;
@@ -8031,8 +8031,12 @@
       const previousTab = state.activeMobileTab || 'cultivation';
       state.activeMobileTab = tab;
       const tabbedMode = window.matchMedia('(max-width: 760px), (min-width: 1024px)').matches;
+      const sectFocus = tab === 'sect';
+      const dashboard = document.querySelector('.dashboard-reforge');
+      dashboard?.classList.toggle('sect-focus-mode', sectFocus);
+      document.body.classList.toggle('sect-focus-mode', sectFocus);
       screens.forEach(screen => {
-        screen.classList.toggle('mobile-screen-hidden', tabbedMode && screen.dataset.mobileScreen !== tab);
+        screen.classList.toggle('mobile-screen-hidden', sectFocus ? screen.dataset.mobileScreen !== 'sect' : (tabbedMode && screen.dataset.mobileScreen !== tab));
       });
       buttons.forEach(button => button.classList.toggle('active', button.dataset.mobileTab === tab));
       const desiredPage = pageIndexForTab(tab);

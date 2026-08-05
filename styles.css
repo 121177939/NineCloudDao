@@ -4690,3 +4690,15 @@ button.cave-item-slot-b01:hover { transform: translateY(-2px); filter: brightnes
   border-color: rgba(230,200,121,.62);
   background: rgba(201,167,95,.12);
 }
+
+/* CACHE82 · 宗门独占视图：进入宗门后隐藏角色HUD与其他游戏区，把可用空间交给B-SECT02。 */
+body.sect-focus-mode{overflow-x:hidden}
+.dashboard-reforge.sect-focus-mode{display:block!important;width:100%!important;max-width:none!important;padding:0 0 92px!important}
+.dashboard-reforge.sect-focus-mode>.hero-hud,
+.dashboard-reforge.sect-focus-mode>[data-mobile-screen]:not([data-mobile-screen="sect"]),
+.dashboard-reforge.sect-focus-mode>.double-panel-grid,
+.dashboard-reforge.sect-focus-mode>#opportunitySection{display:none!important}
+.dashboard-reforge.sect-focus-mode>#sectSystemSection{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:8px!important;border:0!important;background:transparent!important;box-shadow:none!important;min-height:calc(100dvh - 100px)}
+.dashboard-reforge.sect-focus-mode>#sectSystemSection>.panel-title{display:none!important}
+.dashboard-reforge.sect-focus-mode>#sectSystemSection #sectV2RootBSect01{width:100%;max-width:none;min-height:calc(100dvh - 112px)}
+@media(min-width:761px){.dashboard-reforge.sect-focus-mode{padding:8px 12px 104px!important}.dashboard-reforge.sect-focus-mode>#sectSystemSection{padding:0!important}}

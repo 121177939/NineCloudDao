@@ -1,47 +1,46 @@
 {
   "version": "V1.8.3",
-  "releaseLabel": "V1.8.3 CACHE81",
-  "buildId": "v1-8-3-cache81-bsect01-fix1",
-  "cacheEpoch": 81,
-  "minimumDatabaseBaseline": "V1.8.3 CACHE80 / SQL143-169 + 176-178 + ADMIN9 R11 FIX5",
-  "sqlRevision": "179-184",
+  "releaseLabel": "V1.8.3 CACHE82",
+  "buildId": "v1-8-3-cache82-bsect02-worldnet1",
+  "cacheEpoch": 82,
+  "minimumDatabaseBaseline": "V1.8.3 CACHE81 / SQL179-184 / ADMIN9 R12",
+  "sqlRevision": "185-190",
+  "precheckSql": "185_V1.8.3_BSECT02_第二阶段迁移前检查_只读.sql",
   "migrationSql": [
-    "179_V1.8.3_BSECT01_宗门经营基础模块_安装.sql",
-    "181_V1.8.3_剑心基础道攻与终境奖励修复_安装.sql"
+    "186_V1.8.3_BSECT02_NPC外交市场与世界网络_安装.sql",
+    "187_V1.8.3_BSECT02_晋升试炼自动管理与观战_安装.sql",
+    "188_V1.8.3_BSECT02_ADMIN9_R13_宗门管理与经济监控_安装.sql"
   ],
-  "precheckSql": "179_PRECHECK_CACHE80_BSECT01_只读.sql",
-  "postMigrationChecks": [
-    "180_V1.8.3_BSECT01_安装后只读检查.sql",
-    "182_V1.8.3_剑心与终境奖励修复_升级后检查_只读.sql"
-  ],
-  "releaseGateSql": "183_V1.8.3_CACHE81_正式发布门禁.sql",
-  "finalCheckSql": "184_V1.8.3_CACHE81_升级后检查_只读.sql",
-  "rollbackSql": "EMERGENCY_DISABLE_BSECT01_非迁移编号.sql",
+  "releaseGateSql": "189_V1.8.3_CACHE82_BSECT02_正式发布门禁.sql",
+  "finalCheckSql": "190_V1.8.3_CACHE82_BSECT02_升级后检查_只读.sql",
+  "rollbackSql": "EMERGENCY_DISABLE_BSECT02_非迁移编号.sql",
+  "restoreSql": "RESTORE_ENABLE_BSECT02_非迁移编号.sql",
   "features": [
-    "BSECT01_PERSONAL_SECT",
-    "SECT_ON_DEMAND_72H_SETTLEMENT",
-    "CONTINUOUS_EQUIPMENT_ENHANCEMENT_UI",
-    "SWORD_HEART_REALM_BASE_ATTACK_8_PERCENT",
-    "TERMINAL_OPPORTUNITY_BASIS_FIX",
-    "PAIGOW_CRON_DISABLED_PERF1"
+    "BSECT02_NPC_DIPLOMACY",
+    "BSECT02_CROSS_SECT_MARKET",
+    "BSECT02_MAINTENANCE",
+    "BSECT02_ADVANCED_ADVENTURES",
+    "BSECT02_EXPELLED_DISCIPLE_LIFECYCLE",
+    "BSECT02_PROMOTION_TRIALS",
+    "BSECT02_AUTO_MANAGEMENT",
+    "BSECT02_WORLD_RANKING",
+    "BSECT02_READONLY_WAR_SPECTATOR",
+    "SECT_FULLSCREEN_FOCUS_MODE"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R12_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R13_手机直用版.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "BSECT01_FIX1",
-  "databaseRelease": "V1.8.3 CACHE81",
+  "clientHotfix": "BSECT02_WORLDNET1",
+  "databaseRelease": "V1.8.3 CACHE82",
   "notes": [
-    "以CACHE80为唯一源码和数据库基线",
-    "先安装并验收B-SECT01，再安装剑心与终境奖励修复",
-    "宗门前端替换旧宗门页面但不删除旧数据对象",
-    "强化成功可在原界面连续操作，失败毁装规则不变",
-    "剑心持剑与异灵根均为境界基础道攻+8%，冲突时不叠加",
-    "顾辰终境机缘与秘境修为、灵石基数修复",
-    "牌九Cron继续停用，无新增高频轮询"
+    "以CACHE81为唯一源码和数据库基线，SQL179-184不得重复执行或改写",
+    "文档原建议第二阶段使用SQL179-184，但该号段已被CACHE81占用，因此整体顺延为SQL185-190",
+    "进入宗门时隐藏角色HUD与其他页面，让宗门系统独占内容区",
+    "市场资产、维护、历练、晋升和离宗结果全部由服务端权威结算",
+    "正式宗门战争仅只读观战且默认关闭；后代血脉与真实战损不在本版开放"
   ],
-  "gmVersion": "ADMIN9 R12",
-  "handoffRevision": "R14-2026-08-05",
-  "gmSqlRevision": "160-167 + 181",
-  "combatRollbackSql": "EMERGENCY_ROLLBACK_SQL181_非迁移编号.sql"
+  "gmVersion": "ADMIN9 R13",
+  "handoffRevision": "R15-2026-08-05",
+  "phase3SqlStart": 191
 }

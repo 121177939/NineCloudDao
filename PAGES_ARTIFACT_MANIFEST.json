@@ -1,6 +1,8 @@
 {
-  "version": "V1.2 FIX3 CACHE40",
-  "clientBuild": "v1-2-fix3-cache40",
+  "version": "V1.8.3 CACHE82",
+  "clientBuild": "v1-8-3-cache82-bsect02-worldnet1",
+  "deploymentAllowed": true,
+  "gmDeliveryMode": "local_only",
   "files": [
     {
       "path": ".nojekyll",
@@ -9,23 +11,23 @@
     },
     {
       "path": "404.html",
-      "size": 2242,
-      "sha256": "368f5d66b527bf9dfb8040ec0ced8eebbba98acf4f79d25c67b67e739340dd2c"
+      "size": 2864,
+      "sha256": "4e96a4370aaf0c4e0aa3e553e614ad8cf1fcb24ca15133dc0ee3eb229256e693"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 1834,
-      "sha256": "c4605690eaac80ab357be790208f4e1a62d333693efc244b53fe3ac4ea744807"
+      "size": 3042,
+      "sha256": "3817f0fd815c142be22604e7e9ca1b63de6912ff318da1f2b9e3d5bd3489666b"
     },
     {
       "path": "VERSION.txt",
-      "size": 10,
-      "sha256": "fecd9135a5c23aa21a5f30dbbbbb547f64cd18e8401bdf45aff08616cfab4ff8"
+      "size": 137,
+      "sha256": "a692d4b356114e775a728c22650a621e4dfc1f5edeb60a0ab05670d4f4210555"
     },
     {
       "path": "app.js",
-      "size": 433231,
-      "sha256": "4d76edf52df7ac62bbbd0edb0b42ba619185792cd6d11ac4a0340180683d0193"
+      "size": 490866,
+      "sha256": "4d7812d483e60dd1f74ceeb0c53b6c7f86a2f67a7e23d56ba10895141539229c"
     },
     {
       "path": "assets/icon-192.png",
@@ -38,64 +40,119 @@
       "sha256": "325dfbfd51969375a6a360dac434263b2f874bed68309fcf0b2a1594b5445858"
     },
     {
+      "path": "assets/secret-realm-portal.webp",
+      "size": 60350,
+      "sha256": "ae9775fa539e690e12239b4a1fa31ce7367532609d542cc254c7ee620762156f"
+    },
+    {
+      "path": "b-equipment01.css",
+      "size": 23071,
+      "sha256": "aa91df61c678c2fcc3c93a2b1f836cd917d7c2e9d17e9740bfc24e030ed83726"
+    },
+    {
+      "path": "b-equipment01.js",
+      "size": 48834,
+      "sha256": "aab06ba29a47c70dd545bbe8d94ccc3af7aa937dd65faed71d71faf6ede86c7e"
+    },
+    {
       "path": "b-paigow01.css",
       "size": 837,
       "sha256": "46ebb8fa5eb421e5822d6106a3c3067ad1ee28369e7934fa87691b8c0ef4ad97"
     },
     {
       "path": "b-paigow01.html",
-      "size": 571,
-      "sha256": "8e7f5352465c666f4d4b1c4a4fd27c79660f6c08496378d26b91c660e3e48e7f"
+      "size": 27006,
+      "sha256": "b8769d06e602acc9219106b2655e8f3a7d2fb9e7e752cb4e2abe263c08d70ca8"
     },
     {
       "path": "b-paigow01.js",
-      "size": 2071,
-      "sha256": "292be1938620b0704f52cb61655709ae18c0a3abb01cd6746ec2609b54313d0b"
+      "size": 2316,
+      "sha256": "33adf42f05d2d8a46d889d30996e5e93b45728c3a5ccdba156d2e30dad961add"
+    },
+    {
+      "path": "b-paigow02-ui.css",
+      "size": 25101,
+      "sha256": "f95893aa45644e74807f2be9a656f70a185b85e1fdb6ccd0b17da9fdaaeb9d3c"
+    },
+    {
+      "path": "b-paigow02-ui.js",
+      "size": 1362,
+      "sha256": "fa4411e106ca1c2a746bfa612c985123b84ce91c927e0ed4d5d909730140e342"
+    },
+    {
+      "path": "b-paigow02-ui03.css",
+      "size": 18019,
+      "sha256": "dc747e6208aa357d173878a73663d079dadfb1fd926c071ae44b200309a9758f"
+    },
+    {
+      "path": "b-secret-realm01.css",
+      "size": 24507,
+      "sha256": "19653dfbe360e547acde431f08ece306b827d212159c4d93617daa64b695fdbf"
+    },
+    {
+      "path": "b-secret-realm01.js",
+      "size": 43881,
+      "sha256": "efa0fa4d4bdeb86df7b373d9836ca22e44b25b1da48a27b26d6ed5340e107a20"
+    },
+    {
+      "path": "b-sect-v2.css",
+      "size": 12139,
+      "sha256": "24841f4fed6d1aeb830d6bc1e5148cdb7f9d086400923e7ab81927f09469f056"
+    },
+    {
+      "path": "b-sect-v2.js",
+      "size": 41024,
+      "sha256": "f2a2584dafb8d05dab85015cbe573ce96eee81b184acc094e99419bd79acd22e"
     },
     {
       "path": "config.js",
-      "size": 509,
-      "sha256": "b2936bf78ce8bdbe954098c1e74d7d18bb43877f47b4d8075f4faf7c93d9215c"
+      "size": 539,
+      "sha256": "53595336b701b0f2b6f08b45fe882bc236cd0be6e1d296b0a584f87b5e5d4f9a"
     },
     {
       "path": "index.html",
-      "size": 2242,
-      "sha256": "368f5d66b527bf9dfb8040ec0ced8eebbba98acf4f79d25c67b67e739340dd2c"
+      "size": 2864,
+      "sha256": "4e96a4370aaf0c4e0aa3e553e614ad8cf1fcb24ca15133dc0ee3eb229256e693"
     },
     {
       "path": "manifest.webmanifest",
-      "size": 534,
-      "sha256": "06f71cd2168e425a649b59cf5d5882e72a4bbb33c80ffd9f24262f39f1b4e2dd"
+      "size": 549,
+      "sha256": "78276a98ccad59f0682edc45d58e0bea964c5020b115209ab5893db90ed8571e"
     },
     {
       "path": "paigow-app.css",
-      "size": 46585,
-      "sha256": "8d1351ec82a17df312df9b994f4bbcfee2c0ba7690ab81f0400b10b6d4f76ce8"
+      "size": 48111,
+      "sha256": "1c3aeac80fd942d9a9b3b5bf514fd1551c6ea40af26376f685a9a6acc54a7aa5"
     },
     {
       "path": "paigow-app.js",
-      "size": 46519,
-      "sha256": "b69cf02a8c981ae5fcb42e4c47339544d7e67f92fe932514cb240bfafe9085dd"
+      "size": 67520,
+      "sha256": "1ae95df2a337896817a1872c9ddcd6b3d6145b64b0bf272518bbb51919499c56"
+    },
+    {
+      "path": "paigow-realtime.js",
+      "size": 8878,
+      "sha256": "ec86eade9baa3965021205f58341dd028a571949e22d9774f1a1462d2be661ac"
     },
     {
       "path": "release_config.json",
-      "size": 209,
-      "sha256": "aef75eeb5271ef35294e847532d91088fab588cd9cb48d0989e77c2e82e6dd86"
+      "size": 2012,
+      "sha256": "dfbaf357de2d63205e97c4317ee038d35b4ab6eb38b292749fdc5d627eb86862"
     },
     {
       "path": "styles.css",
-      "size": 227022,
-      "sha256": "21052ac09766e2a32884a9c9721d3a7c869d926cdb1ec24a4c0d9a96745fa9d0"
+      "size": 235004,
+      "sha256": "739ff8f8655d1e3f7de21f33e94a7f52c862c2782d8e19b4d44aea56ccfd282e"
     },
     {
       "path": "sw.js",
-      "size": 3178,
-      "sha256": "e316e3bd226586a5199cd07becea84f6595f88d875886479826d7a083fb583c5"
+      "size": 4045,
+      "sha256": "cdd4d74820443a0b856d4c566dfd1c84737374ddf27c6cd01e556a976a654564"
     },
     {
       "path": "update-guard.js",
-      "size": 4923,
-      "sha256": "a4df8b4804e264aebd722c27f88fd528692e2ec21dd5fff64d05e5b4c82d0b5a"
+      "size": 5161,
+      "sha256": "c1d18dbec00167ac6dfeac2bfe70f553d9ef10eac24bb59375387acb25a5c0e0"
     }
   ]
 }
