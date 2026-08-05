@@ -1,14 +1,14 @@
 (() => {
   'use strict';
 
-  const MODULE = 'B-SECT04-SOCIALSPAR1';
+  const MODULE = 'B-SECT05-PARTNERSEASON1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
   const projectRef = (() => { try { return new URL(baseUrl).hostname.split('.')[0]; } catch { return 'unknown'; } })();
   const sessionKey = `nine_cloud_dao_session_${projectRef}_v1`;
   const deviceKey = `nine_cloud_dao_device_${projectRef}_v1`;
-  const state = { data: null, loading: false, busy: false, lastFetchAt: 0, lastAutoSyncAt: 0, activeTab: 'overview', phase2Available: true, growthAvailable: true, eventSyncAvailable: true, socialAvailable: true, timer: null, serverOffsetMs: 0 };
+  const state = { data: null, loading: false, busy: false, lastFetchAt: 0, lastAutoSyncAt: 0, activeTab: 'overview', phase2Available: true, growthAvailable: true, eventSyncAvailable: true, socialAvailable: true, partnerAvailable: true, timer: null, serverOffsetMs: 0 };
 
   const esc = value => String(value ?? '')
     .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -102,6 +102,18 @@
       ['BSECT04_INVALID_EVENT_CHOICE', '人物事件选项无效。'],
       ['BSECT04_TREASURY_STONES_INSUFFICIENT', '宗门库藏灵石不足以执行这个选择。'],
       ['BSECT04_DISABLED', '宗门人物与切磋系统当前处于维护状态。'],
+      ['BSECT05_PARTNER_DISABLED', '宗门道侣系统当前处于维护状态。'],
+      ['BSECT05_PARTNER_REQUIREMENTS_NOT_MET', '双方好感、心境或忠诚尚未达到结为道侣的条件。'],
+      ['BSECT05_DISCIPLE_ALREADY_PARTNERED', '其中一名弟子已经拥有道侣。'],
+      ['BSECT05_PROPOSAL_NOT_FOUND', '道侣提案不存在。'],
+      ['BSECT05_PROPOSAL_ALREADY_RESOLVED', '这个道侣提案已经处理。'],
+      ['BSECT05_PROPOSAL_EXPIRED', '这个道侣提案已经过期。'],
+      ['BSECT05_BOND_NOT_ACTIVE', '这段道侣关系已经解除。'],
+      ['BSECT05_MANAGER_OFFICE_REQUIRED', '自动托管负责人必须是峰主或大长老。'],
+      ['BSECT05_DAILY_WINS_NOT_ENOUGH', '今日切磋胜场尚未达到领取条件。'],
+      ['BSECT05_DAILY_REWARD_ALREADY_CLAIMED', '今日切磋奖励已经领取。'],
+      ['BSECT05_SEASON_DISABLED', '普通切磋赛季当前处于维护状态。'],
+      ['BSECT05_DISABLED', '宗门道侣、托管与赛季系统当前处于维护状态。'],
       ['AUTH_REQUIRED', '请先登录游戏。'],
       ['PGRST202', '宗门数据库RPC尚未安装或尚未刷新API缓存。'],
       ['Could not find the function', '宗门数据库RPC尚未安装或尚未刷新API缓存。']
@@ -144,6 +156,7 @@
   function advanced(data = state.data) { return phase2(data)?.advanced || {}; }
   function growth(data = state.data) { return data?.growth || {}; }
   function social(data = state.data) { return data?.social || {}; }
+  function partnerPhase(data = state.data) { return data?.partner_phase || {}; }
   function mapBy(items, key = 'disciple_id') { return new Map((Array.isArray(items) ? items : []).map(item => [String(item?.[key] || ''), item])); }
   function disciples(data = state.data) {
     const base = Array.isArray(data?.disciples) ? data.disciples : [];
@@ -250,7 +263,7 @@
     const pendingCount = (social().pending_events || []).length;
     const tabs = [
       ['overview','宗门总览'],['disciples','弟子与山门'],['events',`成长事件${eventCount ? `（${eventCount}）` : ''}`],
-      ['people','人物与师徒'],['decisions',`宗主决断${pendingCount ? `（${pendingCount}）` : ''}`],['sparring','三人切磋'],
+      ['people','人物与师徒'],['decisions',`宗主决断${pendingCount ? `（${pendingCount}）` : ''}`],['partners','道侣与深度托管'],['sparring','切磋赛季'],
       ['world','世界宗门'],['market','宗门市集'],['adventures','高级历练'],['promotion','晋升与托管'],['honors','排行与荣誉']
     ];
     return `<nav class="sect-v2-tabs-bsect02" aria-label="宗门页面">${tabs.map(([code,label]) => `<button type="button" data-bsect-tab="${code}" class="${state.activeTab === code ? 'active' : ''}">${label}</button>`).join('')}</nav>`;
@@ -282,7 +295,7 @@
     const settings = growth(data).settings || {};
     const assignments = growth(data).assignments || [];
     const scheduled = assignments.filter(a => a.assignment_code === 'cultivation' || a.assignment_code === 'retreat').filter(a => a.next_event_at);
-    return `<div class="sect-v2-view-bsect02"><div class="sect-v2-callout-bsect01"><strong>弟子随机事件由服务器排期与结算</strong><p>持续修炼和随机闭关会生成事件排期；默认间隔为${fmt(settings.event_min_minutes || 35)}—${fmt(settings.event_max_minutes || 120)}分钟。倒计时到期后，本页面会自动请求服务器结算；切回游戏或点击“结算并刷新”也会结算。</p></div>${sectionTitle('等待触发',`${scheduled.length}名弟子已有事件排期`)}<div class="sect-v2-log-bsect01">${scheduled.map(a => { const d=disciples(data).find(x=>String(x.id)===String(a.disciple_id)); return `<article><strong>${esc(d?.dao_name || d?.name || '宗门弟子')} · ${esc(assignmentName(a.assignment_code))}</strong><p>${countdownSpan(a.next_event_at,'预计触发 ')}</p><small>服务器排期：${time(a.next_event_at)}</small></article>`; }).join('') || '<div class="sect-v2-empty-bsect01">当前没有事件排期。请先安排弟子持续修炼或随机闭关。</div>'}</div>${sectionTitle('最近随机事件',`${items.length}条`)}<div class="sect-v2-log-bsect01">${items.map(e => `<article><strong>${esc(e.title || '弟子事件')}</strong><p>${esc(e.content || '')}</p><small>${time(e.resolved_at || e.created_at)}</small></article>`).join('') || '<div class="sect-v2-empty-bsect01">尚未结算出随机事件。事件不会在安排事务后立即出现，需要等到服务器随机排期到期。</div>'}</div><div class="sect-v2-warning-bsect02"><strong>当前事件范围</strong><p>本版已实现修炼感悟、心境澄明、杂念扰心和渡境清元丹机缘。关系冲突、师徒、道侣、离宗等完整人物事件仍属于后续宗门事件系统。</p></div></div>`;
+    return `<div class="sect-v2-view-bsect02"><div class="sect-v2-callout-bsect01"><strong>弟子随机事件由服务器排期与结算</strong><p>持续修炼和随机闭关会生成事件排期；默认间隔为${fmt(settings.event_min_minutes || 35)}—${fmt(settings.event_max_minutes || 120)}分钟。倒计时到期后，本页面会自动请求服务器结算；切回游戏或点击“结算并刷新”也会结算。</p></div>${sectionTitle('等待触发',`${scheduled.length}名弟子已有事件排期`)}<div class="sect-v2-log-bsect01">${scheduled.map(a => { const d=disciples(data).find(x=>String(x.id)===String(a.disciple_id)); return `<article><strong>${esc(d?.dao_name || d?.name || '宗门弟子')} · ${esc(assignmentName(a.assignment_code))}</strong><p>${countdownSpan(a.next_event_at,'预计触发 ')}</p><small>服务器排期：${time(a.next_event_at)}</small></article>`; }).join('') || '<div class="sect-v2-empty-bsect01">当前没有事件排期。请先安排弟子持续修炼或随机闭关。</div>'}</div>${sectionTitle('最近随机事件',`${items.length}条`)}<div class="sect-v2-log-bsect01">${items.map(e => `<article><strong>${esc(e.title || '弟子事件')}</strong><p>${esc(e.content || '')}</p><small>${time(e.resolved_at || e.created_at)}</small></article>`).join('') || '<div class="sect-v2-empty-bsect01">尚未结算出随机事件。事件不会在安排事务后立即出现，需要等到服务器随机排期到期。</div>'}</div><div class="sect-v2-warning-bsect02"><strong>当前事件范围</strong><p>本版事件目录已扩展至修炼、心境、忠诚、同门关系、师徒、职务、资源、道侣协同与争执。普通事件自动结算，重要事件仍进入宗主决断。</p></div></div>`;
   }
 
   function peopleHtml(data) {
@@ -302,10 +315,23 @@
     return `<div class="sect-v2-view-bsect02"><div class="sect-v2-callout-bsect01"><strong>重要人物事件需要宗主裁决</strong><p>普通事件会按弟子性格、忠诚、心境和关系自动处理；资源申请、同门冲突、晋升诉求、拜师请求和心魔征兆等重要事件进入待处理队列。</p></div>${sectionTitle('待处理事件',`${pending.length}件`)}<div class="sect-v2-decision-list-bsect04">${pending.map(e=>`<article><header><div><small>${esc(names.get(String(e.disciple_id))||'宗门弟子')}${e.target_disciple_id?` · 涉及 ${esc(names.get(String(e.target_disciple_id))||'同门')}`:''}</small><strong>${esc(e.title)}</strong></div><span>${countdownSpan(e.expires_at,'剩余 ')}</span></header><p>${esc(e.content)}</p><div class="sect-v2-actions-bsect01">${(e.choices||[]).map(c=>`<button type="button" class="${c.code==='approve'||c.code==='counsel'||c.code==='mediate'?'primary-btn':'secondary-btn'}" data-bsect-event-choice="${esc(e.id)}" data-choice="${esc(c.code)}" data-label="${esc(c.label)}">${esc(c.label)}</button>`).join('')}</div></article>`).join('') || '<div class="sect-v2-empty-bsect01">当前没有需要宗主处理的重要人物事件。</div>'}</div></div>`;
   }
 
+  function partnersHtml(data) {
+    const phase = partnerPhase(data);
+    if (!state.partnerAvailable || phase.installed === false) return unavailableHtml('道侣、深度托管与切磋赛季数据库尚未安装。');
+    const list = disciples(data); const names = new Map(list.map(d => [String(d.id), d.dao_name || d.name]));
+    const proposals = phase.proposals || []; const bonds = phase.bonds || []; const eligible = phase.eligible_pairs || [];
+    const rules = phase.auto_rules || {}; const settings = phase.settings || {};
+    const managers = list.filter(d => ['peak_master','grand_elder'].includes(d.office_code));
+    return `<div class="sect-v2-view-bsect02"><div class="sect-v2-callout-bsect01"><strong>道侣关系属于长期人物资产</strong><p>只有本宗弟子、双方好感达到${fmt(settings.minimum_affinity || 60)}，且心境与忠诚达到配置门槛时才能发起提案。宗主批准后，双方同时修炼或闭关会由服务器按时间结算约${pct(settings.cultivation_bonus_rate || 0.05)}协同修为；本阶段仍不开放生育与后代。</p></div>${sectionTitle('待确认道侣提案',`${proposals.length}件`)}<div class="sect-v2-decision-list-bsect04">${proposals.map(p=>`<article><header><div><small>好感 ${fmt(p.affinity_snapshot)}</small><strong>${esc(names.get(String(p.disciple_a_id))||'弟子')} 与 ${esc(names.get(String(p.disciple_b_id))||'弟子')}</strong></div><span>${countdownSpan(p.expires_at,'剩余 ')}</span></header><p>双方关系已达到结为道侣的条件。批准后形成唯一道侣关系并开始同修协同。</p><div class="sect-v2-actions-bsect01"><button class="primary-btn" type="button" data-bsect-partner-resolve="${esc(p.id)}" data-approve="true">宗门见证·批准</button><button class="secondary-btn" type="button" data-bsect-partner-resolve="${esc(p.id)}" data-approve="false">暂不批准</button></div></article>`).join('') || '<div class="sect-v2-empty-bsect01">当前没有待确认提案。</div>'}</div>${sectionTitle('可发起关系',`${eligible.length}组`)}<div class="sect-v2-relation-list-bsect04">${eligible.map(r=>`<article><div><strong>${esc(names.get(String(r.disciple_a_id))||'弟子')} ↔ ${esc(names.get(String(r.disciple_b_id))||'弟子')}</strong><small>${esc(relationName(r.relation_code))}</small></div><span>好感 ${fmt(r.affinity)}</span><button class="secondary-btn" type="button" data-bsect-partner-propose-a="${esc(r.disciple_a_id)}" data-b="${esc(r.disciple_b_id)}">发起道侣提案</button></article>`).join('') || '<div class="sect-v2-empty-bsect01">暂无满足门槛且双方均无道侣的关系组合。</div>'}</div>${sectionTitle('现有道侣',`${bonds.filter(b=>b.status==='active').length}对`)}<div class="sect-v2-grid-bsect01">${bonds.map(b=>`<article class="sect-v2-card-bsect01 ${b.status==='active'?'is-partner-active-bsect05':''}"><small>${b.status==='active'?'道侣关系生效中':`状态：${esc(b.status)}`}</small><h4>${esc(names.get(String(b.disciple_a_id))||'弟子')} · ${esc(names.get(String(b.disciple_b_id))||'弟子')}</h4><p>协同等级 ${fmt(b.synergy_level)} · 累计协同修为 ${fmt(b.total_cultivation_bonus)}<br>累计同修 ${durationText(num(b.total_synergy_seconds)*1000)}</p><small>上次结算：${time(b.last_synergy_at)}</small>${b.status==='active'?`<div class="sect-v2-actions-bsect01"><button class="danger-btn" type="button" data-bsect-partner-end="${esc(b.id)}">解除道侣关系</button></div>`:''}</article>`).join('') || '<div class="sect-v2-empty-bsect01">宗门尚无正式道侣。</div>'}</div><section class="sect-v2-panel-bsect02"><header><div><strong>峰主 / 大长老深度托管</strong><small>服务端按需执行，不创建高频Cron</small></div><span>${rules.enabled?'已启用':'未启用'}</span></header><form id="sectAutoRulesFormBsect05" class="sect-v2-form-bsect02"><label class="sect-v2-switch-bsect02"><input type="checkbox" name="enabled" ${rules.enabled?'checked':''}><span>启用深度托管</span></label><label class="sect-v2-switch-bsect02"><input type="checkbox" name="autoCultivate" ${rules.auto_cultivate_idle!==false?'checked':''}><span>自动安排空闲弟子修炼</span></label><label class="sect-v2-switch-bsect02"><input type="checkbox" name="autoHeal" ${rules.auto_heal_injured!==false?'checked':''}><span>自动安排受伤弟子疗伤</span></label><label class="sect-v2-switch-bsect02"><input type="checkbox" name="autoResource" ${rules.auto_resolve_resource_requests?'checked':''}><span>限额自动审批修炼资源</span></label><label>单次资源审批上限<input type="number" name="resourceLimit" min="0" step="1" value="${num(rules.resource_approval_limit,300)}"></label><label>心境保护线<input type="number" name="moodFloor" min="0" max="100" value="${num(rules.protect_mood_below,30)}"></label><label>宗门灵石保留线<input type="number" name="reserve" min="0" step="1" value="${num(rules.reserve_spirit_stones,5000)}"></label><label>托管负责人<select name="manager"><option value="">宗主直接管理</option>${managers.map(d=>`<option value="${esc(d.id)}" ${String(rules.manager_disciple_id||'')===String(d.id)?'selected':''}>${esc(d.dao_name||d.name)} · ${officeName(d.office_code)}</option>`).join('')}</select></label><button class="primary-btn" type="submit">保存深度托管策略</button></form></section></div>`;
+  }
+
   function sparringHtml(data) {
-    if (!state.socialAvailable) return unavailableHtml('普通切磋数据库尚未安装。');
-    const soc=social(data);const list=disciples(data);const current=new Set((soc.sparring_lineup?.disciple_ids||[]).map(String));const matches=soc.recent_matches||[];const settings=soc.settings||{};
-    return `<div class="sect-v2-view-bsect02"><div class="sect-v2-callout-bsect01"><strong>三人异步普通切磋</strong><p>选择三名弟子保存防守快照，再由服务端匹配强度接近的其他玩家宗门。切磋复用现有境界与五行克制，不造成真实伤势、死亡、装备损失或建筑损坏。</p></div><section class="sect-v2-panel-bsect02"><header><div><strong>出战阵容</strong><small>必须恰好选择3名不同的存活弟子</small></div><span>今日主动切磋 ${fmt(soc.today_sparring_count||0)}/${fmt(settings.daily_sparring_limit||10)}</span></header><form id="sectSparringLineupFormBsect04"><div class="sect-v2-lineup-grid-bsect04">${list.map(d=>`<label class="${['heavy','dying'].includes(d.injury_status)?'disabled':''}"><input type="checkbox" name="disciple" value="${esc(d.id)}" ${current.has(String(d.id))?'checked':''} ${['heavy','dying'].includes(d.injury_status)?'disabled':''}><span><strong>${esc(d.dao_name||d.name)}</strong><small>${esc(d.realm_name)} · ${esc(d.element_name)} · ${identityRankName(d.identity_rank_code)}</small></span></label>`).join('')}</div><div class="sect-v2-actions-bsect01"><button class="secondary-btn" type="submit">保存三人阵容</button><button class="primary-btn" type="button" data-bsect-start-sparring ${current.size===3?'':'disabled'}>匹配并切磋</button></div></form></section>${sectionTitle('最近战报',`${matches.length}场`)}<div class="sect-v2-match-list-bsect04">${matches.map(m=>{const mine=String(m.winner_sect_id)===String(data.sect?.id);const attackerMine=String(m.attacker_sect_id)===String(data.sect?.id);return `<article class="${mine?'win':'lose'}"><header><div><small>${time(m.created_at)}</small><strong>${esc(m.attacker_name)} ${fmt(m.attacker_score)} : ${fmt(m.defender_score)} ${esc(m.defender_name)}</strong></div><span>${mine?'胜':'负'}${attackerMine?' · 主动':' · 防守'}</span></header><div class="sect-v2-rounds-bsect04">${(m.rounds||[]).map(r=>`<span>第${fmt(r.round)}阵 · ${r.winner==='attacker'?'攻方胜':'守方胜'}</span>`).join('')}</div></article>`;}).join('') || '<div class="sect-v2-empty-bsect01">尚无普通切磋战报。其他宗门也需要先设置三人阵容。</div>'}</div></div>`;
+    if (!state.socialAvailable || social(data).installed === false) return unavailableHtml('普通切磋数据库尚未安装。');
+    const soc=social(data);const phase=partnerPhase(data);const list=disciples(data);const current=new Set((soc.sparring_lineup?.disciple_ids||[]).map(String));const matches=soc.recent_matches||[];const settings=soc.settings||{};
+    const season=phase.season||{};const rating=phase.rating||{};const board=phase.leaderboard||[];const phaseSettings=phase.settings||{};
+    const todayWins=matches.filter(m=>String(m.winner_sect_id)===String(data.sect?.id)&&new Date(m.created_at).toDateString()===new Date().toDateString()).length;
+    const canClaim=todayWins>=num(phaseSettings.daily_reward_wins,3)&&!phase.daily_reward_claimed;
+    return `<div class="sect-v2-view-bsect02"><div class="sect-v2-callout-bsect01"><strong>三人异步普通切磋 · 月赛季</strong><p>选择三名弟子保存防守快照，再由服务端匹配强度接近的宗门。切磋复用现有境界与五行克制，不造成真实伤势、死亡、装备损失或建筑损坏。</p></div><div class="sect-v2-metrics-bsect02">${metric('当前赛季',season.name||'等待开启',season.ends_at?`结束 ${time(season.ends_at)}`:'')}${metric('赛季积分',fmt(rating.rating||phaseSettings.season_start_rating||1000),`胜 ${fmt(rating.wins||0)} · 负 ${fmt(rating.losses||0)}`)}${metric('今日胜场',fmt(todayWins),`奖励门槛 ${fmt(phaseSettings.daily_reward_wins||3)}`)}${metric('最高积分',fmt(rating.best_rating||rating.rating||0),`当前连胜 ${fmt(rating.current_streak||0)}`)}</div><section class="sect-v2-panel-bsect02"><header><div><strong>出战阵容</strong><small>必须恰好选择3名不同的存活弟子</small></div><span>今日主动切磋 ${fmt(soc.today_sparring_count||0)}/${fmt(settings.daily_sparring_limit||10)}</span></header><form id="sectSparringLineupFormBsect04"><div class="sect-v2-lineup-grid-bsect04">${list.map(d=>`<label class="${['heavy','dying'].includes(d.injury_status)?'disabled':''}"><input type="checkbox" name="disciple" value="${esc(d.id)}" ${current.has(String(d.id))?'checked':''} ${['heavy','dying'].includes(d.injury_status)?'disabled':''}><span><strong>${esc(d.dao_name||d.name)}</strong><small>${esc(d.realm_name)} · ${esc(d.element_name)} · ${identityRankName(d.identity_rank_code)}</small></span></label>`).join('')}</div><div class="sect-v2-actions-bsect01"><button class="secondary-btn" type="submit">保存三人阵容</button><button class="primary-btn" type="button" data-bsect-start-sparring ${current.size===3?'':'disabled'}>匹配并切磋</button><button class="primary-btn" type="button" data-bsect-claim-season-reward ${canClaim?'':'disabled'}>${phase.daily_reward_claimed?'今日奖励已领取':`领取${fmt(phaseSettings.daily_reward_spirit_stones||1200)}灵石`}</button></div></form></section>${sectionTitle('赛季排行榜','前30名')}<div class="sect-v2-ranking-bsect02">${board.map(r=>`<article class="${r.is_mine?'mine':''}"><b>${fmt(r.rank)}</b><div><strong>${esc(r.sect_name)}</strong><small>胜 ${fmt(r.wins)} · 负 ${fmt(r.losses)}</small></div><span>${fmt(r.rating)}</span></article>`).join('')||'<div class="sect-v2-empty-bsect01">本赛季暂无积分数据。</div>'}</div>${sectionTitle('最近战报',`${matches.length}场`)}<div class="sect-v2-match-list-bsect04">${matches.map(m=>{const mine=String(m.winner_sect_id)===String(data.sect?.id);const attackerMine=String(m.attacker_sect_id)===String(data.sect?.id);return `<article class="${mine?'win':'lose'}"><header><div><small>${time(m.created_at)}</small><strong>${esc(m.attacker_name)} ${fmt(m.attacker_score)} : ${fmt(m.defender_score)} ${esc(m.defender_name)}</strong></div><span>${mine?'胜':'负'}${attackerMine?' · 主动':' · 防守'}</span></header><div class="sect-v2-rounds-bsect04">${(m.rounds||[]).map(r=>`<span>第${fmt(r.round)}阵 · ${r.winner==='attacker'?'攻方胜':'守方胜'}</span>`).join('')}</div></article>`;}).join('') || '<div class="sect-v2-empty-bsect01">尚无普通切磋战报。其他宗门也需要先设置三人阵容。</div>'}</div></div>`;
   }
 
   function worldHtml(data) {
@@ -341,9 +367,9 @@
 
   function dashboardHtml(data) {
     const sect = data.sect || {}; const p2 = phase2(data); const treasury = p2.treasury || {};
-    const views = {overview:overviewHtml,disciples:disciplesHtml,events:eventsHtml,people:peopleHtml,decisions:decisionsHtml,sparring:sparringHtml,world:worldHtml,market:marketHtml,adventures:adventuresHtml,promotion:promotionHtml,honors:honorsHtml};
+    const views = {overview:overviewHtml,disciples:disciplesHtml,events:eventsHtml,people:peopleHtml,decisions:decisionsHtml,partners:partnersHtml,sparring:sparringHtml,world:worldHtml,market:marketHtml,adventures:adventuresHtml,promotion:promotionHtml,honors:honorsHtml};
     const view = views[state.activeTab] || overviewHtml;
-    return `<div class="sect-v2-shell-bsect01"><header class="sect-v2-head-bsect01"><div><span>B-SECT04 · 人物关系、宗主决断与三人异步切磋</span><strong>${esc(sect.name)}</strong><small>${stageName(sect.stage_code)} · 弟子 ${disciples(data).length}/${num(data.settings?.max_disciple_count,20)} · 综合评分 ${fmt(p2.score || 0)}</small></div><div class="sect-v2-resource-chips-bsect02"><span>灵石 <b>${fmt(treasury.spirit_stones || 0)}</b></span><span>物资 <b>${fmt(treasury.supplies || 0)}</b></span><span>声望 <b>${fmt(treasury.reputation || 0)}</b></span><span>渡境丹 <b>${fmt(growth(data).breakthrough_pills || 0)}</b></span><button class="secondary-btn" type="button" data-bsect-refresh>结算并刷新</button></div></header>${tabNav()}${view(data)}</div>`;
+    return `<div class="sect-v2-shell-bsect01"><header class="sect-v2-head-bsect01"><div><span>B-SECT05 · 道侣协同、深度托管与切磋赛季</span><strong>${esc(sect.name)}</strong><small>${stageName(sect.stage_code)} · 弟子 ${disciples(data).length}/${num(data.settings?.max_disciple_count,20)} · 综合评分 ${fmt(p2.score || 0)}</small></div><div class="sect-v2-resource-chips-bsect02"><span>灵石 <b>${fmt(treasury.spirit_stones || 0)}</b></span><span>物资 <b>${fmt(treasury.supplies || 0)}</b></span><span>声望 <b>${fmt(treasury.reputation || 0)}</b></span><span>渡境丹 <b>${fmt(growth(data).breakthrough_pills || 0)}</b></span><button class="secondary-btn" type="button" data-bsect-refresh>结算并刷新</button></div></header>${tabNav()}${view(data)}</div>`;
   }
 
   function render() {
@@ -359,6 +385,15 @@
   }
 
   async function fetchDashboard(sync = true) {
+    if (state.partnerAvailable) {
+      try {
+        return sync ? await rpc('sync_sect_v2_dashboard_bsect05', { p_request_id: uuid() }) : await rpc('get_sect_v2_dashboard_bsect05');
+      } catch (error) {
+        const raw = String(error?.message || error || '');
+        if (!raw.includes('PGRST202') && !raw.includes('Could not find the function') && !raw.includes('BSECT05')) throw error;
+        state.partnerAvailable = false;
+      }
+    }
     if (state.socialAvailable) {
       try {
         return sync ? await rpc('sync_sect_v2_dashboard_bsect04', { p_request_id: uuid() }) : await rpc('get_sect_v2_dashboard_bsect04');
@@ -488,6 +523,11 @@
     el.querySelectorAll('[data-bsect-position-form]').forEach(form=>form.addEventListener('submit',e=>{e.preventDefault();const f=new FormData(e.currentTarget);action('set_sect_disciple_position_bsect04',{p_disciple_id:e.currentTarget.dataset.bsectPositionForm,p_identity_rank_code:f.get('identity'),p_office_code:f.get('office')},'弟子身份与职务已调整。');}));
     el.querySelectorAll('[data-bsect-master-form]').forEach(form=>form.addEventListener('submit',e=>{e.preventDefault();const f=new FormData(e.currentTarget);action('set_sect_master_apprentice_bsect04',{p_apprentice_disciple_id:e.currentTarget.dataset.bsectMasterForm,p_master_disciple_id:f.get('master')||null},'弟子师承已更新。');}));
     el.querySelectorAll('[data-bsect-event-choice]').forEach(b=>b.addEventListener('click',()=>{if(confirm(`确认选择“${b.dataset.label}”？人物关系与资源结果由服务端结算。`))action('resolve_sect_pending_event_bsect04',{p_event_id:b.dataset.bsectEventChoice,p_choice_code:b.dataset.choice},'宗主决断已记录。');}));
+    el.querySelectorAll('[data-bsect-partner-propose-a]').forEach(b=>b.addEventListener('click',()=>{if(confirm('确认向宗门提交这两名弟子的道侣提案？提案仍需宗主再次批准。'))action('propose_sect_dao_partner_bsect05',{p_disciple_a_id:b.dataset.bsectPartnerProposeA,p_disciple_b_id:b.dataset.b},'道侣提案已经生成。');}));
+    el.querySelectorAll('[data-bsect-partner-resolve]').forEach(b=>b.addEventListener('click',()=>{const approve=b.dataset.approve==='true';if(confirm(approve?'确认由宗门见证双方结为道侣？':'确认暂不批准这份道侣提案？'))action('resolve_sect_dao_partner_bsect05',{p_proposal_id:b.dataset.bsectPartnerResolve,p_approve:approve},approve?'双方已经结为道侣。':'提案已被暂缓。');}));
+    el.querySelectorAll('[data-bsect-partner-end]').forEach(b=>b.addEventListener('click',()=>{if(confirm('解除后双方好感会明显下降，确认解除这段道侣关系？'))action('end_sect_dao_partner_bsect05',{p_bond_id:b.dataset.bsectPartnerEnd},'道侣关系已经解除。');}));
+    el.querySelector('#sectAutoRulesFormBsect05')?.addEventListener('submit',e=>{e.preventDefault();const f=new FormData(e.currentTarget);action('set_sect_auto_rules_bsect05',{p_enabled:f.get('enabled')==='on',p_auto_cultivate_idle:f.get('autoCultivate')==='on',p_auto_heal_injured:f.get('autoHeal')==='on',p_auto_resolve_resource_requests:f.get('autoResource')==='on',p_resource_approval_limit:Number(f.get('resourceLimit')),p_protect_mood_below:Number(f.get('moodFloor')),p_reserve_spirit_stones:Number(f.get('reserve')),p_manager_disciple_id:f.get('manager')||null},'深度托管策略已保存。');});
+    el.querySelector('[data-bsect-claim-season-reward]')?.addEventListener('click',()=>action('claim_sect_sparring_daily_reward_bsect05',{},'今日切磋胜场奖励已领取。'));
     el.querySelector('#sectSparringLineupFormBsect04')?.addEventListener('submit',e=>{e.preventDefault();const ids=new FormData(e.currentTarget).getAll('disciple');if(ids.length!==3){toast('必须恰好选择三名弟子。','error');return;}action('set_sect_sparring_lineup_bsect04',{p_disciple_ids:ids},'三人切磋阵容已保存。');});
     el.querySelector('[data-bsect-start-sparring]')?.addEventListener('click',async()=>{if(!confirm('确认匹配其他玩家宗门进行普通切磋？本次不会造成真实伤势或资产损失。'))return;if(state.busy)return;state.busy=true;try{const result=await rpc('start_sect_sparring_bsect04',{p_request_id:uuid()});await refresh({sync:false,silent:true});alert(`${result?.attacker_name||'本宗门'} ${result?.attacker_score??0} : ${result?.defender_score??0} ${result?.defender_name||'对手'}\n${String(result?.winner_sect_id)===String(state.data?.sect?.id)?'切磋获胜':'切磋落败'}\n声望 +${result?.reputation_delta??0}，灵石 +${result?.spirit_stones_delta??0}`);}catch(error){toast(errorText(error),'error');}finally{state.busy=false;}});
     el.querySelector('#sectAutoPolicyFormBsect02')?.addEventListener('submit', e => { e.preventDefault(); const f=new FormData(e.currentTarget); action('set_sect_auto_policy_bsect02',{p_enabled:f.get('enabled')==='on',p_auto_cultivate_idle:f.get('autoCultivate')==='on',p_protect_loyalty_below:Number(f.get('loyalty')),p_reserve_spirit_stones:Number(f.get('reserve')),p_npc_preferred_code:f.get('npc')||null},'自动管理策略已保存。'); });
@@ -504,6 +544,7 @@
   window.addEventListener('jiuxiao:sect-v2-refresh', () => refresh({sync:true,silent:true}));
   window.addEventListener('focus', () => { if (root() && Date.now()-state.lastFetchAt>60_000) refresh({sync:true,silent:true}); }, { passive:true });
   const api = { module:MODULE, refresh, render, state:() => state.data, setTab:tab=>{state.activeTab=tab;render();} };
+  window.B_SECTV2_B05 = api;
   window.B_SECTV2_B04 = api;
   window.B_SECTV2_B03 = api;
   window.B_SECTV2_B02 = api;

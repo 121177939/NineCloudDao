@@ -1,41 +1,40 @@
 {
-  "version": "V1.8.6",
-  "releaseLabel": "V1.8.6 CACHE88",
-  "buildId": "v1-8-6-cache88-bsect04-socialspar1",
-  "cacheEpoch": 88,
-  "minimumDatabaseBaseline": "V1.8.6 CACHE88 / SQL199-204 / ADMIN9 R17",
-  "sqlRevision": "199-204",
+  "version": "V1.8.7",
+  "releaseLabel": "V1.8.7 CACHE89",
+  "buildId": "v1-8-7-cache89-bsect05-partnerseason1",
+  "cacheEpoch": 89,
+  "minimumDatabaseBaseline": "V1.8.7 CACHE89 / SQL205-209 / ADMIN9 R18",
+  "sqlRevision": "205-209",
   "migrationSql": [
-    "199_V1.8.5_CACHE87_宗门弟子随机事件链路补完_安装.sql",
-    "200_V1.8.6_BSECT04_人物关系与切磋_迁移前检查_只读.sql",
-    "201_V1.8.6_BSECT04_人物事件身份师徒与异步切磋_安装.sql",
-    "202_V1.8.6_ADMIN9_R17_宗门人物与切磋管理_安装.sql",
-    "203_V1.8.6_CACHE88_正式发布门禁.sql",
-    "204_V1.8.6_CACHE88_升级后检查_只读.sql"
+    "205_V1.8.7_BSECT05_道侣托管与赛季_迁移前检查_只读.sql",
+    "206_V1.8.7_BSECT05_道侣协同自动管理与切磋赛季_安装.sql",
+    "207_V1.8.7_ADMIN9_R18_道侣托管与赛季管理_安装.sql",
+    "208_V1.8.7_CACHE89_正式发布门禁.sql",
+    "209_V1.8.7_CACHE89_升级后检查_只读.sql"
   ],
   "features": [
+    "BSECT05_DAO_PARTNER",
+    "BSECT05_PARTNER_SYNERGY",
+    "BSECT05_DEEP_AUTO_MANAGEMENT",
+    "BSECT05_SPARRING_SEASON",
     "BSECT04_SOCIAL_EVENTS",
-    "BSECT04_IMPORTANT_EVENT_QUEUE",
-    "BSECT04_DUAL_POSITION",
-    "BSECT04_MASTER_APPRENTICE",
     "BSECT04_ASYNC_SPARRING",
-    "BSECT03_EVENT_UNIFIED_SYNC",
     "CASINO_GLOBAL_SWITCH"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R17_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R18_手机直用版.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "BSECT04_SOCIALSPAR1",
-  "databaseRelease": "V1.8.6 CACHE88 / SQL199-204",
+  "clientHotfix": "BSECT05_PARTNERSEASON1",
+  "databaseRelease": "V1.8.7 CACHE89 / SQL205-209",
   "notes": [
-    "当前生产未部署SQL199，因此CACHE88升级包累计包含SQL199-204",
-    "严格按SQL199→200→201→202→部署前端与GM→203→204执行",
-    "SQL179-198为已执行历史链，禁止重复执行",
-    "普通切磋没有真实战损；后代血脉和正式战争仍未开放"
+    "当前生产基线按V1.8.6 CACHE88 + SQL204计算",
+    "严格按SQL205→206→207→部署前端与GM→208→209执行",
+    "SQL179-204为已执行历史链，禁止重复执行",
+    "本阶段不开放后代血脉和真实宗门战争"
   ],
-  "gmVersion": "ADMIN9 R17",
-  "handoffRevision": "R21-2026-08-05",
-  "nextSqlNumber": 205,
-  "phase3SqlStart": 205
+  "gmVersion": "ADMIN9 R18",
+  "handoffRevision": "R22-2026-08-05",
+  "nextSqlNumber": 210,
+  "phase3SqlStart": 210
 }
