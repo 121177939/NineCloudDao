@@ -1,18 +1,14 @@
 {
-  "version": "V1.8.3",
-  "releaseLabel": "V1.8.3 CACHE82",
-  "buildId": "v1-8-3-cache82-bsect02-worldnet1",
-  "cacheEpoch": 82,
-  "minimumDatabaseBaseline": "V1.8.3 CACHE81 / SQL179-184 / ADMIN9 R12",
-  "sqlRevision": "185-190",
-  "precheckSql": "185_V1.8.3_BSECT02_第二阶段迁移前检查_只读.sql",
-  "migrationSql": [
-    "186_V1.8.3_BSECT02_NPC外交市场与世界网络_安装.sql",
-    "187_V1.8.3_BSECT02_晋升试炼自动管理与观战_安装.sql",
-    "188_V1.8.3_BSECT02_ADMIN9_R13_宗门管理与经济监控_安装.sql"
-  ],
-  "releaseGateSql": "189_V1.8.3_CACHE82_BSECT02_正式发布门禁.sql",
-  "finalCheckSql": "190_V1.8.3_CACHE82_BSECT02_升级后检查_只读.sql",
+  "version": "V1.8.4",
+  "releaseLabel": "V1.8.4 CACHE83",
+  "buildId": "v1-8-4-cache83-bsect02-deployfix1",
+  "cacheEpoch": 83,
+  "minimumDatabaseBaseline": "V1.8.3 CACHE82 / SQL185-190 / ADMIN9 R13",
+  "sqlRevision": "185-190（沿用，无新增SQL）",
+  "precheckSql": "无需执行：SQL185-190已经完成",
+  "migrationSql": [],
+  "releaseGateSql": "无需重复执行：SQL189已经完成",
+  "finalCheckSql": "无需重复执行：SQL190已经完成",
   "rollbackSql": "EMERGENCY_DISABLE_BSECT02_非迁移编号.sql",
   "restoreSql": "RESTORE_ENABLE_BSECT02_非迁移编号.sql",
   "features": [
@@ -25,22 +21,23 @@
     "BSECT02_AUTO_MANAGEMENT",
     "BSECT02_WORLD_RANKING",
     "BSECT02_READONLY_WAR_SPECTATOR",
-    "SECT_FULLSCREEN_FOCUS_MODE"
+    "SECT_FULLSCREEN_FOCUS_MODE",
+    "GITHUB_PAGES_REPOSITORY_PACKAGE_FIX"
   ],
   "gmEntry": "九霄问道_ADMIN9_R13_手机直用版.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "BSECT02_WORLDNET1",
-  "databaseRelease": "V1.8.3 CACHE82",
+  "clientHotfix": "BSECT02_DEPLOYFIX1",
+  "databaseRelease": "V1.8.3 CACHE82 / SQL185-190",
   "notes": [
-    "以CACHE81为唯一源码和数据库基线，SQL179-184不得重复执行或改写",
-    "文档原建议第二阶段使用SQL179-184，但该号段已被CACHE81占用，因此整体顺延为SQL185-190",
-    "进入宗门时隐藏角色HUD与其他页面，让宗门系统独占内容区",
-    "市场资产、维护、历练、晋升和离宗结果全部由服务端权威结算",
-    "正式宗门战争仅只读观战且默认关闭；后代血脉与真实战损不在本版开放"
+    "SQL185-190已执行完成，本版本不包含新SQL，也不得重复执行既有SQL",
+    "修复上一版公开ZIP仅包含Pages产物、缺少.github/workflows与tools构建脚本导致GitHub Actions build失败的问题",
+    "本ZIP根目录直接包含完整仓库文件、GitHub Pages工作流和构建工具；不要只上传.pages-site子目录",
+    "保留CACHE82宗门第二阶段、强化、天生剑心和终境奖励全部业务内容，仅提升客户端版本与缓存纪元",
+    "GM继续使用ADMIN9 R13，本次无需更新GM数据库结构"
   ],
   "gmVersion": "ADMIN9 R13",
-  "handoffRevision": "R15-2026-08-05",
+  "handoffRevision": "R16-2026-08-05",
   "phase3SqlStart": 191
 }

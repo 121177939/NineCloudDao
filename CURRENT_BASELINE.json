@@ -1,17 +1,13 @@
 {
-  "version": "1.8.3",
-  "releaseLabel": "九霄问道 V1.8.3 CACHE82",
-  "sourceBaseline": "V1.8.3 CACHE81",
-  "minimumDatabaseBaseline": "V1.8.3 CACHE81 / SQL179-184 / ADMIN9 R12",
-  "deploymentStatus": "formal_release_package_pending_production_acceptance",
-  "databaseMigrations": [
-    "186_V1.8.3_BSECT02_NPC外交市场与世界网络_安装.sql",
-    "187_V1.8.3_BSECT02_晋升试炼自动管理与观战_安装.sql",
-    "188_V1.8.3_BSECT02_ADMIN9_R13_宗门管理与经济监控_安装.sql"
-  ],
-  "databasePrecheck": "185_V1.8.3_BSECT02_第二阶段迁移前检查_只读.sql",
-  "databaseReleaseGate": "189_V1.8.3_CACHE82_BSECT02_正式发布门禁.sql",
-  "databaseFinalCheck": "190_V1.8.3_CACHE82_BSECT02_升级后检查_只读.sql",
+  "version": "1.8.4",
+  "releaseLabel": "九霄问道 V1.8.4 CACHE83",
+  "sourceBaseline": "V1.8.3 CACHE82",
+  "minimumDatabaseBaseline": "V1.8.3 CACHE82 / SQL185-190 / ADMIN9 R13",
+  "deploymentStatus": "formal_release_package_frontend_deploy_fix",
+  "databaseMigrations": [],
+  "databasePrecheck": "SQL185-190 已执行，本前端修复版无需新增SQL",
+  "databaseReleaseGate": "SQL189 已执行，不要重复执行",
+  "databaseFinalCheck": "SQL190 已执行且由用户确认完成，不要重复执行",
   "databaseSafeRollback": "EMERGENCY_DISABLE_BSECT02_非迁移编号.sql",
   "databaseRestore": "RESTORE_ENABLE_BSECT02_非迁移编号.sql",
   "modules": [
@@ -26,7 +22,8 @@
     "B-EQUIPMENT01-CONTINUOUS-ENHANCE1",
     "B-COMBAT01-SWORD-BASE-ATTACK1",
     "B-OPPORTUNITY04-TERMINAL-BASIS-FIX1",
-    "B-CLIENT-PERF01-POLLING1"
+    "B-CLIENT-PERF01-POLLING1",
+    "B-DEPLOY01-GITHUB-PAGES-PACKAGE-FIX1"
   ],
   "confirmedRules": [
     "点击宗门后隐藏角色信息和其他业务面板，保留底部导航并将可用空间全部交给宗门系统",
@@ -35,23 +32,24 @@
     "宗门维护、高级历练、自动管理和晋升试炼均按玩家进入或操作时按需结算，不新增高频Cron",
     "圣地道门和万古仙宗采用多阶段晋升试炼；失败分别损失20%和30%托管资源并进入冷却",
     "正式宗门战争仅提供默认关闭的只读观战，不造成真实伤势、资源或建筑损失",
-    "后代血脉与正式战争继续保留到第三阶段，不在CACHE82开放",
-    "CACHE81的强化、天生剑心、最终境界机缘和性能修复全部保留"
+    "后代血脉与正式战争继续保留到第三阶段，不在CACHE83开放",
+    "CACHE81的强化、天生剑心、最终境界机缘和性能修复全部保留",
+    "V1.8.4 CACHE83仅修复GitHub Pages部署包结构与缓存版本，不新增数据库迁移，SQL185-190禁止重复执行"
   ],
   "gmEntry": "九霄问道_ADMIN9_R13_手机直用版.html",
-  "clientRelease": "V1.8.3_CACHE82",
-  "developmentBaseline": "V1.8.3_AB64_ADMIN9_CACHE82",
-  "cacheEpoch": 82,
-  "sqlRevision": "185-190",
+  "clientRelease": "V1.8.4_CACHE83",
+  "developmentBaseline": "V1.8.4_AB65_ADMIN9_CACHE83",
+  "cacheEpoch": 83,
+  "sqlRevision": "185-190（沿用，无新增SQL）",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "BSECT02_WORLDNET1",
-  "clientBuild": "v1-8-3-cache82-bsect02-worldnet1",
-  "databaseRelease": "V1.8.3 CACHE82",
+  "clientHotfix": "BSECT02_DEPLOYFIX1",
+  "clientBuild": "v1-8-4-cache83-bsect02-deployfix1",
+  "databaseRelease": "V1.8.3 CACHE82 / SQL185-190",
   "gmVersion": "ADMIN9 R13",
   "gmSqlRevision": "160-167 + 181 + 188",
-  "handoffRevision": "R15-2026-08-05",
-  "deploymentVerification": "先执行SQL185并确认overall_ok=true；依次执行SQL186、SQL187、SQL188；部署CACHE82公开文件并使用ADMIN9 R13验证；执行SQL189发布门禁；最后执行SQL190并确认overall_ok=true。",
-  "buildId": "v1-8-3-cache82-bsect02-worldnet1",
+  "handoffRevision": "R16-2026-08-05",
+  "deploymentVerification": "SQL185-190已经执行完成。本版只修复GitHub部署包缺少工作流和构建脚本的问题；上传仓库根目录后等待Pages工作流build与deploy成功，不要重复执行SQL。",
+  "buildId": "v1-8-4-cache83-bsect02-deployfix1",
   "phase3SqlStart": 191
 }
