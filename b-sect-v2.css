@@ -40,3 +40,22 @@
 #sectV2RootBSect01 .danger-btn{min-height:38px;padding:7px 11px;border:1px solid rgba(208,104,84,.45);border-radius:9px;background:rgba(126,46,35,.15);color:#d99b8b}
 @media(max-width:900px){.sect-v2-metrics-bsect02{grid-template-columns:repeat(2,minmax(0,1fr))}.sect-v2-form-bsect02{grid-template-columns:repeat(2,minmax(0,1fr))}.sect-v2-form-bsect02>button{grid-column:1/-1;justify-self:start}}
 @media(max-width:620px){.sect-v2-head-bsect01{display:grid;position:relative;top:auto}.sect-v2-resource-chips-bsect02{justify-content:flex-start}.sect-v2-tabs-bsect02{top:0}.sect-v2-actions-bsect01{justify-content:flex-start}.sect-v2-grid-bsect01,.sect-v2-metrics-bsect02{grid-template-columns:1fr}.sect-v2-modal-card-bsect01 dl{grid-template-columns:1fr 1fr}.sect-v2-market-list-bsect02 article{grid-template-columns:minmax(0,1fr) auto}.sect-v2-market-list-bsect02 article button,.sect-v2-market-list-bsect02 article i{grid-column:1/-1;justify-self:start}.sect-v2-form-bsect02,.sect-v2-adventure-form-bsect02{grid-template-columns:1fr}.sect-v2-adventure-form-bsect02 fieldset{grid-column:auto}.sect-v2-statline-bsect01{align-items:flex-start;flex-direction:column;gap:3px}}
+/* CACHE84 · B-SECT03 弟子成长、随机时间与突破 */
+.sect-v2-card-bsect01.is-breakthrough-ready-bsect03{border-color:rgba(226,196,126,.62);box-shadow:inset 0 0 0 1px rgba(226,196,126,.12),0 0 24px rgba(200,168,98,.08)}
+.sect-v2-status-bsect02.ready-bsect03{color:#f1d690;border-color:rgba(226,196,126,.65);background:rgba(200,168,98,.12)}
+.sect-v2-timing-bsect03{display:flex;flex-wrap:wrap;gap:7px;color:var(--sect-gold2);font-size:.72rem;font-variant-numeric:tabular-nums}
+.sect-v2-countdown-bsect03{display:inline-flex;padding:5px 8px;border:1px solid rgba(200,168,98,.24);border-radius:8px;background:rgba(200,168,98,.06)}
+#sectV2RootBSect01 .breakthrough-btn-bsect03{background:linear-gradient(180deg,rgba(154,84,51,.8),rgba(92,43,29,.92));border-color:rgba(226,155,112,.55);color:#f2d8bd}
+.sect-v2-growth-modal-bsect03{width:min(720px,100%)}
+.sect-v2-growth-box-bsect03{display:grid;gap:11px;margin-top:13px;padding:13px;border:1px solid var(--sect-line);border-radius:13px;background:rgba(255,255,255,.018)}
+.sect-v2-growth-box-bsect03>header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--sect-line)}
+.sect-v2-growth-box-bsect03>header>span{color:var(--sect-gold2);font-size:.75rem;text-align:right}
+.sect-v2-growth-box-bsect03.danger-zone-bsect03{border-color:rgba(204,103,83,.4);background:linear-gradient(145deg,rgba(126,46,35,.1),rgba(255,255,255,.015))}
+.sect-v2-timing-grid-bsect03,.sect-v2-breakthrough-stats-bsect03{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.sect-v2-timing-grid-bsect03>span,.sect-v2-breakthrough-stats-bsect03>span{padding:8px;border-radius:9px;background:rgba(0,0,0,.14);font-size:.73rem;color:var(--soft-text,#b8afa1);overflow-wrap:anywhere}
+.sect-v2-growth-form-bsect03{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-items:end}
+.sect-v2-growth-form-bsect03 label{display:grid;gap:5px;color:var(--muted-text,#8b8274);font-size:.72rem}
+.sect-v2-growth-form-bsect03 select,.sect-v2-growth-form-bsect03 input{width:100%;min-height:40px;box-sizing:border-box}
+.sect-v2-growth-form-bsect03 input[type=checkbox]{width:auto;min-height:auto;justify-self:start;transform:scale(1.15);margin:10px 0}
+.sect-v2-growth-form-bsect03 button{justify-self:start}
+@media(max-width:620px){.sect-v2-growth-modal-bsect03{padding:14px}.sect-v2-growth-form-bsect03,.sect-v2-timing-grid-bsect03,.sect-v2-breakthrough-stats-bsect03{grid-template-columns:1fr}.sect-v2-growth-box-bsect03>header{align-items:flex-start;flex-direction:column}.sect-v2-growth-box-bsect03>header>span{text-align:left}}
