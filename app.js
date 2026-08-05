@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V1.8.5 CACHE86：沿用CACHE80低频同步，并接入B-SECT03弟子成长与突破闭环。
+  // V1.8.6 CACHE88：沿用CACHE80低频同步，接入B-SECT04人物事件、师徒关系与三人异步切磋闭环。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,
@@ -7411,7 +7411,7 @@
 
 
 
-  // V1.8.5 CACHE86：异灵根与持剑天生剑心均使用境界基础道攻加成。
+  // V1.8.6 CACHE88：异灵根与持剑天生剑心均使用境界基础道攻加成。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';

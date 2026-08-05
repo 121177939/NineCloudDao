@@ -1,36 +1,41 @@
 {
-  "version": "V1.8.5",
-  "releaseLabel": "V1.8.5 CACHE86",
-  "buildId": "v1-8-5-cache86-casinogate1",
-  "cacheEpoch": 86,
-  "minimumDatabaseBaseline": "V1.8.5 CACHE86 / SQL198 / ADMIN9 R16",
-  "sqlRevision": "198",
+  "version": "V1.8.6",
+  "releaseLabel": "V1.8.6 CACHE88",
+  "buildId": "v1-8-6-cache88-bsect04-socialspar1",
+  "cacheEpoch": 88,
+  "minimumDatabaseBaseline": "V1.8.6 CACHE88 / SQL199-204 / ADMIN9 R17",
+  "sqlRevision": "199-204",
   "migrationSql": [
-    "198_V1.8.5_ADMIN9_R16_赌场全局开关_安装.sql"
+    "199_V1.8.5_CACHE87_宗门弟子随机事件链路补完_安装.sql",
+    "200_V1.8.6_BSECT04_人物关系与切磋_迁移前检查_只读.sql",
+    "201_V1.8.6_BSECT04_人物事件身份师徒与异步切磋_安装.sql",
+    "202_V1.8.6_ADMIN9_R17_宗门人物与切磋管理_安装.sql",
+    "203_V1.8.6_CACHE88_正式发布门禁.sql",
+    "204_V1.8.6_CACHE88_升级后检查_只读.sql"
   ],
   "features": [
-    "CASINO_GLOBAL_SWITCH",
-    "CASINO_SERVER_ENTRY_GUARD",
-    "CASINO_PLAYER_FIXED_DISABLED_NOTICE",
-    "CASINO_PAIGOW_GATE",
-    "CASINO_ADMIN9_R16_CONTROL",
-    "CASINO_ADMIN_AUDIT"
+    "BSECT04_SOCIAL_EVENTS",
+    "BSECT04_IMPORTANT_EVENT_QUEUE",
+    "BSECT04_DUAL_POSITION",
+    "BSECT04_MASTER_APPRENTICE",
+    "BSECT04_ASYNC_SPARRING",
+    "BSECT03_EVENT_UNIFIED_SYNC",
+    "CASINO_GLOBAL_SWITCH"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R16_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R17_手机直用版.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "CASINO_GATE01",
-  "databaseRelease": "V1.8.5 CACHE86 / SQL198",
+  "clientHotfix": "BSECT04_SOCIALSPAR1",
+  "databaseRelease": "V1.8.6 CACHE88 / SQL199-204",
   "notes": [
-    "SQL198默认保持赌场开启；需要暂停时在ADMIN9 R16的赌场控制页面切换为关闭",
-    "关闭赌场会阻止新下注、新开牌九房间和新入座，但不阻断既有结算、取消与离桌",
-    "玩家关闭提示固定为：服务器检查到当前游戏进行非法活动，已暂停此项功能。",
-    "SQL179-197为既有历史链，禁止重复执行；本版本只新增SQL198",
-    "本地GM禁止上传到公开GitHub Pages"
+    "当前生产未部署SQL199，因此CACHE88升级包累计包含SQL199-204",
+    "严格按SQL199→200→201→202→部署前端与GM→203→204执行",
+    "SQL179-198为已执行历史链，禁止重复执行",
+    "普通切磋没有真实战损；后代血脉和正式战争仍未开放"
   ],
-  "gmVersion": "ADMIN9 R16",
-  "handoffRevision": "R19-2026-08-05",
-  "nextSqlNumber": 199,
-  "phase3SqlStart": 199
+  "gmVersion": "ADMIN9 R17",
+  "handoffRevision": "R21-2026-08-05",
+  "nextSqlNumber": 205,
+  "phase3SqlStart": 205
 }
