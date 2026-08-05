@@ -1,7 +1,7 @@
 {
   "version": "1.8.4",
-  "releaseLabel": "九霄问道 V1.8.4 CACHE84",
-  "sourceBaseline": "V1.8.4 CACHE83",
+  "releaseLabel": "九霄问道 V1.8.4 CACHE85",
+  "sourceBaseline": "V1.8.4 CACHE84",
   "minimumDatabaseBaseline": "V1.8.4 CACHE84 / SQL193-197 / ADMIN9 R15",
   "deploymentStatus": "formal_release_package_pending_production_acceptance",
   "databaseMigrations": [
@@ -12,8 +12,8 @@
     197
   ],
   "databasePrecheck": "SQL193 弟子成长补完迁移前只读检查",
-  "databaseReleaseGate": "SQL196 CACHE84正式发布门禁",
-  "databaseFinalCheck": "SQL197 CACHE84升级后只读检查",
+  "databaseReleaseGate": "SQL196 CACHE85正式发布门禁",
+  "databaseFinalCheck": "SQL197 CACHE85升级后只读检查",
   "databaseSafeRollback": "EMERGENCY_DISABLE_BSECT03_非迁移编号.sql",
   "databaseRestore": "RESTORE_ENABLE_BSECT03_非迁移编号.sql",
   "modules": [
@@ -37,7 +37,8 @@
     "B-COMBAT01-SWORD-BASE-ATTACK1",
     "B-OPPORTUNITY04-TERMINAL-BASIS-FIX1",
     "B-CLIENT-PERF01-POLLING1",
-    "B-DEPLOY01-GITHUB-PAGES-PACKAGE-FIX1"
+    "B-DEPLOY01-GITHUB-PAGES-PACKAGE-FIX1",
+    "B-SECT03-UIFIX1-TABNAV-METRIC"
   ],
   "confirmedRules": [
     "宗门弟子普通修炼持续执行，客户端倒计时仅展示，数据库使用服务端时间权威结算",
@@ -49,24 +50,25 @@
     "元婴以下突破失败受天道保护并可自动突破；元婴及以上必须手动确认",
     "元婴及以上失败保留大境跌落、小境跌落、进度损失、伤势及0.3%身死道消分支",
     "点击宗门后隐藏角色信息和其他业务面板，保留底部导航并将可用空间全部交给宗门系统",
-    "后代血脉与正式宗门战争仍属于后续第三阶段，不在CACHE84开放",
-    "CACHE83及此前强化、天生剑心、最终境界奖励、宗门第二阶段和部署修复全部保留"
+    "后代血脉与正式宗门战争仍属于后续第三阶段，不在CACHE85开放",
+    "CACHE83及此前强化、天生剑心、最终境界奖励、宗门第二阶段和部署修复全部保留",
+    "CACHE85修复宗门页面合并遗漏的tabNav与metric渲染函数，并提升缓存纪元确保旧Service Worker不会继续返回错误脚本"
   ],
   "gmEntry": "九霄问道_ADMIN9_R15_手机直用版.html",
-  "clientRelease": "V1.8.4_CACHE84",
-  "developmentBaseline": "V1.8.4_AB66_ADMIN9_CACHE84",
-  "cacheEpoch": 84,
+  "clientRelease": "V1.8.4_CACHE85",
+  "developmentBaseline": "V1.8.4_AB67_ADMIN9_CACHE85",
+  "cacheEpoch": 85,
   "sqlRevision": "193-197",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "BSECT03_GROWTH1",
-  "clientBuild": "v1-8-4-cache84-bsect03-growth1",
+  "clientHotfix": "BSECT03_UIFIX1",
+  "clientBuild": "v1-8-4-cache85-bsect03-growth1-uifix1",
   "databaseRelease": "V1.8.4 CACHE84 / SQL193-197",
   "gmVersion": "ADMIN9 R15",
   "gmSqlRevision": "160-167 + 181 + 188 + 191-192 + 195",
-  "handoffRevision": "R17-2026-08-05",
-  "deploymentVerification": "先执行SQL193-195，再部署CACHE84前端和使用ADMIN9 R15，随后执行SQL196与SQL197。任意overall_ok=false立即停止。SQL179-192不得重复执行。",
-  "buildId": "v1-8-4-cache84-bsect03-growth1",
+  "handoffRevision": "R18-2026-08-05",
+  "deploymentVerification": "SQL193-197已完成时只部署CACHE85前端；不要重复执行SQL。首次打开后等待Service Worker更新或彻底刷新。",
+  "buildId": "v1-8-4-cache85-bsect03-growth1-uifix1",
   "nextSqlNumber": 198,
   "phase3SqlStart": 198
 }

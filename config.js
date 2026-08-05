@@ -1,12 +1,12 @@
-// 《九霄问道》V1.8.4 CACHE84 宗门弟子成长补完版配置
+// 《九霄问道》V1.8.4 CACHE85 宗门弟子成长补完版配置
 // Publishable key 可以安全放在浏览器客户端；绝对不要在这里填写 Secret key / service_role。
 window.GAME_CONFIG = Object.freeze({
   supabaseUrl: 'https://fyykkqkovccgmamsdeoq.supabase.co',
   supabasePublishableKey: 'sb_publishable_mfCyeW3gVVjQt3fxBV_z7g_mBArNMyw',
   gameName: '九霄问道',
   version: '1.8.4',
-  releaseLabel: 'V1.8.4 CACHE84',
-  buildId: 'v1-8-4-cache84-bsect03-growth1',
+  releaseLabel: 'V1.8.4 CACHE85',
+  buildId: 'v1-8-4-cache85-bsect03-growth1-uifix1',
   cacheEpoch: 84,
   worldCode: 'jiuxiao_world_1'
 });

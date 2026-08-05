@@ -190,6 +190,16 @@
     return `<article class="sect-v2-card-bsect01 ${capped ? 'is-breakthrough-ready-bsect03' : ''}"><div class="sect-v2-card-head-bsect02"><div><small>${esc(identityName(d.identity_code))}</small><h4>${esc(d.dao_name || d.name)}</h4>${d.dao_name ? `<small>本名：${esc(d.name)}</small>` : ''}</div><span class="sect-v2-status-bsect02 ${away ? 'away' : ''} ${capped ? 'ready-bsect03' : ''}">${esc(status)}</span></div><div class="sect-v2-tags-bsect01"><span>${esc(d.spirit_root_name)}</span><span>${esc(d.element_name)}属性</span><span>${esc(d.realm_name)}</span><span>${esc(d.personality)}</span></div><div class="sect-v2-statline-bsect01"><span>修为 ${fmt(d.cultivation)} / ${fmt(d.cultivation_cap)}</span><span>忠诚 ${fmt(d.loyalty)} · 心境 ${fmt(d.mood)}</span></div><div class="sect-v2-progress-bsect01"><i style="width:${progress.toFixed(2)}%"></i></div><small>当前速率约 ${fmt(d.rate_per_second)}/秒 · 伤势：${esc(injury)}${estimated ? ` · 预计圆满 ${esc(estimated)}` : ''}</small>${nextLabel ? `<div class="sect-v2-timing-bsect03">${nextLabel}</div>` : ''}<div class="sect-v2-actions-bsect01"><button class="secondary-btn" type="button" data-bsect-detail="${esc(d.id)}">成长详情</button>${taskButtons}${options.allowExpel && d.identity_code !== 'opening_first' ? `<button class="danger-btn" type="button" data-bsect-expel="${esc(d.id)}" data-name="${esc(d.dao_name || d.name)}">逐出</button>` : ''}</div></article>`;
   }
 
+  function tabNav() {
+    const tabs = [
+      ['overview','宗门总览'],['disciples','弟子与山门'],['world','世界宗门'],['market','宗门市集'],
+      ['adventures','高级历练'],['promotion','晋升与托管'],['honors','排行与荣誉']
+    ];
+    return `<nav class="sect-v2-tabs-bsect02" aria-label="宗门页面">${tabs.map(([code,label]) => `<button type="button" data-bsect-tab="${code}" class="${state.activeTab === code ? 'active' : ''}">${label}</button>`).join('')}</nav>`;
+  }
+
+  function metric(label, value, note = '') { return `<article class="sect-v2-metric-bsect02"><span>${esc(label)}</span><strong>${esc(value)}</strong>${note ? `<small>${esc(note)}</small>` : ''}</article>`; }
+
   function sectionTitle(title, note = '') { return `<div class="sect-v2-section-title-bsect01"><h4>${esc(title)}</h4><span>${esc(note)}</span></div>`; }
 
   function overviewHtml(data) {

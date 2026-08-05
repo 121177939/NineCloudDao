@@ -40,7 +40,7 @@
 #sectV2RootBSect01 .danger-btn{min-height:38px;padding:7px 11px;border:1px solid rgba(208,104,84,.45);border-radius:9px;background:rgba(126,46,35,.15);color:#d99b8b}
 @media(max-width:900px){.sect-v2-metrics-bsect02{grid-template-columns:repeat(2,minmax(0,1fr))}.sect-v2-form-bsect02{grid-template-columns:repeat(2,minmax(0,1fr))}.sect-v2-form-bsect02>button{grid-column:1/-1;justify-self:start}}
 @media(max-width:620px){.sect-v2-head-bsect01{display:grid;position:relative;top:auto}.sect-v2-resource-chips-bsect02{justify-content:flex-start}.sect-v2-tabs-bsect02{top:0}.sect-v2-actions-bsect01{justify-content:flex-start}.sect-v2-grid-bsect01,.sect-v2-metrics-bsect02{grid-template-columns:1fr}.sect-v2-modal-card-bsect01 dl{grid-template-columns:1fr 1fr}.sect-v2-market-list-bsect02 article{grid-template-columns:minmax(0,1fr) auto}.sect-v2-market-list-bsect02 article button,.sect-v2-market-list-bsect02 article i{grid-column:1/-1;justify-self:start}.sect-v2-form-bsect02,.sect-v2-adventure-form-bsect02{grid-template-columns:1fr}.sect-v2-adventure-form-bsect02 fieldset{grid-column:auto}.sect-v2-statline-bsect01{align-items:flex-start;flex-direction:column;gap:3px}}
-/* CACHE84 · B-SECT03 弟子成长、随机时间与突破 */
+/* CACHE85 · B-SECT03 弟子成长、随机时间与突破 */
 .sect-v2-card-bsect01.is-breakthrough-ready-bsect03{border-color:rgba(226,196,126,.62);box-shadow:inset 0 0 0 1px rgba(226,196,126,.12),0 0 24px rgba(200,168,98,.08)}
 .sect-v2-status-bsect02.ready-bsect03{color:#f1d690;border-color:rgba(226,196,126,.65);background:rgba(200,168,98,.12)}
 .sect-v2-timing-bsect03{display:flex;flex-wrap:wrap;gap:7px;color:var(--sect-gold2);font-size:.72rem;font-variant-numeric:tabular-nums}

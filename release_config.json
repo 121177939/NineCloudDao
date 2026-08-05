@@ -1,8 +1,8 @@
 {
   "version": "V1.8.4",
-  "releaseLabel": "V1.8.4 CACHE84",
-  "buildId": "v1-8-4-cache84-bsect03-growth1",
-  "cacheEpoch": 84,
+  "releaseLabel": "V1.8.4 CACHE85",
+  "buildId": "v1-8-4-cache85-bsect03-growth1-uifix1",
+  "cacheEpoch": 85,
   "minimumDatabaseBaseline": "V1.8.4 CACHE84 / SQL193-197 / ADMIN9 R15",
   "sqlRevision": "193-197",
   "precheckSql": "193_V1.8.4_BSECT03_弟子成长补完_迁移前检查_只读.sql",
@@ -10,8 +10,8 @@
     "194_V1.8.4_BSECT03_弟子成长随机时间与突破_安装.sql",
     "195_V1.8.4_BSECT03_ADMIN9_R15_宗门成长管理_安装.sql"
   ],
-  "releaseGateSql": "196_V1.8.4_CACHE84_BSECT03_正式发布门禁.sql",
-  "finalCheckSql": "197_V1.8.4_CACHE84_BSECT03_升级后检查_只读.sql",
+  "releaseGateSql": "196_V1.8.4_CACHE85_BSECT03_正式发布门禁.sql",
+  "finalCheckSql": "197_V1.8.4_CACHE85_BSECT03_升级后检查_只读.sql",
   "rollbackSql": "EMERGENCY_DISABLE_BSECT03_非迁移编号.sql",
   "restoreSql": "RESTORE_ENABLE_BSECT03_非迁移编号.sql",
   "features": [
@@ -38,9 +38,10 @@
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "BSECT03_GROWTH1",
+  "clientHotfix": "BSECT03_UIFIX1",
   "databaseRelease": "V1.8.4 CACHE84 / SQL193-197",
   "notes": [
+    "CACHE85为纯前端修复：补回宗门导航与指标卡渲染函数；不新增SQL，不得重跑SQL193-197",
     "SQL179-192为既有历史链，禁止重复执行；本次只追加SQL193-197",
     "普通修炼、随机闭关、分阶段疗伤、随机成长事件和弟子突破均由数据库权威结算，客户端倒计时不可决定结果",
     "元婴以下失败受天道保护；元婴及以上必须手动确认，并保留0.3%身死道消分支",
@@ -48,7 +49,7 @@
     "GitHub公开ZIP包含.github工作流、tools构建脚本和完整仓库根目录，禁止上传本地GM文件"
   ],
   "gmVersion": "ADMIN9 R15",
-  "handoffRevision": "R17-2026-08-05",
+  "handoffRevision": "R18-2026-08-05",
   "nextSqlNumber": 198,
   "phase3SqlStart": 198
 }
