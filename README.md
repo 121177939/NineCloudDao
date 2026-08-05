@@ -1,9 +1,13 @@
-# 九霄问道 V1.8.4 CACHE85 GitHub Pages完整仓库包
+# 九霄问道 V1.8.5 CACHE86 GitHub Pages完整仓库包
 
-构建：`v1-8-4-cache85-bsect03-growth1-uifix1`
+构建：`v1-8-5-cache86-casinogate1`
 
-本版为CACHE84宗门成长系统的纯前端修复版：补回宗门页面合并时遗漏的`tabNav()`与`metric()`渲染函数，并提升缓存纪元，确保旧Service Worker不会继续返回错误脚本。
+本版新增赌场全服开关。SQL198执行后，可使用本地ADMIN9 R16开启或关闭赌场。关闭时，游戏显示固定提示：
 
-数据库继续使用SQL193—197；已经执行成功时禁止重跑。GM继续使用ADMIN9 R15。
+> 服务器检查到当前游戏进行非法活动，已暂停此项功能。
 
-上传时将本ZIP解压后的内容直接覆盖GitHub仓库根目录。根目录应直接看到`index.html`、`.github`、`tools`和`.nojekyll`。
+## 部署
+
+解压后将全部内容覆盖到GitHub仓库根目录。根目录必须直接包含`index.html`、`.github`、`tools`和`.nojekyll`。
+
+先执行SQL198并确认`overall_ok=true`，再部署本前端。ADMIN9 R16仅本地使用，禁止上传到公开仓库。

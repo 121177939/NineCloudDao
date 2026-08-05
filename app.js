@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V1.8.4 CACHE85：沿用CACHE80低频同步，并接入B-SECT03弟子成长与突破闭环。
+  // V1.8.5 CACHE86：沿用CACHE80低频同步，并接入B-SECT03弟子成长与突破闭环。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,
@@ -140,6 +140,10 @@
     sectSystemSyncing: false,
     sectSystemFetchedAt: 0,
     marketSystem: null,
+    casinoFeature: null,
+    casinoFeatureFetchedAt: 0,
+    casinoFeatureSyncing: false,
+    casinoDisabledNoticeAt: 0,
     treasureShop: null,
     treasureShopSyncing: false,
     treasureShopFetchedAt: 0,
@@ -285,6 +289,7 @@
     if (raw.includes('SUPPORT_TECHNIQUE_SLOT_ONLY')) return '这门功法只能放入辅修槽。';
     if (raw.includes('INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法提升功法。';
     if (raw.includes('MARKET_DISABLED')) return '万运博弈楼尚未开放。';
+    if (raw.includes('CASINO_GLOBAL_DISABLED')) return '服务器检查到当前游戏进行非法活动，已暂停此项功能。';
     if (raw.includes('CASINO_INSUFFICIENT_SPIRIT_STONES')) return '统一灵石余额不足，无法落注。';
     if (raw.includes('CASINO_INSUFFICIENT_CULTIVATION')) return '当前小境界内可动用修为不足；境界保底修为不可下注。';
     if (raw.includes('CULTIVATION_STAKE_MINIMUM')) return '修为赌注通常最低五万点；若当前30%下注上限低于五万，则按该上限落注。';
@@ -815,6 +820,56 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
+  const CASINO_DISABLED_NOTICE_V198 = '服务器检查到当前游戏进行非法活动，已暂停此项功能。';
+
+  async function rpcGetCasinoFeatureSwitchV198() {
+    const result = await restFetch('rpc/get_casino_feature_switch_v198', { method: 'POST', body: {} });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+  function casinoFeatureEnabledV198(snapshot = state.casinoFeature) {
+    return snapshot?.enabled !== false && snapshot?.status !== 'disabled';
+  }
+
+  function casinoDisabledNoticeV198(snapshot = state.casinoFeature) {
+    return String(snapshot?.notice || CASINO_DISABLED_NOTICE_V198);
+  }
+
+  function notifyCasinoDisabledV198(snapshot = state.casinoFeature, force = false) {
+    const now = Date.now();
+    if (!force && now - Number(state.casinoDisabledNoticeAt || 0) < 2200) return;
+    state.casinoDisabledNoticeAt = now;
+    showToast(casinoDisabledNoticeV198(snapshot), 'error');
+  }
+
+  async function refreshCasinoFeatureSwitchV198({ force = false, silent = true } = {}) {
+    if (!state.session || !state.character) return state.casinoFeature;
+    if (!force && state.casinoFeature && Date.now() - Number(state.casinoFeatureFetchedAt || 0) < 8000) return state.casinoFeature;
+    if (state.casinoFeatureSyncing) return state.casinoFeature;
+    state.casinoFeatureSyncing = true;
+    try {
+      const snapshot = await rpcGetCasinoFeatureSwitchV198();
+      state.casinoFeature = snapshot || { enabled: true, status: 'active' };
+      state.casinoFeatureFetchedAt = Date.now();
+      return state.casinoFeature;
+    } catch (error) {
+      // SQL198未完成或临时断网时，不把赌场误判为关闭；实际下注仍由数据库守卫。
+      if (!silent) showToast(translateError(error), 'error');
+      return state.casinoFeature || { enabled: true, status: 'unknown' };
+    } finally {
+      state.casinoFeatureSyncing = false;
+    }
+  }
+
+  async function requireCasinoEnabledV198({ force = false, notify = true } = {}) {
+    const snapshot = await refreshCasinoFeatureSwitchV198({ force, silent: true });
+    if (!casinoFeatureEnabledV198(snapshot)) {
+      if (notify) notifyCasinoDisabledV198(snapshot, true);
+      return false;
+    }
+    return true;
+  }
+
   async function rpcGetCasinoPlayerHouseStatusV1() {
     const result = await restFetch('rpc/get_casino_player_house_status_v1', { method: 'POST', body: {} });
     return Array.isArray(result) ? result[0] || null : result;
@@ -1105,6 +1160,16 @@
     captureCasinoUiDrafts();
     state.marketSyncing = true;
     try {
+      const casinoFeature = await refreshCasinoFeatureSwitchV198({ force: true, silent: true });
+      if (!casinoFeatureEnabledV198(casinoFeature)) {
+        state.marketSystemFetchedAt = Date.now();
+        if (state.marketView === 'casino') {
+          state.marketView = 'home';
+          updateBazaarPanel();
+          notifyCasinoDisabledV198(casinoFeature);
+        }
+        return state.marketSystem;
+      }
       const [marketSystem, playerHouse] = await Promise.all([
         rpcGetMarketV1(),
         rpcGetCasinoPlayerHouseStatusV1().catch(error => ({
@@ -5426,7 +5491,11 @@
     document.querySelectorAll('[data-bazaar-target]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
-      button.addEventListener('click', () => setBazaarView(button.dataset.bazaarTarget || 'home', true));
+      button.addEventListener('click', async () => {
+        const target = button.dataset.bazaarTarget || 'home';
+        if (target === 'casino' && !(await requireCasinoEnabledV198({ force: true, notify: true }))) return;
+        setBazaarView(target, true);
+      });
     });
     document.querySelectorAll('[data-bazaar-back]').forEach(button => {
       if (button.dataset.bound === '1') return;
@@ -7187,7 +7256,8 @@
     document.querySelectorAll('[data-paigow-open]').forEach(button => {
       if (button.dataset.bound === '1') return;
       button.dataset.bound = '1';
-      button.addEventListener('click', () => {
+      button.addEventListener('click', async () => {
+        if (!(await requireCasinoEnabledV198({ force: true, notify: true }))) return;
         const moduleApi = window.JiuxiaoPaiGowB01;
         if (!moduleApi || typeof moduleApi.open !== 'function') {
           showToast('九霄灵牌模块尚未加载，请刷新页面后重试。', 'error');
@@ -7341,7 +7411,7 @@
 
 
 
-  // V1.8.4 CACHE85：异灵根与持剑天生剑心均使用境界基础道攻加成。
+  // V1.8.5 CACHE86：异灵根与持剑天生剑心均使用境界基础道攻加成。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
