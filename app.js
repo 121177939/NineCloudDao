@@ -27,6 +27,29 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
+  // V1.8.3 CACHE80 PERF1：低频云端同步、后台暂停、按页面刷新。
+  const PERF_E80 = Object.freeze({
+    heartbeatMs: 30 * 1000,
+    cultivationSyncMs: 60 * 1000,
+    opportunityPollMs: 60 * 1000,
+    marketSyncMs: 30 * 1000,
+    worldEventsSyncMs: 60 * 1000,
+    divineNoticeSyncMs: 60 * 1000,
+    heavenBalanceSyncMs: 5 * 60 * 1000,
+    onDemandStaleMs: 60 * 1000,
+    rankingStaleMs: 5 * 60 * 1000,
+    resumeCooldownMs: 15 * 1000
+  });
+
+  function networkVisibleE80() {
+    return document.visibilityState === 'visible';
+  }
+
+  function staleForE80(timestamp, maxAge = PERF_E80.onDemandStaleMs) {
+    const value = Number(timestamp || 0);
+    return !value || Date.now() - value >= maxAge;
+  }
+
   const app = document.getElementById('app');
   const accountArea = document.getElementById('accountArea');
   const toast = document.getElementById('toast');
@@ -66,6 +89,7 @@
     cultivationTicker: null,
     cultivationSyncTimer: null,
     cultivationSyncing: false,
+    cultivationSyncedAt: 0,
     liveCultivationBase: 0,
     liveCultivationStartedAt: 0,
     breakthroughStatus: null,
@@ -75,20 +99,24 @@
     opportunityPollTimer: null,
     opportunityCountdownTimer: null,
     opportunitySyncing: false,
+    opportunityFetchedAt: 0,
     opportunityOfflineSummaryOpen: false,
     lastOpportunityNoticeId: null,
     caveSystem: null,
     caveCountdownTimer: null,
     caveSyncTimer: null,
     caveSyncing: false,
+    caveSystemFetchedAt: 0,
     techniqueSystem: null,
     exclusiveTechniqueSystem: null,
     techniqueLibrary: null,
     heavenBalance: null,
     heavenBalanceSyncTimer: null,
     heavenBalanceSyncing: false,
+    heavenBalanceFetchedAt: 0,
     techniqueSyncTimer: null,
     techniqueSyncing: false,
+    techniqueSystemFetchedAt: 0,
     techniqueUpgradeQueue: [],
     techniqueUpgradeProcessing: false,
     destinyRanking: null,
@@ -148,6 +176,7 @@
     spiritDiceBoundaryHistoryLimit: 1,
     marketSyncing: false,
     marketSyncTimer: null,
+    marketSystemFetchedAt: 0,
     worldEvents: null,
     worldEventsSyncing: false,
     worldEventsSyncTimer: null,
@@ -162,6 +191,8 @@
     gameSessionActive: false,
     gameSessionHeartbeatTimer: null,
     sessionReplacementHandled: false,
+    resumeSyncingE80: false,
+    lastResumeSyncAtE80: 0,
     activeMobileTab: 'cultivation'
   };
 
@@ -433,7 +464,6 @@
     if (state.spiritDiceBoundaryRefreshTimer) clearTimeout(state.spiritDiceBoundaryRefreshTimer);
     if (state.worldEventsSyncTimer) clearInterval(state.worldEventsSyncTimer);
     if (state.divineNoticeTimer) clearInterval(state.divineNoticeTimer);
-    if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.cultivationTicker = null;
     state.cultivationSyncTimer = null;
     state.opportunityPollTimer = null;
@@ -454,7 +484,6 @@
     state.spiritDiceBoundaryRefreshTimer = null;
     state.worldEventsSyncTimer = null;
     state.divineNoticeTimer = null;
-    state.gameSessionHeartbeatTimer = null;
     state.cultivationSyncing = false;
     state.opportunitySyncing = false;
     state.opportunityOfflineSummaryOpen = false;
@@ -483,14 +512,18 @@
     state.breakthroughStatus = null;
     state.opportunityStatus = null;
     state.opportunitySyncing = false;
+    state.opportunityFetchedAt = 0;
     state.opportunityOfflineSummaryOpen = false;
     document.getElementById('opportunityOfflineSummaryBackdrop')?.remove();
     state.lastOpportunityNoticeId = null;
     state.caveSystem = null;
+    state.caveSystemFetchedAt = 0;
     state.techniqueSystem = null;
+    state.techniqueSystemFetchedAt = 0;
     state.exclusiveTechniqueSystem = null;
     state.techniqueLibrary = null;
     state.heavenBalance = null;
+    state.heavenBalanceFetchedAt = 0;
     state.destinyRanking = null;
     state.destinyRankingFetchedAt = 0;
     state.rankingBoard = 'cultivation';
@@ -511,9 +544,14 @@
     state.timeStatusStartedAt = 0;
     state.timeSyncing = false;
     state.deathHandled = false;
+    if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
+    state.gameSessionHeartbeatTimer = null;
     state.gameSessionActive = false;
+    state.resumeSyncingE80 = false;
+    state.lastResumeSyncAtE80 = 0;
     state.activeMobileTab = 'cultivation';
     state.marketSystem = null;
+    state.marketSystemFetchedAt = 0;
     state.marketView = 'home';
     state.casinoView = 'lobby';
     state.casinoHouseMode = 'system';
@@ -732,7 +770,7 @@
   function startGameSessionHeartbeat() {
     if (state.gameSessionHeartbeatTimer) clearInterval(state.gameSessionHeartbeatTimer);
     state.gameSessionHeartbeatTimer = setInterval(async () => {
-      if (!state.session?.access_token || !state.gameSessionActive) return;
+      if (!networkVisibleE80() || !state.session?.access_token || !state.gameSessionActive) return;
       try {
         const status = await rpcHeartbeatGameSession();
         if (status?.status !== 'active') handleGameSessionReplaced();
@@ -742,7 +780,7 @@
           handleGameSessionReplaced();
         }
       }
-    }, 5000);
+    }, PERF_E80.heartbeatMs);
   }
 
   async function rpcGetMarketV1() {
@@ -1074,6 +1112,7 @@
         }))
       ]);
       state.marketSystem = { ...(marketSystem || {}), player_house: playerHouse || { mode: 'system', dealer_name: '荷老' } };
+      state.marketSystemFetchedAt = Date.now();
       if (Number.isFinite(Number(state.marketSystem?.character?.spirit_stones))) {
         setLocalSpiritStoneBalance(Number(state.marketSystem.character.spirit_stones));
       }
@@ -2403,6 +2442,7 @@
     state.heavenBalanceSyncing = true;
     try {
       state.heavenBalance = await rpcGetHeavenBalanceV1();
+      state.heavenBalanceFetchedAt = Date.now();
       updateHeavenBalanceEntry();
       const modalBody = document.getElementById('heavenBalanceModalBody');
       if (modalBody) modalBody.innerHTML = heavenBalanceModalHtml(state.heavenBalance);
@@ -2859,6 +2899,7 @@
     try {
       const settlement = await rpcSettleOpportunityV4();
       state.opportunityStatus = settlement?.opportunity || state.opportunityStatus;
+      state.opportunityFetchedAt = Date.now();
       if (settlement?.cultivation) {
         state.cultivationStatus = settlement.cultivation;
         state.liveCultivationBase = Number(settlement.cultivation.cultivation_total || state.liveCultivationBase || 0);
@@ -2911,6 +2952,7 @@
       const system = await rpcGetTechniqueSystemV2();
       if (!system || system.status !== 'ok') return system;
       state.techniqueSystem = system;
+      state.techniqueSystemFetchedAt = Date.now();
       if (state.details) state.details.techniqueSystem = system;
       const root = document.getElementById('techniqueV2Root');
       if (root && state.details) {
@@ -2976,6 +3018,7 @@
       ]);
       if (!system || system.status !== 'ok') return system;
       state.caveSystem = system;
+      state.caveSystemFetchedAt = Date.now();
       state.techniqueLibrary = techniqueLibrary || { status: 'unavailable', books: [] };
       if (Number.isFinite(Number(system.spirit_stones))) setLocalSpiritStoneBalance(Number(system.spirit_stones));
       if (state.details) {
@@ -7290,7 +7333,7 @@
 
 
 
-  // V1.8.3 CACHE78 ESSENCE10-UIFIX1：异灵根基础道攻规则不变；精简元神加成栏说明。
+  // V1.8.3 CACHE80 PERF1：沿用CACHE78异灵根基础道攻与元神短文案。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
@@ -7915,6 +7958,40 @@
     startCultivationLoop();
   }
 
+
+  async function refreshActiveTabDataE80(tab = state.activeMobileTab, force = false) {
+    if (!networkVisibleE80() || !state.character) return;
+    const tasks = [];
+    switch (tab) {
+      case 'cultivation':
+        if (force || staleForE80(state.heavenBalanceFetchedAt, PERF_E80.heavenBalanceSyncMs)) tasks.push(refreshHeavenBalance(true));
+        break;
+      case 'primordial':
+        if (force || !state.battleSnapshotV1) tasks.push(refreshMyBattleSnapshotV1(Boolean(force)));
+        break;
+      case 'techniques':
+        if (force || staleForE80(state.techniqueSystemFetchedAt)) tasks.push(refreshTechniqueSystem(false, true));
+        break;
+      case 'cave':
+        if (force || staleForE80(state.caveSystemFetchedAt)) tasks.push(refreshCaveSystem(true));
+        break;
+      case 'market':
+        if (force || staleForE80(state.marketSystemFetchedAt)) tasks.push(refreshMarketSystem(true));
+        if (force || staleForE80(state.worldEventsFetchedAt)) tasks.push(refreshWorldEvents(true));
+        if (force || staleForE80(state.destinyRankingFetchedAt, PERF_E80.rankingStaleMs)) tasks.push(refreshDestinyRanking(false, true));
+        break;
+      case 'social':
+        if (force || staleForE80(state.npcSocialFetchedAt)) tasks.push(refreshNpcSocial(true));
+        break;
+      case 'sect':
+        if (force || staleForE80(state.sectSystemFetchedAt)) tasks.push(refreshSectSystem(true));
+        break;
+      default:
+        break;
+    }
+    if (tasks.length) await Promise.allSettled(tasks);
+  }
+
   function bindMobileDashboardNav() {
     const nav = document.querySelector('.mobile-bottom-nav');
     if (!nav) return;
@@ -7968,9 +8045,9 @@
         const repeatedMarketTap = target === 'market' && state.activeMobileTab === 'market';
         if (repeatedMarketTap && state.marketView !== 'home') setBazaarView('home', false);
         apply(target, true);
-        if (target === 'market' && Date.now() - Number(state.worldEventsFetchedAt || 0) > 15000) refreshWorldEvents(true);
-        if (target === 'social' && Date.now() - Number(state.npcSocialFetchedAt || 0) > 30000) refreshNpcSocial(true);
-        if (target === 'sect' && Date.now() - Number(state.sectSystemFetchedAt || 0) > 30000) refreshSectSystem(true);
+        refreshActiveTabDataE80(target, false).catch(error => {
+          console.debug('[九霄问道] 页面按需刷新暂不可用：', error?.message || error);
+        });
       });
     });
 
@@ -8037,6 +8114,7 @@
       const result = await rpcClaimCultivation();
       if (!result) return true;
       state.cultivationStatus = result;
+      state.cultivationSyncedAt = Date.now();
       state.liveCultivationBase = Number(result.cultivation_total || 0);
       state.liveCultivationStartedAt = Date.now();
       state.character.cultivation = result.cultivation_total;
@@ -8074,29 +8152,49 @@
 
   function startCultivationLoop() {
     stopCultivationLoop();
+
+    // 纯本地显示仍保持流畅；只有云端读写降频。
     state.cultivationTicker = setInterval(updateLiveCultivationDisplay, 250);
-    state.cultivationSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) syncCultivation(true); }, 15000);
-    state.opportunityPollTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshOpportunity(); }, 10000);
     state.opportunityCountdownTimer = setInterval(updateOpportunityCountdown, 1000);
     state.caveCountdownTimer = setInterval(updateCaveCountdown, 1000);
-    state.caveSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshCaveSystem(true); }, 60000);
-    state.techniqueSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshTechniqueSystem(false); }, 60000);
-    state.heavenBalanceSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshHeavenBalance(true); }, 60000);
-    state.npcSocialSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshNpcSocial(true); }, 60000);
-    state.sectSystemSyncTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) refreshSectSystem(true); }, 60000);
+
+    state.cultivationSyncTimer = setInterval(() => {
+      if (!networkVisibleE80() || casinoPublicTableActiveV176()) return;
+      syncCultivation(true);
+    }, PERF_E80.cultivationSyncMs);
+
+    state.opportunityPollTimer = setInterval(() => {
+      if (!networkVisibleE80() || casinoPublicTableActiveV176()) return;
+      refreshOpportunity();
+    }, PERF_E80.opportunityPollMs);
+
+    // 洞府、功法、红尘、宗门不再全局轮询；进入对应页面时按需刷新。
+    state.heavenBalanceSyncTimer = setInterval(() => {
+      if (!networkVisibleE80() || casinoPublicTableActiveV176()) return;
+      refreshHeavenBalance(true);
+    }, PERF_E80.heavenBalanceSyncMs);
+
     state.marketSyncTimer = setInterval(() => {
-      if (document.hidden || state.marketView !== 'casino') return;
+      if (!networkVisibleE80() || state.activeMobileTab !== 'market' || state.marketView !== 'casino') return;
       const publicGame = state.casinoView === 'house' ? (state.casinoDrafts?.house?.game || 'spirit_dice') : '';
-      // 灵骰/鱼虾各自只在阶段边界同步；避免通用赌场10秒整页同步与公共桌同步叠加。
       if (publicGame === 'spirit_dice' || publicGame === 'fish_shrimp') return;
       refreshMarketSystem(true);
-    }, 10000);
-    state.worldEventsSyncTimer = setInterval(() => { if (!document.hidden && !casinoPublicTableActiveV176()) refreshWorldEvents(true); }, 10000);
-    state.divineNoticeTimer = setInterval(() => { if (!casinoPublicTableActiveV176()) checkDivineNotice(true); }, 10000);
+    }, PERF_E80.marketSyncMs);
+
+    state.worldEventsSyncTimer = setInterval(() => {
+      if (!networkVisibleE80() || state.activeMobileTab !== 'market' || casinoPublicTableActiveV176()) return;
+      refreshWorldEvents(true);
+    }, PERF_E80.worldEventsSyncMs);
+
+    state.divineNoticeTimer = setInterval(() => {
+      if (!networkVisibleE80() || casinoPublicTableActiveV176()) return;
+      checkDivineNotice(true);
+    }, PERF_E80.divineNoticeSyncMs);
+
     updateLiveCultivationDisplay();
     updateOpportunityCountdown();
     updateCaveCountdown();
-    setTimeout(() => checkDivineNotice(true), 180);
+    if (networkVisibleE80()) setTimeout(() => checkDivineNotice(true), 500);
   }
 
   function historyHtml(rows) {
@@ -8325,41 +8423,38 @@
     }
     importSessionFromHash();
     loadStoredSession();
-    document.addEventListener('visibilitychange', async () => {
-      if (document.visibilityState !== 'visible') return;
-      if (state.gameSessionActive) {
-        try {
-          const status = await rpcHeartbeatGameSession();
-          if (status?.status !== 'active') return handleGameSessionReplaced();
-        } catch (error) {
-          if (String(error?.message || '').includes('GAME_SESSION')) return handleGameSessionReplaced();
+    const resumeFromBackgroundE80 = async () => {
+      if (!networkVisibleE80() || state.resumeSyncingE80) return;
+      const now = Date.now();
+      if (now - Number(state.lastResumeSyncAtE80 || 0) < PERF_E80.resumeCooldownMs) return;
+      state.resumeSyncingE80 = true;
+      state.lastResumeSyncAtE80 = now;
+      try {
+        if (state.gameSessionActive) {
+          try {
+            const status = await rpcHeartbeatGameSession();
+            if (status?.status !== 'active') return handleGameSessionReplaced();
+          } catch (error) {
+            if (String(error?.message || '').includes('GAME_SESSION')) return handleGameSessionReplaced();
+          }
         }
-      }
-      if (state.character) {
-        const alive = await syncCultivation(true);
-        if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
-          checkDivineNotice(true);
+        if (state.character) {
+          const alive = await syncCultivation(true);
+          if (alive !== false && state.character?.status !== 'dead') {
+            await Promise.allSettled([refreshOpportunity(), refreshBreakthroughStatus()]);
+            await refreshActiveTabDataE80(state.activeMobileTab || 'cultivation', true);
+            checkDivineNotice(true);
+          }
         }
+      } finally {
+        state.resumeSyncingE80 = false;
       }
+    };
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') resumeFromBackgroundE80();
     });
-    window.addEventListener('focus', async () => {
-      if (state.gameSessionActive) {
-        try {
-          const status = await rpcHeartbeatGameSession();
-          if (status?.status !== 'active') return handleGameSessionReplaced();
-        } catch (error) {
-          if (String(error?.message || '').includes('GAME_SESSION')) return handleGameSessionReplaced();
-        }
-      }
-      if (state.character) {
-        const alive = await syncCultivation(true);
-        if (alive !== false && state.character?.status !== 'dead') {
-          await Promise.all([refreshOpportunity(), refreshBreakthroughStatus(), refreshCaveSystem(true), refreshTechniqueSystem(false), refreshNpcSocial(true), refreshSectSystem(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
-          checkDivineNotice(true);
-        }
-      }
-    });
+    window.addEventListener('focus', resumeFromBackgroundE80, { passive: true });
     if (state.session?.access_token) await enterGame();
     else renderAuth();
   }

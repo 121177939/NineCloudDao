@@ -2,16 +2,18 @@
   'use strict';
 
   const config = window.GAME_CONFIG || {};
-  const BUILD_ID = String(config.buildId || 'v1-8-3-cache78-decompose10-uifix1');
+  const BUILD_ID = String(config.buildId || 'v1-8-3-cache80-perf1');
   const CACHE_PREFIX = 'nine-cloud-dao-';
   const BUILD_STORAGE_KEY = 'nine_cloud_dao_client_build_v1';
   const EPOCH_STORAGE_KEY = 'nine_cloud_dao_cache_epoch_v1';
   const RELOAD_GUARD_KEY = 'nine_cloud_dao_sw_reload_guard_v1';
-  const CHECK_INTERVAL_MS = 60 * 1000;
+  const CHECK_INTERVAL_MS = 5 * 60 * 1000;
+  const FOCUS_CHECK_GAP_MS = 30 * 1000;
   const SUPABASE_URL = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const API_KEY = String(config.supabasePublishableKey || '');
   let refreshInProgress = false;
   let releaseCheckInProgress = false;
+  let lastReleaseCheckAt = 0;
 
   async function clearNineCloudCaches() {
     if (!('caches' in window)) return;
@@ -48,9 +50,12 @@
     }
   }
 
-  async function checkServerRelease() {
+  async function checkServerRelease(force = false) {
+    const now = Date.now();
+    if (!force && now - lastReleaseCheckAt < FOCUS_CHECK_GAP_MS) return;
     if (releaseCheckInProgress || !SUPABASE_URL || !API_KEY) return;
     releaseCheckInProgress = true;
+    lastReleaseCheckAt = now;
     try {
       const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_jiuxiao_app_release_control_v1`, {
         method: 'POST',
@@ -114,7 +119,7 @@
       });
 
       await registration.update();
-      window.setInterval(() => registration.update().catch(() => undefined), 5 * 60 * 1000);
+      window.setInterval(() => registration.update().catch(() => undefined), 15 * 60 * 1000);
     } catch (error) {
       console.warn('[九霄问道] Service Worker 注册失败：', error);
     }
@@ -128,7 +133,7 @@
     }
 
     await registerServiceWorker();
-    await checkServerRelease();
+    await checkServerRelease(true);
 
     window.setInterval(checkServerRelease, CHECK_INTERVAL_MS);
     document.addEventListener('visibilitychange', () => {

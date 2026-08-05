@@ -1,19 +1,20 @@
 {
   "version": "V1.8.3",
-  "releaseLabel": "V1.8.3 CACHE78",
-  "buildId": "v1-8-3-cache78-decompose10-uifix1",
-  "cacheEpoch": 78,
-  "minimumDatabaseBaseline": "V1.8.3 CACHE77 / SQL164 FIX1-166 + ADMIN9 R11 FIX4 / SQL163",
-  "sqlRevision": "143-169",
+  "releaseLabel": "V1.8.3 CACHE80",
+  "buildId": "v1-8-3-cache80-perf1",
+  "cacheEpoch": 80,
+  "minimumDatabaseBaseline": "V1.8.3 CACHE78 / SQL164 FIX1-169 + ADMIN9 R11 FIX5",
+  "sqlRevision": "143-169 + 176-178",
   "migrationSql": [
     "143_V1.8.0_装备分解与强化系统_安装.sql",
     "150_V1.8.1_秘境机缘同步奖励与全局倍率_安装.sql",
     "157_V1.8.2_剑心异灵根戒指效果增幅_安装.sql",
     "164_V1.8.3_异灵根境界基础道攻8百分比_安装_FIX1.sql",
-    "167_V1.8.3_装备分解器源十倍与GM动态配置_安装.sql"
+    "167_V1.8.3_装备分解器源十倍与GM动态配置_安装_FIX1.sql",
+    "176_V1.8.3_在线负载优化与牌九Cron停用.sql"
   ],
-  "releaseGateSql": "168_V1.8.3_CACHE78_正式发布门禁.sql",
-  "finalCheckSql": "169_V1.8.3_CACHE78_升级后检查_只读.sql",
+  "releaseGateSql": "177_V1.8.3_CACHE80_正式发布门禁.sql",
+  "finalCheckSql": "178_V1.8.3_CACHE80_升级后检查_只读.sql",
   "rollbackSql": "149_V1.8.0_CACHE60_强化功能安全停用.sql",
   "features": [
     "UNIVERSAL_EQUIPMENT_ESSENCE",
@@ -24,24 +25,29 @@
     "EQUIPMENT_ENHANCEMENT_0_TO_10",
     "ENHANCEMENT_FAILURE_DESTROYS_ITEM_AND_SOCKETS",
     "MUTATION_REALM_BASE_ATTACK_8_PERCENT",
-    "YUANSHEN_BONUS_COPY_UIFIX1"
+    "YUANSHEN_BONUS_COPY_UIFIX1",
+    "CLIENT_POLLING_REDUCTION_PERF1",
+    "BACKGROUND_NETWORK_PAUSE_PERF1",
+    "ON_DEMAND_SYSTEM_REFRESH_PERF1",
+    "PAIGOW_CRON_DISABLED_PERF1"
   ],
   "gmEntry": "九霄问道_ADMIN9_R11_FIX5_手机直用版.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "DECOMPOSE10-UIFIX1",
-  "databaseRelease": "V1.8.3 CACHE78",
+  "clientHotfix": "PERF1",
+  "databaseRelease": "V1.8.3 CACHE80",
   "notes": [
-    "黄玄地天仙默认分解器源改为10/20/40/80/160",
-    "分解产出实时读取equipment_grade_config_bequipment01.decompose_essence并可由GM调整",
-    "强化一次仍消耗黄1玄2地4天8仙16，不随分解产出变化",
-    "默认分解一件装备约可提供10次同品级强化尝试",
-    "强化概率、灵石消耗、强化属性、孔位和失败毁装规则不变",
-    "风冰雷异灵根仍只增加境界基础道攻8%",
-    "元神加成卡片与戒指说明已压缩为手机端短文案"
+    "以生产CACHE78为基线；不采用未部署的CACHE79赌场移除草案",
+    "牌九每秒Cron保持停用，但牌九与鱼虾玩法及历史数据仍保留",
+    "会话心跳从5秒改为30秒，页面隐藏时暂停",
+    "修为与机缘云端结算统一降为60秒；本地数字与倒计时仍实时显示",
+    "世界事件与天谕从10秒改为60秒，天道均衡改为5分钟",
+    "洞府、功法、红尘、宗门不再后台轮询，进入对应页面时按需刷新",
+    "从后台返回时只同步当前页面，且15秒内自动去重",
+    "装备分解、强化、异灵根与秘境奖励规则保持CACHE78不变"
   ],
   "gmVersion": "ADMIN9 R11 FIX5",
-  "handoffRevision": "R11-2026-08-04",
+  "handoffRevision": "R12-2026-08-05",
   "gmSqlRevision": "160-167"
 }
