@@ -4,9 +4,9 @@ import hashlib, json, shutil, sys
 
 root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve()
 out=Path(sys.argv[2] if len(sys.argv)>2 else '.pages-site').resolve()
-build_id='v1-8-3-cache80-perf1'
-label='V1.8.3 CACHE80'
-required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json','b-paigow01.js','b-paigow01.css','b-paigow01.html','b-equipment01.js','b-equipment01.css','b-secret-realm01.js','b-secret-realm01.css','paigow-realtime.js','paigow-app.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js','assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']
+build_id='v1-8-3-cache81-bsect01-fix1'
+label='V1.8.3 CACHE81'
+required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json','b-paigow01.js','b-paigow01.css','b-paigow01.html','b-equipment01.js','b-equipment01.css','b-secret-realm01.js','b-secret-realm01.css','b-sect-v2.js','b-sect-v2.css','paigow-realtime.js','paigow-app.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js','assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']
 for rel in required:
     if not (root/rel).is_file(): raise SystemExit(f'MISSING:{rel}')
 for rel in ['gm-admin.html','gm-admin.css','gm-admin.js','gm-operations.html','GM入口说明.txt']:
@@ -15,15 +15,18 @@ def text(rel): return (root/rel).read_text('utf-8')
 app=text('app.js'); sw=text('sw.js'); baseline=json.loads(text('CURRENT_BASELINE.json')); release=json.loads(text('release_config.json'))
 checks={
  'version':text('VERSION.txt').splitlines()[0].strip()==label and build_id in text('VERSION.txt'),
- 'config':all(t in text('config.js') for t in [f"releaseLabel: '{label}'",f"buildId: '{build_id}'",'cacheEpoch: 80']),
- 'baseline':baseline.get('sourceBaseline')=='V1.8.3 CACHE78' and baseline.get('clientHotfix')=='PERF1' and baseline.get('gmVersion')=='ADMIN9 R11 FIX5',
+ 'config':all(t in text('config.js') for t in [f"releaseLabel: '{label}'",f"buildId: '{build_id}'",'cacheEpoch: 81']),
+ 'baseline':baseline.get('sourceBaseline')=='V1.8.3 CACHE80' and baseline.get('clientHotfix')=='BSECT01_FIX1' and baseline.get('gmVersion')=='ADMIN9 R12',
  'heartbeat': 'PERF_E80.heartbeatMs' in app and 'heartbeatMs: 30 * 1000' in app,
  'polling': all(t in app for t in ['cultivationSyncMs: 60 * 1000','opportunityPollMs: 60 * 1000','worldEventsSyncMs: 60 * 1000','divineNoticeSyncMs: 60 * 1000']),
  'on-demand': all(t in app for t in ['refreshActiveTabDataE80','洞府、功法、红尘、宗门不再全局轮询','resumeCooldownMs: 15 * 1000']),
  'hidden-pause': 'networkVisibleE80()' in app and "document.visibilityState === 'visible'" in app,
  'games-preserved': all((root/x).is_file() for x in ['b-paigow01.js','b-paigow01.html','paigow-app.js']) and 'rpcGetFishShrimpStateV0148' in app,
- 'cache': f"nine-cloud-dao-v1.8.3-cache80-perf1" in sw and build_id in sw,
+ 'cache': f"nine-cloud-dao-v1.8.3-cache81-bsect01-fix1" in sw and build_id in sw,
  'no-secrets':'sb_secret_' not in '\n'.join(text(x) for x in ['app.js','config.js','index.html']).lower(),
+ 'sect': all((root/x).is_file() for x in ['b-sect-v2.js','b-sect-v2.css']) and 'B-SECT01-FOUNDATION1' in text('b-sect-v2.js') and 'sectV2RootBSect01' in app,
+ 'enhancement': all(t in text('b-equipment01.js') for t in ['enhancementSuccessNotice','openEnhancement(fresh','showEnhancementFailure']),
+ 'sword-heart': all(t in app for t in ['sword_heart_base_stat_bonus','剑心持剑基攻']),
  'deployment':release.get('deploymentAllowed') is True and release.get('gmPublicDeployment') is False
 }
 failed=[k for k,v in checks.items() if not v]

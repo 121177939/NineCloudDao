@@ -603,8 +603,24 @@
     return item.slot_code === 'ring' ? Math.round(raw * 10000) / 10000 : Math.round(raw);
   }
 
-  function openEnhancement(item) {
-    const targetLevel = Number(item.enhancement_level || 0) + 1;
+  function enhancementSuccessNotice(item, feedback = null) {
+    if (!feedback) return '';
+    const gainedSocket = Boolean(feedback.gainedSocket);
+    return `<div class="equipment-enhance-success-bequipment01" role="status"><strong>强化成功 · 已提升至 +${Number(item.enhancement_level || feedback.level || 0)}</strong><p>${esc(item.short_name || item.full_name)}已承受天命${gainedSocket ? '，并新增一个孔位' : ''}。当前数据与下一次强化预览已刷新，可继续强化。</p></div>`;
+  }
+
+  function openMaxEnhancement(item, feedback = null) {
+    const currentSockets = Number(item.total_socket_capacity || item.socket_capacity || 0);
+    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01 equipment-enhance-modal-bequipment01" role="dialog" aria-modal="true"><button class="modal-close-button" data-eq-close>×</button><header style="--grade:${esc(color(item))}">${itemIcon(item)}<div><span>${esc(item.realm_name)} · ${esc(item.grade_name)} · ${esc(slotMeta[item.slot_code][1])}</span><h3>${esc(itemEnhancementName(item))} · 已满级</h3></div></header>${enhancementSuccessNotice(item, feedback)}<div class="equipment-enhance-levels-bequipment01"><div><small>当前等级</small><strong>+${Number(item.enhancement_level || 10)}</strong><span>${esc(formatMainStat(item, item.main_stat_value))}</span><em>${currentSockets}个孔位</em></div><i>✓</i><div class="next"><small>强化状态</small><strong>已满级</strong><span>该装备已达到最高强化等级</span><em>无需继续消耗器源或灵石</em></div></div><div class="equipment-modal-actions-bequipment01 equipment-enhance-actions-bequipment01"><button class="primary-btn" type="button" disabled>已强化至最高等级 +10</button><button class="ghost-btn" data-eq-close-alt>返回背包</button></div></section></div>`;
+    const root = modalHost();
+    bindBackdrop(root);
+    root.querySelector('[data-eq-close-alt]')?.addEventListener('click', closeModal);
+  }
+
+  function openEnhancement(item, feedback = null) {
+    const currentLevel = Number(item.enhancement_level || 0);
+    if (currentLevel >= 10) { openMaxEnhancement(item, feedback); return; }
+    const targetLevel = currentLevel + 1;
     const level = enhancementLevelConfig(targetLevel);
     if (!level || targetLevel > 10) { toast('该装备已经强化至最高等级 +10。', 'error'); return; }
     const essenceCost = Number(configuredGradeEnhancementEssence(item.grade_code) || 0);
@@ -618,7 +634,7 @@
     const insufficient = essenceOwned < essenceCost || stonesOwned < stoneCost || level.enabled === false;
     const sourceText = level.probability_source === 'timed_override' ? '限时活动概率' : '基础概率';
 
-    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01 equipment-enhance-modal-bequipment01" role="dialog" aria-modal="true"><button class="modal-close-button" data-eq-close>×</button><header style="--grade:${esc(color(item))}">${itemIcon(item)}<div><span>${esc(item.realm_name)} · ${esc(item.grade_name)} · ${esc(slotMeta[item.slot_code][1])}</span><h3>${esc(itemEnhancementName(item))} → +${targetLevel}</h3></div></header><div class="equipment-enhance-levels-bequipment01"><div><small>当前等级</small><strong>+${Number(item.enhancement_level || 0)}</strong><span>${esc(formatMainStat(item, item.main_stat_value))}</span><em>${currentSockets}个孔位</em></div><i>→</i><div class="next"><small>成功后</small><strong>+${targetLevel}</strong><span>${esc(formatMainStat(item, nextValue))}</span><em>${nextSockets}个孔位${nextSockets > currentSockets ? ` · 新增${nextSockets - currentSockets}孔` : ''}</em></div></div><dl class="equipment-enhance-costs-bequipment01"><div><dt>本级属性增加</dt><dd>基础主属性 +${item.slot_code === 'ring' ? Number(level.ring_cumulative_percent || 0) - Number((enhancementLevelConfig(targetLevel - 1) || {}).ring_cumulative_percent || 0) : Number(level.normal_increment_percent || 0)}%</dd></div><div><dt>累计强化加成</dt><dd>+${percent}%${item.slot_code === 'ring' ? '（戒指采用普通倍率的50%）' : ''}</dd></div><div><dt>本次成功率</dt><dd class="risk">${Number(level.success_percent ?? Number(level.success_rate || 0) * 100).toLocaleString('zh-CN', { maximumFractionDigits: 4 })}% · ${sourceText}</dd></div><div><dt>器源</dt><dd class="${essenceOwned < essenceCost ? 'insufficient' : ''}">${nfmt(essenceOwned)} / 消耗 ${nfmt(essenceCost)}</dd></div><div><dt>灵石</dt><dd class="${stonesOwned < stoneCost ? 'insufficient' : ''}">${nfmt(stonesOwned)} / 消耗 ${nfmt(stoneCost)}</dd></div></dl><div class="equipment-destroy-warning-bequipment01"><strong>天命有险</strong><p>强化失败后，该装备、已有强化等级、全部孔位及孔位中的 ${Number(item.socket_content_count || 0)} 项内容将永久消失；本次器源与灵石不返还。</p></div><div class="equipment-modal-actions-bequipment01 equipment-enhance-actions-bequipment01"><button class="danger-btn fate" data-enhance-confirm ${insufficient ? 'disabled' : ''}>我命由我不由天</button><button class="ghost-btn" data-eq-close-alt>我再回去考虑考虑</button></div>${insufficient ? `<p class="equipment-insufficient-note-bequipment01">${level.enabled === false ? '该强化等级当前已停用。' : '器源或灵石不足，暂时无法强化。'}</p>` : ''}</section></div>`;
+    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01 equipment-enhance-modal-bequipment01" role="dialog" aria-modal="true"><button class="modal-close-button" data-eq-close>×</button><header style="--grade:${esc(color(item))}">${itemIcon(item)}<div><span>${esc(item.realm_name)} · ${esc(item.grade_name)} · ${esc(slotMeta[item.slot_code][1])}</span><h3>${esc(itemEnhancementName(item))} → +${targetLevel}</h3></div></header>${enhancementSuccessNotice(item, feedback)}<div class="equipment-enhance-levels-bequipment01"><div><small>当前等级</small><strong>+${currentLevel}</strong><span>${esc(formatMainStat(item, item.main_stat_value))}</span><em>${currentSockets}个孔位</em></div><i>→</i><div class="next"><small>成功后</small><strong>+${targetLevel}</strong><span>${esc(formatMainStat(item, nextValue))}</span><em>${nextSockets}个孔位${nextSockets > currentSockets ? ` · 新增${nextSockets - currentSockets}孔` : ''}</em></div></div><dl class="equipment-enhance-costs-bequipment01"><div><dt>本级属性增加</dt><dd>基础主属性 +${item.slot_code === 'ring' ? Number(level.ring_cumulative_percent || 0) - Number((enhancementLevelConfig(targetLevel - 1) || {}).ring_cumulative_percent || 0) : Number(level.normal_increment_percent || 0)}%</dd></div><div><dt>累计强化加成</dt><dd>+${percent}%${item.slot_code === 'ring' ? '（戒指采用普通倍率的50%）' : ''}</dd></div><div><dt>本次成功率</dt><dd class="risk">${Number(level.success_percent ?? Number(level.success_rate || 0) * 100).toLocaleString('zh-CN', { maximumFractionDigits: 4 })}% · ${sourceText}</dd></div><div><dt>器源</dt><dd class="${essenceOwned < essenceCost ? 'insufficient' : ''}">${nfmt(essenceOwned)} / 消耗 ${nfmt(essenceCost)}</dd></div><div><dt>灵石</dt><dd class="${stonesOwned < stoneCost ? 'insufficient' : ''}">${nfmt(stonesOwned)} / 消耗 ${nfmt(stoneCost)}</dd></div></dl><div class="equipment-destroy-warning-bequipment01"><strong>天命有险</strong><p>强化失败后，该装备、已有强化等级、全部孔位及孔位中的 ${Number(item.socket_content_count || 0)} 项内容将永久消失；本次器源与灵石不返还。</p></div><div class="equipment-modal-actions-bequipment01 equipment-enhance-actions-bequipment01"><button class="danger-btn fate" data-enhance-confirm ${insufficient ? 'disabled' : ''}>我命由我不由天</button><button class="ghost-btn" data-eq-close-alt>我再回去考虑考虑</button></div>${insufficient ? `<p class="equipment-insufficient-note-bequipment01">${level.enabled === false ? '该强化等级当前已停用。' : '器源或灵石不足，暂时无法强化。'}</p>` : ''}</section></div>`;
     const root = modalHost();
     bindBackdrop(root);
     root.querySelector('[data-eq-close-alt]')?.addEventListener('click', closeModal);
@@ -632,7 +648,15 @@
     try {
       const result = await rpc('enhance_equipment_v180', { p_item_id: item.id, p_request_id: uuid() });
       await refresh(true);
-      showEnhancementResult(item, targetLevel, result);
+      if (result?.enhancement_success) {
+        const fresh = allItems().find(row => String(row.id) === String(item.id));
+        if (!fresh) { closeModal(); toast('强化已成功，但装备刷新失败，请重新打开背包确认。', 'error'); return; }
+        const gainedSocket = Number(fresh.total_socket_capacity || 0) > Number(item.total_socket_capacity || 0);
+        openEnhancement(fresh, { level: targetLevel, gainedSocket });
+        toast(`强化成功！${item.short_name}已提升至 +${targetLevel}${gainedSocket ? '，并新增一个孔位' : ''}。`);
+      } else {
+        showEnhancementFailure(item, targetLevel, result);
+      }
     } catch (error) {
       toast(errorText(error), 'error');
       await refresh(true);
@@ -641,16 +665,9 @@
     }
   }
 
-  function showEnhancementResult(item, targetLevel, result) {
-    if (result?.enhancement_success) {
-      const fresh = allItems().find(row => String(row.id) === String(item.id));
-      const gainedSocket = Number(fresh?.total_socket_capacity || 0) > Number(item.total_socket_capacity || 0);
-      modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01 equipment-result-modal-bequipment01 success" role="dialog" aria-modal="true"><header><span class="equipment-result-sigil-bequipment01">成</span><div><span>道器承命</span><h3>强化成功 · +${targetLevel}</h3></div></header><p>【${esc(item.full_name)}】已强化至 +${targetLevel}。</p><dl><div><dt>当前属性</dt><dd>${esc(fresh?.main_stat_display || '')}</dd></div><div><dt>当前孔位</dt><dd>${Number(fresh?.total_socket_capacity || 0)}${gainedSocket ? '（新增1个孔位）' : ''}</dd></div><div><dt>剩余器源</dt><dd>${nfmt(result.essence_after)}</dd></div><div><dt>剩余灵石</dt><dd>${nfmt(result.spirit_stones_after)}</dd></div></dl><div class="equipment-modal-actions-bequipment01"><button class="primary-btn" data-eq-close-alt>收下天命</button></div></section></div>`;
-      toast(`强化成功！${item.short_name}已提升至 +${targetLevel}${gainedSocket ? '，并新增一个孔位' : ''}。`);
-    } else {
-      modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01 equipment-result-modal-bequipment01 destroyed" role="dialog" aria-modal="true"><header><span class="equipment-result-sigil-bequipment01">劫</span><div><span>道器归墟</span><h3>强化失败 · 装备已永久消失</h3></div></header><p>【${esc(item.full_name)} +${Number(item.enhancement_level || 0)}】未能承受强化，装备与全部孔位内容已化为飞灰。</p><dl><div><dt>冲击等级</dt><dd>+${targetLevel}</dd></div><div><dt>本次成功率</dt><dd>${Number(result?.success_percent || 0)}%</dd></div><div><dt>消耗器源</dt><dd>${nfmt(result?.essence_cost)}</dd></div><div><dt>消耗灵石</dt><dd>${nfmt(result?.spirit_stone_cost)}</dd></div></dl><div class="equipment-modal-actions-bequipment01"><button class="ghost-btn" data-eq-close-alt>知命而行</button></div></section></div>`;
-      toast('强化失败，装备与全部孔位内容已永久消失。', 'error');
-    }
+  function showEnhancementFailure(item, targetLevel, result) {
+    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01 equipment-result-modal-bequipment01 destroyed" role="dialog" aria-modal="true"><header><span class="equipment-result-sigil-bequipment01">劫</span><div><span>道器归墟</span><h3>强化失败 · 装备已永久消失</h3></div></header><p>【${esc(item.full_name)} +${Number(item.enhancement_level || 0)}】未能承受强化，装备与全部孔位内容已化为飞灰。</p><dl><div><dt>冲击等级</dt><dd>+${targetLevel}</dd></div><div><dt>本次成功率</dt><dd>${Number(result?.success_percent || 0)}%</dd></div><div><dt>消耗器源</dt><dd>${nfmt(result?.essence_cost)}</dd></div><div><dt>消耗灵石</dt><dd>${nfmt(result?.spirit_stone_cost)}</dd></div></dl><div class="equipment-modal-actions-bequipment01"><button class="ghost-btn" data-eq-close-alt>知命而行</button></div></section></div>`;
+    toast('强化失败，装备与全部孔位内容已永久消失。', 'error');
     const root = modalHost();
     root.querySelector('[data-eq-close-alt]')?.addEventListener('click', closeModal);
     root.querySelector('.equipment-modal-backdrop-bequipment01')?.addEventListener('click', event => { if (event.target === event.currentTarget) closeModal(); });

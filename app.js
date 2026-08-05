@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V1.8.3 CACHE80 PERF1：低频云端同步、后台暂停、按页面刷新。
+  // V1.8.3 CACHE81：沿用CACHE80低频同步，并接入B-SECT01。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,
@@ -4799,16 +4799,19 @@
         : '五行未形成直接克制，本次伤害不作修正。';
     const ringBasePercent = Math.max(0, Number(action?.ring_base_percent ?? action?.equipment_element_bonus ?? attacker?.equipment_element_bonus ?? 0));
     const ringEffectivePercent = Math.max(0, Number(action?.ring_effective_percent ?? ringBasePercent));
-    const talentRatePercent = Math.max(0, Number(action?.talent_ring_amplification_rate || 0) * 100);
-    const talentSource = String(action?.talent_source || '');
-    const talentLabel = talentSource === 'mutation'
-      ? `变异灵根（${escapeHtml(action?.mutation_name || attacker?.mutation_name || '异')}）`
-      : (talentSource === 'sword_heart' ? '天生剑心' : '');
-    const talentLine = talentLabel
-      ? (ringBasePercent > 0
-        ? `${talentLabel}使戒指效果提高${formatNumber(talentRatePercent, 2)}%，本次戒指增伤由${formatNumber(ringBasePercent, 2)}%提升至${formatNumber(ringEffectivePercent, 2)}%。`
-        : `${talentLabel}可使戒指效果提高${formatNumber(talentRatePercent, 2)}%，但当前没有戒指增伤，因此不产生额外伤害。`)
-      : (ringBasePercent > 0 ? `戒指提供${formatNumber(ringEffectivePercent, 2)}%本命五行最终伤害加成。` : '');
+    const baseTalentSource = String(attacker?.talent_base_stat_source || action?.talent_base_stat_source || action?.base_stat_talent_source || '');
+    const baseTalentRatePercent = Math.max(0, Number(attacker?.talent_base_stat_bonus ?? action?.talent_base_stat_bonus ?? action?.base_stat_talent_bonus ?? 0) * 100);
+    const baseTalentLabel = baseTalentSource === 'mutation'
+      ? `异灵根（${escapeHtml(attacker?.mutation_name || action?.mutation_name || '异')}）`
+      : (baseTalentSource === 'sword_heart' ? '天生剑心' : '');
+    const talentLine = [
+      baseTalentLabel && baseTalentRatePercent > 0
+        ? `${baseTalentLabel}已使境界基础道攻提高${formatNumber(baseTalentRatePercent, 2)}%。`
+        : '',
+      ringBasePercent > 0
+        ? `戒指独立提供${formatNumber(ringEffectivePercent, 2)}%本命五行最终伤害加成。`
+        : ''
+    ].filter(Boolean).join('');
     return `
       <article class="battle-action-bcombat01 ${action?.defeated ? 'is-finisher' : ''}">
         <header><span>第 ${formatNumber(action?.round || 1)} 回合</span><strong>${escapeHtml(action?.attacker_name || '')} 出手</strong></header>
@@ -5166,13 +5169,18 @@
     if (state.sectSystemSyncing || !state.character) return;
     state.sectSystemSyncing = true;
     try {
-      state.sectSystem = await rpcGetSectSystemV1();
+      if (window.B_SECTV2_B01?.refresh) {
+        await window.B_SECTV2_B01.refresh({ sync: true, silent });
+        state.sectSystem = { status: 'module', module: 'B-SECT01' };
+      } else {
+        state.sectSystem = await rpcGetSectSystemV1();
+        updateSectSystemPanel();
+        if (!silent) showToast('宗门录已刷新。');
+      }
       state.sectSystemFetchedAt = Date.now();
-      updateSectSystemPanel();
-      if (!silent) showToast('宗门录已刷新。');
     } catch (error) {
       state.sectSystem = { status: 'unavailable', sects: [], buildings: [], tasks: [], recent_events: [], error: translateError(error) };
-      updateSectSystemPanel();
+      if (!window.B_SECTV2_B01) updateSectSystemPanel();
       if (!silent) showToast(translateError(error), 'error');
     } finally {
       state.sectSystemSyncing = false;
@@ -7333,7 +7341,7 @@
 
 
 
-  // V1.8.3 CACHE80 PERF1：沿用CACHE78异灵根基础道攻与元神短文案。
+  // V1.8.3 CACHE81：异灵根与持剑天生剑心均使用境界基础道攻加成。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
@@ -7343,23 +7351,23 @@
     const mutationBaseRate = ready && snapshot?.mutation_active
       ? Math.max(0, Number(snapshot.mutation_base_stat_bonus ?? 0.08))
       : 0;
-    const mutationBaseRatePercent = mutationBaseRate * 100;
-    const mutationBaseMultiplier = ready && snapshot?.mutation_active
-      ? Math.max(1, Number(snapshot.mutation_base_stat_multiplier ?? (1 + mutationBaseRate)))
+    const swordBaseRate = ready && snapshot?.sword_heart_active
+      ? Math.max(0, Number(snapshot.sword_heart_base_stat_bonus ?? 0.08))
+      : 0;
+    const activeBaseRate = snapshot?.mutation_active ? mutationBaseRate : swordBaseRate;
+    const activeBaseRatePercent = activeBaseRate * 100;
+    const activeBaseMultiplier = ready && (snapshot?.mutation_active || snapshot?.sword_heart_active)
+      ? Math.max(1, Number(snapshot.talent_base_stat_multiplier ?? snapshot.mutation_base_stat_multiplier ?? snapshot.sword_heart_base_stat_multiplier ?? (1 + activeBaseRate)))
       : 1;
     const ringBasePercent = ready ? Math.max(0, Number(snapshot.equipment_element_bonus || 0)) : 0;
-    const swordRate = ready && snapshot?.sword_heart_active
-      ? Math.max(0, Number(snapshot.talent_ring_amplification_rate ?? snapshot.sword_heart_final_damage_bonus ?? 0))
-      : 0;
-    const swordRatePercent = swordRate * 100;
     const ringEffectivePercent = ready
-      ? Math.max(0, Number(snapshot.effective_equipment_element_bonus ?? (ringBasePercent * (1 + swordRate))))
+      ? Math.max(0, Number(snapshot.effective_equipment_element_bonus ?? ringBasePercent))
       : 0;
     const bonusValue = ready
       ? (snapshot?.mutation_active
-        ? `变异·${snapshot.mutation_name || '未知'} · 道攻+${formatNumber(mutationBaseRatePercent, 2)}%`
+        ? `变异·${snapshot.mutation_name || '未知'} · 基攻+${formatNumber(activeBaseRatePercent, 2)}%`
         : (snapshot?.sword_heart_active
-          ? `剑心 · 戒指×${formatNumber(1 + swordRate, 2)}`
+          ? `剑心 · 基攻+${formatNumber(activeBaseRatePercent, 2)}%`
           : (ringBasePercent > 0 ? `戒指 +${formatNumber(ringBasePercent, 2)}%` : `五行 · ${snapshot.element_name || '未定'}`)))
       : (snapshot?.status === 'unavailable' ? '未部署' : '同步中');
     const card = (position, icon, name, displayValue, detail) => `
@@ -7377,8 +7385,8 @@
       const baseValue = Number(snapshot[baseKey] || 0);
       const realmBaseValue = Number(snapshot[realmBaseKey] ?? baseValue);
       const equipmentValue = Number(snapshot[equipmentKey] || 0);
-      const baseText = snapshot?.mutation_active && baseKey === 'base_attack'
-        ? `境界 ${formatNumber(realmBaseValue)} × ${formatNumber(mutationBaseMultiplier, 2)} = 基础 ${formatNumber(baseValue)}`
+      const baseText = (snapshot?.mutation_active || snapshot?.sword_heart_active) && baseKey === 'base_attack'
+        ? `境界 ${formatNumber(realmBaseValue)} × ${formatNumber(activeBaseMultiplier, 2)} = 基础 ${formatNumber(baseValue)}`
         : `境界基础 ${formatNumber(baseValue)}`;
       return `${baseText}${equipmentValue ? ` + ${equipmentLabel} ${formatNumber(equipmentValue)}` : ` · ${equipmentLabel} 0`}`;
     };
@@ -7388,17 +7396,15 @@
         <strong>${escapeHtml(liveValue(key))}</strong>
         <small>${escapeHtml(detail)}</small>
       </div>`;
-    const bonusLabel = snapshot?.mutation_active ? '异灵根' : '增伤';
+    const bonusLabel = snapshot?.mutation_active ? '异灵根' : (snapshot?.sword_heart_active ? '天生剑心' : '戒指增伤');
     const bonusDisplay = ready
-      ? (snapshot?.mutation_active ? `+${formatNumber(mutationBaseRatePercent, 2)}%` : `+${formatNumber(ringEffectivePercent, 2)}%`)
+      ? ((snapshot?.mutation_active || snapshot?.sword_heart_active) ? `+${formatNumber(activeBaseRatePercent, 2)}%` : `+${formatNumber(ringEffectivePercent, 2)}%`)
       : (snapshot?.status === 'unavailable' ? '不可用' : '同步中');
     const bonusDetail = ready
       ? (snapshot?.mutation_active
-        ? `基攻+${formatNumber(mutationBaseRatePercent, 2)}%${ringBasePercent > 0 ? ` · 戒指+${formatNumber(ringEffectivePercent, 2)}%` : ''}`
+        ? `境界基础道攻+${formatNumber(activeBaseRatePercent, 2)}%${ringBasePercent > 0 ? ` · 戒指独立+${formatNumber(ringEffectivePercent, 2)}%` : ''}`
         : (snapshot?.sword_heart_active
-          ? (ringBasePercent > 0
-            ? `戒指 ${formatNumber(ringBasePercent, 2)}% × 剑心 ${formatNumber(1 + swordRate, 2)} = ${formatNumber(ringEffectivePercent, 2)}%`
-            : `剑心可使戒指效果提高${formatNumber(swordRatePercent, 2)}%，但当前没有戒指增伤`)
+          ? `持剑生效：境界基础道攻+${formatNumber(activeBaseRatePercent, 2)}%${ringBasePercent > 0 ? ` · 戒指独立+${formatNumber(ringEffectivePercent, 2)}%` : ''}`
           : (ringBasePercent > 0 ? `戒指 ${formatNumber(ringBasePercent, 2)}%` : '暂无常驻增伤')))
       : '等待服务端权威属性';
     return `
@@ -7452,9 +7458,9 @@
 
           ${card('right-1', '生', '生机', value('vitality'), ready ? `${liveDetail('base_vitality', 'realm_base_vitality', 'effective_armor_vitality', '法衣')}。` : '正在读取服务端权威战斗快照。')}
           ${card('right-2', '身', '身法', value('agility'), ready ? `${liveDetail('base_agility', 'realm_base_agility', 'effective_armor_agility', '鞋履')}；身法用于决定先手。` : '正在读取服务端权威战斗快照。')}
-          ${card('right-3', '元', '加成', bonusValue, ready ? `${snapshot?.mutation_active ? `基攻+${formatNumber(mutationBaseRatePercent, 2)}%` : `本命${snapshot.element_name || '未定'}行`}${ringBasePercent > 0 ? ` · 戒指+${formatNumber(ringEffectivePercent, 2)}%` : ''}${snapshot.sword_heart_active ? ' · 剑心' : ''}` : '读取中')}
+          ${card('right-3', '元', '加成', bonusValue, ready ? `${snapshot?.mutation_active ? `异灵根基攻+${formatNumber(activeBaseRatePercent, 2)}%` : (snapshot?.sword_heart_active ? `剑心持剑基攻+${formatNumber(activeBaseRatePercent, 2)}%` : `本命${snapshot.element_name || '未定'}行`)}${ringBasePercent > 0 ? ` · 戒指独立+${formatNumber(ringEffectivePercent, 2)}%` : ''}` : '读取中')}
         </div>
-        <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。${snapshot?.mutation_active ? `异灵根基础道攻+${formatNumber(mutationBaseRatePercent, 2)}%。` : ''}` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
+        <div id="yuanshenDetailV0155" class="yuanshen-detail-v0155" aria-live="polite">${ready ? `战斗属性由服务端实时计算；武器：${escapeHtml(snapshot.weapon_name || '赤手空拳')}，法衣：${escapeHtml(snapshot.armor_name || '赤裸')}。${snapshot?.mutation_active ? `异灵根境界基础道攻+${formatNumber(activeBaseRatePercent, 2)}%。` : (snapshot?.sword_heart_active ? `天生剑心持剑生效，境界基础道攻+${formatNumber(activeBaseRatePercent, 2)}%。` : '')}` : snapshot?.status === 'unavailable' ? `战斗数据库尚未部署：${escapeHtml(snapshot.error || '请执行 V1.0 SQL。')}` : '正在读取服务端战斗属性，界面不会生成伪造数值。'}</div>
       </div>`;
   }
 
@@ -7845,7 +7851,7 @@
             <article class="path-card">
               <span>先天灵根 · ${escapeHtml(root.rarity || '未知')}</span>
               <strong>${escapeHtml(root.name || '未测')}</strong>
-              <p>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)}。风、冰、雷变异灵根额外使境界基础道攻提高8%；道御、生机、身法不加成，也不放大装备、强化、功法或戒指，不参与五行克制。其他灵根只影响修炼速度。${escapeHtml(root.description || '')}</p>
+              <p>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)}。风、冰、雷变异灵根额外使境界基础道攻提高8%；天生剑心在装备剑类武器时同样使境界基础道攻提高8%。二者冲突时只生效一个；均不增加道御、生机、身法，也不放大装备、强化、功法或戒指。其他灵根只影响修炼速度。${escapeHtml(root.description || '')}</p>
             </article>
             <article class="path-card">
               <span>降生命格 · ${escapeHtml(fate.rarity || '未知')}</span>
@@ -7895,8 +7901,8 @@
         </section>
 
         <section id="sectSystemSection" class="panel" data-mobile-screen="sect">
-          <div class="panel-title"><h3>宗门</h3><span class="badge">山门 · 贡献 · 事务</span></div>
-          ${sectSystemPanelHtml(sectSystem)}
+          <div class="panel-title"><h3>宗门</h3><span class="badge">宗主 · 弟子 · 修炼</span></div>
+          <div id="sectV2RootBSect01"><div class="empty-state">正在查阅宗门名册……</div></div>
         </section>
 
         <section id="historySection" class="panel" data-mobile-screen="history">
@@ -7931,6 +7937,7 @@
     bindBazaarActions();
     bindMobileDashboardNav();
     window.dispatchEvent(new CustomEvent('jiuxiao:secret-realm-rendered'));
+    window.dispatchEvent(new CustomEvent('jiuxiao:sect-v2-rendered'));
     if (!window.__secretRealmClaimSyncBoundV179) {
       window.__secretRealmClaimSyncBoundV179 = true;
       window.addEventListener('jiuxiao:secret-realm-claimed', async () => {
@@ -8285,9 +8292,7 @@
         rpcGetNpcSocialV1().catch(error => ({
           status: 'unavailable', contacts: [], recent_events: [], error: translateError(error)
         })),
-        rpcGetSectSystemV1().catch(error => ({
-          status: 'unavailable', sects: [], buildings: [], tasks: [], recent_events: [], error: translateError(error)
-        })),
+        Promise.resolve({ status: 'module', module: 'B-SECT01' }),
         rpcGetMarketV1().catch(error => ({
           status: 'unavailable', pools: {}, tickets: {}, open_duels: [], my_duels: [], latest_draws: [], error: translateError(error)
         })),

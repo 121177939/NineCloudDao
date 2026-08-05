@@ -51,6 +51,7 @@
 .equipment-enhance-levels-bequipment01>div.next{border-color:rgba(224,178,77,.65);box-shadow:inset 0 0 24px rgba(224,178,77,.08)}
 .equipment-enhance-levels-bequipment01>i{align-self:center;color:#d5b66e;font-style:normal;font-size:1.4rem}
 .equipment-enhance-levels-bequipment01 small{color:#8f836a}.equipment-enhance-levels-bequipment01 strong{color:#f1d17b;font-size:1.8rem}.equipment-enhance-levels-bequipment01 span{color:#e5d6ae;font-size:.78rem}.equipment-enhance-levels-bequipment01 em{color:#a89a78;font-style:normal;font-size:.7rem}
+.equipment-enhance-success-bequipment01{margin:14px 0;padding:12px 14px;border:1px solid rgba(106,190,126,.58);background:rgba(29,76,42,.28);box-shadow:inset 0 0 22px rgba(91,178,112,.08)}.equipment-enhance-success-bequipment01 strong{display:block;color:#bce8b9;font-size:.92rem}.equipment-enhance-success-bequipment01 p{margin:5px 0 0!important;color:#c8d9bf!important;font-size:.76rem;line-height:1.65}
 .equipment-enhance-costs-bequipment01{margin:0!important}.equipment-enhance-costs-bequipment01 dd.risk{color:#efb268}.equipment-enhance-costs-bequipment01 dd.insufficient{color:#ef8677;font-weight:700}
 .equipment-destroy-warning-bequipment01{margin-top:14px;padding:12px 13px;border:1px solid rgba(213,80,66,.66);background:linear-gradient(135deg,rgba(92,24,20,.52),rgba(38,14,12,.7));color:#f3b6a9}
 .equipment-destroy-warning-bequipment01 strong{display:block;color:#ffcec2;letter-spacing:.15em}.equipment-destroy-warning-bequipment01 p{margin:6px 0 0!important;color:#e6a89c!important;line-height:1.7!important}
