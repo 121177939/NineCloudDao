@@ -9,15 +9,18 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      artifact_name: ${{ steps.artifact_name.outputs.name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -52,15 +55,29 @@ jobs:
           done
 
       - name: Build lean Pages artifact
-        run: python3 tools/build_pages_v2_0_0.py . .pages-site
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .pages-site
+          python3 tools/build_pages_v2_0_0.py . .pages-site
+          test -f .pages-site/index.html
+          test -f .pages-site/.nojekyll
 
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v5
+
+      - name: Select unique artifact name for this run attempt
+        id: artifact_name
+        shell: bash
+        run: echo "name=github-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
 
       - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v5
+        id: upload-pages
+        uses: actions/upload-pages-artifact@v4
         with:
+          name: ${{ steps.artifact_name.outputs.name }}
           path: .pages-site
+          retention-days: 1
           include-hidden-files: true
 
   deploy:
@@ -71,6 +88,48 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Remove duplicate artifacts from an interrupted upload retry
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_NAME: ${{ needs.build.outputs.artifact_name }}
+        run: |
+          set -euo pipefail
+          endpoint="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?per_page=100"
+
+          for pass in 1 2 3 4 5; do
+            mapfile -t artifact_ids < <(
+              gh api "$endpoint" \
+                --jq '.artifacts | map(select(.name == env.ARTIFACT_NAME)) | sort_by(.id) | reverse | .[].id'
+            )
+
+            count=${#artifact_ids[@]}
+            if [ "$count" -eq 1 ]; then
+              echo "Pages artifact is unique: ${ARTIFACT_NAME} (${artifact_ids[0]})"
+              exit 0
+            fi
+
+            if [ "$count" -eq 0 ]; then
+              echo "Artifact metadata is not visible yet; retrying (${pass}/5)."
+              sleep 3
+              continue
+            fi
+
+            echo "Found ${count} artifacts named ${ARTIFACT_NAME}; keeping newest ${artifact_ids[0]}."
+            for artifact_id in "${artifact_ids[@]:1}"; do
+              gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}"
+            done
+            sleep 3
+          done
+
+          mapfile -t final_ids < <(
+            gh api "$endpoint" \
+              --jq '.artifacts | map(select(.name == env.ARTIFACT_NAME)) | .[].id'
+          )
+          test "${#final_ids[@]}" -eq 1
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ needs.build.outputs.artifact_name }}
