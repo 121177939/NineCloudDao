@@ -1,27 +1,80 @@
-name: Validate NineCloudDao V2.0.2 CACHE94 (manual only)
+name: Deploy NineCloudDao V2.0.3 CACHE95 to GitHub Pages
 
 on:
+  push:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  validate:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-node@v5
-        with:
-          node-version: "24"
-      - name: Validate static release files
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Verify repository package structure
         shell: bash
         run: |
           set -euo pipefail
-          for f in app.js config.js update-guard.js sw.js b-paigow01.js b-equipment01.js b-secret-realm01.js b-sect-v2.js paigow-realtime.js paigow-app.js b-paigow02-ui.js; do node --check "$f"; done
+          test -f index.html
+          test -f tools/build_pages_v2_0_3.py
+          test -f .nojekyll
+          test -f .github/workflows/deploy-pages.yml
+          echo "Required repository files are present."
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in app.js config.js update-guard.js sw.js b-paigow01.js b-equipment01.js b-secret-realm01.js b-sect-v2.js paigow-realtime.js paigow-app.js b-paigow02-ui.js; do
+            echo "Checking $f"
+            node --check "$f"
+          done
+
+      - name: Build lean Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
           rm -rf .pages-site
-          python3 tools/build_pages_v2_0_2.py . .pages-site
+          python3 tools/build_pages_v2_0_3.py . .pages-site
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: .pages-site
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

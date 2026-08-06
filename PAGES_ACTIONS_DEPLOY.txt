@@ -1,0 +1,7 @@
+九霄问道 V2.0.3 CACHE95
+发布模式：沿用CACHE91的GitHub Pages Actions双作业流程
+构建作业：本地重建 .pages-site 并上传一次 github-pages Artifact
+部署作业：actions/deploy-pages 发布
+构建号：v2-0-3-cache95-equipment-worldnews3-schemafix1-pagesactions1
+数据库顺序：SQL229 -> 部署并确认VERSION.txt -> SQL230 -> SQL231
+GitHub Pages Source必须设置为 GitHub Actions。

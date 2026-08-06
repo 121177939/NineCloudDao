@@ -1,8 +1,8 @@
 {
-  "version": "2.0.2",
-  "releaseLabel": "九霄问道 V2.0.2 CACHE94",
-  "sourceBaseline": "V2.0.1 CACHE93 / SQL211-221 + SQL224-225 / ADMIN9 R20",
-  "minimumDatabaseBaseline": "V2.0.2 CACHE94 / SQL211-221 + SQL224-228 / ADMIN9 R20",
+  "version": "2.0.3",
+  "releaseLabel": "九霄问道 V2.0.3 CACHE95",
+  "sourceBaseline": "V2.0.0 CACHE92 / SQL211-221 / ADMIN9 R20",
+  "minimumDatabaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
   "deploymentStatus": "formal_release_package_pending_production_acceptance",
   "databaseMigrations": [
     211,
@@ -16,22 +16,25 @@
     219,
     220,
     221,
+    229,
+    230,
+    231
+  ],
+  "supersededMigrations": [
+    222,
+    223,
     224,
     225,
     226,
     227,
     228
   ],
-  "supersededMigrations": [
-    222,
-    223
-  ],
-  "databaseReleaseGate": "SQL227 V2.0.2 CACHE94正式发布门禁",
-  "databaseFinalCheck": "SQL228 CACHE94升级后只读检查",
+  "databaseReleaseGate": "SQL230 V2.0.3 CACHE95正式发布门禁",
+  "databaseFinalCheck": "SQL231 CACHE95升级后只读检查",
   "modules": [
     "B-SECT06-AUTONOMY2000",
     "DB-MAINT-V210-GM",
-    "B-EQUIPMENT01-WORLDNEWS2-TEXTRED1",
+    "B-EQUIPMENT01-WORLDNEWS3-SCHEMAFIX1",
     "B-CLIENT-PERF01-POLLING1"
   ],
   "confirmedRules": [
@@ -39,24 +42,25 @@
     "装备从+5冲击+6至+9冲击+10时，成功与失败均进入九霄界闻",
     "强化界闻显示装备中文完整名称，不显示模板内部代码",
     "强化界闻仅标题、时间、正文与炼字印记变红，卡片底色和默认边框不变",
-    "SQL226自动修复已有强化界闻中的装备内部代码",
-    "强化失败永久毁装与孔位内容清除规则不变"
+    "SQL229使用生产真实表public.jiuxiao_world_events修复已有错误界闻",
+    "强化失败永久毁装与孔位内容清除规则不变",
+    "GitHub Pages恢复CACHE91同款Actions双作业部署"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
-  "clientRelease": "V2.0.2_CACHE94",
-  "developmentBaseline": "V2.0.2_AB76_ADMIN9_CACHE94",
-  "cacheEpoch": 94,
-  "sqlRevision": "211-221 + 224-228",
+  "clientRelease": "V2.0.3_CACHE95",
+  "developmentBaseline": "V2.0.3_AB76_ADMIN9_CACHE95",
+  "cacheEpoch": 95,
+  "sqlRevision": "211-221 + 229-231",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPMENT_WORLDNEWS2_TEXTRED1",
-  "clientBuild": "v2-0-2-cache94-equipment-worldnews2-textred1",
-  "databaseRelease": "V2.0.2 CACHE94 / SQL211-221 + SQL224-228",
+  "clientHotfix": "EQUIPMENT_WORLDNEWS3_SCHEMAFIX1_PAGESACTIONS1",
+  "clientBuild": "v2-0-3-cache95-equipment-worldnews3-schemafix1-pagesactions1",
+  "databaseRelease": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231",
   "gmVersion": "ADMIN9 R20",
-  "handoffRevision": "R30-2026-08-06",
-  "deploymentVerification": "先执行SQL226安装修复；部署V2.0.2并确认VERSION.txt；再执行SQL227门禁与SQL228只读验收。",
-  "buildId": "v2-0-2-cache94-equipment-worldnews2-textred1",
-  "nextSqlNumber": 229,
-  "phase3SqlStart": 229,
-  "deploymentMethod": "github_pages_branch_main_root_no_custom_artifact"
+  "handoffRevision": "R31-2026-08-06",
+  "deploymentVerification": "先执行SQL229安装修复；GitHub Pages Source设为GitHub Actions并部署V2.0.3；确认VERSION.txt后执行SQL230门禁与SQL231只读验收。",
+  "buildId": "v2-0-3-cache95-equipment-worldnews3-schemafix1-pagesactions1",
+  "nextSqlNumber": 232,
+  "phase3SqlStart": 232,
+  "deploymentMethod": "github_pages_actions_original_two_job_single_artifact"
 }

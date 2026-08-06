@@ -1,7 +1,9 @@
-# 九霄问道 V2.0.2 CACHE94
+# 九霄问道 V2.0.3 CACHE95
 
-构建号：`v2-0-2-cache94-equipment-worldnews2-textred1`。
+构建号：`v2-0-3-cache95-equipment-worldnews3-schemafix1-pagesactions1`。
 
-将本包全部文件覆盖到GitHub仓库 `main` 根目录，Pages来源保持 `Deploy from a branch / main / (root)`。
+本包恢复项目在CACHE91使用的GitHub Pages Actions双作业部署：build构建 `.pages-site`，deploy发布唯一的 `github-pages` Artifact。
 
-本版本修复强化界闻：装备显示中文完整名称；只有文字为红色，卡片底色与默认边框不变。数据库顺序：SQL226 → 部署并确认V2.0.2 → SQL227 → SQL228。
+上传前请删除仓库中其他Pages部署工作流，只保留 `.github/workflows/deploy-pages.yml`；然后在 `Settings → Pages → Build and deployment → Source` 选择 **GitHub Actions**。不要再使用 `Deploy from a branch`。
+
+数据库顺序：SQL229 → 部署并确认V2.0.3 → SQL230 → SQL231。

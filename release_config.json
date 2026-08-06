@@ -1,33 +1,34 @@
 {
-  "version": "V2.0.2",
-  "releaseLabel": "V2.0.2 CACHE94",
-  "buildId": "v2-0-2-cache94-equipment-worldnews2-textred1",
-  "cacheEpoch": 94,
-  "minimumDatabaseBaseline": "V2.0.2 CACHE94 / SQL211-221 + SQL224-228 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 224-228",
+  "version": "V2.0.3",
+  "releaseLabel": "V2.0.3 CACHE95",
+  "buildId": "v2-0-3-cache95-equipment-worldnews3-schemafix1-pagesactions1",
+  "cacheEpoch": 95,
+  "minimumDatabaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
+  "sqlRevision": "211-221 + 229-231",
   "migrationSql": [
-    "226_V2.0.2_CACHE94_强化界闻名称与纯红字修复_安装.sql",
-    "227_V2.0.2_CACHE94_正式发布门禁.sql",
-    "228_V2.0.2_CACHE94_升级后检查_只读.sql"
+    "229_V2.0.3_CACHE95_强化界闻真实表与名称修复_安装.sql",
+    "230_V2.0.3_CACHE95_正式发布门禁.sql",
+    "231_V2.0.3_CACHE95_升级后检查_只读.sql"
   ],
   "features": [
-    "EQUIPMENT_ENHANCEMENT_WORLD_NEWS_NAME_FIX",
+    "EQUIPMENT_ENHANCEMENT_WORLD_NEWS_REAL_TABLE_FIX",
     "EQUIPMENT_WORLD_NEWS_TEXT_ONLY_RED",
     "EXISTING_WORLD_NEWS_REPAIR",
-    "GITHUB_PAGES_MAIN_ROOT_BRANCH_DEPLOY"
+    "GITHUB_PAGES_ACTIONS_ORIGINAL_TWO_JOB"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPMENT_WORLDNEWS2_TEXTRED1",
-  "databaseRelease": "V2.0.2 CACHE94 / SQL211-221 + SQL224-228",
+  "clientHotfix": "EQUIPMENT_WORLDNEWS3_SCHEMAFIX1_PAGESACTIONS1",
+  "databaseRelease": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231",
   "notes": [
-    "SQL226修正未来强化界闻，并自动修复已有界闻中的装备内部代码。",
-    "卡片底色保持原界闻默认样式，仅文字变红。",
-    "先SQL226，后部署V2.0.2，再SQL227与SQL228。",
-    "GM仍为ADMIN9 R20。"
+    "SQL229改用生产真实界闻表public.jiuxiao_world_events。",
+    "已有错误界闻会使用模板中文名称修复。",
+    "卡片底色与默认边框不变，仅文字为红色。",
+    "Pages恢复CACHE91同款Actions构建与部署方式。",
+    "先SQL229，后部署V2.0.3，再SQL230与SQL231。"
   ],
   "gmVersion": "ADMIN9 R20",
-  "nextSqlNumber": 229,
-  "deploymentMethod": "github_pages_branch_main_root_no_custom_artifact"
+  "nextSqlNumber": 232,
+  "deploymentMethod": "github_pages_actions_original_two_job_single_artifact"
 }
