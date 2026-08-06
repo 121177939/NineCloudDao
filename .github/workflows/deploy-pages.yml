@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V1.8.7 CACHE89 to GitHub Pages
+name: Deploy NineCloudDao V2.0.0 CACHE91 to GitHub Pages
 
 on:
   push:
@@ -26,9 +26,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "Repository root: $PWD"
           test -f index.html
-          test -f tools/build_pages_v1_8_7.py
+          test -f tools/build_pages_v2_0_0.py
           test -f .nojekyll
           test -f .github/workflows/deploy-pages.yml
           echo "Required repository files are present."
@@ -53,7 +52,7 @@ jobs:
           done
 
       - name: Build lean Pages artifact
-        run: python3 tools/build_pages_v1_8_7.py . .pages-site
+        run: python3 tools/build_pages_v2_0_0.py . .pages-site
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6

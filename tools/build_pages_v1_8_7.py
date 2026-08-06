@@ -7,8 +7,8 @@ import sys
 
 root = Path(sys.argv[1] if len(sys.argv) > 1 else '.').resolve()
 out = Path(sys.argv[2] if len(sys.argv) > 2 else '.pages-site').resolve()
-build_id = 'v1-8-7-cache89-bsect05-partnerseason1'
-label = 'V1.8.7 CACHE89'
+build_id = 'v1-8-8-cache90-bsect06-autonomy2000'
+label = 'V1.8.8 CACHE90'
 required = [
     '.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js',
     'manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json',
