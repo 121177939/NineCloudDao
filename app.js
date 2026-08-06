@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.0.0 CACHE91：沿用CACHE80低频同步，接入B-SECT04人物事件、师徒关系与三人异步切磋闭环。
+  // V2.0.0 CACHE92：沿用CACHE80低频同步，接入B-SECT04人物事件、师徒关系与三人异步切磋闭环。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,
@@ -5356,8 +5356,13 @@
     });
   }
 
+  function isEquipmentEnhancementWorldEvent(eventType = '') {
+    return String(eventType || '').startsWith('equipment_enhancement');
+  }
+
   function worldEventSeal(eventType = '') {
     const type = String(eventType || '');
+    if (type.startsWith('equipment_enhancement')) return '炼';
     if (type.startsWith('breakthrough')) return '劫';
     if (type.startsWith('opportunity')) return '缘';
     if (type.startsWith('secret_realm')) return '秘';
@@ -5406,7 +5411,7 @@
     return `
       <div id="worldEventsRoot" class="world-events-root">
         ${entries.length ? `<div class="world-event-list">${entries.map(entry => `
-          <article class="world-event-row level-${Math.max(1, Math.min(4, Number(entry.event_level || 1)))} ${entry.is_pinned ? 'is-pinned' : ''}">
+          <article class="world-event-row level-${Math.max(1, Math.min(4, Number(entry.event_level || 1)))} ${entry.is_pinned ? 'is-pinned' : ''} ${isEquipmentEnhancementWorldEvent(entry.event_type) ? 'is-equipment-enhancement' : ''}">
             <div class="world-event-seal" aria-hidden="true">${escapeHtml(worldEventSeal(entry.event_type))}</div>
             <div class="world-event-copy">
               <div class="world-event-meta">
@@ -5455,7 +5460,7 @@
             <button class="bazaar-entry-button" type="button" data-bazaar-target="casino"><span aria-hidden="true">赌</span><strong>赌坊</strong><small>一筹问造化</small></button>
             <button class="bazaar-entry-button" type="button" data-bazaar-target="treasure"><span aria-hidden="true">珍</span><strong>珍宝阁</strong><small>渡境 · 洗灵</small></button>
           </div>
-          <section class="bazaar-world-section" aria-labelledby="worldEventsHeading"><div class="bazaar-world-heading"><div><span>天道传音</span><h4 id="worldEventsHeading">九霄界闻</h4></div><small>突破 · 机缘 · 秘境 · 赌坊</small></div>${worldEventsPanelHtml(worldEvents || { status: 'loading', entries: [] })}</section>
+          <section class="bazaar-world-section" aria-labelledby="worldEventsHeading"><div class="bazaar-world-heading"><div><span>天道传音</span><h4 id="worldEventsHeading">九霄界闻</h4></div><small>突破 · 强化 · 机缘 · 秘境 · 赌坊</small></div>${worldEventsPanelHtml(worldEvents || { status: 'loading', entries: [] })}</section>
         </div>`;
     }
     const pageMeta = { ranking: ['天命榜', '修为、财富与战力总览'], casino: ['赌坊 · 万运博弈楼', '灵石 · 修为 · 造化彩池'], treasure: ['珍宝阁', '渡境清元丹 · 洗灵丹'] }[safeView];
@@ -7411,7 +7416,7 @@
 
 
 
-  // V2.0.0 CACHE91：异灵根与持剑天生剑心均使用境界基础道攻加成。
+  // V2.0.0 CACHE92：异灵根与持剑天生剑心均使用境界基础道攻加成。
   // V1.0 CACHE30 · 元神战斗属性总览（接入 B-COMBAT01 服务端权威快照）
   function primordialSpiritPanelHtmlV1(root = {}, fate = {}, snapshot = state.battleSnapshotV1) {
     const rootName = root.name || '未测灵根';
@@ -8492,6 +8497,13 @@
   window.addEventListener('jiuxiao:equipment-loadout-changed', event => {
     window.JIUXIAO_REFRESH_BATTLE_SNAPSHOT_V1({ reason: 'equipment', action: event?.detail?.action || '' }).catch(error => {
       console.warn('[九霄问道] 装备变化后的战斗属性刷新失败：', error?.message || error);
+    });
+  });
+
+
+  window.addEventListener('jiuxiao:world-events-dirty', () => {
+    refreshWorldEvents(true).catch(error => {
+      console.warn('[九霄问道] 九霄界闻即时刷新失败：', error?.message || error);
     });
   });
 

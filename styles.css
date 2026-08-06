@@ -2043,6 +2043,20 @@ button, .badge, .hero-chip { max-width: 100%; }
 .world-event-meta strong { min-width: 0; color: var(--gold-bright); font-size: 13px; font-weight: 500; }
 .world-event-meta time { flex: 0 0 auto; color: var(--paper-muted); font-size: 10px; }
 .world-event-copy p { margin: 5px 0 0; color: var(--paper); font-size: 13px; line-height: 1.72; overflow-wrap: anywhere; }
+.world-event-row.is-equipment-enhancement {
+  border-left: 2px solid rgba(224, 82, 82, .9);
+  background: linear-gradient(90deg, rgba(133, 28, 28, .16), rgba(45, 15, 15, .05));
+}
+.world-event-row.is-equipment-enhancement .world-event-seal,
+.world-event-row.is-equipment-enhancement .world-event-meta strong,
+.world-event-row.is-equipment-enhancement .world-event-meta time,
+.world-event-row.is-equipment-enhancement .world-event-copy p {
+  color: #ef5f5f;
+}
+.world-event-row.is-equipment-enhancement .world-event-seal {
+  border-color: rgba(224, 82, 82, .62);
+  box-shadow: inset 0 0 12px rgba(224, 82, 82, .12);
+}
 .world-event-footer {
   padding: 10px 14px;
   display: flex;

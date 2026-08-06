@@ -1,10 +1,10 @@
 {
   "version": "V2.0.0",
-  "releaseLabel": "V2.0.0 CACHE91",
-  "buildId": "v2-0-0-cache91-bsect06-autonomy2000-dbmaint1",
-  "cacheEpoch": 91,
-  "minimumDatabaseBaseline": "V2.0.0 CACHE91 / SQL211-220 / ADMIN9 R20",
-  "sqlRevision": "211-220",
+  "releaseLabel": "V2.0.0 CACHE92",
+  "buildId": "v2-0-0-cache92-equipment-worldnews1",
+  "cacheEpoch": 92,
+  "minimumDatabaseBaseline": "V2.0.0 CACHE92 / SQL211-223 / ADMIN9 R20",
+  "sqlRevision": "211-223",
   "migrationSql": [
     "211_V2.0.0_BSECT06_自主宗门千事件_迁移前检查_只读.sql",
     "212_V2.0.0_BSECT06_自主生态事件归类与容量治理_安装.sql",
@@ -15,7 +15,10 @@
     "217_V2.0.0_BSECT06_自主决策事件结算贡献奖励与归档联动_安装.sql",
     "218_V2.0.0_ADMIN9_R20_自主生态与数据库维护管理_安装.sql",
     "219_V2.0.0_CACHE91_正式发布门禁.sql",
-    "220_V2.0.0_CACHE91_升级后检查_只读.sql"
+    "220_V2.0.0_CACHE91_升级后检查_只读.sql",
+    "221_V2.0.0_CACHE92_装备强化九霄界闻_安装.sql",
+    "222_V2.0.0_CACHE92_正式发布门禁.sql",
+    "223_V2.0.0_CACHE92_升级后检查_只读.sql"
   ],
   "features": [
     "BSECT06_AUTONOMOUS_DISCIPLES",
@@ -25,23 +28,25 @@
     "DB_MAINT_V210_ADMIN9",
     "BSECT05_DAO_PARTNER",
     "BSECT05_SPARRING_SEASON",
-    "CASINO_GLOBAL_SWITCH"
+    "CASINO_GLOBAL_SWITCH",
+    "EQUIPMENT_ENHANCEMENT_WORLD_NEWS_RED"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
   "deploymentAllowed": true,
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "BSECT06_AUTONOMY2000_DBMAINT1",
-  "databaseRelease": "V2.0.0 CACHE91 / SQL211-220",
+  "clientHotfix": "EQUIPMENT_WORLDNEWS1",
+  "databaseRelease": "V2.0.0 CACHE92 / SQL211-223",
   "notes": [
-    "当前生产基线按V1.8.7 CACHE89 + SQL210计算",
-    "严格按SQL211→212→213→214→215→216→217→218→部署前端与GM→219→220执行",
-    "SQL179-210为已执行历史链，禁止重复执行",
-    "2000模板只存数据库；前端按需读取；SQL210继续负责旧业务自动清理",
-    "GM R20新增数据库状态、规则、候选、Cron、运行审计、手动清理和启停"
+    "新库或尚未完成CACHE91验收：先执行SQL211-218并部署CACHE92与ADMIN9 R20，再执行SQL219、SQL220、SQL221、SQL222、SQL223。",
+    "已完成CACHE91验收：SQL221安装→部署CACHE92→SQL222正式门禁→SQL223只读验收。",
+    "SQL221不提升发布标识；SQL222门禁通过后才正式进入CACHE92。",
+    "装备只有从+5冲击+6及更高等级时才进入九霄界闻；成功和失败各8组随机文案，统一红字。",
+    "SQL179-210为已执行历史链，禁止重复执行。",
+    "GM仍为ADMIN9 R20，无需更换。"
   ],
   "gmVersion": "ADMIN9 R20",
-  "handoffRevision": "R24-2026-08-06",
-  "nextSqlNumber": 221,
-  "phase3SqlStart": 221
+  "handoffRevision": "R27-2026-08-06",
+  "nextSqlNumber": 224,
+  "phase3SqlStart": 224
 }

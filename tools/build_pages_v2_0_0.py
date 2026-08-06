@@ -3,8 +3,8 @@ from pathlib import Path
 import hashlib, json, shutil, sys
 root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve()
 out=Path(sys.argv[2] if len(sys.argv)>2 else '.pages-site').resolve()
-build_id='v2-0-0-cache91-bsect06-autonomy2000-dbmaint1'
-label='V2.0.0 CACHE91'
+build_id='v2-0-0-cache92-equipment-worldnews1'
+label='V2.0.0 CACHE92'
 required=[
  '.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js',
  'manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json',
@@ -18,14 +18,14 @@ if missing: raise SystemExit('MISSING_REQUIRED_FILES:'+','.join(missing))
 for rel in ['gm-admin.html','gm-admin.css','gm-admin.js','gm-operations.html','GM入口说明.txt']:
  if (root/rel).exists(): raise SystemExit('LOCAL_GM_ASSET_NOT_ALLOWED_IN_PUBLIC_PAGES:'+rel)
 def text(rel): return (root/rel).read_text('utf-8')
-app=text('app.js'); paigow=text('paigow-app.js'); sect=text('b-sect-v2.js'); sw=text('sw.js')
+app=text('app.js'); equipment=text('b-equipment01.js'); styles=text('styles.css'); paigow=text('paigow-app.js'); sect=text('b-sect-v2.js'); sw=text('sw.js')
 baseline=json.loads(text('CURRENT_BASELINE.json')); release=json.loads(text('release_config.json'))
 fixed_notice='服务器检查到当前游戏进行非法活动，已暂停此项功能。'
 checks={
  'version':text('VERSION.txt').splitlines()[0].strip()==label and build_id in text('VERSION.txt'),
- 'config':all(x in text('config.js') for x in [f"releaseLabel: '{label}'",f"buildId: '{build_id}'",'cacheEpoch: 91']),
- 'baseline':baseline.get('sourceBaseline')=='V1.8.7 CACHE89 + SQL210' and baseline.get('clientHotfix')=='BSECT06_AUTONOMY2000_DBMAINT1' and baseline.get('gmVersion')=='ADMIN9 R20',
- 'database':baseline.get('nextSqlNumber')==221 and str(baseline.get('sqlRevision'))=='211-220',
+ 'config':all(x in text('config.js') for x in [f"releaseLabel: '{label}'",f"buildId: '{build_id}'",'cacheEpoch: 92']),
+ 'baseline':baseline.get('sourceBaseline')=='V2.0.0 CACHE91 / SQL211-220 / ADMIN9 R20' and baseline.get('clientHotfix')=='EQUIPMENT_WORLDNEWS1' and baseline.get('gmVersion')=='ADMIN9 R20',
+ 'database':baseline.get('nextSqlNumber')==224 and str(baseline.get('sqlRevision'))=='211-223',
  'autonomy-dashboard':all(x in sect for x in ['get_sect_v2_dashboard_bsect06','sync_sect_v2_dashboard_bsect06','B-SECT06-AUTONOMY2000']),
  'autonomy-policy':all(x in sect for x in ['set_sect_autonomy_policy_bsect06','function autonomyHtml','弟子是自主生活与修炼的人物']),
  'master-assets':all(x in sect for x in ['contribute_sect_spirit_stones_bsect06','contribute_sect_inventory_item_bsect06','contribute_sect_equipment_bsect06','reward_sect_disciple_asset_bsect06']),
@@ -38,7 +38,8 @@ checks={
  'polling':all(x in app for x in ['cultivationSyncMs: 60 * 1000','opportunityPollMs: 60 * 1000','worldEventsSyncMs: 60 * 1000','divineNoticeSyncMs: 60 * 1000']),
  'on-demand':all(x in app for x in ['refreshActiveTabDataE80','洞府、功法、红尘、宗门不再全局轮询','resumeCooldownMs: 15 * 1000']),
  'games-preserved':all((root/x).is_file() for x in ['b-paigow01.js','b-paigow01.html','paigow-app.js']) and 'rpcGetFishShrimpStateV0148' in app,
- 'cache':'nine-cloud-dao-v2.0.0-cache91-bsect06-autonomy2000-dbmaint1' in sw and build_id in sw,
+ 'equipment-world-news':all(x in app for x in ['equipment_enhancement','is-equipment-enhancement','jiuxiao:world-events-dirty']) and all(x in equipment for x in ['jiuxiao:world-events-dirty','target_level || targetLevel']) and '.world-event-row.is-equipment-enhancement' in styles,
+ 'cache':'nine-cloud-dao-v2.0.0-cache92-equipment-worldnews1' in sw and build_id in sw,
  'no-secrets':'sb_secret_' not in '\n'.join(text(x) for x in ['app.js','config.js','index.html']).lower(),
  'deployment':release.get('deploymentAllowed') is True and release.get('gmPublicDeployment') is False,
 }

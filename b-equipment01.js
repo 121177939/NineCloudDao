@@ -2,7 +2,7 @@
   'use strict';
 
   const MODULE = 'B-EQUIPMENT01';
-  const VERSION = '1.8.3-cache78-decompose10-uifix1';
+  const VERSION = '2.0.0-cache92-equipment-worldnews1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
@@ -648,6 +648,14 @@
     try {
       const result = await rpc('enhance_equipment_v180', { p_item_id: item.id, p_request_id: uuid() });
       await refresh(true);
+      if (Number(result?.target_level || targetLevel) >= 6) {
+        window.dispatchEvent(new CustomEvent('jiuxiao:world-events-dirty', { detail: {
+          source: 'equipment_enhancement',
+          result: result?.enhancement_success ? 'success' : 'failure',
+          targetLevel: Number(result?.target_level || targetLevel),
+          worldEventId: result?.world_event_id || null
+        }}));
+      }
       if (result?.enhancement_success) {
         const fresh = allItems().find(row => String(row.id) === String(item.id));
         if (!fresh) { closeModal(); toast('强化已成功，但装备刷新失败，请重新打开背包确认。', 'error'); return; }
