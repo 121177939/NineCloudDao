@@ -1,0 +1,5 @@
+九霄问道 V2.0.1 CACHE93
+发布模式：GitHub Pages 从 main 分支根目录直接发布
+构建号：v2-0-1-cache93-equipment-worldnews1-branchdeploy1
+不使用：actions/upload-pages-artifact、actions/deploy-pages、自定义 github-pages environment
+设置：Settings > Pages > Deploy from a branch > main > /(root)
