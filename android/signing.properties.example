@@ -1,0 +1,5 @@
+# 复制为项目根目录 signing.properties；不要提交真实文件。
+storeFile=release.keystore
+storePassword=CHANGE_ME
+keyAlias=jiuxiao
+keyPassword=CHANGE_ME

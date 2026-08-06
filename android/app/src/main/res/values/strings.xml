@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">九霄问道</string>
+    <string name="app_menu">应用菜单</string>
+    <string name="check_update">检查更新</string>
+    <string name="reload_game">重新载入游戏</string>
+    <string name="clear_local_cache">清理本地缓存</string>
+    <string name="about_app">关于应用</string>
+</resources>

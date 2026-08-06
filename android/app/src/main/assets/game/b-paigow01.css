@@ -1,0 +1,8 @@
+/* B-PAIGOW01 · full-screen isolated launcher */
+.b-paigow01-overlay{position:fixed;inset:0;z-index:10050;display:grid;background:rgba(8,7,5,.88);backdrop-filter:blur(5px)}
+.b-paigow01-overlay[hidden]{display:none!important}
+.b-paigow01-shell{position:relative;width:100%;height:100%;background:#12100d;overflow:hidden}
+.b-paigow01-frame{display:block;width:100%;height:100%;border:0;background:#12100d}
+.b-paigow01-close{position:absolute;z-index:3;right:max(10px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));width:42px;height:42px;border:1px solid rgba(230,200,121,.42);background:rgba(20,17,12,.92);color:#e8dfc7;font-size:25px;line-height:1;box-shadow:0 6px 22px rgba(0,0,0,.35)}
+body.b-paigow01-open{overflow:hidden!important}
+@media(max-width:620px){.b-paigow01-close{width:38px;height:38px;font-size:22px}}

@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "errors": [],
+  "warnings": [],
+  "gameFileCount": 27,
+  "gameBytes": 1253923,
+  "xmlFileCount": 12,
+  "project": "android-studio-project",
+  "gameBaseline": "V2.0.4 CACHE96",
+  "gameBuildId": "v2-0-4-cache96-equipment-worldnews3-branchpublish2-appautoupdate1",
+  "databaseBaseline": "SQL211-221 + SQL229-231",
+  "androidVersionCode": 2000496
+}

@@ -1,0 +1,201 @@
+/* B-EQUIPMENT01 · V1.8.2 CACHE76 equipment-grid UIFIX4 */
+.equipment-slot-card-bequipment01{--grade:#8f8068;border-color:color-mix(in srgb,var(--grade) 68%,#4c4030)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--grade) 30%,transparent),inset 0 0 20px color-mix(in srgb,var(--grade) 9%,transparent)!important;min-height:108px!important}
+.equipment-slot-card-bequipment01 .equipment-icon-bequipment01{flex:0 0 auto}
+.equipment-copy-bequipment01 strong{font-size:.78rem!important;white-space:nowrap}.equipment-copy-bequipment01 strong em{font-style:normal}.equipment-copy-bequipment01 small{display:block!important;line-height:1.35!important;font-size:.66rem!important}.equipment-copy-bequipment01 i{background:linear-gradient(90deg,var(--grade),transparent)!important}
+.equipment-icon-bequipment01{--grade:#ae9a72;width:42px;height:42px;border-radius:50%;display:inline-grid;place-items:center;border:2px solid var(--grade);color:var(--grade);background:radial-gradient(circle,rgba(255,255,255,.12),rgba(22,18,12,.95));box-shadow:0 0 14px color-mix(in srgb,var(--grade) 40%,transparent);font-family:serif;font-weight:800;font-style:normal}
+.equipment-storage-shell-bequipment01{margin:16px 0 10px}.equipment-storage-tabs-bequipment01{display:none!important}
+.equipment-pending-bequipment01{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid rgba(224,82,82,.5);background:rgba(88,27,23,.35);padding:9px 12px;border-radius:10px;margin-bottom:10px;color:#f0c7b5}.equipment-pending-bequipment01 button{border:1px solid #d58c55;background:#5d351d;color:#ffe4b0;border-radius:8px;padding:7px 12px}
+.equipment-storage-panel-bequipment01{border:1px solid rgba(206,182,126,.28);background:rgba(12,13,11,.58);border-radius:0;padding:0}.equipment-storage-head-bequipment01{min-height:42px;display:flex;justify-content:space-between;gap:10px;align-items:center;margin:0;padding:9px 12px;border-bottom:1px solid rgba(206,182,126,.22);background:linear-gradient(90deg,rgba(117,81,39,.15),transparent 74%)}.equipment-storage-head-bequipment01 strong{color:#e8d39a;font-weight:500}.equipment-storage-head-bequipment01 span{font-size:.72rem;color:#958a70}
+.equipment-filter-bequipment01{display:flex;gap:6px;overflow-x:auto;padding:7px 9px;border-bottom:1px solid rgba(206,182,126,.16)}.equipment-filter-bequipment01 button{white-space:nowrap;border:1px solid rgba(160,138,94,.25);background:rgba(28,23,15,.75);color:#ad9e7b;border-radius:999px;padding:5px 10px;font-size:.7rem}.equipment-filter-bequipment01 button.active{color:#f0d797;border-color:#b78e42}
+.equipment-grid-bequipment01{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:9px}.equipment-grid-item-bequipment01,.equipment-grid-empty-bequipment01{aspect-ratio:1;border-radius:0;min-width:0;overflow:hidden}.equipment-grid-item-bequipment01{--grade:#8f8068;position:relative;border:1px solid var(--grade);background:radial-gradient(circle at 50% 22%,color-mix(in srgb,var(--grade) 14%,transparent),rgba(13,11,8,.94) 62%);color:#d7c79e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:5px;box-shadow:inset 0 0 13px color-mix(in srgb,var(--grade) 8%,transparent)}.equipment-grid-item-bequipment01 .equipment-icon-bequipment01{width:34px;height:34px;font-size:.9rem}.equipment-grid-item-bequipment01 strong{font-size:.68rem;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.equipment-grid-item-bequipment01 small{font-size:.55rem;line-height:1.2;color:#94896f;max-width:100%;text-align:center}.equipment-grid-item-bequipment01 em{font-size:.56rem;color:#b5a47c;font-style:normal}.equipment-grade-bequipment01{font-size:.55rem;color:var(--grade)}.equipment-grid-lock-bequipment01{position:absolute;top:3px;right:4px;font-size:.5rem;color:#f0d693}.equipment-grid-empty-bequipment01{display:grid;place-items:center;border:1px dashed rgba(159,137,93,.16);color:rgba(158,139,101,.18);font-family:serif}.equipment-grid-item-bequipment01.material{--grade:#6fae9c}
+.equipment-unavailable-bequipment01{padding:14px;border:1px dashed rgba(180,145,76,.3);border-radius:10px;color:#9d9074;text-align:center}
+.equipment-modal-bequipment01{max-width:520px!important}.equipment-modal-bequipment01 header{--grade:#a68d62;display:flex;align-items:center;gap:14px;border-bottom:1px solid color-mix(in srgb,var(--grade) 45%,transparent);padding-bottom:13px}.equipment-modal-bequipment01 header h3{margin:3px 0 0;color:#e8d7ad}.equipment-modal-bequipment01 header h3 em{color:var(--grade);font-style:normal}.equipment-modal-bequipment01 header span{color:#9d9074;font-size:.72rem}.equipment-detail-main-bequipment01{display:flex;justify-content:space-between;align-items:center;padding:15px 0}.equipment-detail-main-bequipment01 strong{font-size:1.3rem;color:#f0d98e}.equipment-detail-main-bequipment01 span{color:#b5a47d}.equipment-modal-bequipment01>p{color:#b8aa8a;line-height:1.7}.equipment-modal-bequipment01 dl{display:grid;gap:6px}.equipment-modal-bequipment01 dl div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed rgba(160,140,100,.2);padding:6px 0}.equipment-modal-bequipment01 dt{color:#8f836a}.equipment-modal-bequipment01 dd{margin:0;color:#d8c69b}.equipment-modal-actions-bequipment01{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.danger-btn{border:1px solid #a95345;background:rgba(111,37,29,.45);color:#f0b9a8;border-radius:9px;padding:10px 13px}.danger-btn:disabled{opacity:.38}
+@media(max-width:760px){.equipment-grid-bequipment01{grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;padding:4px}.equipment-grid-item-bequipment01{gap:1px;padding:2px}.equipment-grid-item-bequipment01 .equipment-icon-bequipment01{width:28px;height:28px;font-size:.72rem}.equipment-grid-item-bequipment01 strong{font-size:.56rem}.equipment-grid-item-bequipment01 small{font-size:.46rem}.equipment-grid-item-bequipment01 em,.equipment-grade-bequipment01{font-size:.47rem}.equipment-slot-card-bequipment01{min-height:96px!important}.equipment-copy-bequipment01 strong{font-size:.69rem!important}.equipment-copy-bequipment01 small{font-size:.58rem!important}.equipment-icon-bequipment01{width:35px;height:35px}.equipment-storage-head-bequipment01{align-items:flex-start;flex-direction:column;padding:7px}.equipment-storage-head-bequipment01 strong{font-size:11px}.equipment-storage-head-bequipment01 span{font-size:7px}.equipment-filter-bequipment01{gap:4px;padding:5px 4px}.equipment-filter-bequipment01 button{padding:4px 7px;font-size:.58rem}}
+@media(max-width:420px){.equipment-grid-bequipment01{grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:3px}.equipment-grid-item-bequipment01 .equipment-icon-bequipment01{width:23px;height:23px;font-size:.62rem}.equipment-grid-item-bequipment01 strong{font-size:.48rem}.equipment-grid-item-bequipment01 small{display:none}.equipment-grid-item-bequipment01 em,.equipment-grade-bequipment01{font-size:.42rem}.equipment-filter-bequipment01{margin-inline:0}.equipment-modal-actions-bequipment01>*{flex:1 1 42%}}
+
+.batch-decompose-bequipment01{border-color:rgba(169,83,69,.55)!important;color:#e7b2a4!important}
+.equipment-batch-modal-bequipment01{max-width:640px!important}.equipment-batch-tools-bequipment01{display:flex;gap:8px;align-items:center;margin:12px 0}.equipment-batch-tools-bequipment01 button{border:1px solid rgba(185,151,86,.35);background:rgba(28,23,15,.8);color:#c8b88f;border-radius:8px;padding:7px 10px}.equipment-batch-tools-bequipment01 strong{margin-left:auto;color:#e7d099;font-size:.78rem}.equipment-batch-list-bequipment01{display:grid;gap:7px;max-height:min(52vh,440px);overflow:auto;padding-right:3px}.equipment-batch-row-bequipment01{--grade:#8f8068;display:grid;grid-template-columns:auto 42px 1fr auto;gap:9px;align-items:center;border:1px solid color-mix(in srgb,var(--grade) 48%,rgba(160,140,100,.25));border-radius:9px;padding:8px;background:rgba(17,14,10,.78)}.equipment-batch-row-bequipment01 input{width:18px;height:18px;accent-color:var(--grade)}.equipment-batch-row-bequipment01 .equipment-icon-bequipment01{width:34px;height:34px}.equipment-batch-row-bequipment01 strong{color:#ddd0ad}.equipment-batch-row-bequipment01 strong em{font-style:normal;color:var(--grade)}.equipment-batch-row-bequipment01 small{display:block;color:#93886e;font-size:.68rem;margin-top:2px}.equipment-batch-row-bequipment01 b{color:#d9c28b;font-size:.72rem;white-space:nowrap}
+@media(max-width:520px){.equipment-batch-row-bequipment01{grid-template-columns:auto 34px 1fr}.equipment-batch-row-bequipment01>b{grid-column:3}.equipment-batch-tools-bequipment01{flex-wrap:wrap}.equipment-batch-tools-bequipment01 strong{width:100%;margin-left:0}}
+
+.equipment-disabled-bequipment01{margin-bottom:10px;border:1px solid rgba(224,82,82,.42);background:rgba(88,27,23,.28);color:#e8b9ab;border-radius:10px;padding:9px 12px;font-size:.76rem}
+
+/* V1.7.4：洞府只保留原生单一6×6格；装备直接嵌入空格，溢出时进入装备匣。 */
+.equipment-cave-slot-bequipment01 .equipment-icon-bequipment01{position:absolute;left:24%;top:10%;width:52%;height:52%;font-size:.8rem}
+.equipment-cave-overflow-bequipment01{width:100%;min-height:34px;border:1px solid rgba(206,182,126,.25);border-top:0;background:rgba(201,167,95,.045);color:#bcae8a;font-size:9px}
+.equipment-cave-box-modal-bequipment01{max-width:680px!important}.equipment-cave-box-grid-bequipment01{max-height:min(62vh,620px);overflow:auto;margin-top:12px}
+@media(max-width:760px){.equipment-cave-slot-bequipment01 .equipment-icon-bequipment01{left:26%;top:8%;width:48%;height:48%;font-size:.58rem}}
+
+/* V1.7.4：随身装备背包在元神页常驻显示，无打开、关闭或遮罩层。 */
+.equipment-backpack-inline-bequipment01{margin:12px 0 0;border:1px solid rgba(206,182,126,.3);background:linear-gradient(180deg,rgba(32,27,19,.82),rgba(14,13,10,.9));padding:10px}
+.equipment-backpack-inline-bequipment01>.equipment-storage-panel-bequipment01{margin:0}
+#equipmentBackpackLauncherBEquipment01,[data-equipment-backpack-modal],#equipmentStorageShellBEquipment01{display:none!important}
+
+
+@media(max-width:520px){.equipment-backpack-inline-bequipment01{margin-top:8px;padding:5px}}
+
+/* V1.7.8.2 UIFIX3：随身背包紧贴元神信息区。 */
+@media(max-width:760px){.equipment-backpack-inline-bequipment01{margin-top:3px!important;padding-top:5px}}
+
+/* V1.8.2 CACHE76 UIFIX3：背包装备小格显示孔位占用（已用/总数），已穿戴大卡片保持原显示。 */
+.equipment-enhancement-badge-bequipment01{position:absolute;left:3px;top:3px;z-index:2;min-width:25px;padding:2px 4px;border:1px solid rgba(245,210,111,.7);background:rgba(52,33,10,.92);color:#ffe59a;font-size:.55rem;line-height:1;border-radius:999px;box-shadow:0 0 8px rgba(242,208,107,.28)}
+.equipment-cave-slot-bequipment01 .equipment-enhancement-badge-bequipment01{left:2px;top:2px}
+.equipment-resource-strip-bequipment01{width:calc(100% - 18px);margin:9px;display:grid;grid-template-columns:auto auto 1fr;gap:10px;align-items:center;border:1px solid rgba(111,174,156,.42);background:linear-gradient(90deg,rgba(34,75,65,.28),rgba(20,17,12,.82));color:#d8cfad;padding:8px 10px;text-align:left}
+.equipment-resource-strip-bequipment01>span{display:grid;grid-template-columns:28px auto;grid-template-rows:auto auto;column-gap:7px;align-items:center;min-width:112px}
+.equipment-resource-strip-bequipment01 i{grid-row:1/3;width:28px;height:28px;border:1px solid rgba(111,174,156,.68);border-radius:50%;display:grid;place-items:center;color:#9ed8c6;font-style:normal;font-family:serif}
+.equipment-resource-strip-bequipment01 b{font-size:.64rem;color:#a99e80}.equipment-resource-strip-bequipment01 strong{font-size:.76rem;color:#f0dca4}.equipment-resource-strip-bequipment01 small{justify-self:end;color:#91886f;font-size:.62rem;line-height:1.5}
+.enhance-btn-bequipment01{border:1px solid rgba(224,178,77,.72);background:linear-gradient(180deg,rgba(126,86,23,.92),rgba(75,43,12,.96));color:#ffe9a9;border-radius:9px;padding:10px 13px;font-weight:700;box-shadow:0 0 12px rgba(224,178,77,.15)}
+.enhance-btn-bequipment01:disabled{opacity:.4}
+.equipment-enhance-modal-bequipment01{max-width:590px!important}
+.equipment-enhance-levels-bequipment01{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:stretch;margin:16px 0}
+.equipment-enhance-levels-bequipment01>div{border:1px solid rgba(185,151,86,.3);background:rgba(17,14,9,.78);padding:13px;display:grid;gap:5px;text-align:center}
+.equipment-enhance-levels-bequipment01>div.next{border-color:rgba(224,178,77,.65);box-shadow:inset 0 0 24px rgba(224,178,77,.08)}
+.equipment-enhance-levels-bequipment01>i{align-self:center;color:#d5b66e;font-style:normal;font-size:1.4rem}
+.equipment-enhance-levels-bequipment01 small{color:#8f836a}.equipment-enhance-levels-bequipment01 strong{color:#f1d17b;font-size:1.8rem}.equipment-enhance-levels-bequipment01 span{color:#e5d6ae;font-size:.78rem}.equipment-enhance-levels-bequipment01 em{color:#a89a78;font-style:normal;font-size:.7rem}
+.equipment-enhance-success-bequipment01{margin:14px 0;padding:12px 14px;border:1px solid rgba(106,190,126,.58);background:rgba(29,76,42,.28);box-shadow:inset 0 0 22px rgba(91,178,112,.08)}.equipment-enhance-success-bequipment01 strong{display:block;color:#bce8b9;font-size:.92rem}.equipment-enhance-success-bequipment01 p{margin:5px 0 0!important;color:#c8d9bf!important;font-size:.76rem;line-height:1.65}
+.equipment-enhance-costs-bequipment01{margin:0!important}.equipment-enhance-costs-bequipment01 dd.risk{color:#efb268}.equipment-enhance-costs-bequipment01 dd.insufficient{color:#ef8677;font-weight:700}
+.equipment-destroy-warning-bequipment01{margin-top:14px;padding:12px 13px;border:1px solid rgba(213,80,66,.66);background:linear-gradient(135deg,rgba(92,24,20,.52),rgba(38,14,12,.7));color:#f3b6a9}
+.equipment-destroy-warning-bequipment01 strong{display:block;color:#ffcec2;letter-spacing:.15em}.equipment-destroy-warning-bequipment01 p{margin:6px 0 0!important;color:#e6a89c!important;line-height:1.7!important}
+.equipment-enhance-actions-bequipment01{display:grid!important;grid-template-columns:1fr 1fr}.equipment-enhance-actions-bequipment01 .fate{font-weight:800;letter-spacing:.06em;min-height:46px}.equipment-insufficient-note-bequipment01{color:#e69a8e!important;text-align:center;margin:9px 0 0!important}
+.equipment-result-modal-bequipment01{max-width:520px!important;text-align:center}.equipment-result-modal-bequipment01 header{justify-content:center}.equipment-result-sigil-bequipment01{width:62px;height:62px;border:2px solid currentColor;border-radius:50%;display:grid;place-items:center;font-size:1.8rem;font-family:serif}.equipment-result-modal-bequipment01.success .equipment-result-sigil-bequipment01{color:#e6c66e;box-shadow:0 0 25px rgba(230,198,110,.3)}.equipment-result-modal-bequipment01.destroyed .equipment-result-sigil-bequipment01{color:#df7667;box-shadow:0 0 25px rgba(223,118,103,.3)}.equipment-result-modal-bequipment01>p{margin:18px 0!important}.equipment-result-modal-bequipment01 .equipment-modal-actions-bequipment01>*{width:100%}
+@media(max-width:620px){.equipment-resource-strip-bequipment01{grid-template-columns:1fr 1fr}.equipment-resource-strip-bequipment01 small{grid-column:1/3;justify-self:start}.equipment-enhance-levels-bequipment01{gap:6px}.equipment-enhance-levels-bequipment01>div{padding:9px 5px}.equipment-enhance-levels-bequipment01 strong{font-size:1.45rem}.equipment-enhance-actions-bequipment01{grid-template-columns:1fr!important}}
+/* CACHE64 UIFIX4：不改变6×6格子尺寸；小格仅显示强化、图标、名称、品级与孔位占用（已用/总数）；大卡片孔位显示不变。 */
+.equipment-grid-item-bequipment01 strong{line-height:1.05}
+.equipment-enhancement-badge-bequipment01{left:2px;top:2px;min-width:18px;padding:1px 3px;font-size:.44rem;line-height:1}
+@media(max-width:760px){
+  .equipment-grid-item-bequipment01 strong{width:100%;font-size:.49rem;line-height:1.02;white-space:normal;overflow:hidden;text-overflow:clip;word-break:break-all;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .equipment-grade-bequipment01{font-size:.42rem;line-height:1}
+  .equipment-enhancement-badge-bequipment01{left:1px;top:1px;min-width:15px;padding:1px 2px;font-size:.36rem}
+}
+@media(max-width:420px){
+  .equipment-grid-item-bequipment01{gap:0}
+  .equipment-grid-item-bequipment01 strong{font-size:.39rem;line-height:1}
+  .equipment-grade-bequipment01{font-size:.35rem;line-height:1}
+  .equipment-grid-item-bequipment01 em{font-size:.38rem;line-height:1}
+  .equipment-enhancement-badge-bequipment01{min-width:13px;padding:1px;font-size:.30rem}
+}
+
+/* V1.8.2 CACHE75 EQUIPMENT-FX1-UIFIX3：装备强化双圈定位修复。
+   +1～+5：沿用原始静态单圈；
+   +6～+7：原内圈旋转；
+   +8～+9：内圈静止，新增当前品级色外圈旋转；
+   +10：内圈静止，外圈改为黄玄地天仙五色连续渐变旋转。 */
+.equipment-icon-bequipment01.equipment-effect-bequipment01{
+  position:relative;isolation:isolate;overflow:visible;
+  text-shadow:none!important;filter:none!important;
+}
+.equipment-icon-bequipment01.equipment-effect-bequipment01::before,
+.equipment-icon-bequipment01.equipment-effect-bequipment01::after{
+  content:"";position:absolute;left:50%;top:50%;border-radius:50%;
+  pointer-events:none;box-sizing:border-box;
+  transform:translate(-50%,-50%) rotate(0deg);
+  transform-origin:50% 50%;will-change:transform;
+}
+/* +6～+7：原本的一个圈自己转动，不新增第二圈，不加光晕。 */
+.equipment-icon-bequipment01.equipment-effect-tier6-bequipment01{
+  border-color:transparent!important;box-shadow:none!important;
+}
+.equipment-icon-bequipment01.equipment-effect-tier6-bequipment01::before{
+  width:calc(100% + 4px);height:calc(100% + 4px);padding:2px;z-index:1;
+  background:conic-gradient(from 0deg,
+    color-mix(in srgb,var(--grade) 42%,#17110d) 0%,
+    var(--grade) 18%,
+    color-mix(in srgb,var(--grade) 82%,#fff) 30%,
+    var(--grade) 44%,
+    color-mix(in srgb,var(--grade) 36%,#17110d) 62%,
+    var(--grade) 82%,
+    color-mix(in srgb,var(--grade) 42%,#17110d) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:equipmentFxInnerSpinBEquipment01 2.25s linear infinite;
+}
+.equipment-icon-bequipment01.equipment-effect-tier6-bequipment01::after{display:none}
+/* +8～+9：原内圈保持静止，外圈使用当前装备品级色旋转。 */
+.equipment-icon-bequipment01.equipment-effect-tier8-bequipment01{
+  border-color:var(--grade)!important;box-shadow:none!important;
+}
+.equipment-icon-bequipment01.equipment-effect-tier8-bequipment01::before{display:none}
+.equipment-icon-bequipment01.equipment-effect-tier8-bequipment01::after{
+  width:calc(100% + 16px);height:calc(100% + 16px);padding:2px;z-index:1;
+  background:conic-gradient(from 0deg,
+    color-mix(in srgb,var(--grade) 30%,#15100d) 0%,
+    var(--grade) 19%,
+    color-mix(in srgb,var(--grade) 84%,#fff) 31%,
+    var(--grade) 48%,
+    color-mix(in srgb,var(--grade) 32%,#15100d) 66%,
+    var(--grade) 84%,
+    color-mix(in srgb,var(--grade) 30%,#15100d) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:equipmentFxOuterSpinBEquipment01 2.65s linear infinite;
+}
+/* +10：原内圈静止，外圈为五种装备品级色的连续渐变。 */
+.equipment-icon-bequipment01.equipment-effect-tier10-bequipment01{
+  border-color:var(--grade)!important;box-shadow:none!important;
+}
+.equipment-icon-bequipment01.equipment-effect-tier10-bequipment01::before{display:none}
+.equipment-icon-bequipment01.equipment-effect-tier10-bequipment01::after{
+  width:calc(100% + 16px);height:calc(100% + 16px);padding:2px;z-index:1;
+  background:conic-gradient(from 0deg,
+    #c99a32 0%,
+    #4f86d9 20%,
+    #925fd1 40%,
+    #e05252 60%,
+    #f2d06b 80%,
+    #c99a32 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:equipmentFxOuterSpinBEquipment01 2.85s linear infinite;
+}
+@keyframes equipmentFxInnerSpinBEquipment01{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+@keyframes equipmentFxOuterSpinBEquipment01{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+/* 背包固定6×6小格只缩小外圈尺寸，不改变格子大小与文字排版。 */
+@media(max-width:760px){
+  .equipment-grid-item-bequipment01 .equipment-icon-bequipment01.equipment-effect-tier6-bequipment01::before{
+    width:calc(100% + 3px);height:calc(100% + 3px);padding:1.5px
+  }
+  .equipment-grid-item-bequipment01 .equipment-icon-bequipment01.equipment-effect-tier8-bequipment01::after,
+  .equipment-grid-item-bequipment01 .equipment-icon-bequipment01.equipment-effect-tier10-bequipment01::after{
+    width:calc(100% + 10px);height:calc(100% + 10px);padding:1.5px
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .equipment-icon-bequipment01.equipment-effect-bequipment01::before,
+  .equipment-icon-bequipment01.equipment-effect-bequipment01::after{animation:none!important}
+}
+
+/* CACHE73 UIFIX1：旋转圆环始终以装备图标中心为旋转轴，禁止绕图标偏移并遮挡名称。 */
+
+/* V1.8.2 CACHE75 EQUIPMENT-FX1-UIFIX3：手机端已穿戴大卡片移除境界行，内容整体下移，确保强化圆环完整显示。 */
+@media(max-width:620px){
+  .equipment-slot-card-bequipment01 .equipment-icon-bequipment01{transform:translateY(4px)}
+  .equipment-slot-card-bequipment01 .equipment-copy-bequipment01{transform:translateY(4px)}
+}
+
+/* V1.8.2 CACHE75 EQUIPMENT-FX1-UIFIX3：背包装备小格品级改为右上角单字角标。
+   不改变固定6×6与格子尺寸；移除原品级占行，为名称和孔位腾出空间。 */
+.equipment-grid-item-bequipment01 .equipment-grade-corner-bequipment01{
+  position:absolute;right:3px;top:3px;z-index:5;
+  color:var(--grade);font-size:.52rem;line-height:1;font-weight:800;
+  font-style:normal;letter-spacing:0;text-shadow:none;pointer-events:none;
+}
+.equipment-grid-item-bequipment01 .equipment-grid-lock-bequipment01{
+  top:14px;right:3px;z-index:5;
+}
+@media(max-width:760px){
+  .equipment-grid-item-bequipment01 .equipment-grade-corner-bequipment01{right:2px;top:2px;font-size:.39rem}
+  .equipment-grid-item-bequipment01 .equipment-grid-lock-bequipment01{top:11px;right:2px;font-size:.34rem}
+}
+@media(max-width:420px){
+  .equipment-grid-item-bequipment01 .equipment-grade-corner-bequipment01{right:1px;top:1px;font-size:.32rem}
+  .equipment-grid-item-bequipment01 .equipment-grid-lock-bequipment01{top:9px;right:1px;font-size:.28rem}
+}
+
+/* V1.8.2 CACHE76 EQUIPMENT-FX1-UIFIX4：仅手机端背包小格装备圆圈上移2px。
+   不改变格子尺寸；不影响已穿戴大卡片；圆圈仍保持在格子边界内。 */
+@media(max-width:760px){
+  .equipment-grid-item-bequipment01 .equipment-icon-bequipment01{transform:translateY(-2px)}
+}

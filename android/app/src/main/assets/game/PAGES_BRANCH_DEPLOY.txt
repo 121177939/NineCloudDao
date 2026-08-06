@@ -1,0 +1,13 @@
+九霄问道 V2.0.4 CACHE96
+
+本包是已经构建完成的静态站点。
+不使用 upload-pages-artifact，不使用 deploy-pages，不使用 github-pages Environment。
+
+GitHub 设置：
+Settings -> Pages -> Source: Deploy from a branch -> main -> /(root)
+
+上传前取消旧的 Deploying to github-pages 运行；覆盖 .github/workflows/deploy-pages.yml 后，新 push 不会再启动自定义部署作业。
+
+构建号：v2-0-4-cache96-equipment-worldnews3-branchpublish2-appautoupdate1
+数据库最低基线：V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20
+本版本无新增SQL，下一SQL编号232。

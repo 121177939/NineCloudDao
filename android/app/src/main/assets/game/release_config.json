@@ -1,0 +1,29 @@
+{
+  "version": "V2.0.4",
+  "releaseLabel": "V2.0.4 CACHE96",
+  "buildId": "v2-0-4-cache96-equipment-worldnews3-branchpublish2-appautoupdate1",
+  "cacheEpoch": 96,
+  "minimumDatabaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
+  "sqlRevision": "211-221 + 229-231",
+  "migrationSql": [],
+  "features": [
+    "EQUIPMENT_ENHANCEMENT_WORLD_NEWS_REAL_TABLE_FIX",
+    "EQUIPMENT_WORLD_NEWS_TEXT_ONLY_RED",
+    "GITHUB_PAGES_BRANCH_SOURCE_NO_DEPLOY_JOB",
+    "ANDROID_GITHUB_RELEASE_AUTO_UPDATE"
+  ],
+  "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
+  "deploymentAllowed": true,
+  "gmPublicDeployment": false,
+  "clientHotfix": "BRANCHPUBLISH2_APPAUTOUPDATE1",
+  "databaseRelease": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231",
+  "notes": [
+    "游戏业务与数据库结构不变，沿用V2.0.3强化界闻修复。",
+    "网页发布取消自定义deploy-pages作业，改用GitHub Pages分支发布源。",
+    "Android正式版自动从同一GitHub仓库的最新Release检查新版APK。",
+    "本版本没有新增SQL，下一SQL编号仍为232。"
+  ],
+  "gmVersion": "ADMIN9 R20",
+  "nextSqlNumber": 232,
+  "deploymentMethod": "github_pages_branch_source_without_custom_deploy_job"
+}

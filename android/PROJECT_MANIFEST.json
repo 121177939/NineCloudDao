@@ -1,0 +1,51 @@
+{
+  "artifactType": "Android Studio complete project",
+  "projectName": "JiuxiaoWendaoAndroid",
+  "deliveryRevision": "R5-CACHE96-BRANCHPUBLISH2-APPAUTOUPDATE1",
+  "generatedDate": "2026-08-06",
+  "game": {
+    "name": "九霄问道",
+    "version": "V2.0.4 CACHE96",
+    "buildId": "v2-0-4-cache96-equipment-worldnews3-branchpublish2-appautoupdate1",
+    "databaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
+    "nextSqlNumber": 232,
+    "bundledRuntimeFiles": 27,
+    "bundledRuntimeBytes": 1253923,
+    "sourcePackage": "V2.0.4 CACHE96 branch publishing frontend",
+    "publicPackage": "Jiuxiao_V2.0.4_CACHE96_BRANCHPUBLISH2_GitHub_MainRoot_Deploy_R1_FULL.zip"
+  },
+  "android": {
+    "applicationIdDefault": "com.jiuxiaowendao.game",
+    "versionCode": 2000496,
+    "versionName": "2.0.4-cache96",
+    "minSdk": 24,
+    "targetSdk": 34,
+    "compileSdk": 34,
+    "agp": "8.2.2",
+    "gradle": "8.2.1",
+    "jdk": "17",
+    "runtime": "APK-bundled assets rendered through WebViewAssetLoader"
+  },
+  "update": {
+    "provider": "same public GitHub repository latest Release",
+    "automaticCheck": "on app launch and foreground, throttled to 30 minutes",
+    "releaseAssets": [
+      "jiuxiao-wendao-release.apk",
+      "app-update.json",
+      "SHA256SUMS.txt"
+    ],
+    "checks": [
+      "versionCode",
+      "packageName",
+      "SHA-256",
+      "APK signing certificate"
+    ],
+    "silentInstall": false
+  },
+  "validation": {
+    "staticValidationPassed": true,
+    "androidAssembleExecutedInDeliveryEnvironment": false,
+    "note": "No Android SDK/Maven build in delivery environment; build in Android Studio or GitHub Actions."
+  },
+  "sensitiveFilesIncluded": false
+}
