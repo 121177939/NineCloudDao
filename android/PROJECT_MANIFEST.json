@@ -1,23 +1,23 @@
 {
   "artifactType": "Android Studio complete project",
   "projectName": "JiuxiaoWendaoAndroid",
-  "deliveryRevision": "R5-CACHE96-BRANCHPUBLISH2-APPAUTOUPDATE1",
+  "deliveryRevision": "R7-CACHE97-PAGESUNLOCK1-APPDIALOGUPDATE1",
   "generatedDate": "2026-08-06",
   "game": {
     "name": "九霄问道",
-    "version": "V2.0.4 CACHE96",
-    "buildId": "v2-0-4-cache96-equipment-worldnews3-branchpublish2-appautoupdate1",
+    "version": "V2.0.5 CACHE97",
+    "buildId": "v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1",
     "databaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
     "nextSqlNumber": 232,
     "bundledRuntimeFiles": 27,
-    "bundledRuntimeBytes": 1253923,
-    "sourcePackage": "V2.0.4 CACHE96 branch publishing frontend",
-    "publicPackage": "Jiuxiao_V2.0.4_CACHE96_BRANCHPUBLISH2_GitHub_MainRoot_Deploy_R1_FULL.zip"
+    "bundledRuntimeBytes": 1254192,
+    "sourcePackage": "V2.0.5 CACHE97 same-repository Pages frontend",
+    "publicPackage": "九霄问道_V2.0.5_CACHE97_GitHub网页部署包_原Pages流程_R1.zip"
   },
   "android": {
     "applicationIdDefault": "com.jiuxiaowendao.game",
-    "versionCode": 2000496,
-    "versionName": "2.0.4-cache96",
+    "versionCode": 2000597,
+    "versionName": "2.0.5-cache97",
     "minSdk": 24,
     "targetSdk": 34,
     "compileSdk": 34,

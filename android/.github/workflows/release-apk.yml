@@ -65,27 +65,24 @@ jobs:
           test -n "$ANDROID_KEY_ALIAS"
           test -n "$ANDROID_KEYSTORE_PASSWORD"
           test -n "$ANDROID_KEY_PASSWORD"
-          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/release.keystore
-          cat > android/signing.properties <<EOF
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > release.keystore
+          cat > signing.properties <<EOF
           storeFile=release.keystore
           storePassword=$ANDROID_KEYSTORE_PASSWORD
           keyAlias=$ANDROID_KEY_ALIAS
           keyPassword=$ANDROID_KEY_PASSWORD
           EOF
 
-      - name: Validate Android project
-        working-directory: android
+      - name: Validate project
         run: python3 tools/validate_project.py
 
-      - name: Build signed APK and bind update source to this repository
-        working-directory: android
+      - name: Build signed release APK with this repository as update source
         run: >-
           ./gradlew --no-daemon clean assembleRelease
           -PGITHUB_OWNER="${{ github.repository_owner }}"
           -PGITHUB_REPO="${{ github.event.repository.name }}"
 
       - name: Prepare release assets
-        working-directory: android
         shell: bash
         run: |
           mkdir -p release-dist
@@ -101,10 +98,10 @@ jobs:
           TAG: ${{ steps.release.outputs.tag }}
         run: |
           if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" --target "$GITHUB_SHA" --title "九霄问道 $TAG" --notes-file android/release/release-notes.txt
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "九霄问道 $TAG" --notes-file release/release-notes.txt
           fi
           gh release upload "$TAG" \
-            android/release-dist/jiuxiao-wendao-release.apk \
-            android/release-dist/app-update.json \
-            android/release-dist/SHA256SUMS.txt \
+            release-dist/jiuxiao-wendao-release.apk \
+            release-dist/app-update.json \
+            release-dist/SHA256SUMS.txt \
             --clobber

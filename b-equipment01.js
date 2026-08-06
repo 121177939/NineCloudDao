@@ -2,7 +2,7 @@
   'use strict';
 
   const MODULE = 'B-EQUIPMENT01';
-  const VERSION = '2.0.4-cache96-equipment-worldnews3-branchpublish2-appautoupdate1';
+  const VERSION = '2.0.5-cache97-equipment-worldnews3-branchpublish2-appautoupdate1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');

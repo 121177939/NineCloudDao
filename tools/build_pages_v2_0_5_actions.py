@@ -11,7 +11,7 @@ def text(x): return (root/x).read_text('utf-8')
 styles=text('styles.css'); baseline=json.loads(text('CURRENT_BASELINE.json'))
 checks={
  'version':text('VERSION.txt').splitlines()[0]==label and build in text('VERSION.txt'),
- 'config':all(x in text('config.js') for x in [label,build,'cacheEpoch: 96']),
+ 'config':all(x in text('config.js') for x in [label,build,'cacheEpoch: 97']),
  'text-red':'.world-event-row.is-equipment-enhancement .world-event-copy p' in styles and 'color: #ef5f5f' in styles,
  'no-special-background':not re.search(r'\.world-event-row\.is-equipment-enhancement\s*\{[^}]*(background|border-left)',styles,re.S),
  'database':baseline.get('nextSqlNumber')==232 and baseline.get('sqlRevision')=='211-221 + 229-231',

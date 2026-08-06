@@ -2,7 +2,7 @@
 from pathlib import Path
 import json, re, sys
 root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve()
-build='v2-0-4-cache96-equipment-worldnews3-branchpublish2-appautoupdate1'; label='V2.0.4 CACHE96'
+build='v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1'; label='V2.0.5 CACHE97'
 required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json']
 missing=[x for x in required if not (root/x).is_file()]
 if missing: raise SystemExit('MISSING:'+','.join(missing))

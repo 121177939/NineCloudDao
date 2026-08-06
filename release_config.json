@@ -1,8 +1,8 @@
 {
-  "version": "V2.0.4",
-  "releaseLabel": "V2.0.4 CACHE96",
-  "buildId": "v2-0-4-cache96-equipment-worldnews3-branchpublish2-appautoupdate1",
-  "cacheEpoch": 96,
+  "version": "V2.0.5",
+  "releaseLabel": "V2.0.5 CACHE97",
+  "buildId": "v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1",
+  "cacheEpoch": 97,
   "minimumDatabaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
   "sqlRevision": "211-221 + 229-231",
   "migrationSql": [],
@@ -11,19 +11,19 @@
     "EQUIPMENT_WORLD_NEWS_TEXT_ONLY_RED",
     "ANDROID_GITHUB_RELEASE_AUTO_UPDATE",
     "GITHUB_PAGES_ORIGINAL_ACTIONS_FLOW_RECOVERY",
-    "ANDROID_UPDATE_DIALOG_NO_FLOATING_BUTTON"
+    "ANDROID_UPDATE_DIALOG_NO_FLOATING_BUTTON",
+    "CLIENT_VERSION_205_CACHE97"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "PAGESWORKFLOW_RECOVERY1_APPAUTOUPDATE2_NOFAB",
+  "clientHotfix": "PAGESENVUNLOCK1_APPDIALOGUPDATE1_VERSION205",
   "databaseRelease": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231",
   "notes": [
-    "游戏业务与数据库结构不变，沿用V2.0.4 CACHE96游戏资源。",
-    "网页发布恢复为V1.8.7 CACHE89相同的GitHub Actions Pages Artifact流程，不更换仓库。",
-    "工作流自动校正Pages Source为GitHub Actions，并将deploy-pages等待上限提高到20分钟。",
-    "Android删除右下角浮动按钮，仅检测到新版本时弹窗询问是否更新。",
-    "本版本没有新增SQL，下一SQL编号仍为232。"
+    "V2.0.5 CACHE97为客户端与Android版本升级，游戏玩法和数据库结构不变。",
+    "网页继续使用同一仓库的GitHub Actions Pages Artifact部署流程。",
+    "Android不显示右下角浮动更新按钮；仅检测到更高versionCode时弹窗询问是否更新。",
+    "本版本没有新增SQL，数据库继续沿用V2.0.3 CACHE95 / SQL211-221 + SQL229-231，下一SQL编号仍为232。"
   ],
   "gmVersion": "ADMIN9 R20",
   "nextSqlNumber": 232,

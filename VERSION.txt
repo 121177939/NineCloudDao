@@ -1,4 +1,6 @@
-V2.0.4 CACHE96
-v2-0-4-cache96-equipment-worldnews3-branchpublish2-appautoupdate1
-ADMIN9 R20 / DB baseline V2.0.3 CACHE95 / SQL211-221 + SQL229-231
-CACHE96
+V2.0.5 CACHE97
+v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1
+V2.0.5
+CACHE97
+DATABASE: V2.0.3 CACHE95 / SQL211-221 + SQL229-231
+NEXT_SQL: 232
