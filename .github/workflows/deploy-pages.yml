@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V2.0.6 CACHE98 to GitHub Pages
+name: Deploy NineCloudDao V2.0.7 CACHE99 to GitHub Pages
 
 on:
   push:
@@ -9,9 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  deployments: write
 
-# Keep the exact CACHE89 deployment model: one Pages deployment at a time.
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -22,106 +20,63 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Verify repository package structure
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Repository root: $PWD"
-          test -f index.html
-          test -f tools/build_pages_v2_0_6_actions.py
-          test -f .nojekyll
-          test -f .github/workflows/deploy-pages.yml
-          echo "Required repository files are present."
+        uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
-      - name: Cancel stale Pages deployments from earlier failed runs
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          echo "Searching for stale Pages deployments..."
-          gh api --paginate "repos/${GITHUB_REPOSITORY}/deployments?per_page=100"             --jq '.[] | select(.environment == "github-pages" or .environment == "nineclouddao-pages-live") | [.id, .sha, .environment] | @tsv'             > /tmp/pages-deployments.tsv || true
-
-          while IFS=$'\t' read -r deployment_id deployment_sha deployment_environment; do
-            [ -n "${deployment_id:-}" ] || continue
-            [ "$deployment_sha" != "$GITHUB_SHA" ] || continue
-            state="$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses?per_page=1"               --jq '.[0].state // "unknown"' 2>/dev/null || echo unknown)"
-            case "$state" in
-              queued|pending|in_progress|waiting)
-                echo "Cancelling stale Pages deployment: id=$deployment_id sha=$deployment_sha env=$deployment_environment state=$state"
-                gh api --method POST                   "repos/${GITHUB_REPOSITORY}/pages/deployments/${deployment_sha}/cancel" >/dev/null 2>&1 || true
-                gh api --method POST                   "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses"                   -f state=inactive                   -f description='Superseded by a newer GitHub Pages deployment' >/dev/null 2>&1 || true
-                ;;
-              *)
-                echo "Keeping completed deployment: id=$deployment_id state=$state"
-                ;;
-            esac
-          done < /tmp/pages-deployments.tsv
-
-      - name: Verify Pages is configured for GitHub Actions
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          BUILD_TYPE="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.build_type // ""')"
-          if [ -n "$BUILD_TYPE" ]; then
-            echo "GitHub Pages build_type: $BUILD_TYPE"
-            if [ "$BUILD_TYPE" != "workflow" ]; then
-              echo "::error::Settings > Pages > Build and deployment > Source 必须选择 GitHub Actions。当前值：$BUILD_TYPE"
-              exit 1
-            fi
-          else
-            echo "Pages API未返回build_type；继续交给configure-pages进行官方校验。"
-          fi
-
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "24"
+
+      - name: Verify source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f index.html
+          test -f .nojekyll
+          test -f tools/build_pages_v2_0_7_actions.py
+          test -f VERSION.txt
+          grep -F "V2.0.7 CACHE99" VERSION.txt
 
       - name: Check JavaScript syntax
         shell: bash
         run: |
           set -euo pipefail
           for f in app.js config.js update-guard.js sw.js b-paigow01.js b-equipment01.js b-secret-realm01.js b-sect-v2.js paigow-realtime.js paigow-app.js b-paigow02-ui.js; do
-            echo "Checking $f"
             node --check "$f"
           done
 
-      - name: Build lean Pages artifact
+      - name: Build Pages site
         shell: bash
         run: |
           set -euo pipefail
           rm -rf .pages-site
-          python3 tools/build_pages_v2_0_6_actions.py . .pages-site
+          python3 tools/build_pages_v2_0_7_actions.py . .pages-site
           test -f .pages-site/index.html
           test -f .pages-site/.nojekyll
 
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v5
 
       - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v4
         with:
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: .pages-site
+          retention-days: 1
           include-hidden-files: true
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 35
     permissions:
       pages: write
       id-token: write
-      deployments: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -130,6 +85,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
         with:
-          timeout: 600000
-          reporting_interval: 5000
-          error_count: 20
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 1800000
+          reporting_interval: 10000
+          error_count: 30

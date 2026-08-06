@@ -1,6 +1,2 @@
-九霄问道 V2.0.6 CACHE98
-
-APK内置本地运行资源。网页部署仍使用同一仓库GitHub Actions Pages Artifact流程。
-构建号：v2-0-6-cache98-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1
-数据库：V2.0.3 CACHE95 / SQL211-221 + SQL229-231
-下一SQL：232
+APK_LOCAL_GAME=V2.0.7 CACHE99
+REMOTE_PAGE_NOT_USED=true

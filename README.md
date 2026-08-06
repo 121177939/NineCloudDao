@@ -1,11 +1,11 @@
-# 九霄问道 V2.0.6 CACHE98
+# 九霄问道 V2.0.7 CACHE99：全新GitHub仓库版
 
-构建号：`v2-0-6-cache98-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1`
+这是用于重建干净仓库的完整根目录。解压后应直接看到 `.github`、`android`、`index.html`、`VERSION.txt` 等文件。
 
-本包用于覆盖现在的同一个GitHub仓库。网页继续使用 `.github/workflows/deploy-pages.yml` 的 GitHub Actions Pages Artifact流程；Android正式版通过 `.github/workflows/release-apk.yml` 发布到同仓库Releases。
+- 网页：官方 GitHub Actions Pages Artifact 流程。
+- APP：APK内本地运行游戏资源；只在发现更高版本时弹窗询问更新。
+- APP更新源：同一个GitHub仓库的最新正式 Release。
+- Android：`versionCode=2000799`，`versionName=2.0.7-cache99`。
+- 数据库：无新增SQL，继续使用 V2.0.3 CACHE95 / SQL211-221 + SQL229-231；下一SQL编号232。
 
-APP版本：`2.0.6-cache98`（`2000698`）。APP没有右下角浮动更新圆圈；仅检测到更高版本时弹窗询问是否更新。
-
-数据库继续沿用 V2.0.3 CACHE95 / SQL211-221 + SQL229-231，本版本没有新增SQL，下一SQL编号仍为232。
-
-详见 `V2.0.6_Pages与华为网络修复_R1说明.md`。
+请先阅读：`00_重建新仓库与APP更新完整流程.md`。

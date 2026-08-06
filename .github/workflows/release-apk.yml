@@ -1,26 +1,30 @@
 name: Build and publish Android APK
 
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release标签；留空使用 v2.0.6-cache98"
+        description: "Release标签；留空使用 v2.0.7-cache99"
         required: false
         type: string
+  push:
+    tags:
+      - "v*"
 
 permissions:
   contents: write
 
+concurrency:
+  group: android-release
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
       - name: Resolve release tag
         id: release
@@ -28,21 +32,23 @@ jobs:
         env:
           MANUAL_TAG: ${{ inputs.release_tag }}
         run: |
+          set -euo pipefail
           if [ "$GITHUB_REF_TYPE" = "tag" ]; then
             TAG="$GITHUB_REF_NAME"
-          elif [ -n "$MANUAL_TAG" ]; then
+          elif [ -n "${MANUAL_TAG:-}" ]; then
             TAG="$MANUAL_TAG"
           else
-            TAG="v2.0.6-cache98"
+            TAG="v2.0.7-cache99"
           fi
           case "$TAG" in v*) ;; *) echo "Release标签必须以v开头" >&2; exit 1 ;; esac
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Set up Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
+          cache: gradle
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -50,6 +56,7 @@ jobs:
       - name: Install Android SDK 34
         shell: bash
         run: |
+          set -euo pipefail
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
@@ -61,6 +68,7 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
+          set -euo pipefail
           test -n "$ANDROID_KEYSTORE_BASE64"
           test -n "$ANDROID_KEY_ALIAS"
           test -n "$ANDROID_KEYSTORE_PASSWORD"
@@ -75,19 +83,25 @@ jobs:
 
       - name: Validate Android project
         working-directory: android
-        run: python3 tools/validate_project.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_project.py
 
-      - name: Build signed APK and bind update source to this repository
-        working-directory: android
-        run: >-
-          ./gradlew --no-daemon clean assembleRelease
-          -PGITHUB_OWNER="${{ github.repository_owner }}"
-          -PGITHUB_REPO="${{ github.event.repository.name }}"
-
-      - name: Prepare release assets
+      - name: Build signed release APK
         working-directory: android
         shell: bash
         run: |
+          set -euo pipefail
+          chmod +x gradlew
+          ./gradlew --no-daemon clean assembleRelease             -PGITHUB_OWNER="${{ github.repository_owner }}"             -PGITHUB_REPO="${{ github.event.repository.name }}"
+
+      - name: Prepare update files
+        working-directory: android
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf release-dist
           mkdir -p release-dist
           cp app/build/outputs/apk/release/app-release.apk release-dist/jiuxiao-wendao-release.apk
           SHA256=$(sha256sum release-dist/jiuxiao-wendao-release.apk | awk '{print $1}')
@@ -100,11 +114,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.release.outputs.tag }}
         run: |
+          set -euo pipefail
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" --target "$GITHUB_SHA" --title "九霄问道 $TAG" --notes-file android/release/release-notes.txt
           fi
-          gh release upload "$TAG" \
-            android/release-dist/jiuxiao-wendao-release.apk \
-            android/release-dist/app-update.json \
-            android/release-dist/SHA256SUMS.txt \
-            --clobber
+          gh release upload "$TAG"             android/release-dist/jiuxiao-wendao-release.apk             android/release-dist/app-update.json             android/release-dist/SHA256SUMS.txt             --clobber
