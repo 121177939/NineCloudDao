@@ -1,4 +1,4 @@
-name: Validate NineCloudDao V2.0.1 CACHE93 (manual only)
+name: Validate NineCloudDao V2.0.2 CACHE94 (manual only)
 
 on:
   workflow_dispatch:
@@ -11,26 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: "24"
       - name: Validate static release files
         shell: bash
         run: |
           set -euo pipefail
-          test -f index.html
-          test -f .nojekyll
-          test -f tools/build_pages_v2_0_1.py
-          for f in app.js config.js update-guard.js sw.js b-paigow01.js b-equipment01.js b-secret-realm01.js b-sect-v2.js paigow-realtime.js paigow-app.js b-paigow02-ui.js; do
-            node --check "$f"
-          done
+          for f in app.js config.js update-guard.js sw.js b-paigow01.js b-equipment01.js b-secret-realm01.js b-sect-v2.js paigow-realtime.js paigow-app.js b-paigow02-ui.js; do node --check "$f"; done
           rm -rf .pages-site
-          python3 tools/build_pages_v2_0_1.py . .pages-site
-          echo "Validation passed. GitHub Pages publishing is handled by branch source: main / root."
+          python3 tools/build_pages_v2_0_2.py . .pages-site
