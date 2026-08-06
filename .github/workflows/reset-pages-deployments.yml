@@ -1,0 +1,91 @@
+name: Reset stuck Pages deployments
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+  pages: write
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel stuck Pages jobs and mark failed deployments inactive
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const targets = new Set(['github-pages', 'nineclouddao-pages-live']);
+            const terminalKeep = new Set(['success', 'inactive']);
+
+            const deployments = await github.paginate(
+              github.rest.repos.listDeployments,
+              { owner, repo, per_page: 100 }
+            );
+
+            let inspected = 0;
+            let cancelled = 0;
+            let inactivated = 0;
+
+            for (const deployment of deployments) {
+              if (!targets.has(deployment.environment)) continue;
+              inspected += 1;
+
+              const statusResponse = await github.rest.repos.listDeploymentStatuses({
+                owner,
+                repo,
+                deployment_id: deployment.id,
+                per_page: 1,
+              });
+              const latestState = statusResponse.data[0]?.state ?? 'unknown';
+
+              core.info(
+                `deployment=${deployment.id} environment=${deployment.environment} sha=${deployment.sha} state=${latestState}`
+              );
+
+              if (terminalKeep.has(latestState)) continue;
+
+              // GitHub Pages accepts either the Pages deployment ID or commit SHA.
+              // A finished/unknown record can return 404; that is safe to ignore.
+              try {
+                await github.request(
+                  'POST /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}/cancel',
+                  {
+                    owner,
+                    repo,
+                    pages_deployment_id: deployment.sha,
+                    headers: { 'X-GitHub-Api-Version': '2022-11-28' },
+                  }
+                );
+                cancelled += 1;
+                core.info(`Cancelled Pages deployment for ${deployment.sha}`);
+              } catch (error) {
+                if (error.status !== 404 && error.status !== 409) throw error;
+                core.info(`Pages cancel skipped for ${deployment.sha}: HTTP ${error.status}`);
+              }
+
+              await github.rest.repos.createDeploymentStatus({
+                owner,
+                repo,
+                deployment_id: deployment.id,
+                state: 'inactive',
+                environment: deployment.environment,
+                auto_inactive: false,
+                description: 'Manual cleanup of stuck GitHub Pages deployment',
+              });
+              inactivated += 1;
+            }
+
+            await core.summary
+              .addHeading('Pages deployment cleanup')
+              .addTable([
+                [{data: 'Item', header: true}, {data: 'Count', header: true}],
+                ['Inspected target deployments', String(inspected)],
+                ['Pages cancel requests accepted', String(cancelled)],
+                ['Deployments marked inactive', String(inactivated)],
+              ])
+              .addRaw('\nKeep the normal Pages deployment workflow disabled until this cleanup run is green.\n')
+              .write();
