@@ -1,34 +1,34 @@
 {
   "artifactType": "Android Studio complete project",
   "projectName": "JiuxiaoWendaoAndroid",
-  "deliveryRevision": "R7-CACHE97-PAGESUNLOCK1-APPDIALOGUPDATE1",
+  "deliveryRevision": "R9-CACHE98-PAGESRECOVERY2-HUAWEINET1-APPDIALOGUPDATE1",
   "generatedDate": "2026-08-06",
   "game": {
     "name": "九霄问道",
-    "version": "V2.0.5 CACHE97",
-    "buildId": "v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1",
+    "version": "V2.0.6 CACHE98",
+    "buildId": "v2-0-6-cache98-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1",
     "databaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
     "nextSqlNumber": 232,
     "bundledRuntimeFiles": 27,
-    "bundledRuntimeBytes": 1254192,
-    "sourcePackage": "V2.0.5 CACHE97 same-repository Pages frontend",
-    "publicPackage": "九霄问道_V2.0.5_CACHE97_GitHub网页部署包_原Pages流程_R1.zip"
+    "bundledRuntimeBytes": 1254458,
+    "sourcePackage": "V2.0.6 CACHE98 same-repository Pages frontend",
+    "publicPackage": "九霄问道_V2.0.6_CACHE98_GitHub网页部署包_原Pages流程_R1.zip"
   },
   "android": {
     "applicationIdDefault": "com.jiuxiaowendao.game",
-    "versionCode": 2000597,
-    "versionName": "2.0.5-cache97",
+    "versionCode": 2000698,
+    "versionName": "2.0.6-cache98",
     "minSdk": 24,
     "targetSdk": 34,
     "compileSdk": 34,
     "agp": "8.2.2",
     "gradle": "8.2.1",
     "jdk": "17",
-    "runtime": "APK-bundled assets rendered through WebViewAssetLoader"
+    "runtime": "APK-bundled assets through WebViewAssetLoader using the Supabase host as same-origin; remote backend routes fall through to HTTPS"
   },
   "update": {
     "provider": "same public GitHub repository latest Release",
-    "automaticCheck": "on app launch and foreground, throttled to 30 minutes",
+    "automaticCheck": "on app launch and foreground, throttled to 30 minutes; no ConnectivityManager gate",
     "releaseAssets": [
       "jiuxiao-wendao-release.apk",
       "app-update.json",
@@ -40,12 +40,19 @@
       "SHA-256",
       "APK signing certificate"
     ],
-    "silentInstall": false
+    "silentInstall": false,
+    "releaseTag": "v2.0.6-cache98",
+    "networkFallback": "github.com latest/download first, api.github.com fallback"
   },
   "validation": {
     "staticValidationPassed": true,
     "androidAssembleExecutedInDeliveryEnvironment": false,
-    "note": "No Android SDK/Maven build in delivery environment; build in Android Studio or GitHub Actions."
+    "note": "Static validation completed. Android assemble must run in Android Studio or GitHub Actions."
   },
-  "sensitiveFilesIncluded": false
+  "sensitiveFilesIncluded": false,
+  "fixes": {
+    "pages": "cancel stale Pages deployments, restore official github-pages environment and CACHE89 workflow model",
+    "huaweiNetwork": "same-origin Supabase WebViewAssetLoader domain, explicit network loads, no EMUI ConnectivityManager gate",
+    "ui": "no floating update control; update prompt only when a newer release exists"
+  }
 }

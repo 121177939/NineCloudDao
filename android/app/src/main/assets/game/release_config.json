@@ -1,8 +1,8 @@
 {
-  "version": "V2.0.5",
-  "releaseLabel": "V2.0.5 CACHE97",
-  "buildId": "v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1",
-  "cacheEpoch": 97,
+  "version": "V2.0.6",
+  "releaseLabel": "V2.0.6 CACHE98",
+  "buildId": "v2-0-6-cache98-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1",
+  "cacheEpoch": 98,
   "minimumDatabaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
   "sqlRevision": "211-221 + 229-231",
   "migrationSql": [],
@@ -12,17 +12,17 @@
     "ANDROID_GITHUB_RELEASE_AUTO_UPDATE",
     "GITHUB_PAGES_ORIGINAL_ACTIONS_FLOW_RECOVERY",
     "ANDROID_UPDATE_DIALOG_NO_FLOATING_BUTTON",
-    "CLIENT_VERSION_205_CACHE97"
+    "CLIENT_VERSION_206_CACHE98"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "PAGESENVUNLOCK1_APPDIALOGUPDATE1_VERSION205",
+  "clientHotfix": "PAGESRECOVERY2_HUAWEINET1_APPDIALOGUPDATE1_VERSION206",
   "databaseRelease": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231",
   "notes": [
-    "V2.0.5 CACHE97为客户端与Android版本升级，游戏玩法和数据库结构不变。",
-    "网页继续使用同一仓库的GitHub Actions Pages Artifact部署流程。",
-    "Android不显示右下角浮动更新按钮；仅检测到更高versionCode时弹窗询问是否更新。",
+    "V2.0.6 CACHE98为客户端、网页缓存纪元与Android版本升级，游戏玩法和数据库结构不变。",
+    "网页继续使用同一仓库的GitHub Actions Pages Artifact部署流程，并保留卡住部署清理逻辑。",
+    "Android保留华为网络兼容修复，不显示右下角浮动更新按钮；仅检测到更高versionCode时弹窗询问是否更新。",
     "本版本没有新增SQL，数据库继续沿用V2.0.3 CACHE95 / SQL211-221 + SQL229-231，下一SQL编号仍为232。"
   ],
   "gmVersion": "ADMIN9 R20",

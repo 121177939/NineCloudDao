@@ -3,11 +3,7 @@ package com.jiuxiaowendao.game;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -46,7 +42,9 @@ public final class MainActivity extends Activity implements LocalGameWebViewClie
             webView.loadUrl(LocalGameWebViewClient.START_URL);
         }
 
-        if (BuildConfig.AUTO_UPDATE_ENABLED && isNetworkAvailable()) {
+        if (BuildConfig.AUTO_UPDATE_ENABLED) {
+            // Do not gate update checks on ConnectivityManager. Some EMUI/Huawei builds can
+            // report no validated network even while HTTPS is usable.
             webView.postDelayed(updateManager::checkAutomatically, 2500L);
         }
 
@@ -72,6 +70,8 @@ public final class MainActivity extends Activity implements LocalGameWebViewClie
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setBlockNetworkLoads(false);
+        settings.setBlockNetworkImage(false);
         settings.setUserAgentString(settings.getUserAgentString()
                 + " JiuxiaoWendaoAndroid/" + BuildConfig.VERSION_NAME
                 + " GameBuild/" + BuildConfig.GAME_BUILD_ID);
@@ -89,15 +89,6 @@ public final class MainActivity extends Activity implements LocalGameWebViewClie
             }
         });
         webView.setBackgroundColor(Color.rgb(8, 10, 8));
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (manager == null) return false;
-        Network network = manager.getActiveNetwork();
-        if (network == null) return false;
-        NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
-        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
     }
 
     private void handleBack() {
@@ -122,7 +113,7 @@ public final class MainActivity extends Activity implements LocalGameWebViewClie
         super.onResume();
         if (updateManager != null) {
             updateManager.tryResumeInstall();
-            if (BuildConfig.AUTO_UPDATE_ENABLED && isNetworkAvailable()) updateManager.checkAutomatically();
+            if (BuildConfig.AUTO_UPDATE_ENABLED) updateManager.checkAutomatically();
         }
         if (webView != null) webView.onResume();
     }

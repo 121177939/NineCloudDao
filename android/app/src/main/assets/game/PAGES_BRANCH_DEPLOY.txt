@@ -1,6 +1,6 @@
-九霄问道 V2.0.5 CACHE97
+九霄问道 V2.0.6 CACHE98
 
-APP内置资源本地运行，不从GitHub Pages加载游戏网页。
-GitHub Pages仍用于浏览器网页版本，部署方式保持同一仓库GitHub Actions Pages Artifact流程。
-APP在线更新通过同一仓库GitHub Releases完成。
-构建号：v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1
+APK内置本地运行资源。网页部署仍使用同一仓库GitHub Actions Pages Artifact流程。
+构建号：v2-0-6-cache98-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1
+数据库：V2.0.3 CACHE95 / SQL211-221 + SQL229-231
+下一SQL：232

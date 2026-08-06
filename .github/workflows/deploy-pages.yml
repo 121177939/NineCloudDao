@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V2.0.5 CACHE97 to GitHub Pages
+name: Deploy NineCloudDao V2.0.6 CACHE98 to GitHub Pages
 
 on:
   push:
@@ -9,10 +9,11 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  deployments: write
 
-# 使用新的并发组，避免被此前卡住的 pages 队列继续阻塞。
+# Keep the exact CACHE89 deployment model: one Pages deployment at a time.
 concurrency:
-  group: "nineclouddao-pages-v205-${{ github.ref }}"
+  group: "pages"
   cancel-in-progress: true
 
 jobs:
@@ -29,7 +30,7 @@ jobs:
           set -euo pipefail
           echo "Repository root: $PWD"
           test -f index.html
-          test -f tools/build_pages_v2_0_5_actions.py
+          test -f tools/build_pages_v2_0_6_actions.py
           test -f .nojekyll
           test -f .github/workflows/deploy-pages.yml
           echo "Required repository files are present."
@@ -38,6 +39,48 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+
+      - name: Cancel stale Pages deployments from earlier failed runs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "Searching for stale Pages deployments..."
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/deployments?per_page=100"             --jq '.[] | select(.environment == "github-pages" or .environment == "nineclouddao-pages-live") | [.id, .sha, .environment] | @tsv'             > /tmp/pages-deployments.tsv || true
+
+          while IFS=$'\t' read -r deployment_id deployment_sha deployment_environment; do
+            [ -n "${deployment_id:-}" ] || continue
+            [ "$deployment_sha" != "$GITHUB_SHA" ] || continue
+            state="$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses?per_page=1"               --jq '.[0].state // "unknown"' 2>/dev/null || echo unknown)"
+            case "$state" in
+              queued|pending|in_progress|waiting)
+                echo "Cancelling stale Pages deployment: id=$deployment_id sha=$deployment_sha env=$deployment_environment state=$state"
+                gh api --method POST                   "repos/${GITHUB_REPOSITORY}/pages/deployments/${deployment_sha}/cancel" >/dev/null 2>&1 || true
+                gh api --method POST                   "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses"                   -f state=inactive                   -f description='Superseded by a newer GitHub Pages deployment' >/dev/null 2>&1 || true
+                ;;
+              *)
+                echo "Keeping completed deployment: id=$deployment_id state=$state"
+                ;;
+            esac
+          done < /tmp/pages-deployments.tsv
+
+      - name: Verify Pages is configured for GitHub Actions
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BUILD_TYPE="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.build_type // ""')"
+          if [ -n "$BUILD_TYPE" ]; then
+            echo "GitHub Pages build_type: $BUILD_TYPE"
+            if [ "$BUILD_TYPE" != "workflow" ]; then
+              echo "::error::Settings > Pages > Build and deployment > Source 必须选择 GitHub Actions。当前值：$BUILD_TYPE"
+              exit 1
+            fi
+          else
+            echo "Pages API未返回build_type；继续交给configure-pages进行官方校验。"
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
@@ -58,7 +101,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf .pages-site
-          python3 tools/build_pages_v2_0_5_actions.py . .pages-site
+          python3 tools/build_pages_v2_0_6_actions.py . .pages-site
           test -f .pages-site/index.html
           test -f .pages-site/.nojekyll
 
@@ -74,16 +117,19 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
     permissions:
       pages: write
       id-token: write
-    # 不再引用已经被旧任务卡住的 github-pages 环境。
-    # deploy-pages 官方允许使用不同环境名；首次运行会自动创建干净环境。
+      deployments: write
     environment:
-      name: nineclouddao-pages-live
+      name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 600000
+          reporting_interval: 5000
+          error_count: 20

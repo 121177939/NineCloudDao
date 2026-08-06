@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release标签；留空使用 v2.0.5-cache97"
+        description: "Release标签；留空使用 v2.0.6-cache98"
         required: false
         type: string
 
@@ -33,7 +33,7 @@ jobs:
           elif [ -n "$MANUAL_TAG" ]; then
             TAG="$MANUAL_TAG"
           else
-            TAG="v2.0.5-cache97"
+            TAG="v2.0.6-cache98"
           fi
           case "$TAG" in v*) ;; *) echo "Release标签必须以v开头" >&2; exit 1 ;; esac
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"

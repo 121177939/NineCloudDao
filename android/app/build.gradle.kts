@@ -5,8 +5,8 @@ plugins {
 }
 
 val appId = providers.gradleProperty("APP_ID").orElse("com.jiuxiaowendao.game").get()
-val appVersionCode = providers.gradleProperty("APP_VERSION_CODE").orElse("2000597").get().toInt()
-val appVersionName = providers.gradleProperty("APP_VERSION_NAME").orElse("2.0.5-cache97").get()
+val appVersionCode = providers.gradleProperty("APP_VERSION_CODE").orElse("2000698").get().toInt()
+val appVersionName = providers.gradleProperty("APP_VERSION_NAME").orElse("2.0.6-cache98").get()
 val githubOwner = providers.gradleProperty("GITHUB_OWNER").orElse("YOUR_GITHUB_NAME").get()
 val githubRepo = providers.gradleProperty("GITHUB_REPO").orElse("YOUR_REPOSITORY").get()
 
@@ -31,7 +31,8 @@ android {
 
         buildConfigField("String", "GITHUB_OWNER", quoted(githubOwner))
         buildConfigField("String", "GITHUB_REPO", quoted(githubRepo))
-        buildConfigField("String", "GAME_BUILD_ID", quoted("v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1"))
+        buildConfigField("String", "SUPABASE_HOST", quoted("fyykkqkovccgmamsdeoq.supabase.co"))
+        buildConfigField("String", "GAME_BUILD_ID", quoted("v2-0-6-cache98-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1"))
     }
 
     signingConfigs {

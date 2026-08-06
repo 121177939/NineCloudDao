@@ -11,6 +11,8 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.webkit.WebViewAssetLoader;
+
+import com.jiuxiaowendao.game.BuildConfig;
 import androidx.webkit.WebViewClientCompat;
 
 public final class LocalGameWebViewClient extends WebViewClientCompat {
@@ -20,7 +22,7 @@ public final class LocalGameWebViewClient extends WebViewClientCompat {
         void onPageError(String message);
     }
 
-    public static final String LOCAL_HOST = "appassets.androidplatform.net";
+    public static final String LOCAL_HOST = BuildConfig.SUPABASE_HOST;
     public static final String START_URL = "https://" + LOCAL_HOST + "/assets/game/index.html?android_local=1";
 
     private final Context context;
@@ -31,6 +33,7 @@ public final class LocalGameWebViewClient extends WebViewClientCompat {
         this.context = context;
         this.listener = listener;
         this.assetLoader = new WebViewAssetLoader.Builder()
+                .setDomain(LOCAL_HOST)
                 .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(context))
                 .build();
     }

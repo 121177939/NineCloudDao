@@ -15,11 +15,11 @@
 
 ## 发布
 
-手动运行 `Build and publish Android APK`，Release标签留空即可使用 `v2.0.5-cache97`；也可以：
+手动运行 `Build and publish Android APK`，Release标签留空即可使用 `v2.0.6-cache98`；也可以：
 
 ```bash
-git tag v2.0.5-cache97
-git push origin v2.0.5-cache97
+git tag v2.0.6-cache98
+git push origin v2.0.6-cache98
 ```
 
 GitHub Actions正式构建时会自动把当前仓库owner/repo写进APK，不需要手工修改仓库地址。Release会包含APK、`app-update.json`和SHA清单。

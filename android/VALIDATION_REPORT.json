@@ -3,11 +3,11 @@
   "errors": [],
   "warnings": [],
   "gameFileCount": 27,
-  "gameBytes": 1254192,
+  "gameBytes": 1254458,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.0.5 CACHE97",
-  "gameBuildId": "v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1",
+  "gameBaseline": "V2.0.6 CACHE98",
+  "gameBuildId": "v2-0-6-cache98-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1",
   "databaseBaseline": "SQL211-221 + SQL229-231",
-  "androidVersionCode": 2000597
+  "androidVersionCode": 2000698
 }

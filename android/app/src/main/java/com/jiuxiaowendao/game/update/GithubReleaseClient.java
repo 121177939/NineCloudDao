@@ -52,6 +52,28 @@ public final class GithubReleaseClient {
 
     @NonNull
     public ReleaseInfo fetchLatest() throws IOException, JSONException {
+        try {
+            return fetchLatestDirect();
+        } catch (IOException | JSONException directError) {
+            try {
+                return fetchLatestViaApi();
+            } catch (IOException | JSONException apiError) {
+                apiError.addSuppressed(directError);
+                throw apiError;
+            }
+        }
+    }
+
+    @NonNull
+    private ReleaseInfo fetchLatestDirect() throws IOException, JSONException {
+        String base = String.format(Locale.ROOT,
+                "https://github.com/%s/%s/releases/latest/download/", owner, repo);
+        JSONObject manifest = new JSONObject(readText(base + "app-update.json", false));
+        return parseManifest(manifest, base, "latest");
+    }
+
+    @NonNull
+    private ReleaseInfo fetchLatestViaApi() throws IOException, JSONException {
         String apiUrl = String.format(Locale.ROOT,
                 "https://api.github.com/repos/%s/%s/releases/latest", owner, repo);
         JSONObject release = new JSONObject(readText(apiUrl, true));
@@ -76,6 +98,18 @@ public final class GithubReleaseClient {
         }
 
         JSONObject manifest = new JSONObject(readText(manifestUrl, false));
+        String apkAssetName = manifest.optString("apkAssetName", "jiuxiao-wendao-release.apk");
+        String apkUrl = assetUrls.get(apkAssetName);
+        if (apkUrl == null) throw new IOException("最新 Release 缺少 " + apkAssetName);
+        ReleaseInfo parsed = parseManifest(manifest, "", tagName);
+        return new ReleaseInfo(parsed.versionCode, parsed.versionName, parsed.packageName,
+                parsed.apkAssetName, apkUrl, parsed.sha256, parsed.notes,
+                parsed.mandatory, parsed.minSupportedVersionCode, parsed.tagName);
+    }
+
+    @NonNull
+    private ReleaseInfo parseManifest(@NonNull JSONObject manifest, @NonNull String assetBase,
+                                      @NonNull String tagName) throws IOException, JSONException {
         if (manifest.optInt("schemaVersion", 0) != 1) {
             throw new IOException("不支持的更新清单格式");
         }
@@ -83,15 +117,12 @@ public final class GithubReleaseClient {
         String versionName = manifest.getString("versionName");
         String packageName = manifest.getString("packageName");
         String apkAssetName = manifest.optString("apkAssetName", "jiuxiao-wendao-release.apk");
-        String apkUrl = assetUrls.get(apkAssetName);
-        if (apkUrl == null) throw new IOException("最新 Release 缺少 " + apkAssetName);
-
+        String apkUrl = assetBase + apkAssetName;
         String sha256 = manifest.getString("sha256").trim().toLowerCase(Locale.ROOT);
         if (!sha256.matches("[0-9a-f]{64}")) throw new IOException("更新清单 SHA-256 格式错误");
-        String notes = manifest.optString("notes", release.optString("body", ""));
+        String notes = manifest.optString("notes", "");
         boolean mandatory = manifest.optBoolean("mandatory", false);
         long minSupported = manifest.optLong("minSupportedVersionCode", 0L);
-
         return new ReleaseInfo(versionCode, versionName, packageName, apkAssetName,
                 apkUrl, sha256, notes, mandatory, minSupported, tagName);
     }
@@ -160,6 +191,9 @@ public final class GithubReleaseClient {
             connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
             connection.setReadTimeout(READ_TIMEOUT_MS);
             connection.setInstanceFollowRedirects(false);
+            connection.setUseCaches(false);
+            connection.setRequestProperty("Connection", "close");
+            connection.setRequestProperty("Accept-Encoding", "identity");
             connection.setRequestProperty("User-Agent", userAgent);
             connection.setRequestProperty("Accept", githubApi ? ACCEPT : "application/octet-stream, application/json;q=0.9, */*;q=0.8");
             if (githubApi) connection.setRequestProperty("X-GitHub-Api-Version", API_VERSION);

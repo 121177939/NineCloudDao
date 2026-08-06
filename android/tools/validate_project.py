@@ -57,12 +57,16 @@ def main() -> None:
 
     main_java = read("app/src/main/java/com/jiuxiaowendao/game/MainActivity.java")
     client_java = read("app/src/main/java/com/jiuxiaowendao/game/web/LocalGameWebViewClient.java")
-    check("appassets.androidplatform.net" in client_java, "未使用 WebViewAssetLoader 本地资源域")
+    check("WebViewAssetLoader" in client_java and ".setDomain(LOCAL_HOST)" in client_java,
+          "未使用同源 WebViewAssetLoader 本地资源域")
+    check("BuildConfig.SUPABASE_HOST" in client_java, "本地资源域未绑定Supabase后端域")
     check('loadUrl("http' not in main_java, "MainActivity 不应直接加载远程网页")
     check("setAllowFileAccess(false)" in main_java, "WebView 未关闭文件访问")
     check("setAllowContentAccess(false)" in main_java, "WebView 未关闭 Content 访问")
     check("setAllowUniversalAccessFromFileURLs(false)" in main_java, "WebView 未关闭 file URL 全局访问")
     check("MIXED_CONTENT_NEVER_ALLOW" in main_java, "WebView 未禁用混合内容")
+    check("setBlockNetworkLoads(false)" in main_java, "WebView网络加载未显式开启")
+    check("isNetworkAvailable()" not in main_java, "自动更新仍被ConnectivityManager门禁")
 
     manifest = read("app/src/main/AndroidManifest.xml")
     check("REQUEST_INSTALL_PACKAGES" in manifest, "缺少 APK 更新安装权限")
@@ -81,7 +85,7 @@ def main() -> None:
     check("github.repository_owner" in release_workflow, "Release构建未自动注入GitHub owner")
     check("github.event.repository.name" in release_workflow, "Release构建未自动注入GitHub repo")
     github_client = read("app/src/main/java/com/jiuxiaowendao/game/update/GithubReleaseClient.java")
-    for token in ["app-update.json", "SHA256SUMS.txt", "schemaVersion", "X-GitHub-Api-Version"]:
+    for token in ["app-update.json", "SHA256SUMS.txt", "schemaVersion", "X-GitHub-Api-Version", "releases/latest/download"]:
         check(token in github_client, f"GitHub更新检查缺少：{token}")
 
     wrapper_props = read("gradle/wrapper/gradle-wrapper.properties")
@@ -98,9 +102,9 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2000597" in gradle_props, "Android版本号不是CACHE97基线")
-    check('APP_VERSION_NAME=2.0.5-cache97' in gradle_props, "Android版本名不是CACHE97基线")
-    expected_build = "v2-0-5-cache97-equipment-worldnews3-pagesunlock1-appdialogupdate1"
+    check("APP_VERSION_CODE=2000698" in gradle_props, "Android版本号不是CACHE98基线")
+    check('APP_VERSION_NAME=2.0.6-cache98' in gradle_props, "Android版本名不是CACHE98基线")
+    expected_build = "v2-0-6-cache98-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
@@ -124,10 +128,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.0.5 CACHE97",
+        "gameBaseline": "V2.0.6 CACHE98",
         "gameBuildId": expected_build,
         "databaseBaseline": "SQL211-221 + SQL229-231",
-        "androidVersionCode": 2000597,
+        "androidVersionCode": 2000698,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
