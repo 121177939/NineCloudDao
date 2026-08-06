@@ -50,6 +50,32 @@ jobs:
           java-version: "17"
           cache: gradle
 
+      - name: Restore official Gradle 8.2.1 Wrapper JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          WRAPPER_PATH="android/gradle/wrapper/gradle-wrapper.jar"
+          WRAPPER_URL="https://services.gradle.org/distributions/gradle-8.2.1-wrapper.jar"
+          EXPECTED_SHA256="a8451eeda314d0568b5340498b36edf147a8f0d692c5ff58082d477abe9146e4"
+          TEMP_FILE="$(mktemp)"
+          trap 'rm -f "$TEMP_FILE"' EXIT
+
+          curl --fail --location \
+            --retry 6 --retry-delay 5 --retry-all-errors \
+            --connect-timeout 30 --max-time 180 \
+            "$WRAPPER_URL" -o "$TEMP_FILE"
+
+          ACTUAL_SHA256="$(sha256sum "$TEMP_FILE" | awk '{print $1}')"
+          if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then
+            echo "官方Gradle Wrapper校验失败" >&2
+            echo "expected=$EXPECTED_SHA256" >&2
+            echo "actual=$ACTUAL_SHA256" >&2
+            exit 1
+          fi
+
+          install -m 0644 "$TEMP_FILE" "$WRAPPER_PATH"
+          echo "$EXPECTED_SHA256  $WRAPPER_PATH" | sha256sum --check --strict -
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -94,7 +120,9 @@ jobs:
         run: |
           set -euo pipefail
           chmod +x gradlew
-          ./gradlew --no-daemon clean assembleRelease             -PGITHUB_OWNER="${{ github.repository_owner }}"             -PGITHUB_REPO="${{ github.event.repository.name }}"
+          ./gradlew --no-daemon clean assembleRelease \
+            -PGITHUB_OWNER="${{ github.repository_owner }}" \
+            -PGITHUB_REPO="${{ github.event.repository.name }}"
 
       - name: Prepare update files
         working-directory: android
@@ -104,9 +132,12 @@ jobs:
           rm -rf release-dist
           mkdir -p release-dist
           cp app/build/outputs/apk/release/app-release.apk release-dist/jiuxiao-wendao-release.apk
-          SHA256=$(sha256sum release-dist/jiuxiao-wendao-release.apk | awk '{print $1}')
+          SHA256="$(sha256sum release-dist/jiuxiao-wendao-release.apk | awk '{print $1}')"
           python3 tools/create_update_manifest.py --sha256 "$SHA256"
-          sha256sum release-dist/jiuxiao-wendao-release.apk release-dist/app-update.json > release-dist/SHA256SUMS.txt
+          sha256sum \
+            release-dist/jiuxiao-wendao-release.apk \
+            release-dist/app-update.json \
+            > release-dist/SHA256SUMS.txt
 
       - name: Create or update GitHub Release
         shell: bash
@@ -116,6 +147,13 @@ jobs:
         run: |
           set -euo pipefail
           if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" --target "$GITHUB_SHA" --title "九霄问道 $TAG" --notes-file android/release/release-notes.txt
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "九霄问道 $TAG" \
+              --notes-file android/release/release-notes.txt
           fi
-          gh release upload "$TAG"             android/release-dist/jiuxiao-wendao-release.apk             android/release-dist/app-update.json             android/release-dist/SHA256SUMS.txt             --clobber
+          gh release upload "$TAG" \
+            android/release-dist/jiuxiao-wendao-release.apk \
+            android/release-dist/app-update.json \
+            android/release-dist/SHA256SUMS.txt \
+            --clobber
