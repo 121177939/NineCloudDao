@@ -1,19 +1,23 @@
 {
   "ok": true,
-  "release": "V2.0.11 CACHE103 R1",
-  "buildId": "v2-0-11-cache103-sectui3-autobreak1-outcome2-appupdate2",
-  "androidVersionCode": 2001203,
-  "androidVersionName": "2.0.11-cache103",
+  "release": "V2.0.12 CACHE104 R1",
+  "buildId": "v2-0-12-cache104-authversion1-sectlimit100-deploylock1",
+  "androidVersionCode": 2001304,
+  "androidVersionName": "2.0.12-cache104",
   "database": "SQL211-221 + SQL229-232; no SQL233",
   "gm": "ADMIN9 R20 unchanged",
+  "deploymentLock": "V2.0.11 user-verified Pages + APK build + online APP update; preserve current methods",
   "checks": [
     "JavaScript syntax PASS",
     "Pages lean artifact build PASS",
     "Web/Android shared game resources SHA-256 sync PASS (24 shared files + Android index variant)",
     "Android static project validation PASS",
-    "No manual disciple breakthrough button/bind remains in b-sect-v2.js",
-    "Autonomy policy submits p_allow_private_high_realm_breakthrough=true and self-repairs old false/undefined policy",
-    "Empty event outcome fallback removed; outcome card only renders actual or clearly inferable result",
-    "GitHub Pages deployment method remains validated default github-pages artifact R3 flow"
+    "Login auth hint shows current releaseLabel instead of Supabase database-storage sentence",
+    "Sect history visible list capped at newest 100 with time ordering and de-duplication",
+    "Sect autonomy schedule visible list capped at 100",
+    "Disciple recent history visible list capped at newest 100",
+    "Root release-apk.yml preserved byte-for-byte from V2.0.11 successful baseline",
+    "reset-pages-deployments.yml safety tombstone preserved byte-for-byte",
+    "Pages deployment remains default github-pages Artifact R3 flow with live VERSION/index verification"
   ]
 }

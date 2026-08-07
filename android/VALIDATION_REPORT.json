@@ -3,11 +3,11 @@
   "errors": [],
   "warnings": [],
   "gameFileCount": 26,
-  "gameBytes": 1271163,
+  "gameBytes": 1272642,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.0.11 CACHE103",
-  "gameBuildId": "v2-0-11-cache103-sectui3-autobreak1-outcome2-appupdate2",
+  "gameBaseline": "V2.0.12 CACHE104",
+  "gameBuildId": "v2-0-12-cache104-authversion1-sectlimit100-deploylock1",
   "databaseBaseline": "SQL211-221 + SQL229-232",
-  "androidVersionCode": 2001203
+  "androidVersionCode": 2001304
 }

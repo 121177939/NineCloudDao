@@ -79,7 +79,7 @@
 @media(max-width:560px){.sect-v2-asset-list-bsect06 article{align-items:flex-start}.sect-v2-asset-list-bsect06 article button{flex:0 0 auto}}
 
 
-/* V2.0.11 CACHE103 · 宗门节奏与事件结算可读性 */
+/* V2.0.12 CACHE104 · 宗门节奏与事件结算可读性 */
 .sect-v2-event-outcome-bsect07{display:grid;gap:4px;margin:8px 0 6px;padding:8px 10px;border:1px solid rgba(210,172,98,.24);border-radius:9px;background:rgba(210,172,98,.055);font-size:.76rem;line-height:1.5}
 .sect-v2-event-outcome-bsect07 b{color:#e3c67d;font-size:.72rem}
 .sect-v2-event-outcome-bsect07 span{color:var(--soft-text,#b8afa1);overflow-wrap:anywhere}
@@ -98,5 +98,5 @@
 .sect-v2-breakthrough-hint-bsect08 span{color:var(--muted-text,#9d9384);line-height:1.65;font-size:.84rem}
 @media(max-width:620px){.sect-v2-modal-bsect03{align-items:end;padding:10px}.sect-v2-modal-card-bsect03{max-height:92vh;border-radius:18px 18px 10px 10px}.sect-v2-detail-grid-bsect03{grid-template-columns:1fr 1fr}}
 
-/* V2.0.11 CACHE103 · 无真实数值时只显示可明确判断的事件结果 */
+/* V2.0.12 CACHE104 · 无真实数值时只显示可明确判断的事件结果 */
 .sect-v2-event-outcome-bsect07.is-summary-only-bsect09{background:rgba(255,255,255,.02);border-style:dashed}

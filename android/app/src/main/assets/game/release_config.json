@@ -1,8 +1,8 @@
 {
-  "version": "V2.0.11",
-  "releaseLabel": "V2.0.11 CACHE103",
-  "buildId": "v2-0-11-cache103-sectui3-autobreak1-outcome2-appupdate2",
-  "cacheEpoch": 103,
+  "version": "V2.0.12",
+  "releaseLabel": "V2.0.12 CACHE104",
+  "buildId": "v2-0-12-cache104-authversion1-sectlimit100-deploylock1",
+  "cacheEpoch": 104,
   "minimumDatabaseBaseline": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232 / ADMIN9 R20",
   "sqlRevision": "211-221 + 229-232",
   "migrationSql": [
@@ -23,20 +23,24 @@
     "SECT_OUTCOME_HIDE_EMPTY_FALLBACK",
     "SECT_BREAKTHROUGH_FULL_AUTONOMY",
     "SECT_AUTONOMY_POLICY_SELF_REPAIR",
-    "CLIENT_VERSION_211_CACHE103"
+    "AUTH_LOGIN_SHOW_CURRENT_VERSION",
+    "SECT_HISTORY_VISIBLE_LATEST_100",
+    "SECT_SCHEDULE_VISIBLE_LATEST_100",
+    "DISCIPLE_HISTORY_VISIBLE_LATEST_100",
+    "DEPLOYMENT_AND_APK_RELEASE_METHOD_LOCKED",
+    "CLIENT_VERSION_212_CACHE104"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "SECTUI3_AUTOBREAK1_OUTCOME2_APPUPDATE2_VERSION211",
+  "clientHotfix": "AUTHVERSION1_SECTLIMIT100_DEPLOYLOCK1_VERSION212",
   "databaseRelease": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232",
   "notes": [
-    "V2.0.11 CACHE103修正宗门事件明细：没有真实结构化增减的事件不再重复显示“旧记录未保存可量化结算明细”；有数值时显示“实际变化”，突破/疗伤等可从明确剧情判断的结果显示“事件结果”。",
-    "宗门突破改为完全弟子自主：宗主页面移除“立即突破/确认突破”按钮，所有境界的弟子都在行动评估时依据性格、心境、伤势、资源与宗门突破态度自行决定是否破境。",
-    "修复V2.0.10宗门方略提交时因privateBreak控件已移除却仍读取该字段，导致p_allow_private_high_realm_breakthrough被错误提交为false的问题。V2.0.11固定提交true，并在首次读取宗门时自动把旧策略修复为允许高境界自主突破。",
-    "网页与Android内置游戏资源同步更新；Android versionCode=2001203，versionName=2.0.11-cache103。",
-    "本次不新增数据库迁移，继续沿用SQL232；ADMIN9仍为R20；下一SQL编号保持233。",
-    "GitHub Pages继续沿用V2.0.10 R3已经实际部署成功的默认github-pages Artifact流程与线上版本验收门禁。"
+    "V2.0.12 CACHE104将登录页原“账号与角色均保存到Supabase云端数据库”提示改为当前游戏版本号显示。",
+    "宗门史、自主排期、人物经历统一增加前端可见上限：最多展示最新100条；宗门事件按时间倒序并去重，人物经历按最新优先。",
+    "网页与Android内置游戏资源同步更新；Android versionCode=2001304，versionName=2.0.12-cache104。",
+    "数据库无新增迁移，继续沿用SQL232；下一SQL编号保持233；ADMIN9仍为R20。",
+    "GitHub Pages与Android APK发布方式已由用户实测成功并锁定：Pages继续使用V2.0.10 R3默认github-pages Artifact链；APK继续使用V2.0.7 R6成功链及现有签名/Release流程。后续不得擅自更换。"
   ],
   "gmVersion": "ADMIN9 R20",
   "nextSqlNumber": 233,

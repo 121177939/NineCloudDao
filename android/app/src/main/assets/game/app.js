@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.0.11 CACHE103：宗门自主节奏与事件结算可读性升级，继续沿用低频同步与服务端结算。
+  // V2.0.12 CACHE104：宗门自主节奏与事件结算可读性升级，继续沿用低频同步与服务端结算。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,
@@ -1868,7 +1868,7 @@
         </div>
         <div id="authError" class="form-error"></div>
         <button id="loginSubmit" class="primary-btn full" type="submit">踏入仙门</button>
-        <p class="field-hint">账号与角色均保存到你的 Supabase 云端数据库。</p>
+        <p class="field-hint">当前游戏版本：${escapeHtml(config.releaseLabel || config.version || '未知版本')}</p>
       </form>
     `;
   }

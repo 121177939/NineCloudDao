@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V2.0.11 CACHE103 to GitHub Pages
+name: Deploy NineCloudDao V2.0.12 CACHE104 to GitHub Pages
 
 on:
   push:
@@ -72,9 +72,9 @@ jobs:
           set -euo pipefail
           test -f index.html
           test -f .nojekyll
-          test -f tools/build_pages_v2_0_11.py
+          test -f tools/build_pages_v2_0_12.py
           test -f VERSION.txt
-          grep -F "V2.0.11 CACHE103" VERSION.txt
+          grep -F "V2.0.12 CACHE104" VERSION.txt
           grep -F "PAGES_DEPLOY default-github-pages-artifact-r3" VERSION.txt
 
       - name: Verify web and Android embedded game stay synchronized
@@ -96,7 +96,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf .pages-site
-          python3 tools/build_pages_v2_0_11.py . .pages-site
+          python3 tools/build_pages_v2_0_12.py . .pages-site
           test -f .pages-site/index.html
           test -f .pages-site/.nojekyll
           test -f .pages-site/VERSION.txt
@@ -126,7 +126,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Verify live Pages is V2.0.11 CACHE103 R3
+      - name: Verify live Pages is V2.0.12 CACHE104 R3
         shell: bash
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
@@ -144,10 +144,10 @@ jobs:
             index_url="$base/index.html?pages_verify=$stamp"
             version="$(curl -fsSL --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' "$version_url" 2>/dev/null || true)"
             index="$(curl -fsSL --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' "$index_url" 2>/dev/null || true)"
-            if grep -Fq 'V2.0.11 CACHE103' <<<"$version" \
+            if grep -Fq 'V2.0.12 CACHE104' <<<"$version" \
               && grep -Fq 'PAGES_DEPLOY default-github-pages-artifact-r3' <<<"$version" \
-              && grep -Fq '<!-- version: V2.0.11 CACHE103 -->' <<<"$index"; then
-              echo "LIVE PAGES PASS: V2.0.11 CACHE103 / default artifact R3"
+              && grep -Fq '<!-- version: V2.0.12 CACHE104 -->' <<<"$index"; then
+              echo "LIVE PAGES PASS: V2.0.12 CACHE104 / default artifact R3"
               ok=1
               break
             fi
@@ -155,6 +155,6 @@ jobs:
             sleep 10
           done
           if [ "$ok" -ne 1 ]; then
-            echo "::error::部署完成后线上仍未读到V2.0.11 CACHE103 R3。请确认 Settings → Pages → Source = GitHub Actions，并查看本次 deploy 步骤输出的 page_url。"
+            echo "::error::部署完成后线上仍未读到V2.0.12 CACHE104 R3。请确认 Settings → Pages → Source = GitHub Actions，并查看本次 deploy 步骤输出的 page_url。"
             exit 1
           fi
