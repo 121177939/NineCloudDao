@@ -102,9 +102,9 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001102" in gradle_props, "Android版本号不是CACHE102基线")
-    check('APP_VERSION_NAME=2.0.10-cache102' in gradle_props, "Android版本名不是CACHE102基线")
-    expected_build = "v2-0-10-cache102-sectui2-breakthroughmanual1-appupdate2"
+    check("APP_VERSION_CODE=2001203" in gradle_props, "Android版本号不是CACHE103基线")
+    check('APP_VERSION_NAME=2.0.11-cache103' in gradle_props, "Android版本名不是CACHE103基线")
+    expected_build = "v2-0-11-cache103-sectui3-autobreak1-outcome2-appupdate2"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
@@ -128,10 +128,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.0.10 CACHE102",
+        "gameBaseline": "V2.0.11 CACHE103",
         "gameBuildId": expected_build,
         "databaseBaseline": "SQL211-221 + SQL229-232",
-        "androidVersionCode": 2001102,
+        "androidVersionCode": 2001203,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

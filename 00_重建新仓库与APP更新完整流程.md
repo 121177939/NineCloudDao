@@ -34,7 +34,7 @@
 1. 解压本ZIP到全新目录。
 2. GitHub Desktop选择 `File → Add local repository`；若提示不是Git仓库，选择创建仓库。
 3. Local path选择解压目录，Repository name填 `NineCloudDao`。
-4. 提交信息填 `Initial clean V2.0.10 CACHE102 repository`。
+4. 提交信息填 `Initial clean V2.0.11 CACHE103 repository`。
 5. 点击 `Publish repository`，选择GitHub上的新 `NineCloudDao` 公共仓库。
 
 ### 命令行方式
@@ -44,7 +44,7 @@
 ```bash
 git init
 git add .
-git commit -m "Initial clean V2.0.10 CACHE102 repository"
+git commit -m "Initial clean V2.0.11 CACHE103 repository"
 git branch -M main
 git remote add origin https://github.com/你的用户名/NineCloudDao.git
 git push -u origin main
@@ -66,7 +66,7 @@ R3 会保留一个安全占位版 `reset-pages-deployments.yml` 用来覆盖旧�
 
 1. 新仓库进入 `Settings → Pages`。
 2. `Build and deployment → Source` 选择 `GitHub Actions`。
-3. 进入 `Actions → Deploy NineCloudDao V2.0.10 CACHE102 to GitHub Pages`。
+3. 进入 `Actions → Deploy NineCloudDao V2.0.11 CACHE103 to GitHub Pages`。
 4. 若首次push已经自动运行，可直接等待；也可以点击 `Run workflow → main → Run workflow`。
 5. 正常流程：`build → deploy`。
 6. 部署后打开：
@@ -78,10 +78,10 @@ https://你的用户名.github.io/NineCloudDao/VERSION.txt
 必须显示：
 
 ```text
-V2.0.10 CACHE102
+V2.0.11 CACHE103
 ```
 
-V2.0.10 R2 已恢复 V1.8.2 验证成功的默认 `github-pages` Artifact 部署方式，不再自定义 Artifact 名称。部署结束后 Actions 会自动无缓存访问线上 `VERSION.txt` 与 `index.html` 验证当前版本；只有读到 V2.0.10 CACHE102 R2 才算部署成功。
+V2.0.10 R2 已恢复 V1.8.2 验证成功的默认 `github-pages` Artifact 部署方式，不再自定义 Artifact 名称。部署结束后 Actions 会自动无缓存访问线上 `VERSION.txt` 与 `index.html` 验证当前版本；只有读到 V2.0.11 CACHE103 R2 才算部署成功。
 
 另外，根 `.github/workflows` 只允许 `deploy-pages.yml` 与 `release-apk.yml`。如果旧仓库残留其他 Pages 工作流，构建会明确报错；必须删除旧工作流后再运行。
 
@@ -140,7 +140,7 @@ ANDROID_KEY_PASSWORD
 成功后打开仓库右侧 `Releases`，应看到：
 
 ```text
-v2.0.10-cache102
+v2.0.11-cache103
 ```
 
 附件应包含：
@@ -192,7 +192,7 @@ release-notes.txt
 
 网页：
 
-- `/VERSION.txt` 显示 `V2.0.10 CACHE102`
+- `/VERSION.txt` 显示 `V2.0.11 CACHE103`
 - Actions中build与deploy均为绿色
 - Deployments只有新仓库自己的 `github-pages`
 
@@ -210,8 +210,8 @@ APP：
 ## 十二、V2.0.10 在线更新专项验收
 
 1. 手机必须先安装同一签名的 V2.0.7 正式 Release APK。
-2. 将本 V2.0.10 CACHE102 仓库内容提交到 main。
+2. 将本 V2.0.11 CACHE103 仓库内容提交到 main。
 3. 网页工作流部署 V2.0.8。
-4. 运行 `Build and publish Android APK`，默认发布 `v2.0.10-cache102`。
-5. V2.0.8 APP 启动或回到前台后应检测到 versionCode 2001102，高于 V2.0.8 的 2000900，并弹窗询问更新。
-6. 验收成功后，下一段对话可从 V2.0.10 CACHE102 客户端基线继续开发游戏内容。
+4. 运行 `Build and publish Android APK`，默认发布 `v2.0.11-cache103`。
+5. V2.0.8 APP 启动或回到前台后应检测到 versionCode 2001203，高于 V2.0.8 的 2000900，并弹窗询问更新。
+6. 验收成功后，下一段对话可从 V2.0.11 CACHE103 客户端基线继续开发游戏内容。

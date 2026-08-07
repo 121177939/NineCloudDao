@@ -1,6 +1,6 @@
-name: Legacy Pages reset workflow disabled (V2.0.10 R3)
+name: Legacy Pages reset workflow disabled (V2.0.11 / inherited R3)
 
-# LEGACY_PAGES_RESET_DISABLED_V210_R3
+# LEGACY_PAGES_RESET_DISABLED_V211_R3
 # 这是兼容旧仓库的安全占位文件。它覆盖旧 reset-pages-deployments.yml，
 # 不响应 push，也不会创建、删除或部署任何 Pages 内容。
 
@@ -15,4 +15,4 @@ jobs:
     if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Legacy Pages reset workflow is disabled by V2.0.10 R3."
+      - run: echo "Legacy Pages reset workflow is disabled by V2.0.11 / inherited R3."
