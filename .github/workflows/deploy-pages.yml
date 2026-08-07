@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V2.0.7 CACHE99 to GitHub Pages
+name: Deploy NineCloudDao V2.0.8 CACHE100 to GitHub Pages
 
 on:
   push:
@@ -38,9 +38,9 @@ jobs:
           set -euo pipefail
           test -f index.html
           test -f .nojekyll
-          test -f tools/build_pages_v2_0_7_actions.py
+          test -f tools/build_pages_v2_0_8_actions.py
           test -f VERSION.txt
-          grep -F "V2.0.7 CACHE99" VERSION.txt
+          grep -F "V2.0.8 CACHE100" VERSION.txt
 
       - name: Check JavaScript syntax
         shell: bash
@@ -55,7 +55,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf .pages-site
-          python3 tools/build_pages_v2_0_7_actions.py . .pages-site
+          python3 tools/build_pages_v2_0_8_actions.py . .pages-site
           test -f .pages-site/index.html
           test -f .pages-site/.nojekyll
 

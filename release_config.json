@@ -1,8 +1,8 @@
 {
-  "version": "V2.0.7",
-  "releaseLabel": "V2.0.7 CACHE99",
-  "buildId": "v2-0-7-cache99-equipment-worldnews3-cleanrepo1-huaweinet1-appdialogupdate1",
-  "cacheEpoch": 99,
+  "version": "V2.0.8",
+  "releaseLabel": "V2.0.8 CACHE100",
+  "buildId": "v2-0-8-cache100-equipment-worldnews3-cleanrepo1-huaweinet1-appdialogupdate1",
+  "cacheEpoch": 100,
   "minimumDatabaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
   "sqlRevision": "211-221 + 229-231",
   "migrationSql": [],
@@ -12,18 +12,18 @@
     "ANDROID_GITHUB_RELEASE_AUTO_UPDATE",
     "ANDROID_UPDATE_DIALOG_NO_FLOATING_BUTTON",
     "GITHUB_PAGES_CLEAN_REPOSITORY_UNIQUE_ARTIFACT",
-    "CLIENT_VERSION_207_CACHE99"
+    "CLIENT_VERSION_208_CACHE100"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "CLEANREPO1_HUAWEINET1_APPDIALOGUPDATE1_VERSION207",
+  "clientHotfix": "CLEANREPO1_HUAWEINET1_APPDIALOGUPDATE1_VERSION208",
   "databaseRelease": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231",
   "notes": [
-    "V2.0.7 CACHE99用于全新同名GitHub仓库，游戏玩法和数据库结构不变。",
-    "网页使用官方GitHub Actions Pages Artifact流程；每次运行使用唯一Artifact名称，deploy-pages最长等待30分钟。",
-    "Android保留华为网络兼容修复，不显示右下角按钮；仅检测到更高versionCode时弹窗询问是否更新。",
-    "本版本没有新增SQL，数据库继续沿用V2.0.3 CACHE95 / SQL211-221 + SQL229-231，下一SQL编号仍为232。"
+    "V2.0.8 CACHE100仅做版本提升与APP在线更新验收，游戏玩法、GM和数据库结构不变。",
+    "V2.0.7正式APK已由GitHub Actions自动构建、签名并发布成功；V2.0.8用于验证旧APP检测最新Release并弹窗询问更新。",
+    "APP仍不显示右下角浮动按钮；无新版不提示，发现更高versionCode才弹窗。",
+    "本版本无新增SQL；下一SQL编号仍为232。生产数据库实际状态在下一段数据库开发前必须重新只读核验。"
   ],
   "gmVersion": "ADMIN9 R20",
   "nextSqlNumber": 232,

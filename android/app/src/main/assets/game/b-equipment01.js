@@ -2,7 +2,7 @@
   'use strict';
 
   const MODULE = 'B-EQUIPMENT01';
-  const VERSION = '2.0.7-cache99-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1';
+  const VERSION = '2.0.8-cache100-equipment-worldnews3-pagesrecovery2-huaweinet1-appdialogupdate1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
