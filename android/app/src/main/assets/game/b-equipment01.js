@@ -2,7 +2,7 @@
   'use strict';
 
   const MODULE = 'B-EQUIPMENT01';
-  const VERSION = '2.1.0-cache105-equipment-forge1-wboss1';
+  const VERSION = '2.1.1-cache106-equipment-forge1-wboss1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');

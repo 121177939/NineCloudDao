@@ -114,7 +114,7 @@
       secret.insertAdjacentElement('afterend', section);
     }
 
-    // V2.1.0由主程序正式提供“世 / 世界”底部导航，不再动态注入重复按钮。
+    // V2.1.1由主程序正式提供“世 / 世界”底部导航，不再动态注入重复按钮。
     const tabbedMode = window.matchMedia('(max-width: 760px), (min-width: 1024px)').matches;
     const active = document.querySelector('.mobile-tab-button.active')?.dataset.mobileTab;
     if (tabbedMode && active !== 'world_boss') section.classList.add('mobile-screen-hidden');

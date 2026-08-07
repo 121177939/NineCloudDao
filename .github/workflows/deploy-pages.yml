@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V2.0.12 CACHE104 to GitHub Pages
+name: Deploy NineCloudDao V2.1.1 CACHE106 to GitHub Pages
 
 on:
   push:
@@ -38,10 +38,6 @@ jobs:
           set -euo pipefail
           echo "Root workflows:"
           find .github/workflows -maxdepth 1 -type f -printf '  %f\n' | sort || true
-
-          # R3 no longer rejects every extra workflow. The R2 failure was caused by
-          # that overly strict gate itself. We only block another workflow that can
-          # actually publish GitHub Pages.
           for f in .github/workflows/*.yml .github/workflows/*.yaml; do
             [ -e "$f" ] || continue
             base="$(basename "$f")"
@@ -56,12 +52,9 @@ jobs:
             fi
             echo "::warning::发现额外但未检测到 Pages 发布动作的工作流：$f；本次不阻止部署。"
           done
-
-          # 旧仓库曾残留 reset-pages-deployments.yml。R3 包内自带同名“墓碑”文件，
-          # 上传后会覆盖旧内容并取消 push 触发，避免它再次干扰 Pages。
           if [ -f .github/workflows/reset-pages-deployments.yml ]; then
             grep -Fq 'LEGACY_PAGES_RESET_DISABLED_V211_R3' .github/workflows/reset-pages-deployments.yml || {
-              echo "::error::reset-pages-deployments.yml 仍是旧内容，没有被 R3 安全占位文件覆盖。请用 R3 仓库包覆盖该文件。"
+              echo "::error::reset-pages-deployments.yml 不是锁定的安全占位文件。请用本版本仓库包覆盖该文件。"
               exit 1
             }
           fi
@@ -72,9 +65,9 @@ jobs:
           set -euo pipefail
           test -f index.html
           test -f .nojekyll
-          test -f tools/build_pages_v2_0_12.py
+          test -f tools/build_pages_v2_1_1.py
           test -f VERSION.txt
-          grep -F "V2.0.12 CACHE104" VERSION.txt
+          grep -F "V2.1.1 CACHE106" VERSION.txt
           grep -F "PAGES_DEPLOY default-github-pages-artifact-r3" VERSION.txt
 
       - name: Verify web and Android embedded game stay synchronized
@@ -87,7 +80,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for f in app.js config.js update-guard.js sw.js b-paigow01.js b-equipment01.js b-secret-realm01.js b-sect-v2.js paigow-realtime.js paigow-app.js b-paigow02-ui.js; do
+          for f in app.js config.js update-guard.js sw.js b-paigow01.js b-equipment01.js b-equipment-v210.js b-secret-realm01.js b-world-boss01.js b-sect-v2.js paigow-realtime.js paigow-app.js b-paigow02-ui.js; do
             node --check "$f"
           done
 
@@ -96,10 +89,12 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf .pages-site
-          python3 tools/build_pages_v2_0_12.py . .pages-site
+          python3 tools/build_pages_v2_1_1.py . .pages-site
           test -f .pages-site/index.html
           test -f .pages-site/.nojekyll
           test -f .pages-site/VERSION.txt
+          test -f .pages-site/b-world-boss01.js
+          test -f .pages-site/b-equipment-v210.js
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -126,7 +121,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Verify live Pages is V2.0.12 CACHE104 R3
+      - name: Verify live Pages is V2.1.1 CACHE106 R3
         shell: bash
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
@@ -144,17 +139,17 @@ jobs:
             index_url="$base/index.html?pages_verify=$stamp"
             version="$(curl -fsSL --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' "$version_url" 2>/dev/null || true)"
             index="$(curl -fsSL --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' "$index_url" 2>/dev/null || true)"
-            if grep -Fq 'V2.0.12 CACHE104' <<<"$version" \
+            if grep -Fq 'V2.1.1 CACHE106' <<<"$version" \
               && grep -Fq 'PAGES_DEPLOY default-github-pages-artifact-r3' <<<"$version" \
-              && grep -Fq '<!-- version: V2.0.12 CACHE104 -->' <<<"$index"; then
-              echo "LIVE PAGES PASS: V2.0.12 CACHE104 / default artifact R3"
+              && grep -Fq '<!-- version: V2.1.1 CACHE106 -->' <<<"$index"; then
+              echo "LIVE PAGES PASS: V2.1.1 CACHE106 / default artifact R3"
               ok=1
               break
             fi
-            echo "Attempt $i: Pages CDN尚未返回本次R3版本，10秒后重试。"
+            echo "Attempt $i: Pages CDN尚未返回本次版本，10秒后重试。"
             sleep 10
           done
           if [ "$ok" -ne 1 ]; then
-            echo "::error::部署完成后线上仍未读到V2.0.12 CACHE104 R3。请确认 Settings → Pages → Source = GitHub Actions，并查看本次 deploy 步骤输出的 page_url。"
+            echo "::error::部署完成后线上仍未读到V2.1.1 CACHE106。请确认 Settings → Pages → Source = GitHub Actions，并查看本次 deploy 步骤输出的 page_url。"
             exit 1
           fi
