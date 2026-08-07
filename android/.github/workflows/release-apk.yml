@@ -173,12 +173,43 @@ jobs:
           TAG: ${{ steps.release.outputs.tag }}
         run: |
           set -euo pipefail
-          if ! gh release view "$TAG" >/dev/null 2>&1; then
+
+          # Release notes are optional source data. Do not fail the whole APK
+          # publication merely because android/release/release-notes.txt was not
+          # uploaded to the repository. Prefer the project file when present,
+          # otherwise generate a safe fallback in RUNNER_TEMP.
+          NOTES_FILE="$RUNNER_TEMP/jiuxiao-release-notes.txt"
+          if [ -s android/release/release-notes.txt ]; then
+            cp android/release/release-notes.txt "$NOTES_FILE"
+          else
+            cat > "$NOTES_FILE" <<'EOF'
+          九霄问道 V2.0.7 CACHE99
+
+          - Android 本地运行版正式发布。
+          - 启动与回到前台时自动检查 GitHub Release 新版本。
+          - 发现更高 versionCode 后弹窗询问是否更新。
+          - 没有新版时不显示更新入口，不显示右下角浮动圆圈。
+          - 本版本 APP versionCode：2000799。
+          - 本版本 APP versionName：2.0.7-cache99。
+          EOF
+          fi
+
+          test -s android/release-dist/jiuxiao-wendao-release.apk
+          test -s android/release-dist/app-update.json
+          test -s android/release-dist/SHA256SUMS.txt
+          test -s "$NOTES_FILE"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" \
+              --title "九霄问道 $TAG" \
+              --notes-file "$NOTES_FILE"
+          else
             gh release create "$TAG" \
               --target "$GITHUB_SHA" \
               --title "九霄问道 $TAG" \
-              --notes-file android/release/release-notes.txt
+              --notes-file "$NOTES_FILE"
           fi
+
           gh release upload "$TAG" \
             android/release-dist/jiuxiao-wendao-release.apk \
             android/release-dist/app-update.json \
