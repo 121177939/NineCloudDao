@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.1.1 CACHE110：装备孔位页紧凑化、锁3孔、百炼整装重炼与原地即时更新；继续沿用世界BOSS与服务端权威结算。
+  // V2.1.1 CACHE111：修复元神中央角色总属性弹窗样式回归；继续沿用CACHE110孔位洗炼、世界BOSS与服务端权威结算。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,

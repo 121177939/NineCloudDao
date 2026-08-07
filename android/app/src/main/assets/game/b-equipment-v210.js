@@ -109,5 +109,5 @@
   }
   async function run(name,body,message,upgrade=false){if(state.busy)return;state.busy=true;try{const result=await rpc(name,body);state.dirty=true;if(upgrade){toast(result?.upgrade_success?'天命应允，装备跃迁成功！':'天命未应，道具已消耗，装备保持不变。',result?.upgrade_success?'success':'error')}else toast(message||'操作完成。');await window.B_EQUIPMENT01?.refresh?.(true);const fresh=window.B_EQUIPMENT01?.getItem?.(state.item.id)||state.item;await render(fresh)}catch(e){toast(errorText(e),'error')}finally{state.busy=false}}
   async function open(item){try{await render(item)}catch(e){toast(errorText(e),'error')}}
-  window.B_EQUIPMENT_V210=Object.freeze({module:MODULE,version:'2.1.1-cache110',open,refresh:overview,detailRows});
+  window.B_EQUIPMENT_V210=Object.freeze({module:MODULE,version:'2.1.1-cache111',open,refresh:overview,detailRows});
 })();

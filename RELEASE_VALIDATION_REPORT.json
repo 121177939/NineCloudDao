@@ -1,18 +1,14 @@
 {
-  "release": "V2.1.1 CACHE110 candidate",
-  "buildId": "v2-1-1-cache110-forgeui2-admin22-sql239",
+  "release": "V2.1.1 CACHE111 candidate",
+  "buildId": "v2-1-1-cache111-totalstatsfix-admin22-sql240",
   "gmVersion": "ADMIN9 R22",
-  "androidVersionCode": 2001410,
-  "androidVersionName": "2.1.1-cache110",
+  "androidVersionCode": 2001411,
+  "androidVersionName": "2.1.1-cache111",
   "checks": [
-    "JavaScript syntax PASS",
-    "Web/Android shared assets sync PASS",
-    "V2.1.1 CACHE110 Pages artifact build PASS",
-    "Android static validation PASS",
-    "SQL239 two-file package generated",
-    "No per-socket 百炼 button remains in CACHE110 client",
-    "Socket reroll client uses bulk RPC and inline dynamic update",
-    "SQL239 server enforces max 3 locks and bulk 百炼 semantics"
+    "V2.1.1 CACHE111 Pages artifact build pending local validation",
+    "角色总属性入口 data-total-stats-entry 保留",
+    "total-stats modal CSS restored",
+    "CACHE110孔位洗炼逻辑未改"
   ],
   "database": [
     "SQL239 requires SQL233 equipment socket base",
