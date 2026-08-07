@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - name: Checkout repository
@@ -65,12 +65,36 @@ jobs:
           grep -Fq 'distributionSha256Sum=03ec176d388f2aa99defcadc3ac6adf8dd2bce5145a129659537c0874dea5ad1' \
             android/gradle/wrapper/gradle-wrapper.properties
 
-      - name: Install Android SDK 34
+      - name: Verify preinstalled Android SDK 34
         shell: bash
         run: |
           set -euo pipefail
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "Using Android SDK: $SDK_ROOT"
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+
+          REQUIRED_FILES=(
+            "$SDK_ROOT/platforms/android-34/android.jar"
+            "$SDK_ROOT/build-tools/34.0.0/aapt2"
+            "$SDK_ROOT/build-tools/34.0.0/apksigner"
+            "$SDK_ROOT/platform-tools/adb"
+          )
+
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -e "$file" ]; then
+              echo "::error::GitHub ubuntu-24.04 runner is missing required Android SDK file: $file"
+              echo "ANDROID_HOME=${ANDROID_HOME:-<unset>}"
+              echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-<unset>}"
+              find "$SDK_ROOT" -maxdepth 3 -type d -print 2>/dev/null | sort | head -200 || true
+              exit 1
+            fi
+          done
+
+          echo "$SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
+          echo "$SDK_ROOT/build-tools/34.0.0" >> "$GITHUB_PATH"
+          "$SDK_ROOT/build-tools/34.0.0/aapt2" version
 
       - name: Decode permanent release keystore
         shell: bash
