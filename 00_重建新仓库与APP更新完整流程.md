@@ -60,7 +60,7 @@ index.html
 VERSION.txt
 ```
 
-仓库中不应出现 `reset-pages-deployments.yml`、`nineclouddao-pages-live`或旧部署脚本。
+R3 会保留一个安全占位版 `reset-pages-deployments.yml` 用来覆盖旧仓库同名工作流；它不会响应 push。真正的旧 Pages 发布工作流（例如包含 deploy-pages/upload-pages-artifact 的其他 yml）仍必须停用或删除。
 
 ## 五、首次部署网页
 

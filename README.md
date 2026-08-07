@@ -11,6 +11,6 @@
 
 详细内容见 `V2.0.10升级说明.md`。
 
-## Pages R2 部署恢复
 
-V2.0.10 CACHE102 R2 已恢复 V1.8.2 验证成功的 GitHub Pages 默认 `github-pages` Artifact 部署方式，并新增部署后线上 `VERSION.txt` / `index.html` 自动验收。详细见 `PAGES_V2.0.10_R2_部署恢复说明.md`。
+## Pages R3
+R3 修复了 R2 对额外 workflow 的过严自检，并用同名安全占位文件自动覆盖旧 `reset-pages-deployments.yml`。

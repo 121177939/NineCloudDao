@@ -1,7 +1,7 @@
 {
   "project": "JiuxiaoWendaoAndroid",
   "version": "V2.0.10 CACHE102",
-  "packageRevision": "R2-pages-deploy-restore",
+  "packageRevision": "R3-pages-workflow-legacy-reset-neutralized",
   "versionCode": 2001102,
   "versionName": "2.0.10-cache102",
   "gameBuildId": "v2-0-10-cache102-sectui2-breakthroughmanual1-appupdate2",
@@ -26,7 +26,7 @@
     {
       "path": "VALIDATION_REPORT.json",
       "size": 340,
-      "sha256": "b77991110460bf2f0bd1ce48bc217e41256ab090fec1b03f6dfb89666829267e"
+      "sha256": "536621a35e89288a657077bdd33708488308215f0927cb8bf8403b1aee964e62"
     },
     {
       "path": "app/build.gradle.kts",
@@ -45,13 +45,13 @@
     },
     {
       "path": "app/src/main/assets/game/CURRENT_BASELINE.json",
-      "size": 4775,
-      "sha256": "434e483f9b30f8d3f08adf2ae99718112cf9308ee7d1fbd1be2423442419e567"
+      "size": 4878,
+      "sha256": "b5c01dc85eab4301af13ae637781350167ab72355a4fba984729f9af58cbd49c"
     },
     {
       "path": "app/src/main/assets/game/VERSION.txt",
       "size": 237,
-      "sha256": "9db584fc74497ecdf69e5fe5aa459fe4cc7127e76feaee6c79c6c79464d1e50b"
+      "sha256": "d8ae807e09a2ab001436154aeda1966021ef73fb00b346043fb3fc7f4920eb53"
     },
     {
       "path": "app/src/main/assets/game/android-local.js",
@@ -165,8 +165,8 @@
     },
     {
       "path": "app/src/main/assets/game/release_config.json",
-      "size": 3039,
-      "sha256": "2bb0bdeccaab9eebda326196e04d3f9b268c2c34713cf898af6f74779146c724"
+      "size": 3308,
+      "sha256": "0ef4c4ffc5cc62025ebcfe39327c8fa7a060bfbc4da5b4f7ff61228d393fc039"
     },
     {
       "path": "app/src/main/assets/game/styles.css",

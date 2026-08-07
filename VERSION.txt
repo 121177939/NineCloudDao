@@ -7,4 +7,4 @@ ANDROID 2001102 2.0.10-cache102
 NEXT_SQL 233
 ADMIN9 R20
 
-PAGES_DEPLOY default-github-pages-artifact-r2
+PAGES_DEPLOY default-github-pages-artifact-r3

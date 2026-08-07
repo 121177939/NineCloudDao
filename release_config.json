@@ -38,9 +38,10 @@
     "本次不新增数据库迁移，沿用SQL232；ADMIN9仍为R20；下一SQL编号保持233。",
     "V2.0.10 R2将Pages部署恢复为V1.8.2已验证成功的默认github-pages Artifact方式：upload-pages-artifact不自定义名称，deploy-pages不指定artifact_name。",
     "Pages部署后自动访问线上VERSION.txt与index.html进行最多约3分钟无缓存验收；若线上仍是旧版，Actions直接标红而不是假定部署成功。",
-    "Pages构建前检查根.github/workflows，仅允许deploy-pages.yml与release-apk.yml；若旧仓库残留旧Pages工作流则明确失败，避免旧流程覆盖新站点。"
+    "Pages构建前检查根.github/workflows，仅允许deploy-pages.yml与release-apk.yml；若旧仓库残留旧Pages工作流则明确失败，避免旧流程覆盖新站点。",
+    "V2.0.10 R3修复R2自检误伤：不再要求.github/workflows只能有两个文件；包内加入reset-pages-deployments.yml安全占位文件覆盖旧工作流并取消push触发，仅检测到真正的竞争Pages发布动作时才失败。"
   ],
   "gmVersion": "ADMIN9 R20",
   "nextSqlNumber": 233,
-  "deploymentMethod": "github_actions_pages_default_artifact_verified"
+  "deploymentMethod": "github_actions_pages_default_artifact_r3_legacy_reset_neutralized"
 }

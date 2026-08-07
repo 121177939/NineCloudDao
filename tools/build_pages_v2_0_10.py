@@ -16,7 +16,7 @@ checks={
  'text-red':'.world-event-row.is-equipment-enhancement .world-event-copy p' in styles and 'color: #ef5f5f' in styles,
  'no-special-background':not re.search(r'\.world-event-row\.is-equipment-enhancement\s*\{[^}]*(background|border-left)',styles,re.S),
  'database':baseline.get('nextSqlNumber')==233 and baseline.get('sqlRevision')=='211-221 + 229-232',
- 'pages-method':baseline.get('deploymentMethod')=='github_actions_pages_default_artifact_verified'
+ 'pages-method':baseline.get('deploymentMethod')=='github_actions_pages_default_artifact_r3_legacy_reset_neutralized'
 }
 failed=[k for k,v in checks.items() if not v]
 for k,v in checks.items(): print(('PASS ' if v else 'FAIL ')+k)
