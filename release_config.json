@@ -1,31 +1,38 @@
 {
-  "version": "V2.0.8",
-  "releaseLabel": "V2.0.8 CACHE100",
-  "buildId": "v2-0-8-cache100-equipment-worldnews3-cleanrepo1-huaweinet1-appdialogupdate1",
-  "cacheEpoch": 100,
-  "minimumDatabaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-231",
-  "migrationSql": [],
+  "version": "V2.0.9",
+  "releaseLabel": "V2.0.9 CACHE101",
+  "buildId": "v2-0-9-cache101-secttempo1-eventoutcome1-cleanrepo1-huaweinet1-appdialogupdate1",
+  "cacheEpoch": 101,
+  "minimumDatabaseBaseline": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232 / ADMIN9 R20",
+  "sqlRevision": "211-221 + 229-232",
+  "migrationSql": [
+    232
+  ],
   "features": [
     "EQUIPMENT_ENHANCEMENT_WORLD_NEWS_REAL_TABLE_FIX",
     "EQUIPMENT_WORLD_NEWS_TEXT_ONLY_RED",
     "ANDROID_GITHUB_RELEASE_AUTO_UPDATE",
     "ANDROID_UPDATE_DIALOG_NO_FLOATING_BUTTON",
     "GITHUB_PAGES_CLEAN_REPOSITORY_UNIQUE_ARTIFACT",
-    "CLIENT_VERSION_208_CACHE100"
+    "SECT_AUTONOMY_TEMPO_15_40_MIN",
+    "SECT_DECISION_TEMPO_4_10_MIN",
+    "SECT_EVENT_OUTCOME_VISIBLE",
+    "CLIENT_VERSION_209_CACHE101"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "CLEANREPO1_HUAWEINET1_APPDIALOGUPDATE1_VERSION208",
-  "databaseRelease": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231",
+  "clientHotfix": "SECTTEMPO1_EVENTOUTCOME1_VERSION209",
+  "databaseRelease": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232",
   "notes": [
-    "V2.0.8 CACHE100仅做版本提升与APP在线更新验收，游戏玩法、GM和数据库结构不变。",
-    "V2.0.7正式APK已由GitHub Actions自动构建、签名并发布成功；V2.0.8用于验证旧APP检测最新Release并弹窗询问更新。",
-    "APP仍不显示右下角浮动按钮；无新版不提示，发现更高versionCode才弹窗。",
-    "本版本无新增SQL；下一SQL编号仍为232。生产数据库实际状态在下一段数据库开发前必须重新只读核验。"
+    "V2.0.9 CACHE101调整宗门自主生态节奏：弟子动态15—40分钟，行动评估4—10分钟。",
+    "AUTONOMOUS_CHOICE等内部英文状态不再直接展示，统一转换为中文说明。",
+    "宗门史与宗门动态新增独立结算结果区，优先显示修为、灵石、物资、声望、忠诚、心境、贡献、丹药与物品/功法等真实增减。",
+    "SQL232通过动态定位真实B-SECT06表安装排期钳制和结构化结算摘要，不重写原核心RPC。",
+    "网页与Android内置游戏资源同步更新；Android versionCode=2001001，versionName=2.0.9-cache101。",
+    "ADMIN9仍为R20，本次未修改GM；下一SQL编号为233。"
   ],
   "gmVersion": "ADMIN9 R20",
-  "nextSqlNumber": 232,
+  "nextSqlNumber": 233,
   "deploymentMethod": "github_actions_pages_artifact_clean_repository"
 }

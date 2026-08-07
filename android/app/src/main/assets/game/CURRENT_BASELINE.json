@@ -1,9 +1,9 @@
 {
-  "version": "2.0.8",
-  "releaseLabel": "九霄问道 V2.0.8 CACHE100",
-  "sourceBaseline": "V2.0.6 CACHE98 / database V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
-  "minimumDatabaseBaseline": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
-  "deploymentStatus": "v2_0_8_app_online_update_acceptance_pending",
+  "version": "2.0.9",
+  "releaseLabel": "九霄问道 V2.0.9 CACHE101",
+  "sourceBaseline": "V2.0.8 CACHE100 / database V2.0.3 CACHE95 / SQL211-221 + SQL229-231 / ADMIN9 R20",
+  "minimumDatabaseBaseline": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232 / ADMIN9 R20",
+  "deploymentStatus": "v2_0_9_cache101_sect_tempo_outcome_sql232_ready",
   "databaseMigrations": [
     211,
     212,
@@ -18,7 +18,8 @@
     221,
     229,
     230,
-    231
+    231,
+    232
   ],
   "supersededMigrations": [
     222,
@@ -30,12 +31,13 @@
     228
   ],
   "databaseReleaseGate": "SQL230 V2.0.3 CACHE95正式发布门禁",
-  "databaseFinalCheck": "SQL231 CACHE95升级后只读检查",
+  "databaseFinalCheck": "POSTCHECK_SQL232 宗门节奏与事件结算只读验收",
   "modules": [
     "B-SECT06-AUTONOMY2000",
     "DB-MAINT-V210-GM",
     "B-EQUIPMENT01-WORLDNEWS3-SCHEMAFIX1",
-    "B-CLIENT-PERF01-POLLING1"
+    "B-CLIENT-PERF01-POLLING1",
+    "B-SECT07-TEMPO-OUTCOME"
   ],
   "confirmedRules": [
     "装备+0至+5强化不进入九霄界闻",
@@ -47,29 +49,30 @@
     "Android正式版启动和回到前台时自动检查同仓库最新GitHub Release",
     "Android更新APK必须通过SHA-256、包名、版本号和签名证书校验",
     "Android界面不显示右下角浮动菜单；仅检测到更高versionCode时弹窗询问是否更新",
-    "V2.0.8仅提升客户端、网页缓存纪元与Android版本号，数据库结构、玩法和SQL链不变",
-    "V2.0.8仅提升客户端、网页缓存纪元与Android版本号，数据库结构、玩法和SQL链不变",
     "全新仓库仅保留一条官方GitHub Actions Pages工作流，构建产物每次运行使用唯一Artifact名称",
     "Android正式版从当前同名GitHub仓库最新Release检查更新；无新版不显示任何入口，发现新版只弹窗询问",
-    "V2.0.8仅提升客户端、网页缓存纪元与Android versionCode/versionName，用于在线更新验收；数据库、GM与玩法不变",
-    "V2.0.7的GitHub自动构建、正式签名与Release发布工作流已在新仓库实际成功；R6工作流作为后续APP发布权威模板"
+    "V2.0.7的GitHub自动构建、正式签名与Release发布工作流已在新仓库实际成功；R6工作流作为后续APP发布权威模板",
+    "宗门弟子人物动态排期控制为15—40分钟，行动评估控制为4—10分钟",
+    "AUTONOMOUS_CHOICE等内部代码不得直接显示给玩家，必须中文化",
+    "宗门事件优先显示实际结算结果；旧记录缺失结构化数值时明确提示旧记录未保存，不伪造奖励",
+    "V2.0.9网页游戏内容与Android APK内置资源必须同步，避免网页更新而APP仍为旧内容"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
-  "clientRelease": "V2.0.8_CACHE100",
-  "developmentBaseline": "V2.0.8_AB78_ADMIN9_CACHE100",
-  "cacheEpoch": 100,
-  "sqlRevision": "211-221 + 229-231",
+  "clientRelease": "V2.0.9_CACHE101",
+  "developmentBaseline": "V2.0.9_ADMIN9R20_CACHE101_SQL232",
+  "cacheEpoch": 101,
+  "sqlRevision": "211-221 + 229-232",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "CLEANREPO1_HUAWEINET1_APPDIALOGUPDATE1_VERSION208",
-  "clientBuild": "v2-0-8-cache100-equipment-worldnews3-cleanrepo1-huaweinet1-appdialogupdate1",
-  "databaseRelease": "V2.0.3 CACHE95 / SQL211-221 + SQL229-231",
+  "clientHotfix": "SECTTEMPO1_EVENTOUTCOME1_VERSION209",
+  "clientBuild": "v2-0-9-cache101-secttempo1-eventoutcome1-cleanrepo1-huaweinet1-appdialogupdate1",
+  "databaseRelease": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232",
   "gmVersion": "ADMIN9 R20",
   "handoffRevision": "R36-2026-08-07",
-  "deploymentVerification": "新仓库V2.0.7网页与GitHub自动签名APK发布流程已实际跑通；V2.0.8仅提升版本号，用于验证已安装V2.0.7正式APK能否检测同仓库最新Release并弹窗更新。",
-  "buildId": "v2-0-8-cache100-equipment-worldnews3-cleanrepo1-huaweinet1-appdialogupdate1",
-  "nextSqlNumber": 232,
-  "phase3SqlStart": 232,
+  "deploymentVerification": "V2.0.9源码已完成网页与Android资源同步及静态校验；SQL232需在生产执行PRECHECK→安装→POSTCHECK后再发布正式客户端。",
+  "buildId": "v2-0-9-cache101-secttempo1-eventoutcome1-cleanrepo1-huaweinet1-appdialogupdate1",
+  "nextSqlNumber": 233,
+  "phase3SqlStart": 233,
   "deploymentMethod": "github_actions_pages_artifact_clean_repository",
   "lastObservedProductionDatabase": "本次对话最后明确截图为 V2.0.0 CACHE92 / 92；SQL229-231是否实际生产执行未在对话中提供成功证据，下一段数据库开发前必须重新只读核验"
 }

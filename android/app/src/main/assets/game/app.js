@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.0.8 CACHE100：沿用CACHE80低频同步，接入B-SECT04人物事件、师徒关系与三人异步切磋闭环。
+  // V2.0.9 CACHE101：宗门自主节奏与事件结算可读性升级，继续沿用低频同步与服务端结算。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,

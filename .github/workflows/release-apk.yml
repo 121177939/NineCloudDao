@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release标签；留空使用 v2.0.8-cache100"
+        description: "Release标签；留空使用 v2.0.9-cache101"
         required: false
         type: string
   push:
@@ -38,7 +38,7 @@ jobs:
           elif [ -n "${MANUAL_TAG:-}" ]; then
             TAG="$MANUAL_TAG"
           else
-            TAG="v2.0.8-cache100"
+            TAG="v2.0.9-cache101"
           fi
           case "$TAG" in v*) ;; *) echo "Release标签必须以v开头" >&2; exit 1 ;; esac
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
@@ -183,14 +183,14 @@ jobs:
             cp android/release/release-notes.txt "$NOTES_FILE"
           else
             cat > "$NOTES_FILE" <<'EOF'
-          九霄问道 V2.0.8 CACHE100
+          九霄问道 V2.0.9 CACHE101
 
           - Android 本地运行版正式发布。
           - 启动与回到前台时自动检查 GitHub Release 新版本。
           - 发现更高 versionCode 后弹窗询问是否更新。
           - 没有新版时不显示更新入口，不显示右下角浮动圆圈。
-          - 本版本 APP versionCode：2000900。
-          - 本版本 APP versionName：2.0.8-cache100。
+          - 本版本 APP versionCode：2001001。
+          - 本版本 APP versionName：2.0.9-cache101。
           EOF
           fi
 

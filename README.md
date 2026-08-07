@@ -1,11 +1,11 @@
-# 九霄问道 V2.0.8 CACHE100：全新GitHub仓库版
+# 九霄问道 V2.0.9 CACHE101：全新GitHub仓库版
 
-这是用于重建干净仓库的完整根目录。解压后应直接看到 `.github`、`android`、`index.html`、`VERSION.txt` 等文件。
+当前客户端基线：**V2.0.9 CACHE101**。
 
-- 网页：官方 GitHub Actions Pages Artifact 流程。
-- APP：APK内本地运行游戏资源；只在发现更高版本时弹窗询问更新。
-- APP更新源：同一个GitHub仓库的最新正式 Release。
-- Android：`versionCode=2000900`，`versionName=2.0.8-cache100`。
-- 数据库：无新增SQL，继续使用 V2.0.3 CACHE95 / SQL211-221 + SQL229-231；下一SQL编号232。
-
-请先阅读：`00_重建新仓库与APP更新完整流程.md`。
+- 宗门弟子动态：15—40分钟；行动评估：4—10分钟（需先执行 SQL232）。
+- 宗门事件新增“结算结果”，不再只显示剧情文本。
+- 内部状态 `AUTONOMOUS_CHOICE` 已转换为中文玩家文案。
+- Android：`versionCode=2001001`，`versionName=2.0.9-cache101`。
+- ADMIN9：R20，本次未修改。
+- 数据库：SQL232；下一SQL编号233。
+- 网页与Android内置资源必须保持同步。

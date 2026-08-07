@@ -77,3 +77,10 @@
 .sect-v2-asset-list-bsect06 article div{min-width:0}.sect-v2-asset-list-bsect06 strong,.sect-v2-asset-list-bsect06 small{display:block}.sect-v2-asset-list-bsect06 small{margin-top:4px;color:#9e947e;font-size:11px}.sect-v2-asset-list-bsect06 b{color:#e3c67d;white-space:nowrap}
 .sect-v2-log-bsect01 article.importance-important{border-left:3px solid #d2a85f}.sect-v2-log-bsect01 article.importance-major{border-left:3px solid #c96c62;background:rgba(128,44,37,.08)}
 @media(max-width:560px){.sect-v2-asset-list-bsect06 article{align-items:flex-start}.sect-v2-asset-list-bsect06 article button{flex:0 0 auto}}
+
+
+/* V2.0.9 CACHE101 · 宗门节奏与事件结算可读性 */
+.sect-v2-event-outcome-bsect07{display:grid;gap:4px;margin:8px 0 6px;padding:8px 10px;border:1px solid rgba(210,172,98,.24);border-radius:9px;background:rgba(210,172,98,.055);font-size:.76rem;line-height:1.5}
+.sect-v2-event-outcome-bsect07 b{color:#e3c67d;font-size:.72rem}
+.sect-v2-event-outcome-bsect07 span{color:var(--soft-text,#b8afa1);overflow-wrap:anywhere}
+.sect-v2-autonomy-reason-bsect06 b{color:#e3c67d;margin-right:4px}
