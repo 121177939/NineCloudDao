@@ -2,7 +2,7 @@
   'use strict';
 
   const MODULE = 'B-EQUIPMENT01';
-  const VERSION = '2.1.1-cache108-equipment-forge2-wboss1';
+  const VERSION = '2.1.1-cache109-equipment-detail1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
@@ -498,7 +498,7 @@
     return `当前：${current.main_stat_display}；新装备：${item.main_stat_display}；变化：${diffText}。`;
   }
 
-  function openDetail(item) {
+  async function openDetail(item) {
     const equipped = item.location === 'equipped';
     const inBag = item.location === 'backpack';
     const inCave = item.location === 'cave';
@@ -512,7 +512,18 @@
     if (inBag) actions.push('<button class="primary-btn" data-eq-action="forge">孔位 / 升品 / 破境</button>');
     if (inBag) actions.push(`<button class="danger-btn" data-eq-action="decompose" ${item.is_locked ? 'disabled' : ''}>分解得器源×${Number(item.decompose_essence)}</button>`);
 
-    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01" role="dialog" aria-modal="true"><button class="modal-close-button" data-eq-close>×</button><header style="--grade:${esc(color(item))}">${itemIcon(item)}<div><span>${esc(item.realm_name)} · ${esc(slotMeta[item.slot_code][1])}${item.weapon_kind ? ` · ${esc(item.weapon_kind_label || weaponKindLabels[item.weapon_kind] || item.weapon_kind)}` : ''}</span><h3>${esc(itemEnhancementName(item))}：<em>${esc(item.grade_name)}</em></h3></div></header><div class="equipment-detail-main-bequipment01"><strong>${esc(item.main_stat_display)}</strong><span>${esc(item.socket_display)}</span></div><p>${esc(compare(item))}</p><dl><div><dt>强化等级</dt><dd>+${Number(item.enhancement_level || 0)}</dd></div><div><dt>原始主属性</dt><dd>${esc(formatMainStat(item, item.base_main_stat_value))}</dd></div><div><dt>完整名称</dt><dd>${esc(item.full_name)}</dd></div><div><dt>存放位置</dt><dd>${locationLabels[item.location] || item.location}</dd></div><div><dt>保护状态</dt><dd>${item.is_locked ? '已锁定' : '未锁定'}</dd></div><div><dt>分解所得</dt><dd>器源×${Number(item.decompose_essence)}</dd></div></dl><div class="equipment-modal-actions-bequipment01">${actions.join('')}</div></section></div>`;
+    let socketRows = Array.from({ length: Math.min(8, Math.max(0, Number(item.opened_sockets ?? item.total_socket_capacity ?? item.socket_capacity ?? 0))) }, (_, i) => ({ index: i + 1, symbol: ['①','②','③','④','⑤','⑥','⑦','⑧'][i] || String(i + 1), empty: true, level: null, text: '空' }));
+    try {
+      const rows = await window.B_EQUIPMENT_V210?.detailRows?.(item);
+      if (Array.isArray(rows)) socketRows = rows;
+    } catch (error) {
+      console.warn('[B-EQUIPMENT01] 装备详情孔位读取失败，使用空孔占位。', error);
+    }
+    const socketDetailHtml = socketRows.length
+      ? socketRows.map(row => `<div class="equipment-detail-socket-row-bequipment01 ${row.empty ? 'is-empty' : ''} ${Number(row.level) === 10 ? 'is-max' : ''}"><b>${esc(row.symbol)}</b><span>${esc(row.text)}${row.empty ? '' : ` <em>（LV.${Number(row.level || 1)}）</em>`}</span></div>`).join('')
+      : '<div class="equipment-detail-socket-row-bequipment01 is-empty"><b>①</b><span>空</span></div>';
+
+    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01" role="dialog" aria-modal="true"><button class="modal-close-button" data-eq-close>×</button><header style="--grade:${esc(color(item))}">${itemIcon(item)}<div><span>${esc(item.realm_name)} · ${esc(slotMeta[item.slot_code][1])}${item.weapon_kind ? ` · ${esc(item.weapon_kind_label || weaponKindLabels[item.weapon_kind] || item.weapon_kind)}` : ''}</span><h3>${esc(itemEnhancementName(item))}：<em>${esc(item.grade_name)}</em></h3></div></header><div class="equipment-detail-main-bequipment01"><strong>${esc(item.main_stat_display)}</strong><span>${esc(item.socket_display)}</span></div><section class="equipment-detail-sockets-bequipment01" aria-label="装备孔位属性">${socketDetailHtml}</section><div class="equipment-modal-actions-bequipment01">${actions.join('')}</div></section></div>`;
 
     const root = modalHost();
     bindBackdrop(root);

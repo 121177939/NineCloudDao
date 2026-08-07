@@ -23,6 +23,23 @@
   function forgeItem(id){return (state.overview?.items||[]).find(x=>String(x.id)===String(id))||{id,sockets:[],socket_content_count:0}}
   function levelRow(level){return (state.overview?.level_config||[]).find(x=>Number(x.level)===Number(level))||{}}
   function socketValue(s){const r=levelRow(s.level);if(['attack_flat','defense_flat','vitality_flat','agility_flat'].includes(s.attribute_code))return `原始主属性×${fmt(Number(r.fixed_main_ratio||0)*100)}%`;if(['attack_pct','defense_pct','vitality_pct','agility_pct'].includes(s.attribute_code))return `+${fmt(Number(r.main_percent||0)*100)}%`;if(['hit','evasion'].includes(s.attribute_code))return `+${fmt(Number(r.hit_evasion_percent||0)*100)}%`;return `+${fmt(Number(r.element_percent||0)*100)}%`}
+  const circledSocketNumbers=['①','②','③','④','⑤','⑥','⑦','⑧'];
+  function detailSocketText(item,s){
+    const r=levelRow(s.level),label=String(s.label||s.attribute_code||'属性').replace('+数值','').replace('+%','');
+    if(['attack_flat','defense_flat','vitality_flat','agility_flat'].includes(s.attribute_code)){
+      const value=Math.round(Number(item?.base_main_stat_value||0)*Number(r.fixed_main_ratio||s.value||0));
+      return `${label} +${value.toLocaleString('zh-CN')}`;
+    }
+    const value=Number(s.value_percent??(Number(s.value||0)*100)??0);
+    return `${label} +${fmt(value)}%`;
+  }
+  async function detailRows(item){
+    if(!state.overview)await overview();
+    const fi=forgeItem(item.id);
+    const open=Math.min(8,Math.max(0,Number(item.opened_sockets??item.total_socket_capacity??item.socket_capacity??0)));
+    const map=new Map((fi.sockets||[]).map(s=>[Number(s.socket_index),s]));
+    return Array.from({length:open},(_,i)=>{const index=i+1,s=map.get(index);return s?{index,symbol:circledSocketNumbers[i]||String(index),empty:false,level:Number(s.level||1),text:detailSocketText(item,s)}:{index,symbol:circledSocketNumbers[i]||String(index),empty:true,level:null,text:'空'};});
+  }
   function gradeNext(code){return({yellow:'玄品',mystic:'地品',earth:'天品',heaven:'仙品'}[code]||'已满品')}
   function socketRows(item,fi,levelEnabled){const open=Math.max(0,Number(item.opened_sockets??item.total_socket_capacity??item.socket_capacity??0));const map=new Map((fi.sockets||[]).map(s=>[Number(s.socket_index),s]));return Array.from({length:open},(_,i)=>{const n=i+1,s=map.get(n);return `<article class="forge-socket-v210 ${s?'filled':'empty'}"><label>${s?`<input type="checkbox" data-forge-lock="${n}">`:''}<b>孔${n}</b></label><div>${s?`<strong>${esc(s.label||s.attribute_code)} · Lv${Number(s.level||1)}</strong><small>${esc(socketValue(s))}</small>`:'<strong>空孔</strong><small>刷新属性时会自动生成属性与初始等级</small>'}</div>${s?`<button type="button" data-forge-level="${n}" ${levelEnabled?'':'disabled'}>${levelEnabled?'百炼玄铁×1':'百炼玄铁已关闭'}</button>`:'<span></span>'}</article>`}).join('')}
   function soulRows(item){const souls=(state.overview?.souls||[]).filter(s=>Number(s.source_major_order)===Number(item.major_order)&&s.source_grade_code===item.grade_code&&s.source_slot_code===item.slot_code);if(!souls.length)return '<div class="forge-empty-v210">当前没有可用于这件装备的器魂。</div>';return souls.map(s=>{const cost=(state.overview?.soul_costs||[]).find(x=>Number(x.socket_count)===Number(s.socket_count))?.essence_cost??0;return `<article class="forge-soul-v210"><div><strong>${Number(s.socket_count)}孔器魂</strong><small>同境界 · 同品级 · 同部位 · ${new Date(s.created_at).toLocaleString('zh-CN')}</small></div><button type="button" data-forge-soul="${esc(s.id)}">器源×${fmt(cost)} 承接</button></article>`}).join('')}
@@ -30,5 +47,5 @@
   function bind(item,fi){const root=host();root.querySelector('[data-forge-close]')?.addEventListener('click',close);root.querySelector('.forge-backdrop-v210')?.addEventListener('click',e=>{if(e.target===e.currentTarget)close()});root.querySelectorAll('[data-forge-level]').forEach(b=>b.addEventListener('click',()=>run('reroll_equipment_socket_level_v210',{p_item_id:item.id,p_socket_index:Number(b.dataset.forgeLevel),p_request_id:uuid()},'孔位等级已重新随机。')));root.querySelector('[data-forge-reroll]')?.addEventListener('click',()=>{const locks=Array.from(root.querySelectorAll('[data-forge-lock]:checked')).map(x=>Number(x.dataset.forgeLock));const need=locks.length;if(need>material('equipment_socket_lock_jade_v210')){toast(`定灵锁玉不足：需要${need}枚。`,'error');return}const name=item.slot_code==='weapon'?'兵魄道玉':'护道灵玉';if(!confirm(`确认消耗${name}×1${need?`、定灵锁玉×${need}`:''}刷新所有未锁定孔位属性？已锁孔属性与等级保持不变。`))return;run('reroll_equipment_socket_attributes_v210',{p_item_id:item.id,p_locked_positions:locks,p_request_id:uuid()},'孔位属性已重新随机。')});root.querySelector('[data-forge-grade]')?.addEventListener('click',()=>{if(confirm('消耗造化升品玉×1尝试升品？默认成功率30%，失败只消耗道具，装备不变。'))run('upgrade_equipment_grade_v210',{p_item_id:item.id,p_request_id:uuid()},null,true)});root.querySelector('[data-forge-realm]')?.addEventListener('click',()=>{if(confirm('消耗乾坤破境石×1尝试提升装备大境界？默认成功率30%，失败只消耗道具，装备不变。'))run('upgrade_equipment_realm_v210',{p_item_id:item.id,p_request_id:uuid()},null,true)});root.querySelectorAll('[data-forge-soul]').forEach(b=>b.addEventListener('click',()=>{if(confirm('器魂承接会清空目标装备现有孔位属性并整套覆盖，确认继续？'))run('inherit_equipment_socket_soul_v210',{p_soul_id:b.dataset.forgeSoul,p_target_item_id:item.id,p_request_id:uuid()},'器魂已完成承接。')}))}
   async function run(name,body,message,upgrade=false){if(state.busy)return;state.busy=true;try{const result=await rpc(name,body);if(upgrade){toast(result?.upgrade_success?'天命应允，装备跃迁成功！':'天命未应，道具已消耗，装备保持不变。',result?.upgrade_success?'success':'error')}else toast(message||'操作完成。');await window.B_EQUIPMENT01?.refresh?.(true);const fresh=window.B_EQUIPMENT01?.getItem?.(state.item.id)||state.item;await render(fresh)}catch(e){toast(errorText(e),'error');try{await render(state.item)}catch{}}finally{state.busy=false}}
   async function open(item){try{await render(item)}catch(e){toast(errorText(e),'error')}}
-  window.B_EQUIPMENT_V210=Object.freeze({module:MODULE,version:'2.1.1',open,refresh:overview});
+  window.B_EQUIPMENT_V210=Object.freeze({module:MODULE,version:'2.1.1',open,refresh:overview,detailRows});
 })();

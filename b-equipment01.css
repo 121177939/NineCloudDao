@@ -199,3 +199,13 @@
 @media(max-width:760px){
   .equipment-grid-item-bequipment01 .equipment-icon-bequipment01{transform:translateY(-2px)}
 }
+
+/* V2.1.1 CACHE109 EQUIPMENT-DETAIL1：装备详情基础说明区改为单列孔位属性。 */
+.equipment-detail-sockets-bequipment01{display:grid;grid-template-columns:1fr;gap:0;margin:2px 0 4px;border-top:1px solid rgba(160,140,100,.16);border-bottom:1px solid rgba(160,140,100,.16)}
+.equipment-detail-socket-row-bequipment01{display:flex;align-items:center;gap:12px;min-height:42px;padding:8px 4px;border-bottom:1px dashed rgba(160,140,100,.18);color:#d8c69b}
+.equipment-detail-socket-row-bequipment01:last-child{border-bottom:0}
+.equipment-detail-socket-row-bequipment01>b{width:26px;flex:0 0 26px;text-align:center;color:#bda56e;font-size:1.02rem;font-weight:700}
+.equipment-detail-socket-row-bequipment01>span{min-width:0;font-size:.94rem;letter-spacing:.01em}
+.equipment-detail-socket-row-bequipment01 em{font-style:normal;color:inherit;opacity:.9}
+.equipment-detail-socket-row-bequipment01.is-empty,.equipment-detail-socket-row-bequipment01.is-empty>b{color:#746b5b}
+.equipment-detail-socket-row-bequipment01.is-max,.equipment-detail-socket-row-bequipment01.is-max>b{color:#ef5f5f;font-weight:800}

@@ -2,7 +2,7 @@
   "name": "九霄问道 V2.1.1",
   "short_name": "九霄问道",
   "description": "东方文字修仙人生模拟游戏",
-  "start_url": "./?pwa=1&ncd_build=v2-0-12-cache104-authversion1-sectlimit100-deploylock1",
+  "start_url": "./?pwa=1&ncd_build=v2-1-1-cache109-equipmentdetail1-admin22-sql238",
   "scope": "./",
   "display": "standalone",
   "background_color": "#17130d",
