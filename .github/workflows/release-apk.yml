@@ -85,9 +85,6 @@ jobs:
           for file in "${REQUIRED_FILES[@]}"; do
             if [ ! -e "$file" ]; then
               echo "::error::GitHub ubuntu-24.04 runner is missing required Android SDK file: $file"
-              echo "ANDROID_HOME=${ANDROID_HOME:-<unset>}"
-              echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-<unset>}"
-              find "$SDK_ROOT" -maxdepth 3 -type d -print 2>/dev/null | sort | head -200 || true
               exit 1
             fi
           done
@@ -96,7 +93,16 @@ jobs:
           echo "$SDK_ROOT/build-tools/34.0.0" >> "$GITHUB_PATH"
           "$SDK_ROOT/build-tools/34.0.0/aapt2" version
 
-      - name: Decode permanent release keystore
+      # 必须先做交付包静态校验。校验器会确认仓库中没有签名敏感文件。
+      # 之前的工作流先生成 release.keystore/signing.properties，再运行校验，必然自相矛盾失败。
+      - name: Validate Android project before injecting signing secrets
+        working-directory: android
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_project.py
+
+      - name: Decode and verify permanent release keystore
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -109,20 +115,24 @@ jobs:
           test -n "$ANDROID_KEY_ALIAS"
           test -n "$ANDROID_KEYSTORE_PASSWORD"
           test -n "$ANDROID_KEY_PASSWORD"
+
+          rm -f android/release.keystore android/signing.properties
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/release.keystore
+          test -s android/release.keystore
+
+          # 在编译前验证密钥库密码和别名；不会输出密码或私钥内容。
+          keytool -list \
+            -keystore android/release.keystore \
+            -storepass "$ANDROID_KEYSTORE_PASSWORD" \
+            -alias "$ANDROID_KEY_ALIAS" \
+            >/dev/null
+
           cat > android/signing.properties <<EOF
           storeFile=release.keystore
           storePassword=$ANDROID_KEYSTORE_PASSWORD
           keyAlias=$ANDROID_KEY_ALIAS
           keyPassword=$ANDROID_KEY_PASSWORD
           EOF
-
-      - name: Validate Android project
-        working-directory: android
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 tools/validate_project.py
 
       - name: Build signed release APK
         working-directory: android
@@ -134,6 +144,12 @@ jobs:
           ./gradlew --no-daemon --stacktrace clean assembleRelease \
             -PGITHUB_OWNER="${{ github.repository_owner }}" \
             -PGITHUB_REPO="${{ github.event.repository.name }}"
+
+      - name: Remove temporary signing files
+        if: always()
+        shell: bash
+        run: |
+          rm -f android/release.keystore android/signing.properties
 
       - name: Prepare update files
         working-directory: android

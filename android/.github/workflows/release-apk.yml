@@ -20,8 +20,8 @@ concurrency:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -48,19 +48,61 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-          cache: gradle
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Install Android SDK 34
+      - name: Verify bundled Gradle bootstrap and configuration
         shell: bash
         run: |
           set -euo pipefail
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          test -f android/gradle/wrapper/gradle-wrapper.jar
+          test -f android/gradle/wrapper/gradle-wrapper.properties
+          test -x android/gradlew || chmod +x android/gradlew
 
-      - name: Decode permanent release keystore
+          echo "613f321ad9687358566e3b3322bc789e4347f871823e4ca29e8b6e3b6ade4703  android/gradle/wrapper/gradle-wrapper.jar" \
+            | sha256sum --check --strict -
+
+          grep -Fq 'distributionUrl=https\://services.gradle.org/distributions/gradle-8.2.1-bin.zip' \
+            android/gradle/wrapper/gradle-wrapper.properties
+          grep -Fq 'distributionSha256Sum=03ec176d388f2aa99defcadc3ac6adf8dd2bce5145a129659537c0874dea5ad1' \
+            android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Verify preinstalled Android SDK 34
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "Using Android SDK: $SDK_ROOT"
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+
+          REQUIRED_FILES=(
+            "$SDK_ROOT/platforms/android-34/android.jar"
+            "$SDK_ROOT/build-tools/34.0.0/aapt2"
+            "$SDK_ROOT/build-tools/34.0.0/apksigner"
+            "$SDK_ROOT/platform-tools/adb"
+          )
+
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -e "$file" ]; then
+              echo "::error::GitHub ubuntu-24.04 runner is missing required Android SDK file: $file"
+              exit 1
+            fi
+          done
+
+          echo "$SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
+          echo "$SDK_ROOT/build-tools/34.0.0" >> "$GITHUB_PATH"
+          "$SDK_ROOT/build-tools/34.0.0/aapt2" version
+
+      # 必须先做交付包静态校验。校验器会确认仓库中没有签名敏感文件。
+      # 之前的工作流先生成 release.keystore/signing.properties，再运行校验，必然自相矛盾失败。
+      - name: Validate Android project before injecting signing secrets
+        working-directory: android
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_project.py
+
+      - name: Decode and verify permanent release keystore
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -73,7 +115,18 @@ jobs:
           test -n "$ANDROID_KEY_ALIAS"
           test -n "$ANDROID_KEYSTORE_PASSWORD"
           test -n "$ANDROID_KEY_PASSWORD"
+
+          rm -f android/release.keystore android/signing.properties
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/release.keystore
+          test -s android/release.keystore
+
+          # 在编译前验证密钥库密码和别名；不会输出密码或私钥内容。
+          keytool -list \
+            -keystore android/release.keystore \
+            -storepass "$ANDROID_KEYSTORE_PASSWORD" \
+            -alias "$ANDROID_KEY_ALIAS" \
+            >/dev/null
+
           cat > android/signing.properties <<EOF
           storeFile=release.keystore
           storePassword=$ANDROID_KEYSTORE_PASSWORD
@@ -81,20 +134,22 @@ jobs:
           keyPassword=$ANDROID_KEY_PASSWORD
           EOF
 
-      - name: Validate Android project
-        working-directory: android
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 tools/validate_project.py
-
       - name: Build signed release APK
         working-directory: android
         shell: bash
+        env:
+          GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx3g
         run: |
           set -euo pipefail
-          chmod +x gradlew
-          ./gradlew --no-daemon clean assembleRelease             -PGITHUB_OWNER="${{ github.repository_owner }}"             -PGITHUB_REPO="${{ github.event.repository.name }}"
+          ./gradlew --no-daemon --stacktrace clean assembleRelease \
+            -PGITHUB_OWNER="${{ github.repository_owner }}" \
+            -PGITHUB_REPO="${{ github.event.repository.name }}"
+
+      - name: Remove temporary signing files
+        if: always()
+        shell: bash
+        run: |
+          rm -f android/release.keystore android/signing.properties
 
       - name: Prepare update files
         working-directory: android
@@ -104,9 +159,12 @@ jobs:
           rm -rf release-dist
           mkdir -p release-dist
           cp app/build/outputs/apk/release/app-release.apk release-dist/jiuxiao-wendao-release.apk
-          SHA256=$(sha256sum release-dist/jiuxiao-wendao-release.apk | awk '{print $1}')
+          SHA256="$(sha256sum release-dist/jiuxiao-wendao-release.apk | awk '{print $1}')"
           python3 tools/create_update_manifest.py --sha256 "$SHA256"
-          sha256sum release-dist/jiuxiao-wendao-release.apk release-dist/app-update.json > release-dist/SHA256SUMS.txt
+          sha256sum \
+            release-dist/jiuxiao-wendao-release.apk \
+            release-dist/app-update.json \
+            > release-dist/SHA256SUMS.txt
 
       - name: Create or update GitHub Release
         shell: bash
@@ -116,6 +174,13 @@ jobs:
         run: |
           set -euo pipefail
           if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" --target "$GITHUB_SHA" --title "九霄问道 $TAG" --notes-file android/release/release-notes.txt
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "九霄问道 $TAG" \
+              --notes-file android/release/release-notes.txt
           fi
-          gh release upload "$TAG"             android/release-dist/jiuxiao-wendao-release.apk             android/release-dist/app-update.json             android/release-dist/SHA256SUMS.txt             --clobber
+          gh release upload "$TAG" \
+            android/release-dist/jiuxiao-wendao-release.apk \
+            android/release-dist/app-update.json \
+            android/release-dist/SHA256SUMS.txt \
+            --clobber
