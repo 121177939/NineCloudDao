@@ -1,13 +1,13 @@
 {
   "project": "JiuxiaoWendaoAndroid",
-  "version": "V2.1.1 CACHE106",
+  "version": "V2.1.1 CACHE107",
   "packageRevision": "R19-wboss01-equipmentforge1-admin21-pagesfix1-gatefix1-deploy-lock",
-  "versionCode": 2001406,
-  "versionName": "2.1.1-cache106",
-  "gameBuildId": "v2-1-1-cache106-wboss01-equipmentforge1-admin21-sql233-pagesfix1-gatefix1",
-  "releaseTag": "v2.1.1-cache106",
+  "versionCode": 2001407,
+  "versionName": "2.1.1-cache107",
+  "gameBuildId": "v2-1-1-cache107-wboss01-equipmentforge1-admin21-sql235-readyfix1",
+  "releaseTag": "v2.1.1-cache107",
   "releaseWorkflowBaseline": "LOCKED: V2.0.11 user-verified; R6 APK chain + R3 Pages strategy; V2.1.1 only updates version-specific validation, not signing/Release strategy",
-  "databaseTarget": "SQL233 V2.1.1 CACHE106 R3; structural gate pending, production not executed",
+  "databaseTarget": "SQL235 V2.1.1 CACHE107 READYFIX1; SQL233+234 already production-passed; SQL235 gate pending",
   "files": [
     {
       "path": ".github/workflows/release-apk.yml",
@@ -404,5 +404,6 @@
       "size": 669,
       "sha256": "9c55c82ba0b1b838ede8e1017c8adf31ddbd46e49a689aab357964fb93d6d7a5"
     }
-  ]
+  ],
+  "gameVersion": "V2.1.1 CACHE107"
 }

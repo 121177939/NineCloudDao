@@ -1,24 +1,20 @@
 {
   "ok": true,
-  "release": "V2.1.1 CACHE106 candidate",
-  "buildId": "v2-1-1-cache106-wboss01-equipmentforge1-admin21-sql233-pagesfix1-gatefix1",
-  "androidVersionCode": 2001406,
-  "androidVersionName": "2.1.1-cache106",
-  "database": "target SQL211-221 + SQL229-233; SQL233 R3 runtime not executed in this environment",
-  "gm": "ADMIN9 R21 V2.1.1; 8 inline JavaScript blocks syntax PASS",
-  "deploymentLock": "V2.0.11 verified Pages default github-pages Artifact R3 and Android R6 release/signing strategy preserved; only version-specific build validation/artifact list repaired",
-  "releaseGate": "PENDING_USER_TEST_DB_R3_GATE",
+  "release": "V2.1.1 CACHE107 hotfix candidate",
+  "buildId": "v2-1-1-cache107-wboss01-equipmentforge1-admin21-sql235-readyfix1",
+  "androidVersionCode": 2001407,
+  "androidVersionName": "2.1.1-cache107",
+  "database": "current production user-confirmed SQL233 + SQL234 passed; SQL235 pending execution",
+  "gm": "ADMIN9 R21 V2.1.1 unchanged",
+  "deploymentLock": "GitHub Pages default github-pages Artifact R3 and Android R6 release/signing strategy preserved",
+  "releaseGate": "SQL235_PENDING_USER_EXECUTION",
   "checks": [
-    "V2.1.0 Pages failure reproduced locally: old build_pages_v2_0_12.py rejected the upgraded version/config/database metadata",
-    "V2.1.1 Pages build using tools/build_pages_v2_1_1.py PASS",
-    "Pages artifact includes b-world-boss01.js/css and b-equipment-v210.js/css",
-    "JavaScript syntax PASS for all root game modules used by Pages workflow",
+    "Root JavaScript syntax PASS including b-world-boss01.js",
+    "Regression check PASS: ready/copy click handlers use Event.currentTarget and no longer read dataset from Event",
     "Web/Android shared game resources sync PASS: 28 files + Android index variant",
-    "Android validate_project.py PASS; versionCode 2001406 / versionName 2.1.1-cache106",
-    "ADMIN9 R21 inline JavaScript syntax PASS",
-    "SQL233 R3 static gates PASS: exact V2.0.12/CACHE104 release-display dependency removed; SQL232 structural markers required",
-    "SQL233 R3 PostgreSQL runtime PRECHECK/INSTALL/POSTCHECK/TEST_ENABLE not executed: no connected test DB admin channel in this environment",
-    "404.html已同步到V2.1.1入口，避免GitHub Pages未知路径回落到V1.8.8旧资源。",
-    "本地等价执行deploy-pages.yml的全部build阶段门禁，结果PASS；线上deploy步骤仍需GitHub Actions实际运行。"
+    "V2.1.1 CACHE107 Pages artifact build PASS",
+    "Android validate_project.py PASS; versionCode 2001407 / versionName 2.1.1-cache107",
+    "SQL235 static transaction/marker sanity PASS; runtime not executed in this environment",
+    "No SQL233/234 schema or gameplay logic rewritten by this hotfix"
   ]
 }

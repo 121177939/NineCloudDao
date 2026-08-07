@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const MODULE = 'B-WBOSS01-TEAM-PVE-R1-A-V210';
+  const MODULE = 'B-WBOSS01-TEAM-PVE-R1-A-CACHE107-READYFIX1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
@@ -293,8 +293,9 @@
       action('join_world_boss_party_bwboss01', { p_join_code:code }, '已加入世界BOSS队伍。');
     });
     el.querySelector('[data-wboss-leave]')?.addEventListener('click', () => { if (confirm('确认离开当前世界BOSS队伍？')) action('leave_world_boss_party_bwboss01', {}, '已离开队伍。'); });
-    el.querySelector('[data-wboss-ready]')?.addEventListener('click', button => {
-      const ready = button.dataset.wbossReady === 'true';
+    el.querySelector('[data-wboss-ready]')?.addEventListener('click', event => {
+      const button = event.currentTarget;
+      const ready = button?.dataset?.wbossReady === 'true';
       const strategy = document.getElementById('worldBossStrategyBWorldBoss01')?.value || 'balanced';
       action('set_world_boss_member_ready_bwboss01', { p_ready:ready, p_strategy:strategy }, ready ? '战斗快照已锁定，等待开战。' : '已取消准备。');
     });
@@ -310,8 +311,9 @@
         showPlayback(run);
       } catch (error) { toast(errorText(error), 'error'); }
     }));
-    el.querySelector('[data-wboss-copy-code]')?.addEventListener('click', async button => {
-      const code = button.dataset.wbossCopyCode || '';
+    el.querySelector('[data-wboss-copy-code]')?.addEventListener('click', async event => {
+      const button = event.currentTarget;
+      const code = button?.dataset?.wbossCopyCode || '';
       try { await navigator.clipboard.writeText(code); toast(`队伍口令 ${code} 已复制。`); }
       catch { prompt('复制队伍口令', code); }
     });

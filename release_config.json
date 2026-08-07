@@ -1,10 +1,10 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE106",
-  "buildId": "v2-1-1-cache106-wboss01-equipmentforge1-admin21-sql233-pagesfix1-gatefix1",
-  "cacheEpoch": 106,
+  "releaseLabel": "V2.1.1 CACHE107",
+  "buildId": "v2-1-1-cache107-wboss01-equipmentforge1-admin21-sql235-readyfix1",
+  "cacheEpoch": 107,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-233",
+  "sqlRevision": "211-221 + 229-235",
   "migrationSql": [
     233
   ],
@@ -38,15 +38,15 @@
     "SECT_SCHEDULE_VISIBLE_LATEST_100",
     "DISCIPLE_HISTORY_VISIBLE_LATEST_100",
     "DEPLOYMENT_AND_APK_RELEASE_METHOD_LOCKED",
-    "CLIENT_VERSION_211_CACHE106"
+    "CLIENT_VERSION_211_CACHE107"
   ],
   "gmEntry": "九霄问道_ADMIN9_R21_手机直用版.html",
   "deploymentAllowed": false,
   "gmPublicDeployment": false,
   "clientHotfix": "WBOSS01_EQUIPMENTFORGE1_ADMIN21_SQL233_PAGESFIX1_GATEFIX1",
-  "databaseRelease": "V2.1.1 CACHE106 / SQL211-221 + SQL229-233",
+  "databaseRelease": "V2.1.1 CACHE107 / SQL211-221 + SQL229-235",
   "notes": [
-    "V2.1.1 CACHE106集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
+    "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
     "沿用兵魄道玉/护道灵玉/百炼玄铁现有玩家库存；新增定灵锁玉、造化升品玉、乾坤破境石。",
     "世界BOSS珍稀奖励仅每角色每日前3次胜利判定；普通9%、困难18%总珍稀概率，互斥掉落。",
@@ -57,7 +57,7 @@
     "SQL233 R3门禁不再把jiuxiao_app_release_control的滞后显示版本当作数据库结构基线；改为核验SQL232标记、关键表/字段/RPC与SQL233对象冲突。"
   ],
   "gmVersion": "ADMIN9 R21",
-  "nextSqlNumber": 234,
+  "nextSqlNumber": 236,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
   "releaseStage": "candidate_pending_test_db_gate",
   "runtimeDatabaseGate": "NOT_EXECUTED_USER_MUST_RUN_R3_PRECHECK_INSTALL_POSTCHECK_TEST_ENABLE"
