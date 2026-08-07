@@ -1,28 +1,23 @@
 {
-  "release": "V2.1.1 CACHE109 candidate",
-  "buildId": "v2-1-1-cache109-equipmentdetail1-admin22-sql238",
-  "gm": "ADMIN9 R22",
-  "androidVersionCode": 2001409,
-  "androidVersionName": "2.1.1-cache109",
-  "database": "SQL236 百炼玄铁GM总开关；运行时未在本环境执行",
-  "releaseGate": "SQL236_PENDING_USER_EXECUTION",
+  "release": "V2.1.1 CACHE110 candidate",
+  "buildId": "v2-1-1-cache110-forgeui2-admin22-sql239",
+  "gmVersion": "ADMIN9 R22",
+  "androidVersionCode": 2001410,
+  "androidVersionName": "2.1.1-cache110",
   "checks": [
-    "Web JavaScript syntax PASS",
-    "V2.1.1 CACHE109 Pages artifact build PASS",
-    "Web/Android shared game assets sync PASS",
-    "Android project static validation PASS",
-    "Equipment detail old metadata block removed from openDetail modal",
-    "Equipment detail uses single-column circled socket rows ①-⑧",
-    "Empty opened sockets display 空",
-    "Socket level format uses LV.x and LV.10 row class is-max",
-    "SQL238 includes idempotent BWBOSS numeric token compatibility and CACHE109 release gate",
-    "SQL238 runtime execution not performed in this environment"
+    "JavaScript syntax PASS",
+    "Web/Android shared assets sync PASS",
+    "V2.1.1 CACHE110 Pages artifact build PASS",
+    "Android static validation PASS",
+    "SQL239 two-file package generated",
+    "No per-socket 百炼 button remains in CACHE110 client",
+    "Socket reroll client uses bulk RPC and inline dynamic update",
+    "SQL239 server enforces max 3 locks and bulk 百炼 semantics"
   ],
-  "behavior": {
-    "default": "百炼玄铁等级刷新默认开启",
-    "disabled": "GM关闭后客户端禁用百炼按钮；服务端在材料扣除前返回EQUIPMENT_V210_LEVEL_REROLL_DISABLED",
-    "inventory": "玩家已有百炼玄铁库存不删除、不兑换；重新开启后继续使用"
-  },
-  "runtimeLimit": "当前环境无生产/测试数据库管理员连接，SQL236升级与门禁需由用户在Supabase SQL Editor执行。",
-  "status": "PASS_STATIC_AND_PAGES_BUILD_SQL238_RUNTIME_GATE_PENDING"
+  "database": [
+    "SQL239 requires SQL233 equipment socket base",
+    "SQL239 idempotently adds/preserves level_reroll_enabled GM switch",
+    "SQL239 runtime execution not performed in this environment"
+  ],
+  "status": "PASS_STATIC_AND_PAGES_BUILD_SQL239_RUNTIME_GATE_PENDING"
 }

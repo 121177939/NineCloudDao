@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.1.1 CACHE109：装备详情单列孔位属性展示；继续沿用世界BOSS、装备8孔与服务端权威结算。
+  // V2.1.1 CACHE110：装备孔位页紧凑化、锁3孔、百炼整装重炼与原地即时更新；继续沿用世界BOSS与服务端权威结算。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,

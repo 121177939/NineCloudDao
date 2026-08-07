@@ -1,13 +1,13 @@
 {
   "project": "JiuxiaoWendaoAndroid",
-  "version": "V2.1.1 CACHE109",
-  "packageRevision": "R22-equipmentdetail1-admin22-deploy-lock",
-  "versionCode": 2001409,
-  "versionName": "2.1.1-cache109",
-  "gameBuildId": "v2-1-1-cache109-equipmentdetail1-admin22-sql238",
-  "releaseTag": "v2.1.1-cache109",
+  "version": "V2.1.1 CACHE110",
+  "packageRevision": "R22-forgeui2-admin22-deploy-lock",
+  "versionCode": 2001410,
+  "versionName": "2.1.1-cache110",
+  "gameBuildId": "v2-1-1-cache110-forgeui2-admin22-sql239",
+  "releaseTag": "v2.1.1-cache110",
   "releaseWorkflowBaseline": "LOCKED: V2.0.11 user-verified; R6 APK chain + R3 Pages strategy; V2.1.1 only updates version-specific validation, not signing/Release strategy",
-  "databaseTarget": "SQL238 V2.1.1 CACHE109 EQUIPMENT_DETAIL1; SQL233+234 production-passed; SQL236/237 compatibility retained",
+  "databaseTarget": "SQL239 V2.1.1 CACHE110 FORGE_UI2; SQL233 equipment base required; SQL236 GM switch absorbed idempotently",
   "files": [
     {
       "path": ".github/workflows/release-apk.yml",
@@ -21,18 +21,18 @@
     },
     {
       "path": "README.md",
-      "size": 542,
-      "sha256": "2ebc922d20c946fdd00e2afc133be5e777731e3035eb9c227b57e92db2628a64"
+      "size": 664,
+      "sha256": "883a5b6874faa851a46bcb0995a39a5cc2b3e4e58145bd21ddb96bd349a7d415"
     },
     {
       "path": "VALIDATION_REPORT.json",
-      "size": 361,
-      "sha256": "c69226e197b3c62d6829f761510d49be97159a2928427842fb90e2873308dabb"
+      "size": 353,
+      "sha256": "cba6a9e5b20a212e45c4d53410e00a77805cb29b8452beed92f8efa03004904c"
     },
     {
       "path": "app/build.gradle.kts",
-      "size": 3166,
-      "sha256": "73d84f9fb0fc29bc7f91587f410ca7fa9ccf7a5702d128dcabc5c7bf41232e40"
+      "size": 3158,
+      "sha256": "9c0084f75c33cccb32892c96a9f7ce72e6e91352caad6687b31d89f078610386"
     },
     {
       "path": "app/proguard-rules.pro",
@@ -46,13 +46,13 @@
     },
     {
       "path": "app/src/main/assets/game/CURRENT_BASELINE.json",
-      "size": 7279,
-      "sha256": "1bb256f7140f94b3e702165d84312c2d768939e82584b48829e8be2a18203631"
+      "size": 7856,
+      "sha256": "a381fa67f1d4483d166ee9d73871e5d6d843c5fa5494f4e5a2c9d23d631e92d0"
     },
     {
       "path": "app/src/main/assets/game/VERSION.txt",
-      "size": 412,
-      "sha256": "70532888ead200fa8ea75e4884876f6c4f4a5e32a06f66ab324d5347ef1ccf25"
+      "size": 433,
+      "sha256": "a6a762f41f42668a9d1577916d6e847db5c3edfbc74c6facc32e67525d4f6856"
     },
     {
       "path": "app/src/main/assets/game/android-local.js",
@@ -61,8 +61,8 @@
     },
     {
       "path": "app/src/main/assets/game/app.js",
-      "size": 499503,
-      "sha256": "7797f6e9a754da9692e18f2565b54ecc2f6da37828ab38d4964989a1b5e745cc"
+      "size": 499530,
+      "sha256": "1b9bee5fffa04b4362c5841ad1eab1387017aa168b73f67ac55740feac902a1b"
     },
     {
       "path": "app/src/main/assets/game/assets/icon-192.png",
@@ -81,23 +81,23 @@
     },
     {
       "path": "app/src/main/assets/game/b-equipment-v210.css",
-      "size": 5084,
-      "sha256": "991be84ff376a1350fae22cc02d4c2147988ab85d5c58a315ea13d7bacd48b8e"
+      "size": 5368,
+      "sha256": "83742f0233a11795f15a24f470e5c712a0105a17846d03e92e54f7498e47c30f"
     },
     {
       "path": "app/src/main/assets/game/b-equipment-v210.js",
-      "size": 13376,
-      "sha256": "b589dac2ac186d239e69f03e4c40170ee86974c32d2aa862e551207ab6c6b78c"
+      "size": 17133,
+      "sha256": "6a6d2c3abeb8602496bc034530c4abc388dc2ee5a62123d3330fd2b371cd3e99"
     },
     {
       "path": "app/src/main/assets/game/b-equipment01.css",
-      "size": 24180,
-      "sha256": "003cfc6db5611cd3938df24c3a40d6706eafeba510f0f485c3c33153840a2403"
+      "size": 24199,
+      "sha256": "e55017077a170821347727fffa719e8365f70364f9d14131286435a853f2fd18"
     },
     {
       "path": "app/src/main/assets/game/b-equipment01.js",
-      "size": 50533,
-      "sha256": "148e1b861081ec6db357dcedd69491df63c0f7433200f1839f77940a79bfa7cb"
+      "size": 50525,
+      "sha256": "00fdef4d16ed36cdeacd8795f7f72baddeb8900fdce5b5a9256f950220291448"
     },
     {
       "path": "app/src/main/assets/game/b-paigow01.css",
@@ -161,13 +161,13 @@
     },
     {
       "path": "app/src/main/assets/game/config.js",
-      "size": 570,
-      "sha256": "1982958144ca7a239fada1cb2071663650c0c3749c552b5ee04eccf4b50a89a2"
+      "size": 562,
+      "sha256": "07305979519ffcf6075da2c2272d895f13eddaaeb4c01584766015c7c59b1f75"
     },
     {
       "path": "app/src/main/assets/game/index.html",
-      "size": 3354,
-      "sha256": "a55d6078b53aa08e9af700122dc04519d34edb17f378e1e65f01ac5f856697e1"
+      "size": 3218,
+      "sha256": "53407bac57d972938753b7fe989b839a4ecc07d8087c71d86236d3ed29147d90"
     },
     {
       "path": "app/src/main/assets/game/paigow-app.css",
@@ -186,8 +186,8 @@
     },
     {
       "path": "app/src/main/assets/game/release_config.json",
-      "size": 3727,
-      "sha256": "8a24adf5f95a42d13c19d599c97750fa69bb09bcf904e8829cc21f47ca889dc1"
+      "size": 4318,
+      "sha256": "268d206f2bf415a6b70ef978d9e8a038d7c6ccccbeb29d4d6cfd27c90b5e8499"
     },
     {
       "path": "app/src/main/assets/game/styles.css",
@@ -291,8 +291,8 @@
     },
     {
       "path": "docs/00_当前基线与上线顺序.md",
-      "size": 679,
-      "sha256": "87234948d82dfffb8bf5001381eec4e74b4d112956e4f3a23d58b98e5817c1a2"
+      "size": 743,
+      "sha256": "941a1d3b87f36cade70e58ad94121d15c945686a605d3020e93107e8b4345fc3"
     },
     {
       "path": "docs/01_AndroidStudio导入与调试.md",
@@ -352,7 +352,7 @@
     {
       "path": "gradle.properties",
       "size": 526,
-      "sha256": "d28547de7a197d8090b2c7f0a737e9155566993615a3d58325a631a1eb242f5a"
+      "sha256": "ae7587449d67696416c516ca11f5d630a742eb859ba1ab85cd88700a185c2591"
     },
     {
       "path": "gradlew",
@@ -366,8 +366,8 @@
     },
     {
       "path": "release/release-notes.txt",
-      "size": 240,
-      "sha256": "ae9d7de1e86f15e6549b1a7ce6be7d9ce2b940a2ce335fe50ae9c61219f2aa97"
+      "size": 347,
+      "sha256": "7383f385c6aa95d524fcf2d26fca3074d8699e27d396b45b73a920667ec7bbea"
     },
     {
       "path": "settings.gradle.kts",
@@ -396,8 +396,8 @@
     },
     {
       "path": "tools/validate_project.py",
-      "size": 7646,
-      "sha256": "29f33e85fa51d612595d1cfa274e2a61cb4a6fef12e2cd73515302c7a56b6554"
+      "size": 7638,
+      "sha256": "5cdccb42b3b73a3f6170ece1089f4a0d12056eeb23c501affe5275168cf49352"
     },
     {
       "path": "tools/生成签名密钥并输出GitHubSecrets说明.ps1",
@@ -405,5 +405,5 @@
       "sha256": "9c55c82ba0b1b838ede8e1017c8adf31ddbd46e49a689aab357964fb93d6d7a5"
     }
   ],
-  "gameVersion": "V2.1.1 CACHE109"
+  "gameVersion": "V2.1.1 CACHE110"
 }

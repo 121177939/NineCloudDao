@@ -1,19 +1,12 @@
-# 九霄问道 V2.1.1 CACHE109：装备详情孔位展示热修
+# 九霄问道 V2.1.1 CACHE110：装备孔位洗炼交互重做
 
-当前客户端目标基线：**V2.1.1 CACHE109**。
+当前客户端目标基线：**V2.1.1 CACHE110**。
 
-本版从 V2.0.12 CACHE104 选择性集成 B-WBOSS01，并加入装备孔位/洗练/器魂/升品破境、元神总属性弹窗与 ADMIN9 R21。**没有整包覆盖 CACHE104**。
+- Web：V2.1.1 CACHE110，Build `v2-1-1-cache110-forgeui2-admin22-sql239`。
+- Android：`versionCode=2001410`，`versionName=2.1.1-cache110`，内置游戏资源与网页同步。
+- GM：继续使用 **ADMIN9 R22**。
+- 数据库：本次使用 **SQL239 升级 + SQL239制度门禁**；SQL239幂等保留百炼GM总开关。
 
-- Web：V2.1.1 CACHE109，Build `v2-1-1-cache109-equipmentdetail1-admin22-sql238`。
-- Android：`versionCode=2001409`，`versionName=2.1.1-cache109`，内置游戏资源已同步。
-- 数据库：目标迁移 **SQL233**；下一编号 234。
-- GM：**ADMIN9 R21**，可调整世界BOSS、孔位数值/概率/比例、强化开孔、升品破境、器魂等本次新增配置。
-- 发布方式：继续沿用 V2.0.11 用户已验证成功的 Pages 默认 `github-pages` Artifact R3 与 Android R6 发布/签名链，工作流保持锁定。
+本版重点：材料栏压缩、孔位规则点击查看、单列孔位最终值、最多锁3孔、百炼一次重炼全部未锁已有孔等级、兵魄/护道/百炼操作原地即时更新。
 
-## 重要门禁
-
-当前构建环境没有测试库管理员 SQL 连接，因此这里只完成代码集成与静态验收；**没有执行 SQL233，也没有把世界BOSS生产开启**。
-
-正式上线必须严格按：`PRECHECK → SQL233安装 → POSTCHECK → TEST_ENABLE（仅测试库）→ 测试验收 → PRODUCTION_ENABLE`。
-
-详见 `V2.1.1升级说明.md`、`RELEASE_VALIDATION_REPORT.json` 与 `DEPLOYMENT_LOCK_已验证成功_禁止擅自变更.md`。
+发布方式继续锁定沿用已验证成功的 GitHub Pages 默认 Artifact R3 与 Android Release R6 流程，不更换发布链。

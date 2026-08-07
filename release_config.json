@@ -1,12 +1,12 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE109",
-  "buildId": "v2-1-1-cache109-equipmentdetail1-admin22-sql238",
-  "cacheEpoch": 109,
+  "releaseLabel": "V2.1.1 CACHE110",
+  "buildId": "v2-1-1-cache110-forgeui2-admin22-sql239",
+  "cacheEpoch": 110,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-238",
+  "sqlRevision": "211-221 + 229-239",
   "migrationSql": [
-    238
+    239
   ],
   "features": [
     "WORLD_BOSS_TEAM_PVE_BWBOSS01",
@@ -41,29 +41,37 @@
     "BAILIAN_LEVEL_REROLL_GM_SWITCH",
     "EQUIPMENT_DETAIL_SOCKET_SINGLE_COLUMN",
     "EQUIPMENT_DETAIL_LV10_RED",
-    "CLIENT_VERSION_211_CACHE109"
+    "FORGE_COMPACT_MATERIAL_BAR",
+    "FORGE_SOCKET_RULES_POPUP",
+    "FORGE_SOCKET_LOCK_MAX3",
+    "BAILIAN_BULK_UNLOCKED_LEVEL_REROLL",
+    "FORGE_INLINE_REROLL_NO_FULL_REFRESH",
+    "CLIENT_VERSION_211_CACHE110"
   ],
   "gmEntry": "九霄问道_ADMIN9_R22_手机直用版.html",
   "deploymentAllowed": false,
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPMENT_DETAIL1",
-  "databaseRelease": "V2.1.1 CACHE109 / SQL211-221 + SQL229-238",
+  "clientHotfix": "FORGE_UI2",
+  "databaseRelease": "V2.1.1 CACHE110 / SQL211-221 + SQL229-239",
   "notes": [
     "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
     "沿用兵魄道玉/护道灵玉/百炼玄铁现有玩家库存；新增定灵锁玉、造化升品玉、乾坤破境石。",
     "世界BOSS珍稀奖励仅每角色每日前3次胜利判定；普通9%、困难18%总珍稀概率，互斥掉落。",
-    "SQL233必须先在测试库按PRECHECK→安装→POSTCHECK→TEST_ENABLE验收，生产禁止提前执行。",
     "Pages与Android发布工作流/签名链保持锁定方式不变。",
-    "当前构建环境无法连接测试库管理员SQL通道，PRECHECK/安装/POSTCHECK/TEST_ENABLE尚未实际执行；生产SQL233保持未执行，必须由有测试库权限的环境完成门禁后才能正式发布。",
     "V2.1.1修复Pages构建器仍校验V2.0.12/CACHE104导致build exit 1，并把B装备孔位模块纳入Pages产物和JS语法校验。",
     "SQL233 R3门禁不再把jiuxiao_app_release_control的滞后显示版本当作数据库结构基线；改为核验SQL232标记、关键表/字段/RPC与SQL233对象冲突。",
     "CACHE108新增百炼玄铁等级刷新GM总开关：默认开启；关闭后客户端禁用百炼按钮，服务端RPC在扣材料前强制拒绝。",
-    "CACHE109装备详情移除强化等级/原始主属性/完整名称/存放位置/保护状态/分解所得等说明区，改为①至⑧单列孔位属性；空孔显示“空”，等级统一“LV.x”，LV.10整条红字。"
+    "CACHE109装备详情移除强化等级/原始主属性/完整名称/存放位置/保护状态/分解所得等说明区，改为①至⑧单列孔位属性；空孔显示“空”，等级统一“LV.x”，LV.10整条红字。",
+    "CACHE110装备孔位页压缩五种材料为紧凑材料栏；“孔位属性”标题点击弹出规则说明，主页面取消长提示。",
+    "CACHE110孔锁最多3个；锁孔同时保护属性类型与等级；每次兵魄/护道/百炼按锁孔数额外消耗定灵锁玉。",
+    "CACHE110百炼玄铁从单孔等级刷新改为一次随机重炼整件装备全部未锁且已有属性孔的等级；属性类型不变，空孔不参与。",
+    "CACHE110兵魄/护道/百炼成功后仅原地更新孔位和材料数量，不重新渲染整个装备淬炼页面。",
+    "生产已由用户截图确认SQL233 R5安装及门禁通过；SQL239以SQL233装备孔位基线为前提，并幂等吸收百炼GM开关及世界BOSS镇魔令numeric兼容入口。"
   ],
   "gmVersion": "ADMIN9 R22",
-  "nextSqlNumber": 239,
+  "nextSqlNumber": 240,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "candidate_sql238_gate_pending",
-  "runtimeDatabaseGate": "SQL238_PENDING_USER_EXECUTION"
+  "releaseStage": "candidate_sql239_gate_pending",
+  "runtimeDatabaseGate": "SQL239_PENDING_USER_EXECUTION"
 }
