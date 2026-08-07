@@ -7,7 +7,7 @@ GAME = ROOT / 'android/app/src/main/assets/game'
 SHARED = [
     'CURRENT_BASELINE.json','VERSION.txt','app.js','b-equipment01.css','b-equipment01.js',
     'b-paigow01.css','b-paigow01.html','b-paigow01.js','b-paigow02-ui.css','b-paigow02-ui.js',
-    'b-paigow02-ui03.css','b-secret-realm01.css','b-secret-realm01.js','b-sect-v2.css','b-sect-v2.js',
+    'b-paigow02-ui03.css','b-secret-realm01.css','b-secret-realm01.js','b-world-boss01.css','b-world-boss01.js','b-sect-v2.css','b-sect-v2.js',
     'config.js','paigow-app.css','paigow-app.js','paigow-realtime.js','release_config.json','styles.css'
 ]
 ASSETS = ['assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']

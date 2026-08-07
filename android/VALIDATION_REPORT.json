@@ -2,12 +2,15 @@
   "ok": true,
   "errors": [],
   "warnings": [],
-  "gameFileCount": 26,
-  "gameBytes": 1272642,
+  "gameFileCount": 30,
+  "gameBytes": 1333810,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.0.12 CACHE104",
-  "gameBuildId": "v2-0-12-cache104-authversion1-sectlimit100-deploylock1",
-  "databaseBaseline": "SQL211-221 + SQL229-232",
-  "androidVersionCode": 2001304
+  "gameBaseline": "V2.1.0 CACHE105",
+  "gameBuildId": "v2-1-0-cache105-wboss01-equipmentforge1-admin21-sql233-deploylock1",
+  "databaseBaseline": "SQL211-221 + SQL229-233 (target; runtime gate pending)",
+  "androidVersionCode": 2001405,
+  "validationScope": "static_project_validation",
+  "gradleCompileCompleted": false,
+  "gradleCompileStatus": "BLOCKED: Gradle 8.2.1 distribution not cached; outbound download to services.gradle.org unavailable in current environment"
 }

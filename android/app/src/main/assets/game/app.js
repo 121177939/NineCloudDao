@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.0.12 CACHE104：宗门自主节奏与事件结算可读性升级，继续沿用低频同步与服务端结算。
+  // V2.1.0 CACHE105：世界BOSS、装备8孔淬炼/升品破境、角色总属性；继续沿用服务端权威结算。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,
@@ -1440,6 +1440,14 @@
         'Cache-Control': 'no-store, no-cache, must-revalidate',
         Pragma: 'no-cache'
       }
+    });
+    return Array.isArray(result) ? result[0] || null : result;
+  }
+
+
+  async function rpcGetMyTotalBattleStatsV210() {
+    const result = await restFetch('rpc/get_my_total_battle_stats_v210', {
+      method: 'POST', body: {}, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate', Pragma: 'no-cache' }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -7504,7 +7512,7 @@
           ${card('left-2', '御', '道御', value('defense'), ready ? `${liveDetail('base_defense', 'realm_base_defense', 'effective_armor_defense', '法衣')}。` : '正在读取服务端权威战斗快照。')}
           ${card('left-3', '战', '战力', value('power'), '战力 = 道攻×10 + 道御×8 + 生机×1.5 + 身法×5；综合评分不直接决定胜负。')}
 
-          <section class="yuanshen-core-v0155" aria-label="元神运转功法动画">
+          <section class="yuanshen-core-v0155" data-total-stats-entry tabindex="0" role="button" aria-label="点击查看角色总属性">
             <div class="yuanshen-mandala-v0155" aria-hidden="true">
               <div class="yuanshen-halo-v0155"></div>
               <div class="yuanshen-rays-v0155"></div>
@@ -7566,6 +7574,27 @@
     return state.battleSnapshotV1;
   }
 
+  function totalStatsModalHtmlV210(stats = {}) {
+    const ed = stats.element_damage_percent || {}, er = stats.element_resistance_percent || {};
+    const names = { metal:'金', wood:'木', water:'水', fire:'火', earth:'土' };
+    const elName = code => names[code] || code || '未定';
+    const stat = (label, value, note='') => `<div class="total-stat-v210"><span>${escapeHtml(label)}</span><b>${escapeHtml(String(value))}</b>${note ? `<small>${escapeHtml(note)}</small>` : ''}</div>`;
+    const percent = value => `${formatNumber(Number(value || 0), 2)}%`;
+    return `<div class="total-stats-backdrop-v210"><section class="total-stats-modal-v210" role="dialog" aria-modal="true"><button class="total-stats-close-v210" type="button" data-total-stats-close>×</button><header><small>V2.1.0 · 服务端最终战斗快照</small><h3>角色总属性</h3></header><div class="total-stats-group-v210"><strong>核心属性</strong><div class="total-stats-grid-v210">${stat('道攻',formatNumber(stats.attack||0))}${stat('道御',formatNumber(stats.defense||0))}${stat('生机',formatNumber(stats.vitality||0))}${stat('身法',formatNumber(stats.agility||0))}${stat('当前战力',formatNumber(stats.power||0))}${stat('命中率',percent(Number(stats.hit_rate ?? (Number(stats.base_hit_rate||.8)+Number(stats.hit_bonus||0)))*100),`基础${percent(Number(stats.base_hit_rate||.8)*100)} · 装备+${percent(Number(stats.hit_bonus||0)*100)}`)}${stat('闪避率',percent(Number(stats.evasion_bonus||0)*100))}${stat('本命五行',elName(stats.innate_element||stats.element))}${stat('当前攻击五行',elName(stats.current_attack_element),stats.current_attack_element && stats.current_attack_element!==stats.innate_element?'武器孔位覆盖本命':'随本命')}</div></div><div class="total-stats-group-v210"><strong>五行增伤</strong><div class="total-stats-grid-v210">${Object.entries(names).map(([k,n])=>stat(`${n}伤`,percent(ed[k]||0))).join('')}</div></div><div class="total-stats-group-v210"><strong>五行抗性</strong><div class="total-stats-grid-v210">${Object.entries(names).map(([k,n])=>stat(`${n}抗`,percent(er[k]||0),Number(stats.resistance_scale||1)<.999?'总抗超过上限，已按比例折算':'')).join('')}${stat('五抗生效合计',percent(stats.total_resistance_percent||0))}</div></div><p class="total-stats-note-v210">命中最终判定会再减去目标闪避，并受GM配置的最低/最高命中限制；五行伤害、抗性与克制均由服务端统一结算。</p></section></div>`;
+  }
+
+  async function openTotalStatsV210() {
+    const host = document.getElementById('modalRoot'); if (!host) return;
+    host.innerHTML = '<div class="total-stats-backdrop-v210"><section class="total-stats-modal-v210"><div class="empty-state">正在汇总角色最终属性……</div></section></div>';
+    document.body.classList.add('modal-open');
+    try {
+      const stats = await rpcGetMyTotalBattleStatsV210(); host.innerHTML = totalStatsModalHtmlV210(stats || {});
+      const close = () => { host.innerHTML=''; document.body.classList.remove('modal-open'); };
+      host.querySelector('[data-total-stats-close]')?.addEventListener('click', close);
+      host.querySelector('.total-stats-backdrop-v210')?.addEventListener('click', e => { if (e.target === e.currentTarget) close(); });
+    } catch (error) { host.innerHTML=''; document.body.classList.remove('modal-open'); showToast(`总属性读取失败：${translateError(error)}`, 'error'); }
+  }
+
   function bindPrimordialSpiritPanelV0155() {
     const cards = Array.from(document.querySelectorAll('[data-yuanshen-stat]'));
     const detail = document.getElementById('yuanshenDetailV0155');
@@ -7577,6 +7606,12 @@
         if (detail) detail.textContent = `${button.dataset.yuanshenStat}：${button.dataset.yuanshenDetail}`;
       });
     });
+    const totalEntry = document.querySelector('[data-total-stats-entry]');
+    if (totalEntry && totalEntry.dataset.boundTotal !== '1') {
+      totalEntry.dataset.boundTotal = '1';
+      totalEntry.addEventListener('click', openTotalStatsV210);
+      totalEntry.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openTotalStatsV210(); } });
+    }
   }
 
 
@@ -7588,6 +7623,7 @@
       ['techniques', '法', '功法'],
       ['cave', '府', '洞府'],
       ['secret_realm', '秘', '秘境'],
+      ['world_boss', '世', '世界'],
       ['market', '市', '市坊'],
       ['social', '人', '红尘'],
       ['sect', '宗', '宗门'],
@@ -7867,6 +7903,7 @@
             <a href="#talentSection">功法</a>
             <a href="#inventorySection">洞府</a>
             <a href="#secretRealmSection">秘境</a>
+            <a href="#worldBossSection">世界</a>
             <a href="#marketSection">市坊</a>
             <a href="#npcSocialSection">红尘录</a>
             <a href="#sectSystemSection">宗门</a>
@@ -7957,6 +7994,11 @@
         <section id="secretRealmSection" class="panel" data-mobile-screen="secret_realm">
           <div class="panel-title"><h3>秘境</h3><span class="badge">全天半小时公共场 · 每日10次</span></div>
           <div id="secretRealmRootBSecretRealm01"><div class="empty-state">正在感应本轮秘境……</div></div>
+        </section>
+
+        <section id="worldBossSection" class="panel world-boss-panel-bwboss01" data-mobile-screen="world_boss">
+          <div class="panel-title"><h3>世界BOSS</h3><span class="badge">元婴开放 · 1—3人 · 自动团队战</span></div>
+          <div id="worldBossRootBWorldBoss01"><div class="empty-state">正在感应九幽魔息……</div></div>
         </section>
 
         <section id="opportunitySection" class="double-panel-grid breakthrough-only-grid">
@@ -8064,6 +8106,9 @@
         break;
       case 'social':
         if (force || staleForE80(state.npcSocialFetchedAt)) tasks.push(refreshNpcSocial(true));
+        break;
+      case 'world_boss':
+        if (window.B_WORLD_BOSS01?.refresh) tasks.push(window.B_WORLD_BOSS01.refresh(Boolean(force)));
         break;
       case 'sect':
         window.dispatchEvent(new CustomEvent('jiuxiao:sect-v2-refresh'));

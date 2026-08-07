@@ -5,7 +5,7 @@ root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve()
 out=Path(sys.argv[2] if len(sys.argv)>2 else '.pages-site').resolve()
 build='v2-0-12-cache104-authversion1-sectlimit100-deploylock1'
 label='V2.0.12 CACHE104'
-required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json','b-paigow01.js','b-paigow01.css','b-paigow01.html','b-equipment01.js','b-equipment01.css','b-secret-realm01.js','b-secret-realm01.css','b-sect-v2.js','b-sect-v2.css','paigow-realtime.js','paigow-app.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js','assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']
+required=['.nojekyll','index.html','404.html','styles.css','app.js','config.js','update-guard.js','sw.js','manifest.webmanifest','VERSION.txt','CURRENT_BASELINE.json','release_config.json','b-paigow01.js','b-paigow01.css','b-paigow01.html','b-equipment01.js','b-equipment01.css','b-secret-realm01.js','b-secret-realm01.css','b-world-boss01.js','b-world-boss01.css','b-sect-v2.js','b-sect-v2.css','paigow-realtime.js','paigow-app.js','paigow-app.css','b-paigow02-ui.css','b-paigow02-ui03.css','b-paigow02-ui.js','assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']
 missing=[x for x in required if not (root/x).is_file()]
 if missing: raise SystemExit('MISSING:'+','.join(missing))
 def text(x): return (root/x).read_text('utf-8')

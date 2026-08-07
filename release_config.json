@@ -1,14 +1,24 @@
 {
-  "version": "V2.0.12",
-  "releaseLabel": "V2.0.12 CACHE104",
-  "buildId": "v2-0-12-cache104-authversion1-sectlimit100-deploylock1",
-  "cacheEpoch": 104,
-  "minimumDatabaseBaseline": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-232",
+  "version": "V2.1.0",
+  "releaseLabel": "V2.1.0 CACHE105",
+  "buildId": "v2-1-0-cache105-wboss01-equipmentforge1-admin21-sql233-deploylock1",
+  "cacheEpoch": 105,
+  "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
+  "sqlRevision": "211-221 + 229-233",
   "migrationSql": [
-    232
+    233
   ],
   "features": [
+    "WORLD_BOSS_TEAM_PVE_BWBOSS01",
+    "WORLD_BOSS_RARE_REWARD_FIRST3_WINS",
+    "EQUIPMENT_SOCKET_8_MAX",
+    "EQUIPMENT_SOCKET_ATTRIBUTE_AND_LEVEL_REROLL",
+    "EQUIPMENT_SOCKET_LOCK_JADE",
+    "EQUIPMENT_SOCKET_SOUL_INHERIT",
+    "EQUIPMENT_GRADE_ASCENSION_30PCT",
+    "EQUIPMENT_REALM_BREAKTHROUGH_30PCT",
+    "YUANSHEN_TOTAL_STATS_MODAL",
+    "ADMIN9_R21_BOSS_EQUIPMENT_CONFIG",
     "EQUIPMENT_ENHANCEMENT_WORLD_NEWS_REAL_TABLE_FIX",
     "EQUIPMENT_WORLD_NEWS_TEXT_ONLY_RED",
     "ANDROID_GITHUB_RELEASE_AUTO_UPDATE",
@@ -28,21 +38,25 @@
     "SECT_SCHEDULE_VISIBLE_LATEST_100",
     "DISCIPLE_HISTORY_VISIBLE_LATEST_100",
     "DEPLOYMENT_AND_APK_RELEASE_METHOD_LOCKED",
-    "CLIENT_VERSION_212_CACHE104"
+    "CLIENT_VERSION_210_CACHE105"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
-  "deploymentAllowed": true,
+  "gmEntry": "九霄问道_ADMIN9_R21_手机直用版.html",
+  "deploymentAllowed": false,
   "gmPublicDeployment": false,
-  "clientHotfix": "AUTHVERSION1_SECTLIMIT100_DEPLOYLOCK1_VERSION212",
-  "databaseRelease": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232",
+  "clientHotfix": "WBOSS01_EQUIPMENTFORGE1_ADMIN21_SQL233",
+  "databaseRelease": "V2.1.0 CACHE105 / SQL211-221 + SQL229-233",
   "notes": [
-    "V2.0.12 CACHE104将登录页原“账号与角色均保存到Supabase云端数据库”提示改为当前游戏版本号显示。",
-    "宗门史、自主排期、人物经历统一增加前端可见上限：最多展示最新100条；宗门事件按时间倒序并去重，人物经历按最新优先。",
-    "网页与Android内置游戏资源同步更新；Android versionCode=2001304，versionName=2.0.12-cache104。",
-    "数据库无新增迁移，继续沿用SQL232；下一SQL编号保持233；ADMIN9仍为R20。",
-    "GitHub Pages与Android APK发布方式已由用户实测成功并锁定：Pages继续使用V2.0.10 R3默认github-pages Artifact链；APK继续使用V2.0.7 R6成功链及现有签名/Release流程。后续不得擅自更换。"
+    "V2.1.0 CACHE105集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
+    "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
+    "沿用兵魄道玉/护道灵玉/百炼玄铁现有玩家库存；新增定灵锁玉、造化升品玉、乾坤破境石。",
+    "世界BOSS珍稀奖励仅每角色每日前3次胜利判定；普通9%、困难18%总珍稀概率，互斥掉落。",
+    "SQL233必须先在测试库按PRECHECK→安装→POSTCHECK→TEST_ENABLE验收，生产禁止提前执行。",
+    "Pages与Android发布工作流/签名链保持锁定方式不变。",
+    "当前构建环境无法连接测试库管理员SQL通道，PRECHECK/安装/POSTCHECK/TEST_ENABLE尚未实际执行；生产SQL233保持未执行，必须由有测试库权限的环境完成门禁后才能正式发布。"
   ],
-  "gmVersion": "ADMIN9 R20",
-  "nextSqlNumber": 233,
-  "deploymentMethod": "github_actions_pages_default_artifact_r3_legacy_reset_neutralized"
+  "gmVersion": "ADMIN9 R21",
+  "nextSqlNumber": 234,
+  "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
+  "releaseStage": "candidate_pending_test_db_gate",
+  "runtimeDatabaseGate": "NOT_EXECUTED_NO_TEST_DB_ADMIN_CONNECTION"
 }
