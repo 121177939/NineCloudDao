@@ -1,8 +1,8 @@
 {
-  "version": "V2.0.9",
-  "releaseLabel": "V2.0.9 CACHE101",
-  "buildId": "v2-0-9-cache101-secttempo1-eventoutcome1-cleanrepo1-huaweinet1-appdialogupdate1",
-  "cacheEpoch": 101,
+  "version": "V2.0.10",
+  "releaseLabel": "V2.0.10 CACHE102",
+  "buildId": "v2-0-10-cache102-sectui2-breakthroughmanual1-appupdate2",
+  "cacheEpoch": 102,
   "minimumDatabaseBaseline": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232 / ADMIN9 R20",
   "sqlRevision": "211-221 + 229-232",
   "migrationSql": [
@@ -13,26 +13,34 @@
     "EQUIPMENT_WORLD_NEWS_TEXT_ONLY_RED",
     "ANDROID_GITHUB_RELEASE_AUTO_UPDATE",
     "ANDROID_UPDATE_DIALOG_NO_FLOATING_BUTTON",
-    "GITHUB_PAGES_CLEAN_REPOSITORY_UNIQUE_ARTIFACT",
     "SECT_AUTONOMY_TEMPO_15_40_MIN",
     "SECT_DECISION_TEMPO_4_10_MIN",
     "SECT_EVENT_OUTCOME_VISIBLE",
-    "CLIENT_VERSION_209_CACHE101"
+    "SECT_INTERNAL_CODE_FULL_CHINESE",
+    "SECT_DISCIPLE_DETAIL_MODAL_FIX",
+    "SECT_HIGH_REALM_MANUAL_BREAKTHROUGH_ENTRY",
+    "ANDROID_UPDATE_RETRY_FIX",
+    "CLIENT_VERSION_210_CACHE102",
+    "GITHUB_PAGES_DEFAULT_ARTIFACT_LIVE_VERIFY"
   ],
   "gmEntry": "九霄问道_ADMIN9_R20_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "SECTTEMPO1_EVENTOUTCOME1_VERSION209",
+  "clientHotfix": "SECTUI2_BREAKTHROUGHMANUAL1_APPUPDATE2_VERSION210",
   "databaseRelease": "V2.0.9 CACHE101 / SQL211-221 + SQL229-232",
   "notes": [
-    "V2.0.9 CACHE101调整宗门自主生态节奏：弟子动态15—40分钟，行动评估4—10分钟。",
-    "AUTONOMOUS_CHOICE等内部英文状态不再直接展示，统一转换为中文说明。",
-    "宗门史与宗门动态新增独立结算结果区，优先显示修为、灵石、物资、声望、忠诚、心境、贡献、丹药与物品/功法等真实增减。",
-    "SQL232通过动态定位真实B-SECT06表安装排期钳制和结构化结算摘要，不重写原核心RPC。",
-    "网页与Android内置游戏资源同步更新；Android versionCode=2001001，versionName=2.0.9-cache101。",
-    "ADMIN9仍为R20，本次未修改GM；下一SQL编号为233。"
+    "V2.0.10 CACHE102修复宗门页面剩余英文内部代码：AUTONOMOUS_CHOICE、cultivation、treasure、honor、personality等统一中文化，未知代码不再原样透出。",
+    "修复“人物经历”按钮：补齐人物档案移动端弹层样式，并在档案内显示近期人物事件、结算结果、重要记忆与故事线。",
+    "修复修为圆满弟子的突破交互：元婴及以上明确显示“等待宗主确认突破”并提供确认突破入口；低境界圆满也提供立即突破入口。服务端仍负责真实突破、生死、跌境与丹药结算。",
+    "Android在线更新器修复旧版静默失败节流：冷启动优先检查，失败1分钟后可重试，只有成功读取Release后才记录成功检查；GitHub API版本改为稳定2022-11-28并禁用更新清单缓存。",
+    "GitHub Actions Release流程改为从gradle.properties自动推导标签并校验app-update.json与Release三项附件，避免发了Release却无法被APP识别。",
+    "网页与Android内置游戏资源同步更新；Android versionCode=2001102，versionName=2.0.10-cache102。",
+    "本次不新增数据库迁移，沿用SQL232；ADMIN9仍为R20；下一SQL编号保持233。",
+    "V2.0.10 R2将Pages部署恢复为V1.8.2已验证成功的默认github-pages Artifact方式：upload-pages-artifact不自定义名称，deploy-pages不指定artifact_name。",
+    "Pages部署后自动访问线上VERSION.txt与index.html进行最多约3分钟无缓存验收；若线上仍是旧版，Actions直接标红而不是假定部署成功。",
+    "Pages构建前检查根.github/workflows，仅允许deploy-pages.yml与release-apk.yml；若旧仓库残留旧Pages工作流则明确失败，避免旧流程覆盖新站点。"
   ],
   "gmVersion": "ADMIN9 R20",
   "nextSqlNumber": 233,
-  "deploymentMethod": "github_actions_pages_artifact_clean_repository"
+  "deploymentMethod": "github_actions_pages_default_artifact_verified"
 }

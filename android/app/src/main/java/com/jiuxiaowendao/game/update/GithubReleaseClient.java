@@ -27,7 +27,7 @@ public final class GithubReleaseClient {
     }
 
     private static final String ACCEPT = "application/vnd.github+json";
-    private static final String API_VERSION = "2026-03-10";
+    private static final String API_VERSION = "2022-11-28";
     private static final int CONNECT_TIMEOUT_MS = 15_000;
     private static final int READ_TIMEOUT_MS = 45_000;
     private static final int MAX_REDIRECTS = 8;
@@ -193,6 +193,8 @@ public final class GithubReleaseClient {
             connection.setInstanceFollowRedirects(false);
             connection.setUseCaches(false);
             connection.setRequestProperty("Connection", "close");
+            connection.setRequestProperty("Cache-Control", "no-cache, no-store, max-age=0");
+            connection.setRequestProperty("Pragma", "no-cache");
             connection.setRequestProperty("Accept-Encoding", "identity");
             connection.setRequestProperty("User-Agent", userAgent);
             connection.setRequestProperty("Accept", githubApi ? ACCEPT : "application/octet-stream, application/json;q=0.9, */*;q=0.8");

@@ -1,11 +1,16 @@
-# 九霄问道 V2.0.9 CACHE101：全新GitHub仓库版
+# 九霄问道 V2.0.10 CACHE102：全新GitHub仓库版
 
-当前客户端基线：**V2.0.9 CACHE101**。
+当前客户端基线：**V2.0.10 CACHE102**。
 
-- 宗门弟子动态：15—40分钟；行动评估：4—10分钟（需先执行 SQL232）。
-- 宗门事件新增“结算结果”，不再只显示剧情文本。
-- 内部状态 `AUTONOMOUS_CHOICE` 已转换为中文玩家文案。
-- Android：`versionCode=2001001`，`versionName=2.0.9-cache101`。
-- ADMIN9：R20，本次未修改。
-- 数据库：SQL232；下一SQL编号233。
-- 网页与Android内置资源必须保持同步。
+- 网页与Android内置游戏资源同步。
+- 宗门英文内部码、人物经历弹层、弟子突破入口已修复。
+- Android自动更新重试与Release附件门禁已修复。
+- Android：`versionCode=2001102`，`versionName=2.0.10-cache102`。
+- 数据库沿用SQL232，下一SQL编号233。
+- GM：ADMIN9 R20，本次未修改。
+
+详细内容见 `V2.0.10升级说明.md`。
+
+## Pages R2 部署恢复
+
+V2.0.10 CACHE102 R2 已恢复 V1.8.2 验证成功的 GitHub Pages 默认 `github-pages` Artifact 部署方式，并新增部署后线上 `VERSION.txt` / `index.html` 自动验收。详细见 `PAGES_V2.0.10_R2_部署恢复说明.md`。

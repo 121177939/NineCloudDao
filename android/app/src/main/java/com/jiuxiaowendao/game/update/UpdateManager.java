@@ -34,14 +34,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class UpdateManager {
     public static final int REQUEST_UNKNOWN_SOURCES = 9022;
     private static final String UPDATE_PREFS = "jiuxiao_app_update";
-    private static final String KEY_LAST_AUTO_CHECK = "last_auto_check_ms";
-    private static final long AUTO_CHECK_INTERVAL_MS = 30L * 60L * 1000L;
+    private static final String KEY_LAST_AUTO_ATTEMPT = "last_auto_attempt_ms";
+    private static final String KEY_LAST_SUCCESS_CHECK = "last_success_check_ms";
+    private static final long AUTO_CHECK_INTERVAL_MS = 10L * 60L * 1000L;
+    private static final long AUTO_RETRY_AFTER_FAILURE_MS = 60L * 1000L;
 
     private final Activity activity;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final GithubReleaseClient client;
     private final AtomicBoolean checking = new AtomicBoolean(false);
+    private boolean firstAutomaticCheckInProcess = true;
     private File pendingInstall;
     private AlertDialog updatePrompt;
 
@@ -59,9 +62,19 @@ public final class UpdateManager {
         if (!client.isConfigured()) return;
         long now = System.currentTimeMillis();
         SharedPreferences preferences = activity.getSharedPreferences(UPDATE_PREFS, Activity.MODE_PRIVATE);
-        long last = preferences.getLong(KEY_LAST_AUTO_CHECK, 0L);
-        if (now - last < AUTO_CHECK_INTERVAL_MS) return;
-        preferences.edit().putLong(KEY_LAST_AUTO_CHECK, now).apply();
+        long lastAttempt = preferences.getLong(KEY_LAST_AUTO_ATTEMPT, 0L);
+        long lastSuccess = preferences.getLong(KEY_LAST_SUCCESS_CHECK, 0L);
+
+        // 每次真正冷启动后的第一次检查不受上次成功时间限制。
+        // 旧实现会在网络请求开始前就写入30分钟节流；一旦该次请求失败，
+        // 后续回到前台也会被静默拦截，看起来像“APP完全收不到更新”。
+        boolean processFirst = firstAutomaticCheckInProcess;
+        firstAutomaticCheckInProcess = false;
+        if (!processFirst) {
+            if (now - lastAttempt < AUTO_RETRY_AFTER_FAILURE_MS) return;
+            if (lastSuccess > 0L && now - lastSuccess < AUTO_CHECK_INTERVAL_MS) return;
+        }
+        preferences.edit().putLong(KEY_LAST_AUTO_ATTEMPT, now).apply();
         check(false);
     }
 
@@ -79,6 +92,8 @@ public final class UpdateManager {
         executor.execute(() -> {
             try {
                 ReleaseInfo release = client.fetchLatest();
+                activity.getSharedPreferences(UPDATE_PREFS, Activity.MODE_PRIVATE)
+                        .edit().putLong(KEY_LAST_SUCCESS_CHECK, System.currentTimeMillis()).apply();
                 long currentVersion = PackageInfoCompat.getLongVersionCode(
                         activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0));
                 if (!activity.getPackageName().equals(release.packageName)) {

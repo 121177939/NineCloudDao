@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "release": "V2.0.10 CACHE102 R2",
+  "buildId": "v2-0-10-cache102-sectui2-breakthroughmanual1-appupdate2",
+  "androidVersionCode": 2001102,
+  "androidVersionName": "2.0.10-cache102",
+  "databaseMigrationAdded": false,
+  "databaseBaseline": "SQL211-221 + SQL229-232",
+  "nextSqlNumber": 233,
+  "gm": "ADMIN9 R20 unchanged",
+  "pagesDeployment": "restored default github-pages artifact + live VERSION/index verification",
+  "checks": [
+    "V1.8.2旧部署包与V2.0.9工作流已逐项对比",
+    "Pages恢复checkout@v4/setup-python@v5/setup-node@v4 Node20稳定组合",
+    "upload-pages-artifact@v4恢复默认github-pages Artifact名",
+    "deploy-pages@v4恢复默认Artifact输入，不再指定artifact_name",
+    "构建前检查根.github/workflows仅允许deploy-pages.yml和release-apk.yml",
+    "部署后自动无缓存读取线上VERSION.txt与index.html，未读到V2.0.10 CACHE102 R2则工作流失败",
+    "全部目标JavaScript通过node --check",
+    "GitHub Pages构建器通过版本/缓存/数据库/部署方式门禁",
+    "Android静态validate_project.py通过，无错误/警告",
+    "网页与Android内置24个共享文件SHA-256一致，Android index本地化变体一致",
+    "本次不新增SQL233，GM仍为ADMIN9 R20"
+  ],
+  "diagnosis": {
+    "releaseVsPages": "GitHub Release与Pages为两条独立工作流；V2.0.9 Release成功不代表Pages成功。",
+    "deploymentDifference": "V2.0.8/V2.0.9改用了自定义唯一Artifact名和额外deploy参数；R2恢复V1.8.2已验证的默认Artifact路径。",
+    "staleWorkflowRisk": "仅覆盖上传文件不会自动删除旧.github/workflows文件；残留旧Pages工作流可能继续发布旧站点。",
+    "settingsRisk": "Settings > Pages > Source仍必须设置为GitHub Actions；该仓库设置无法仅靠源码ZIP强制修改。",
+    "browserCacheDistinguish": "若线上VERSION.txt已是V2.0.10而首页仍旧，则属于浏览器/PWA缓存，而不是Pages部署失败。"
+  }
+}

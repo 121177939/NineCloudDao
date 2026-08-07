@@ -9,7 +9,7 @@ Set-Location (Split-Path -Parent $PSScriptRoot)
 if (-not (Test-Path ".git")) { git init }
 git add .
 $changes = git status --porcelain
-if ($changes) { git commit -m "V2.0.9 CACHE101 sect tempo and event outcome" }
+if ($changes) { git commit -m "V2.0.10 CACHE102 sect tempo and event outcome" }
 git branch -M main
 $remote = git remote get-url origin 2>$null
 if ($LASTEXITCODE -eq 0) { git remote set-url origin $RepositoryUrl } else { git remote add origin $RepositoryUrl }

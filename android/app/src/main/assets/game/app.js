@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.0.9 CACHE101：宗门自主节奏与事件结算可读性升级，继续沿用低频同步与服务端结算。
+  // V2.0.10 CACHE102：宗门自主节奏与事件结算可读性升级，继续沿用低频同步与服务端结算。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,

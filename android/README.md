@@ -1,10 +1,7 @@
-# 九霄问道 Android Studio 本地运行版 V2.0.9 CACHE101
+# 九霄问道 Android Studio 本地运行版 V2.0.10 CACHE102
 
-- APK内置本地游戏资源，不加载GitHub Pages网页。
-- 在线业务连接Supabase后端。
-- 正式版从当前GitHub仓库最新Release检查更新。
-- 没有新版时不显示内容；有新版时弹窗询问。
-- 无右下角浮动更新按钮。
-- AGP 8.2.2 / Gradle 8.2.1 / JDK 17 / API 34。
+正式版由仓库根目录 `.github/workflows/release-apk.yml` 构建并使用永久签名。
+本版重点修复自动更新重试、GitHub Release兜底、宗门人物经历弹层和弟子突破入口。
 
-完整建仓、签名、网页部署和APP发布流程见仓库根目录 `00_重建新仓库与APP更新完整流程.md`。
+正式版：versionCode 2001102 / versionName 2.0.10-cache102。
+Debug版仍故意关闭自动更新，不能用于在线更新验收。
