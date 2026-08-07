@@ -3,11 +3,11 @@
   "errors": [],
   "warnings": [],
   "gameFileCount": 30,
-  "gameBytes": 1334639,
+  "gameBytes": 1335512,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.1.1 CACHE107",
-  "gameBuildId": "v2-1-1-cache107-wboss01-equipmentforge1-admin21-sql235-readyfix1",
-  "databaseBaseline": "SQL211-221 + SQL229-235 (target; runtime gate pending)",
-  "androidVersionCode": 2001407
+  "gameBaseline": "V2.1.1 CACHE108",
+  "gameBuildId": "v2-1-1-cache108-wboss01-equipmentforge2-admin22-sql236-bailianswitch1",
+  "databaseBaseline": "SQL211-221 + SQL229-236 (target; runtime gate pending)",
+  "androidVersionCode": 2001408
 }

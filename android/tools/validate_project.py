@@ -102,9 +102,9 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001407" in gradle_props, "Android版本号不是CACHE107基线")
-    check('APP_VERSION_NAME=2.1.1-cache107' in gradle_props, "Android版本名不是CACHE107基线")
-    expected_build = "v2-1-1-cache107-wboss01-equipmentforge1-admin21-sql235-readyfix1"
+    check("APP_VERSION_CODE=2001408" in gradle_props, "Android版本号不是CACHE108基线")
+    check('APP_VERSION_NAME=2.1.1-cache108' in gradle_props, "Android版本名不是CACHE108基线")
+    expected_build = "v2-1-1-cache108-wboss01-equipmentforge2-admin22-sql236-bailianswitch1"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
@@ -128,10 +128,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.1.1 CACHE107",
+        "gameBaseline": "V2.1.1 CACHE108",
         "gameBuildId": expected_build,
-        "databaseBaseline": "SQL211-221 + SQL229-235 (target; runtime gate pending)",
-        "androidVersionCode": 2001407,
+        "databaseBaseline": "SQL211-221 + SQL229-236 (target; runtime gate pending)",
+        "androidVersionCode": 2001408,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

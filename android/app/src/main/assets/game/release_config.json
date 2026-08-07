@@ -1,10 +1,10 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE107",
-  "buildId": "v2-1-1-cache107-wboss01-equipmentforge1-admin21-sql235-readyfix1",
-  "cacheEpoch": 107,
+  "releaseLabel": "V2.1.1 CACHE108",
+  "buildId": "v2-1-1-cache108-wboss01-equipmentforge2-admin22-sql236-bailianswitch1",
+  "cacheEpoch": 108,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-235",
+  "sqlRevision": "211-221 + 229-236",
   "migrationSql": [
     233
   ],
@@ -38,13 +38,14 @@
     "SECT_SCHEDULE_VISIBLE_LATEST_100",
     "DISCIPLE_HISTORY_VISIBLE_LATEST_100",
     "DEPLOYMENT_AND_APK_RELEASE_METHOD_LOCKED",
-    "CLIENT_VERSION_211_CACHE107"
+    "BAILIAN_LEVEL_REROLL_GM_SWITCH",
+    "CLIENT_VERSION_211_CACHE108"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R21_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R22_手机直用版.html",
   "deploymentAllowed": false,
   "gmPublicDeployment": false,
-  "clientHotfix": "WBOSS01_EQUIPMENTFORGE1_ADMIN21_SQL233_PAGESFIX1_GATEFIX1",
-  "databaseRelease": "V2.1.1 CACHE107 / SQL211-221 + SQL229-235",
+  "clientHotfix": "WBOSS01_READYFIX1_BAILIAN_SWITCH1",
+  "databaseRelease": "V2.1.1 CACHE108 / SQL211-221 + SQL229-236",
   "notes": [
     "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
@@ -54,11 +55,12 @@
     "Pages与Android发布工作流/签名链保持锁定方式不变。",
     "当前构建环境无法连接测试库管理员SQL通道，PRECHECK/安装/POSTCHECK/TEST_ENABLE尚未实际执行；生产SQL233保持未执行，必须由有测试库权限的环境完成门禁后才能正式发布。",
     "V2.1.1修复Pages构建器仍校验V2.0.12/CACHE104导致build exit 1，并把B装备孔位模块纳入Pages产物和JS语法校验。",
-    "SQL233 R3门禁不再把jiuxiao_app_release_control的滞后显示版本当作数据库结构基线；改为核验SQL232标记、关键表/字段/RPC与SQL233对象冲突。"
+    "SQL233 R3门禁不再把jiuxiao_app_release_control的滞后显示版本当作数据库结构基线；改为核验SQL232标记、关键表/字段/RPC与SQL233对象冲突。",
+    "CACHE108新增百炼玄铁等级刷新GM总开关：默认开启；关闭后客户端禁用百炼按钮，服务端RPC在扣材料前强制拒绝。"
   ],
-  "gmVersion": "ADMIN9 R21",
-  "nextSqlNumber": 236,
+  "gmVersion": "ADMIN9 R22",
+  "nextSqlNumber": 237,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "candidate_pending_test_db_gate",
-  "runtimeDatabaseGate": "NOT_EXECUTED_USER_MUST_RUN_R3_PRECHECK_INSTALL_POSTCHECK_TEST_ENABLE"
+  "releaseStage": "candidate_sql236_gate_pending",
+  "runtimeDatabaseGate": "SQL236_PENDING_USER_EXECUTION"
 }

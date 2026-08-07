@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.1.1 CACHE107：世界BOSS、装备8孔淬炼/升品破境、角色总属性；继续沿用服务端权威结算。
+  // V2.1.1 CACHE108：世界BOSS、装备8孔淬炼/升品破境、角色总属性；继续沿用服务端权威结算。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 30 * 1000,
     cultivationSyncMs: 60 * 1000,

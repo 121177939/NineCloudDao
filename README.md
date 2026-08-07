@@ -5,7 +5,7 @@
 本版从 V2.0.12 CACHE104 选择性集成 B-WBOSS01，并加入装备孔位/洗练/器魂/升品破境、元神总属性弹窗与 ADMIN9 R21。**没有整包覆盖 CACHE104**。
 
 - Web：V2.1.1 CACHE107，Build `v2-1-1-cache107-wboss01-equipmentforge1-admin21-sql235-readyfix1`。
-- Android：`versionCode=2001407`，`versionName=2.1.1-cache107`，内置游戏资源已同步。
+- Android：`versionCode=2001406`，`versionName=2.1.1-cache107`，内置游戏资源已同步。
 - 数据库：目标迁移 **SQL233**；下一编号 234。
 - GM：**ADMIN9 R21**，可调整世界BOSS、孔位数值/概率/比例、强化开孔、升品破境、器魂等本次新增配置。
 - 发布方式：继续沿用 V2.0.11 用户已验证成功的 Pages 默认 `github-pages` Artifact R3 与 Android R6 发布/签名链，工作流保持锁定。

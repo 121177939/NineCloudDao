@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const MODULE = 'B-WBOSS01-TEAM-PVE-R1-A-CACHE107-READYFIX1';
+  const MODULE = 'B-WBOSS01-TEAM-PVE-R1-A-CACHE108-READYFIX1-BAILIANSWITCH1';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');

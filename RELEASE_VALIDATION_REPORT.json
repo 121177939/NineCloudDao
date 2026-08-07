@@ -1,20 +1,23 @@
 {
-  "ok": true,
-  "release": "V2.1.1 CACHE107 hotfix candidate",
-  "buildId": "v2-1-1-cache107-wboss01-equipmentforge1-admin21-sql235-readyfix1",
-  "androidVersionCode": 2001407,
-  "androidVersionName": "2.1.1-cache107",
-  "database": "current production user-confirmed SQL233 + SQL234 passed; SQL235 pending execution",
-  "gm": "ADMIN9 R21 V2.1.1 unchanged",
-  "deploymentLock": "GitHub Pages default github-pages Artifact R3 and Android R6 release/signing strategy preserved",
-  "releaseGate": "SQL235_PENDING_USER_EXECUTION",
+  "release": "V2.1.1 CACHE108 candidate",
+  "buildId": "v2-1-1-cache108-wboss01-equipmentforge2-admin22-sql236-bailianswitch1",
+  "gm": "ADMIN9 R22",
+  "androidVersionCode": 2001408,
+  "androidVersionName": "2.1.1-cache108",
+  "database": "SQL236 百炼玄铁GM总开关；运行时未在本环境执行",
+  "releaseGate": "SQL236_PENDING_USER_EXECUTION",
   "checks": [
-    "Root JavaScript syntax PASS including b-world-boss01.js",
-    "Regression check PASS: ready/copy click handlers use Event.currentTarget and no longer read dataset from Event",
-    "Web/Android shared game resources sync PASS: 28 files + Android index variant",
-    "V2.1.1 CACHE107 Pages artifact build PASS",
-    "Android validate_project.py PASS; versionCode 2001407 / versionName 2.1.1-cache107",
-    "SQL235 static transaction/marker sanity PASS; runtime not executed in this environment",
-    "No SQL233/234 schema or gameplay logic rewritten by this hotfix"
-  ]
+    "Web JavaScript node --check PASS",
+    "Web/Android shared resources sync PASS",
+    "V2.1.1 CACHE108 Pages artifact build PASS",
+    "Android validate_project.py PASS",
+    "GM R22 script syntax PASS",
+    "SQL236 static transaction/dollar-quote/marker sanity PASS"
+  ],
+  "behavior": {
+    "default": "百炼玄铁等级刷新默认开启",
+    "disabled": "GM关闭后客户端禁用百炼按钮；服务端在材料扣除前返回EQUIPMENT_V210_LEVEL_REROLL_DISABLED",
+    "inventory": "玩家已有百炼玄铁库存不删除、不兑换；重新开启后继续使用"
+  },
+  "runtimeLimit": "当前环境无生产/测试数据库管理员连接，SQL236升级与门禁需由用户在Supabase SQL Editor执行。"
 }
