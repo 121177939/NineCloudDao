@@ -1,9 +1,9 @@
 {
   "version": "2.1.1",
-  "releaseLabel": "九霄问道 V2.1.1 CACHE119",
+  "releaseLabel": "九霄问道 V2.1.1 CACHE120",
   "sourceBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "deploymentStatus": "v2_1_1_cache119_ready_sql247_online_no_new_sql",
+  "deploymentStatus": "v2_1_1_cache120_ready_sql247_online_no_new_sql",
   "databaseMigrations": [
     211,
     212,
@@ -45,7 +45,7 @@
     228
   ],
   "databaseReleaseGate": "SQL230 V2.0.3 CACHE95正式发布门禁",
-  "databaseFinalCheck": "SQL247 R2已门禁通过；CACHE119无新增SQL，下一SQL248",
+  "databaseFinalCheck": "SQL247 R2已门禁通过；CACHE120无新增SQL，下一SQL248",
   "modules": [
     "B-WBOSS01-TEAM-PVE-R1-A-V210",
     "B-EQUIPMENT-V210-SOCKET-FORGE",
@@ -126,30 +126,33 @@
     "SQL247：造化升品玉/乾坤破境石成功后的基础属性统一由bequipment01_value计算，不再直接读取品级表ring_element_multiplier。",
     "SQL247 R2已由用户确认门禁成功；CACHE117未部署，故直接升级CACHE118，不新增SQL248。",
     "CACHE118修复GitHub Pages工作流版本漂移：deploy-pages.yml必须校验CACHE118并调用CACHE118专用构建器，禁止再引用CACHE116构建器。",
-    "CACHE118沿用已验证default github-pages Artifact R3发布方式；Node.js 20 deprecated仅为非阻断warning。"
+    "CACHE118沿用已验证default github-pages Artifact R3发布方式；Node.js 20 deprecated仅为非阻断warning。",
+    "CACHE120洗炼极速链：兵魄/护道/百炼不再客户端串行预查位置和全量刷新；直接调用SQL246事务RPC，由服务端在扣费前最终验证背包、锁定和资产。",
+    "CACHE120洗炼RPC成功后直接用返回的sockets/material_after/lock_item_after/spirit_stones_after更新页面；不等待二次网络刷新。",
+    "CACHE120成功状态显示本次洗炼RPC端到端耗时；关闭弹窗时再通过既有dirty机制刷新装备主列表。"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R27_V2.1.1_CACHE119_全境界修为比例调整_手机直用版.html",
-  "clientRelease": "V2.1.1_CACHE119",
-  "developmentBaseline": "V2.1.1_ADMIN9R27_CACHE119_SQL247_FORGE_LISTENER_FIX",
-  "cacheEpoch": 119,
+  "gmEntry": "九霄问道_ADMIN9_R27_V2.1.1_CACHE120_全境界修为比例调整_手机直用版.html",
+  "clientRelease": "V2.1.1_CACHE120",
+  "developmentBaseline": "V2.1.1_ADMIN9R27_CACHE120_SQL247_FORGE_FAST_PATH",
+  "cacheEpoch": 120,
   "sqlRevision": "211-221 + 229-244；SQL245 R2 + SQL246 + SQL247 ONLINE；SQL248 NEXT",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "PAGES_WORKFLOW_STALE_CACHE_FIX_AND_EQUIPMENT_STATE_UPGRADE_FIX",
-  "clientBuild": "v2-1-1-cache119-forgelistenerfix-equipmentstate-admin27-sql247",
-  "databaseRelease": "SQL247 R2已上线；CACHE119无新增SQL；下一SQL248。",
+  "clientHotfix": "EQUIPMENT_FORGE_SINGLE_RPC_FAST_PATH",
+  "clientBuild": "v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247",
+  "databaseRelease": "SQL247 R2已上线；CACHE120无新增SQL；下一SQL248。",
   "gmVersion": "ADMIN9 R27",
-  "handoffRevision": "R47-2026-08-08-CACHE119-FORGE-LISTENER-FIX",
+  "handoffRevision": "R48-2026-08-08-CACHE120-FORGE-FAST-PATH",
   "deploymentVerification": "V2.0.11已由用户确认：Pages部署成功、APK生成成功、APP在线更新成功。后续V2.0.12及以后锁定沿用该成功方式；不得擅自更换Pages部署链或APK生成/签名/Release链。",
-  "buildId": "v2-1-1-cache119-forgelistenerfix-equipmentstate-admin27-sql247",
+  "buildId": "v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247",
   "nextSqlNumber": 248,
   "phase3SqlStart": 234,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "lastObservedProductionDatabase": "用户已确认SQL247 R2门禁成功；CACHE119仅修客户端装备淬炼事件生命周期，无新增数据库迁移。",
-  "runtimeDatabaseGate": "SQL247_GATE_PASSED_PRODUCTION_NO_NEW_SQL_FOR_CACHE119",
+  "lastObservedProductionDatabase": "用户已确认SQL247 R2门禁成功；CACHE120仅优化客户端洗炼请求链，无新增数据库迁移。",
+  "runtimeDatabaseGate": "SQL247_GATE_PASSED_PRODUCTION_NO_NEW_SQL_FOR_CACHE120",
   "productionSql233Executed": true,
   "notes": [
-    "CACHE119根因：b-equipment-v210旧版把监听器绑定到永久modalRoot，切换装备会累积旧装备闭包。",
-    "CACHE119修复：监听器绑定到本次forge-backdrop节点，操作时实时读取state.item；第二件及后续装备无需重进游戏即可连续洗炼。"
+    "CACHE120根因：CACHE119每次洗炼前后串行执行B_EQUIPMENT01.refresh、get_equipment_forge_item_state_v247、forge overview等多轮网络请求，移动网络下常见5—8秒。",
+    "CACHE120修复：洗炼主路径仅保留一次SQL246权威事务RPC；RPC结果原地更新，安全校验仍由服务端原子执行。"
   ]
 }

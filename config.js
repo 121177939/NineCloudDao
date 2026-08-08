@@ -1,12 +1,12 @@
-// 《九霄问道》V2.1.1 CACHE119 装备背包状态与升品破境修复
+// 《九霄问道》V2.1.1 CACHE120 装备洗炼极速响应
 // Publishable key 可以安全放在浏览器客户端；绝对不要在这里填写 Secret key / service_role。
 window.GAME_CONFIG = Object.freeze({
   supabaseUrl: 'https://fyykkqkovccgmamsdeoq.supabase.co',
   supabasePublishableKey: 'sb_publishable_mfCyeW3gVVjQt3fxBV_z7g_mBArNMyw',
   gameName: '九霄问道',
   version: '2.1.1',
-  releaseLabel: 'V2.1.1 CACHE119',
-  buildId: 'v2-1-1-cache119-forgelistenerfix-equipmentstate-admin27-sql247',
-  cacheEpoch: 119,
+  releaseLabel: 'V2.1.1 CACHE120',
+  buildId: 'v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247',
+  cacheEpoch: 120,
   worldCode: 'jiuxiao_world_1'
 });

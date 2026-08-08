@@ -1,9 +1,9 @@
 {
   "ok": true,
-  "release": "V2.1.1 CACHE119",
-  "buildId": "v2-1-1-cache119-forgelistenerfix-equipmentstate-admin27-sql247",
-  "cacheEpoch": 119,
-  "database": "SQL247 R2 ONLINE",
+  "release": "V2.1.1 CACHE120",
+  "buildId": "v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247",
+  "cacheEpoch": 120,
+  "database": "SQL247 R2 ONLINE / SQL248 NEXT",
   "nextSql": 248,
   "gm": "ADMIN9 R27",
   "pagesMethod": "default-github-pages-artifact-r3",
@@ -14,5 +14,6 @@
     "forgeListenerLifecycleFix": true,
     "liveStateItemActions": true,
     "androidStaticValidation": true
-  }
+  },
+  "status": "PASS"
 }

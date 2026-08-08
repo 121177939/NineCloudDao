@@ -1,16 +1,16 @@
-V2.1.1 CACHE119
-v2-1-1-cache119-forgelistenerfix-equipmentstate-admin27-sql247
+V2.1.1 CACHE120
+v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247
 V2.1.1
-CACHE119
-DATABASE SQL247 R2 已上线并门禁通过；CACHE119无新增SQL
-ANDROID 2001419 2.1.1-cache119
+CACHE120
+DATABASE SQL247 R2 已上线并门禁通过；CACHE120无新增SQL
+ANDROID 2001420 2.1.1-cache120
 NEXT_SQL 248
 ADMIN9 R27
 
 PAGES_DEPLOY default-github-pages-artifact-r3
 DEPLOYMENT_LOCK V2.0.11_VERIFIED_PAGES_R3_ANDROID_RELEASE_R6_DO_NOT_CHANGE
 
-CACHE119：修复装备淬炼弹窗事件监听器累积，切换第二件装备后旧装备监听器抢占点击导致兵魄/护道/百炼/升品/破境无反应的问题。
-CACHE119：淬炼事件只绑定到本次新建弹窗节点；按钮每次点击实时读取 state.item，不再捕获旧装备对象。
-CACHE118功能全部保留：GitHub Pages专用构建器与线上版本校验、装备location实时确认、升品/破境统一bequipment01_value。
-SQL247 R2：已由用户确认执行成功；CACHE119不需要执行SQL248。
+CACHE120：兵魄/护道/百炼改为单RPC极速提交；SQL246服务端事务继续负责背包、锁定、材料、锁玉、灵石全部权威校验。
+CACHE120：直接使用洗炼RPC返回的sockets/material_after/lock_item_after/spirit_stones_after原地更新，不再等待多轮刷新。
+CACHE120：成功反馈显示本次RPC端到端耗时；正常网络目标约1—2秒，具体以生产网络与Supabase响应为准。
+CACHE119/CACHE118/CACHE117功能全部保留；SQL247 R2已上线，下一SQL248。

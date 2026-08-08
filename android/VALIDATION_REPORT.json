@@ -2,12 +2,12 @@
   "ok": true,
   "errors": [],
   "warnings": [],
-  "gameFileCount": 88,
-  "gameBytes": 1675954,
+  "gameFileCount": 89,
+  "gameBytes": 1680119,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.1.1 CACHE119",
-  "gameBuildId": "v2-1-1-cache119-forgelistenerfix-equipmentstate-admin27-sql247",
-  "databaseBaseline": "SQL247 R2 ONLINE; CACHE119 no new SQL",
-  "androidVersionCode": 2001419
+  "gameBaseline": "V2.1.1 CACHE120",
+  "gameBuildId": "v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247",
+  "databaseBaseline": "SQL247 R2 ONLINE; CACHE120 no new SQL",
+  "androidVersionCode": 2001420
 }

@@ -1,8 +1,8 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE119",
-  "buildId": "v2-1-1-cache119-forgelistenerfix-equipmentstate-admin27-sql247",
-  "cacheEpoch": 119,
+  "releaseLabel": "V2.1.1 CACHE120",
+  "buildId": "v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247",
+  "cacheEpoch": 120,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
   "sqlRevision": "211-221 + 229-244 + SQL245 R2 + SQL246 + SQL247 ONLINE；SQL248 NEXT",
   "migrationSql": [
@@ -75,13 +75,17 @@
     "EQUIPMENT_FORGE_REALTIME_STATE_GUARD_SQL247",
     "EQUIPMENT_GRADE_REALM_CANONICAL_VALUE_SQL247",
     "CLIENT_VERSION_211_CACHE118",
-    "GITHUB_PAGES_CACHE118_BUILDER_AND_VERIFY_FIX"
+    "GITHUB_PAGES_CACHE118_BUILDER_AND_VERIFY_FIX",
+    "CLIENT_VERSION_211_CACHE120",
+    "EQUIPMENT_FORGE_SINGLE_RPC_FAST_PATH",
+    "EQUIPMENT_FORGE_RESULT_LOCAL_PATCH",
+    "EQUIPMENT_FORGE_VISIBLE_RPC_LATENCY"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R27_V2.1.1_CACHE119_全境界修为比例调整_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R27_V2.1.1_CACHE120_全境界修为比例调整_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "PAGES_WORKFLOW_STALE_CACHE_FIX_AND_EQUIPMENT_STATE_UPGRADE_FIX",
-  "databaseRelease": "SQL247 R2已上线并门禁通过；CACHE119为客户端装备淬炼监听器修复，无新增SQL；下一SQL248。",
+  "clientHotfix": "EQUIPMENT_FORGE_SINGLE_RPC_FAST_PATH",
+  "databaseRelease": "SQL247 R2已上线并门禁通过；CACHE120为客户端洗炼极速响应，无新增SQL；下一SQL248。",
   "notes": [
     "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
@@ -111,14 +115,16 @@
     "SQL245 R2服务端强制新创建/新轮回角色初生主灵根为五行杂灵根；命格与本命五行继续随机；后续洗灵不受初生规则限制。",
     "ADMIN9 R26 R2系统页新增永久删档重开：清空玩家游戏档案及相关历史，不创建玩家备份；auth登录账号、profiles、GM账号、系统/内容配置、版本与SQL状态保留。",
     "CACHE115同步修正创建角色、转世、洗灵页面说明，使客户端文案与SQL245新服规则一致。",
-    "CACHE119：修复淬炼弹窗在永久modalRoot上累积监听器，导致切换第二件装备后旧装备监听器抢占操作。",
-    "CACHE119：事件绑定到本次弹窗节点，所有装备操作实时读取state.item；无新增SQL。"
+    "CACHE119监听器生命周期修复完整保留：切换不同装备不会残留旧装备监听器。",
+    "CACHE120：兵魄/护道/百炼移除客户端提交前后串行实时位置查询与整包刷新，直接调用SQL246权威事务RPC。",
+    "CACHE120：RPC成功后直接使用返回的sockets/material_after/lock_item_after/spirit_stones_after原地更新，反馈不再等待二次网络刷新。",
+    "CACHE120：成功状态显示端到端RPC耗时；数据库不新增SQL，SQL247 R2保持上线。"
   ],
   "gmVersion": "ADMIN9 R27",
   "nextSqlNumber": 248,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "sql247_online_ready_for_cache119_deploy",
-  "runtimeDatabaseGate": "SQL247_GATE_PASSED_PRODUCTION_NO_NEW_SQL_FOR_CACHE119",
+  "releaseStage": "sql247_online_ready_for_cache120_deploy",
+  "runtimeDatabaseGate": "SQL247_GATE_PASSED_PRODUCTION_NO_NEW_SQL_FOR_CACHE120",
   "releaseNotes": [
     "CACHE116：兵魄/护道对未锁孔同时重新随机属性类型与等级；锁孔双保护。",
     "SQL246：百炼只随机未锁已有属性孔等级；有其它可用等级时排除原等级，避免Lv10付费后原样Lv10。",
@@ -133,11 +139,15 @@
     "CACHE118：Pages工作流改为校验VERSION.txt=V2.1.1 CACHE118，并调用tools/build_pages_v2_1_1_cache118.py；部署后线上也核对CACHE118。",
     "SQL247 R2已由用户确认成功；CACHE118无新增数据库迁移，下一SQL仍为248。",
     "CACHE117的装备位置实时确认、升品/破境bequipment01_value修复完整继承。",
-    "Node.js 20 deprecated提示仍属于非阻断warning；不因此改动已验证的Pages默认Artifact R3部署方式。"
+    "Node.js 20 deprecated提示仍属于非阻断warning；不因此改动已验证的Pages默认Artifact R3部署方式。",
+    "CACHE120：洗炼从多轮串行网络链缩短为单次SQL246 RPC主路径；服务端背包/锁定/资产校验保持不变。",
+    "CACHE120：兵魄/护道/百炼成功后直接用RPC返回值更新孔位与材料/灵石，关闭弹窗时再同步装备主列表。",
+    "CACHE120：页面显示本次洗炼RPC耗时，便于区分网络/数据库慢与客户端刷新慢。"
   ],
   "featureFlags": [
-    "CLIENT_VERSION_211_CACHE119",
-    "EQUIPMENT_FORGE_MODAL_LISTENER_LIFECYCLE_FIX",
-    "EQUIPMENT_FORGE_ACTIONS_USE_LIVE_STATE_ITEM"
+    "CLIENT_VERSION_211_CACHE120",
+    "EQUIPMENT_FORGE_SINGLE_RPC_FAST_PATH",
+    "EQUIPMENT_FORGE_RESULT_LOCAL_PATCH",
+    "EQUIPMENT_FORGE_VISIBLE_RPC_LATENCY"
   ]
 }
