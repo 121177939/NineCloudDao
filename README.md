@@ -1,16 +1,15 @@
-# 九霄问道 V2.1.1 CACHE118
+# 九霄问道 V2.1.1 CACHE119
 
-当前客户端基线：**V2.1.1 CACHE118**；Android：**versionCode 2001418 / versionName 2.1.1-cache118**；GM：**ADMIN9 R27**。
+当前客户端基线：**V2.1.1 CACHE119**；Android：**versionCode 2001419 / versionName 2.1.1-cache119**；GM：**ADMIN9 R27**。
 
-## 本次 CACHE118
-- 修复 GitHub Pages 工作流版本漂移：CACHE117代码上传后，deploy-pages.yml仍校验/调用CACHE116构建器，导致build exit 1。
-- 新增 `tools/build_pages_v2_1_1_cache118.py`，工作流源码门禁、构建与线上验收全部统一为CACHE118。
-- 保留已验证的 default github-pages Artifact R3 部署方式；Node.js 20 deprecated提示是非阻断warning。
-- 完整继承CACHE117装备修复：装备主列表location/is_locked为权威值；穿戴/卸下后强制重新拉取；淬炼/升品/破境提交前通过SQL247实时确认数据库位置。
-- SQL247修复造化升品玉/乾坤破境石成功分支，统一使用 `bequipment01_value(template_id, grade_code)`。
+## 本次 CACHE119
 
-## 数据库状态
-**SQL247 R2 已由用户确认门禁成功。CACHE118无新增SQL，下一编号仍为SQL248。**
+- 修复装备淬炼弹窗事件监听器残留：旧版把 click/change 监听器绑定到永久存在的 `modalRoot`，每打开一件装备就累积一次并捕获旧装备对象。
+- 切换到第二件装备后，旧监听器会先执行并把 `busy` 设为 true，当前装备的新监听器随后退出，因此出现“只有第一件能洗，换装备后兵魄/护道/百炼无反应，重进游戏才恢复”。
+- CACHE119 改为把监听器绑定到每次新建的 `.forge-backdrop-v210`；关闭弹窗时DOM与监听器一起销毁。
+- 所有孔位洗炼、百炼、升品、破境、器魂承接按钮在点击时实时读取 `state.item`，不再使用弹窗打开时捕获的旧装备。
+- CACHE118 GitHub Pages构建修复和CACHE117/116装备数据库规则全部保留。
 
-## 发布锁
-沿用已验证的 Pages R3 与 Android Release R6 流程，不更换包名、签名链或Pages部署方式。
+数据库仍为 **SQL247 R2 已上线**；CACHE119无新增SQL，下一编号仍为 **SQL248**。
+
+发布链继续锁定：`default-github-pages-artifact-r3` / Android Release R6，不改变已验证方式。

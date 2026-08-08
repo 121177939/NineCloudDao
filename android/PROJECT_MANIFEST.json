@@ -1,14 +1,7 @@
 {
-  "project": "JiuxiaoWendaoAndroid",
-  "version": "V2.1.1 CACHE118",
-  "packageRevision": "R28-cache118-pages-build-fix",
-  "versionCode": 2001418,
-  "versionName": "2.1.1-cache118",
-  "gameBuildId": "v2-1-1-cache118-pagesbuildfix-equipmentstate-admin27-sql247",
-  "releaseTag": "v2.1.1-cache118",
-  "releaseWorkflowBaseline": "LOCKED: V2.0.11 user-verified; R6 APK chain + R3 Pages strategy; unchanged",
-  "databaseTarget": "SQL247 R2 ONLINE; CACHE118 has no new SQL; next SQL248",
-  "forgeLocationPolicy": "BACKPACK_ONLY + SQL247_REALTIME_LOCATION_GUARD",
+  "version": "V2.1.1 CACHE119",
+  "versionCode": 2001419,
+  "versionName": "2.1.1-cache119",
   "files": [
     {
       "path": ".github/workflows/release-apk.yml",
@@ -22,18 +15,18 @@
     },
     {
       "path": "README.md",
-      "size": 603,
-      "sha256": "0e6ba889afc448746708692572c51afbad1b0c9ac0d83042ff545514fa63be0d"
+      "size": 523,
+      "sha256": "193586c6180e23f8b0df13e86d75c994b7d3f2a218a1075bb3344e8e6fdf631d"
     },
     {
       "path": "VALIDATION_REPORT.json",
-      "size": 362,
-      "sha256": "5d29418e097f4d5a166f823f5227a7f9710de1abf29a9e1d3d25fc6e6efee695"
+      "size": 360,
+      "sha256": "a08761353b81a32983d6f754cb7afbbeeefe4c33322e24cfed2eee268c713974"
     },
     {
       "path": "app/build.gradle.kts",
-      "size": 3175,
-      "sha256": "b08ab356670e67927359cca20913083ac27b2e9474f631e5aba815b6b297810f"
+      "size": 3181,
+      "sha256": "be257dae9232b3e5f8f52cd9b41a49fd180bd72a005d0128ed04837434f5fce2"
     },
     {
       "path": "app/proguard-rules.pro",
@@ -46,19 +39,134 @@
       "sha256": "9b75d8d17c4e5134b2c1f7ec4053dbca84791fe3124d53bf161acd889bd79523"
     },
     {
-      "path": "app/src/main/assets/game/CURRENT_BASELINE.json",
-      "size": 12265,
-      "sha256": "f3744f0242c090ace05e79f08be01b2991d4ab2fc881fe527ab9416929587a3a"
+      "path": "app/src/main/assets/game/00_重建新仓库与APP更新完整流程.md",
+      "size": 1675,
+      "sha256": "2c6214beb2f6a97fa16fb657dc063a2e0ce27d1ea4176801fc1975675f664f55"
     },
     {
-      "path": "app/src/main/assets/game/PAGES_ARTIFACT_MANIFEST.json",
-      "size": 5221,
-      "sha256": "47f96ccdca476344b3ac75c5382cd47684e57033cfe29b6cf9da0b5442d31f9a"
+      "path": "app/src/main/assets/game/APP_V2.0.8未收到更新提示_诊断与一次性恢复.md",
+      "size": 1300,
+      "sha256": "6056d8b2ff6e604af1754dfbf4f252ab656539fe1cb20b7aac14a89cc2089fe4"
+    },
+    {
+      "path": "app/src/main/assets/game/CURRENT_BASELINE.json",
+      "size": 12942,
+      "sha256": "8ec6a1565bf8fea27a6b4a371b60efac2b63c7ce6e4f88b915a458f8ee98e42d"
+    },
+    {
+      "path": "app/src/main/assets/game/DEPLOYMENT_LOCK_已验证成功_禁止擅自变更.md",
+      "size": 1667,
+      "sha256": "05a0b44ddc31a7f9937e4745733957b74a58bc023e3ac4aa31aa1a67f83525f3"
+    },
+    {
+      "path": "app/src/main/assets/game/PAGES_V2.0.10_R3_失败修复说明.md",
+      "size": 1443,
+      "sha256": "2c370a6ede0d43a89b93953d324dcd08fcdaeefd0c83b53d1412f1eb04dd3112"
+    },
+    {
+      "path": "app/src/main/assets/game/PAGES_V2.1.1_R3_失败修复说明.md",
+      "size": 725,
+      "sha256": "ca2c2e5d9728b932e0ee504173599413f7637a9c05ab152910741c4c6fbc2d26"
+    },
+    {
+      "path": "app/src/main/assets/game/RELEASE_VALIDATION_REPORT.json",
+      "size": 707,
+      "sha256": "2ba40b18386a95776e52334d39e49cfcc72c23f6e09e2cc0c3ff6faaa0cd58b4"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.0.10升级说明.md",
+      "size": 2014,
+      "sha256": "7427acd8e68dd520c2632be1b6a6614a4792223a2ce09131e3132000a3174b57"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.0.11升级说明.md",
+      "size": 1132,
+      "sha256": "d674450725e7076b3e2b2d6946d4a1ae35bd0ff0d3ba3e3d15693fef96a771b2"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.0.12升级说明.md",
+      "size": 1175,
+      "sha256": "224eb487a218ce6f0d9e33d0e321becabf24f37699f1d3a924da51db3abbb285"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.0.9升级说明.md",
+      "size": 1023,
+      "sha256": "f045e0b8e1c9c0042c95af023b333cf5a1b5f09f845c724b21eded0e07f6dff7"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.0升级说明.md",
+      "size": 956,
+      "sha256": "16f05d0022b98b28b5f4badeeecf6079b937bcf3242dd0930046059e466d8ff7"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE107_世界BOSS准备按钮热修说明.md",
+      "size": 1101,
+      "sha256": "a8fe47ba1b04d1ae266511090a595f3460ae81111d341006e05b9ea0c8ee88e4"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE108_百炼玄铁GM总开关说明.md",
+      "size": 664,
+      "sha256": "d08a6b5918df77b6df63c751b07d35a73fd1a39c7f711e9c2254e7bf52e6f542"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE109_装备详情孔位展示热修说明.md",
+      "size": 732,
+      "sha256": "71d0ead8994bbb05d99871a3fb94f8e40d9ac79b796cb5dd4ebb654fe0611177"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE110_装备孔位洗炼交互重做说明.md",
+      "size": 1048,
+      "sha256": "06368eb12e1982fa40a8dd3b2dc5c37d1391e14d9feebfea3383d55ae430abff"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE111_角色总属性点击回归修复说明.md",
+      "size": 517,
+      "sha256": "0b35e68a5151d6c8c2b835d5955238deefba9e2e5fb773180b11925b0aeb778a"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE112_ADMIN9_R24_SQL242_管理说明.md",
+      "size": 438,
+      "sha256": "0e80459d77773aa334032ec00b4329b88a125c3841567f569e7b294e0bc17b67"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE112_数据库稳定与简明GM升级说明.md",
+      "size": 1257,
+      "sha256": "bc1f3c921c50238e4e87675ef85451287ee625bee8fa11ceb44bb2876dcbf828"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE113_ADMIN9_R25_SQL243_升级说明.md",
+      "size": 1805,
+      "sha256": "9a5838ae0791835d221bac5cd65573f1abc5e2ffe1c5bf2e0a96b36e154aaf7b"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE114_穿戴装备隐藏孔位洗炼入口说明.md",
+      "size": 718,
+      "sha256": "95fc8119d178c2d516b33635ee5a166f73b9ef327dcb722db88ef1142f8a6d90"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE116_装备孔位洗炼规则修复说明.md",
+      "size": 580,
+      "sha256": "fdd8b83e569c25fe025140202f4bff0263a5b4ab4b1dfcdc228eaf821d44eea9"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE117_装备背包状态与升品破境修复说明.md",
+      "size": 684,
+      "sha256": "19f4a76a90a5089cc0070b29e3b8eaf829dddd64945457b5ad67d6964bfdafdd"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1_CACHE118_GitHub_Pages构建修复说明.md",
+      "size": 849,
+      "sha256": "feac3b432e0057070c8c1144ad5088321c2ff5569fdb87ea759a91c3ba8ba2c1"
+    },
+    {
+      "path": "app/src/main/assets/game/V2.1.1升级说明.md",
+      "size": 1811,
+      "sha256": "811fd091c589a5b393423052328773795c46936210b7834815d28c68f8e49550"
     },
     {
       "path": "app/src/main/assets/game/VERSION.txt",
-      "size": 709,
-      "sha256": "517f28dc8e83b21d5f83f9fad96cc467637741880a9ee5ee15df1f5e29d0799d"
+      "size": 880,
+      "sha256": "03299991b80c514a6c1dbd08423f8fcb63a5c17fa85b66fb1b727521a7e23bf4"
     },
     {
       "path": "app/src/main/assets/game/android-local.js",
@@ -92,8 +200,8 @@
     },
     {
       "path": "app/src/main/assets/game/b-equipment-v210.js",
-      "size": 21353,
-      "sha256": "20e22ad6c584e374004e846bdd4d00cc369a7bc757283507c2fe8fd125b5cdbc"
+      "size": 21927,
+      "sha256": "d3472e4223f5cff8b25110e0ee2cc462808bdc44198837f22c09b75758e1581e"
     },
     {
       "path": "app/src/main/assets/game/b-equipment01.css",
@@ -102,8 +210,8 @@
     },
     {
       "path": "app/src/main/assets/game/b-equipment01.js",
-      "size": 51280,
-      "sha256": "11c101d5da89c18e0a791bf6c1a653073be7b045b4bb5959e687ca5811788816"
+      "size": 51289,
+      "sha256": "cb91eb12a522bfc56b30a15a55c2a2afacf58fa83f76084b01f97e713a3fa1f2"
     },
     {
       "path": "app/src/main/assets/game/b-paigow01.css",
@@ -167,13 +275,143 @@
     },
     {
       "path": "app/src/main/assets/game/config.js",
-      "size": 572,
-      "sha256": "d3e82910593f1165ffd843657909e8836ac41da222c7d741f4e51565601165cd"
+      "size": 578,
+      "sha256": "a092f51009852866124b5517a1c60079949b326fb366efd970ac2db328d6358f"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL235_CACHE107_READYFIX1/235_V2.1.1_CACHE107_世界BOSS准备按钮客户端热修.sql",
+      "size": 3821,
+      "sha256": "7475c2003e5feaae84d410819cb41acb772f55c29038af9f86e0d61a81bed976"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL235_CACHE107_READYFIX1/门禁_V2.1.1_CACHE107_SQL235_世界BOSS准备按钮热修.sql",
+      "size": 2618,
+      "sha256": "cea9f66604fa25309c2e5713b2684ec11ce80d18aa2b02ec745dea66929887cc"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL236_CACHE108_BAILIAN_SWITCH1/236_V2.1.1_CACHE108_百炼玄铁GM总开关.sql",
+      "size": 13382,
+      "sha256": "d64dfd0d73c895be3058c31221c88e83ead4fe3e9b8206feb9275fe04d3ce4fb"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL236_CACHE108_BAILIAN_SWITCH1/门禁_V2.1.1_CACHE108_SQL236_百炼玄铁GM总开关.sql",
+      "size": 3122,
+      "sha256": "77bd8e46205558d7c3b1547d8cf26515828a698702a3e7f7941d42ba976f5041"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL237_CACHE108_WBOSS_TOKEN_SIGFIX1/237_V2.1.1_CACHE108_世界BOSS镇魔令函数签名热修.sql",
+      "size": 3206,
+      "sha256": "785b393505bd5107f88b2597cf0825fbc537feef7d0bb86621246e89c0a40445"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL237_CACHE108_WBOSS_TOKEN_SIGFIX1/门禁_V2.1.1_CACHE108_SQL237_世界BOSS镇魔令函数签名热修.sql",
+      "size": 2902,
+      "sha256": "cddfd182c0b956b730f3b10b49b47e5a08f1fe86ca01527c39ced9897333c1de"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL238_CACHE109_EQUIPMENT_DETAIL1/238_V2.1.1_CACHE109_装备详情孔位展示热修.sql",
+      "size": 3149,
+      "sha256": "bc0905d170130c9ccfddc7fc43cc021841216846f3ab98f284ab49e6c09bdad0"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL238_CACHE109_EQUIPMENT_DETAIL1/门禁_V2.1.1_CACHE109_SQL238_装备详情孔位展示热修.sql",
+      "size": 2343,
+      "sha256": "d6ac1cfff45b598d8363b7e56ad3c5972290e35de4f684ca9fbaede1f8f94499"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL239_CACHE110_FORGE_UI2/239_V2.1.1_CACHE110_孔位洗炼交互与百炼整装重炼.sql",
+      "size": 24380,
+      "sha256": "ba57041acebddbd429688901f208020ac3d8fc7bd4bdd13b6af53dc84f783d90"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL239_CACHE110_FORGE_UI2/门禁_V2.1.1_CACHE110_SQL239_孔位洗炼交互与百炼整装重炼.sql",
+      "size": 5445,
+      "sha256": "956513528bb74f5b1d5ed1a8ad934d8d146382b3fa7f788ae0d5de58d30c5ab4"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL240_CACHE111_TOTALSTATSFIX1/240_V2.1.1_CACHE111_角色总属性点击回归修复.sql",
+      "size": 2808,
+      "sha256": "4db6a1e57083f9e32af5ade134bf95134653ccbb3b2778ec5ff6aa1c77f35ef7"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL240_CACHE111_TOTALSTATSFIX1/门禁_V2.1.1_CACHE111_SQL240_角色总属性点击回归修复.sql",
+      "size": 4324,
+      "sha256": "87d52dce0dd6036650942aa57086df040e21449c5e7facebf40ab977201a0fec"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL241_CACHE112_DBCAP03_PERF2/241_V2.1.1_CACHE112_DBCAP03_PERF2_数据库稳定与24小时治理.sql",
+      "size": 37786,
+      "sha256": "b24090cb93475623d38776d149ae71c666d2a252afdead879127da21008c11bc"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL241_CACHE112_DBCAP03_PERF2/门禁_V2.1.1_CACHE112_SQL241_DBCAP03_PERF2_数据库稳定.sql",
+      "size": 7962,
+      "sha256": "cad51c9450e4004a528aed6e1c12e74c71f0d01cf54b2e808527fd13b5b9cc92"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL242_CACHE112_ADMIN9_R24_DB_HEALTH/242_V2.1.1_CACHE112_ADMIN9_R24_数据库健康监控与快照.sql",
+      "size": 16874,
+      "sha256": "c97a683d1a3952fcbcf3e822eb2c1fb9c58a45e18727b90c1884e847b19d5016"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL242_CACHE112_ADMIN9_R24_DB_HEALTH/门禁_V2.1.1_CACHE112_SQL242_ADMIN9_R24_数据库健康监控.sql",
+      "size": 2873,
+      "sha256": "646c039fc89118e14dae06909885e11c1fcacb254b354fc46891916ddd9759f4"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL243_CACHE113_FORGE_COST_COMBAT_GUARD/243_V2.1.1_CACHE113_孔位灵石消耗与战斗接入检查.sql",
+      "size": 28521,
+      "sha256": "fa22a6445fcfc1f96412dd2c4bc830c5e562ae6051f9ca14955f6e35682fdb8a"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL243_CACHE113_FORGE_COST_COMBAT_GUARD/门禁_V2.1.1_CACHE113_SQL243_孔位灵石消耗与战斗接入.sql",
+      "size": 8914,
+      "sha256": "d5b946a4b01f3536566b95ef991c3d6ecebaa793a75c47a133a31b8ab32110cd"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL244_CACHE113_BCOMBAT_RUNTIME_HOTFIX_R2/01_SQL244_R2_战斗运行时双故障热修_执行即门禁.sql",
+      "size": 14996,
+      "sha256": "d009bcf9e201ee3c6d922bd0d0c32a6543fedb74c9d8549b5cc741e6680f3feb"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL244_CACHE113_BCOMBAT_RUNTIME_HOTFIX_R2/README_已上线状态.md",
+      "size": 129,
+      "sha256": "9133bd7942ade5334629e4101c0d2452366f621c9f7f7ad39f9644ad1cd7cf30"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL245_CACHE115_NEW_SERVER_RESET/245_V2.1.1_CACHE115_新服境界曲线_五行杂灵根_删档重开.sql",
+      "size": 31342,
+      "sha256": "dc14b4b830f9cb795f50aa369021affbad1888f86fc461eb79dc9f7716c7a1f0"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL245_CACHE115_NEW_SERVER_RESET/新服42阶段累计修为表.csv",
+      "size": 1074,
+      "sha256": "dce599b974cf7df364feb6ba6c2f462dfbc476b6d4873e9ea010be679ad1178a"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL246_CACHE116_SOCKET_REROLL_FIX/246_V2.1.1_CACHE116_兵魄护道属性等级双随机与百炼防空转.sql",
+      "size": 23072,
+      "sha256": "edb116a011da230bda5bf470ea324a90b1176f51a2a44332677b641c2d53752e"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL246_CACHE116_SOCKET_REROLL_FIX/README_SQL246_CACHE116.md",
+      "size": 991,
+      "sha256": "f80bdd786c0748111b7e859e0f1e04293b6fbdec835ef3df90adee9d4e679efb"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL247_CACHE117_EQUIPMENT_STATE_UPGRADE_FIX/247_V2.1.1_CACHE117_装备背包状态与升品破境修复.sql",
+      "size": 14947,
+      "sha256": "fd9946fe9983ebd693d76be3ad9b9f92b2638c3fd58d0601fdb7f651aca8f830"
+    },
+    {
+      "path": "app/src/main/assets/game/database-upgrades/SQL247_CACHE117_EQUIPMENT_STATE_UPGRADE_FIX/README_SQL247_CACHE117.md",
+      "size": 967,
+      "sha256": "703329998231ea0d801a79f79530a33ef0a1d1b605e643b6865413a4f2473e47"
     },
     {
       "path": "app/src/main/assets/game/index.html",
-      "size": 3507,
-      "sha256": "fd500cd682db477a3f5c3595fab9c86b34d4cb48e5fe9acd8c6de92b29163ae6"
+      "size": 3609,
+      "sha256": "f652703f0bd0bd2fc77898ba7746a54286f3fc6421b9ecbbdecc71cb75e2c478"
     },
     {
       "path": "app/src/main/assets/game/paigow-app.css",
@@ -192,13 +430,53 @@
     },
     {
       "path": "app/src/main/assets/game/release_config.json",
-      "size": 9196,
-      "sha256": "f21bebb41a6163035ed5dc4cf7015f3bead32799b8d3b4962eb27ebb3a9c3232"
+      "size": 10289,
+      "sha256": "44627abd0597420cf0d3b4b50daf9bfec5e7ae57b1d8f6568f3b918d3831c17e"
+    },
+    {
+      "path": "app/src/main/assets/game/scripts/初始化并推送新仓库.ps1",
+      "size": 745,
+      "sha256": "7954bfd2fc33ad92f769a7a8d0cff2621e2034897dfa2554972442dd9bd06cb3"
     },
     {
       "path": "app/src/main/assets/game/styles.css",
       "size": 235576,
       "sha256": "791a13b43ace2282e5b820b89f7dc7bc3b825fc8778a73b5a3d04d970a85e484"
+    },
+    {
+      "path": "app/src/main/assets/game/数据库管理_CACHE112/ADMIN9_R23_手机简明GM使用说明.md",
+      "size": 2428,
+      "sha256": "0e457363b5a1a42cbdcae8422d1e6446262ae7e79fa5301a046a6530c44d9255"
+    },
+    {
+      "path": "app/src/main/assets/game/数据库管理_CACHE112/Cron关键任务与生产确认表_CACHE112.md",
+      "size": 1675,
+      "sha256": "28cd05400bebc126fa8e2e30edf084ff335172c214c1f6bf5fd063ce98b977ab"
+    },
+    {
+      "path": "app/src/main/assets/game/数据库管理_CACHE112/PERF热点RPC与临时IO_只读_可选.sql",
+      "size": 1592,
+      "sha256": "3356319ac11dda7fe61fba5db209820a42a0d5761be6df64e410b61b43f62b76"
+    },
+    {
+      "path": "app/src/main/assets/game/数据库管理_CACHE112/数据库健康检查_只读.sql",
+      "size": 5506,
+      "sha256": "38c9a9eb9f48389becaf6a4e6c1ed0908e28cbd0ba9068152eba19c703643d9e"
+    },
+    {
+      "path": "app/src/main/assets/game/数据库管理_CACHE112/数据库检查与长期防事故手册.md",
+      "size": 4041,
+      "sha256": "dbbe6d72734c14e7e50edb353c6a8b9717fcbef121a0dbd22a7dee61fe6533e2"
+    },
+    {
+      "path": "app/src/main/assets/game/数据库管理_CACHE112/数据库稳定治理_以前与现在_CACHE112.md",
+      "size": 3642,
+      "sha256": "488debac3adebb2a4f00b4d88c8ec00e7427e025f2507473da1e6014db89dbb7"
+    },
+    {
+      "path": "app/src/main/assets/game/数据库管理_CACHE112/未来新模块数据库准入硬规则_CACHE112.md",
+      "size": 1981,
+      "sha256": "d841775636e8635de9daa75860e2bce2efe15f6378aa641a996286143bb44006"
     },
     {
       "path": "app/src/main/java/com/jiuxiaowendao/game/MainActivity.java",
@@ -358,7 +636,7 @@
     {
       "path": "gradle.properties",
       "size": 526,
-      "sha256": "6c40f0167a7b7230e7b0390481744fa28a7504827e16f1a11e19dba9911597cc"
+      "sha256": "9b6169d42b2ff8f75d50e38fdec16f29dd81298717b46e2632a255c16d4ad08e"
     },
     {
       "path": "gradlew",
@@ -373,7 +651,7 @@
     {
       "path": "release/release-notes.txt",
       "size": 520,
-      "sha256": "aae22d0bce68afb53f4eef5fac3ec67b7896ba28d956f9f46b386e64cde1569c"
+      "sha256": "63c5530a1cccd9c3210f341dfe966f9b9b21127fdccc0eafdd17d92df556ea6d"
     },
     {
       "path": "settings.gradle.kts",
@@ -397,13 +675,13 @@
     },
     {
       "path": "tools/sync_game_assets.py",
-      "size": 4130,
-      "sha256": "42119b95576367a66d2b4e47d6cf04f530f709585d15cec70006316c9e3da0f8"
+      "size": 4141,
+      "sha256": "d3616e201608218dd789d5ca13ba5ecc491379e562df9f68b694f0ef7ce4e479"
     },
     {
       "path": "tools/validate_project.py",
-      "size": 7647,
-      "sha256": "1f75d8783dec490320e38e87b8fe21199106037981a7a19d0ad620d7715be76e"
+      "size": 7645,
+      "sha256": "aaeefd763fbe3a7c22001aeb7214db624adabd195d07050fddfa3368e2447fc2"
     },
     {
       "path": "tools/生成签名密钥并输出GitHubSecrets说明.ps1",

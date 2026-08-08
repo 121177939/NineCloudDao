@@ -1,21 +1,18 @@
 {
   "ok": true,
-  "version": "V2.1.1 CACHE118",
-  "buildId": "v2-1-1-cache118-pagesbuildfix-equipmentstate-admin27-sql247",
-  "databaseStatus": "SQL247 R2 ONLINE / SQL247_GATE_PASSED confirmed by user",
-  "databaseRequiredForThisRelease": [],
-  "checks": {
-    "pages_workflow_cache118_version_gate": "PASS",
-    "pages_builder_cache118": "PASS",
-    "core_js_syntax": "PASS",
-    "web_android_sync": "PASS",
-    "android_static_validation": "PASS",
-    "equipment_location_authority": "PASS inherited CACHE117",
-    "force_refresh_serialization": "PASS inherited CACHE117",
-    "sql247_upgrade_value_chain": "PRODUCTION GATE PASSED"
-  },
-  "androidVersionCode": 2001418,
-  "androidVersionName": "2.1.1-cache118",
+  "release": "V2.1.1 CACHE119",
+  "buildId": "v2-1-1-cache119-forgelistenerfix-equipmentstate-admin27-sql247",
+  "cacheEpoch": 119,
+  "database": "SQL247 R2 ONLINE",
   "nextSql": 248,
-  "note": "CACHE118 is a client/Pages build pipeline fix; no SQL248 is created or required."
+  "gm": "ADMIN9 R27",
+  "pagesMethod": "default-github-pages-artifact-r3",
+  "checks": {
+    "webAndroidSync": true,
+    "coreJsSyntax": true,
+    "pagesBuilderCache119": true,
+    "forgeListenerLifecycleFix": true,
+    "liveStateItemActions": true,
+    "androidStaticValidation": true
+  }
 }
