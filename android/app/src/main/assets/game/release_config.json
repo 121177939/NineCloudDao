@@ -1,14 +1,11 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE113",
-  "buildId": "v2-1-1-cache113-forgecost-combatguard-admin25-sql243",
-  "cacheEpoch": 113,
+  "releaseLabel": "V2.1.1 CACHE114",
+  "buildId": "v2-1-1-cache114-equipped-detail-admin25-sql244",
+  "cacheEpoch": 114,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-243",
-  "migrationSql": [
-    242,
-    243
-  ],
+  "sqlRevision": "211-221 + 229-244",
+  "migrationSql": [],
   "features": [
     "WORLD_BOSS_TEAM_PVE_BWBOSS01",
     "WORLD_BOSS_RARE_REWARD_FIRST3_WINS",
@@ -59,13 +56,15 @@
     "FORGE_THREE_MATERIAL_SPIRIT_STONE_COST",
     "ADMIN9_R25_FORGE_COST_CONFIG",
     "SQL243_COMBAT_INTEGRATION_GUARD",
-    "BATTLE_LOG_MISS_RENDER"
+    "BATTLE_LOG_MISS_RENDER",
+    "CLIENT_VERSION_211_CACHE114",
+    "EQUIPPED_DETAIL_HIDE_FORGE_ENTRY"
   ],
   "gmEntry": "九霄问道_ADMIN9_R25_V2.1.1_手机直用版.html",
-  "deploymentAllowed": false,
+  "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "FORGE_COST_COMBAT_GUARD_ADMIN25",
-  "databaseRelease": "生产SQL241已确认；SQL242 -> SQL243待执行",
+  "clientHotfix": "EQUIPPED_DETAIL_HIDE_FORGE_ENTRY",
+  "databaseRelease": "生产已确认 SQL244 门禁通过；CACHE114 为纯客户端界面更新，无新增数据库迁移。",
   "notes": [
     "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
@@ -88,16 +87,19 @@
     "CACHE113修复淬炼弹窗遮挡全局提示造成的“点击护道无反应”体验；弹窗内增加明确状态，toast层级提升。",
     "兵魄道玉、护道灵玉、百炼玄铁默认每次额外消耗20万灵石，ADMIN9 R25可分别调整；SQL243服务端原子扣除材料、锁玉与灵石。",
     "CACHE113 R2恢复并强化背包专用洗炼规则：穿戴中的装备禁止兵魄/护道属性洗炼和百炼等级重炼，前端禁用且SQL243服务端再次拒绝。",
-    "当前资料包不包含SQL233天命榜/秘境存储过程原始函数体；SQL243因此以生产数据库真实pg_get_functiondef做发布门禁，不凭客户端文案假定已接入。"
+    "当前资料包不包含SQL233天命榜/秘境存储过程原始函数体；SQL243因此以生产数据库真实pg_get_functiondef做发布门禁，不凭客户端文案假定已接入。",
+    "SQL243已由用户确认最终门禁通过；SQL244 R2已由用户确认SQL244_GATE_PASSED，修复天命榜战斗核心JSON参数上限与double precision/numeric运行时兼容。",
+    "CACHE114仅精简穿戴装备详情操作：穿戴状态不显示孔位洗炼按钮；必须先卸下回背包后，才显示孔位/升品/破境入口。"
   ],
   "gmVersion": "ADMIN9 R25",
-  "nextSqlNumber": 244,
+  "nextSqlNumber": 245,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "candidate_sql242_sql243_pending",
-  "runtimeDatabaseGate": "SQL242_THEN_SQL243_PENDING_USER_EXECUTION",
+  "releaseStage": "ready_client_only_sql244_passed",
+  "runtimeDatabaseGate": "SQL244_PASSED_NO_NEW_SQL_FOR_CACHE114",
   "releaseNotes": [
-    "CACHE113：修复护道/兵魄/百炼孔位操作反馈，保持穿戴装备禁止洗炼；新增三种材料的GM可调灵石成本。",
-    "战斗日志支持miss显示；SQL243在生产库核验天命榜与秘境是否真正使用命中/闪避与V2.1装备属性，未证明则拒绝门禁通过。",
-    "执行顺序固定：SQL242升级 -> SQL242门禁 -> 部署CACHE113/ADMIN9 R25 -> SQL243升级 -> SQL243门禁。发布链仍沿用已验证Pages R3 / Android Release R6。"
+    "CACHE114：穿戴中的装备点击详情时只保留“卸下”，不再显示“孔位洗炼”入口；背包装备仍显示“孔位 / 升品 / 破境”。",
+    "穿戴装备禁止洗炼的SQL243服务端BACKPACK_ONLY规则保持不变；SQL244战斗运行时热修保持不变。",
+    "CACHE114无新增SQL；生产数据库继续以SQL244_GATE_PASSED为当前基线，下一迁移编号SQL245。",
+    "Pages R3 / Android Release R6 发布链、包名与正式签名方式保持锁定不变。"
   ]
 }

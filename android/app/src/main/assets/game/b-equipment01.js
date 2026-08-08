@@ -2,7 +2,7 @@
   'use strict';
 
   const MODULE = 'B-EQUIPMENT01';
-  const VERSION = '2.1.1-cache113-forge-cost-combatguard';
+  const VERSION = '2.1.1-cache114-equipped-detail';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
@@ -509,7 +509,7 @@
     if (inBag) actions.push('<button class="ghost-btn" data-eq-action="cave">放入洞府</button>');
     if (inCave) actions.push('<button class="ghost-btn" data-eq-action="backpack">取回背包</button>');
     if (inBag || inCave) actions.push(`<button class="ghost-btn" data-eq-action="lock">${item.is_locked ? '解锁' : '锁定'}</button>`);
-    if (inBag || equipped) actions.push(`<button class="primary-btn" data-eq-action="forge">${equipped ? '孔位洗炼' : '孔位 / 升品 / 破境'}</button>`);
+    if (inBag) actions.push('<button class="primary-btn" data-eq-action="forge">孔位 / 升品 / 破境</button>');
     if (inBag) actions.push(`<button class="danger-btn" data-eq-action="decompose" ${item.is_locked ? 'disabled' : ''}>分解得器源×${Number(item.decompose_essence)}</button>`);
 
     let socketRows = Array.from({ length: Math.min(8, Math.max(0, Number(item.opened_sockets ?? item.total_socket_capacity ?? item.socket_capacity ?? 0))) }, (_, i) => ({ index: i + 1, symbol: ['①','②','③','④','⑤','⑥','⑦','⑧'][i] || String(i + 1), empty: true, level: null, text: '空' }));

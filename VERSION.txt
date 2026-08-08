@@ -1,14 +1,14 @@
-V2.1.1 CACHE113
-v2-1-1-cache113-forgecost-combatguard-admin25-sql243
+V2.1.1 CACHE114
+v2-1-1-cache114-equipped-detail-admin25-sql244
 V2.1.1
-CACHE113
-DATABASE TARGET SQL242 -> SQL243（生产当前已确认SQL241）
-ANDROID 2001413 2.1.1-cache113
-NEXT_SQL 244（SQL242、SQL243需按顺序执行）
+CACHE114
+DATABASE SQL244 已上线并门禁通过（CACHE114无新增SQL）
+ANDROID 2001414 2.1.1-cache114
+NEXT_SQL 245
 ADMIN9 R25
 
 PAGES_DEPLOY default-github-pages-artifact-r3
 DEPLOYMENT_LOCK V2.0.11_VERIFIED_PAGES_R3_ANDROID_RELEASE_R6_DO_NOT_CHANGE
 
-CACHE113 R2 修复孔位洗炼静默无反馈；兵魄道玉/护道灵玉/百炼玄铁默认各额外20万灵石且GM可调；穿戴装备禁止洗炼，必须卸下回背包；SQL243门禁核验天命榜/秘境命中闪避与V2.1装备接入。
-SQL242_THEN_SQL243_PENDING_USER_EXECUTION
+CACHE114：穿戴装备点击详情时不再显示“孔位洗炼”按钮，只保留“卸下”；卸下回背包后仍可进入“孔位 / 升品 / 破境”。
+SQL244_GATE_PASSED_CONFIRMED

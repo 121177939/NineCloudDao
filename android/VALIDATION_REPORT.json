@@ -3,11 +3,11 @@
   "errors": [],
   "warnings": [],
   "gameFileCount": 31,
-  "gameBytes": 1362029,
+  "gameBytes": 1362470,
+  "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.1.1 CACHE113",
-  "gameBuildId": "v2-1-1-cache113-forgecost-combatguard-admin25-sql243",
-  "databaseBaseline": "production SQL241 passed; target SQL242 then SQL243",
-  "androidVersionCode": 2001413,
-  "packageRevision": "R2-backpack-only"
+  "gameBaseline": "V2.1.1 CACHE114",
+  "gameBuildId": "v2-1-1-cache114-equipped-detail-admin25-sql244",
+  "databaseBaseline": "production SQL244 passed; CACHE114 no new SQL",
+  "androidVersionCode": 2001414
 }
