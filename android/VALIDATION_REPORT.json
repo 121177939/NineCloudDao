@@ -3,11 +3,11 @@
   "errors": [],
   "warnings": [],
   "gameFileCount": 31,
-  "gameBytes": 1362470,
+  "gameBytes": 1364581,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.1.1 CACHE114",
-  "gameBuildId": "v2-1-1-cache114-equipped-detail-admin25-sql244",
-  "databaseBaseline": "production SQL244 passed; CACHE114 no new SQL",
-  "androidVersionCode": 2001414
+  "gameBaseline": "V2.1.1 CACHE115",
+  "gameBuildId": "v2-1-1-cache115-newserver-admin26r2-sql245",
+  "databaseBaseline": "production SQL244 passed; SQL245 R2 required before CACHE115",
+  "androidVersionCode": 2001415
 }

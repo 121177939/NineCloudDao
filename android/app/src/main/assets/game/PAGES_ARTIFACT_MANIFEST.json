@@ -1,6 +1,6 @@
 {
-  "version": "V2.1.1 CACHE114",
-  "clientBuild": "v2-1-1-cache114-equipped-detail-admin25-sql244",
+  "version": "V2.1.1 CACHE115",
+  "clientBuild": "v2-1-1-cache115-newserver-admin26r2-sql245",
   "files": [
     {
       "path": ".nojekyll",
@@ -9,23 +9,23 @@
     },
     {
       "path": "404.html",
-      "size": 3581,
-      "sha256": "f256b6b3ca4751e86d5a8f9c27c596da62eb1bb9f9fdd5c6a61398976f650173"
+      "size": 3391,
+      "sha256": "30ba8ff15206ec2588fc32654fee0cf09a548d5bcc1e432a82b9c2ec0af6ba9d"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 10167,
-      "sha256": "651938cba063732afd5e0aa5750a533a751c0769909a37c9fd5381f1388785b6"
+      "size": 11263,
+      "sha256": "90a6cc0952418931834b4972a3200f4e4e777da927ad14c6e660317876fce49c"
     },
     {
       "path": "VERSION.txt",
-      "size": 656,
-      "sha256": "35ba226d7994514567f620cb5e944b523cee20974ad56f0753101fefc6200a1b"
+      "size": 666,
+      "sha256": "b9c85a9577f0791087683826305de8c197455a678c9fe206b83a7d50106b4487"
     },
     {
       "path": "app.js",
-      "size": 501715,
-      "sha256": "ec0736ddeca0bd980964f6fd74ddf18e3eddf4dfb407f78b00036744518e6f4b"
+      "size": 501883,
+      "sha256": "759975d74aed0e8917cc444026e810b92b9d868bd22fa5408bb676c8f25fb7e1"
     },
     {
       "path": "assets/icon-192.png",
@@ -50,7 +50,7 @@
     {
       "path": "b-equipment-v210.js",
       "size": 19973,
-      "sha256": "f1edc4f927a0fd8775b212a5491dfc4c0068beda034ec7835c6ad425de6bab36"
+      "sha256": "f97026fbe77c5eb0e091adba795d792429b7e696e4032b2e6b7b634768edd625"
     },
     {
       "path": "b-equipment01.css",
@@ -59,8 +59,8 @@
     },
     {
       "path": "b-equipment01.js",
-      "size": 50583,
-      "sha256": "333d281afe2470a9f41da5f1ee51b6ac98a3213468013dbfdde5a01fcf84c4ed"
+      "size": 50531,
+      "sha256": "9585976e5339cb88c39eeec84425a0669f770db64af203feb6b809166ed1da2c"
     },
     {
       "path": "b-paigow01.css",
@@ -124,18 +124,18 @@
     },
     {
       "path": "config.js",
-      "size": 577,
-      "sha256": "6575434d45888e4a24578cb2c0b0c707383ade3e81cf6f2398056564c474f115"
+      "size": 552,
+      "sha256": "82a25f79f887b7a1feda52ad7bcd105995adca6c99eb20eaaf22f00776dca464"
     },
     {
       "path": "index.html",
-      "size": 3581,
-      "sha256": "f256b6b3ca4751e86d5a8f9c27c596da62eb1bb9f9fdd5c6a61398976f650173"
+      "size": 3391,
+      "sha256": "30ba8ff15206ec2588fc32654fee0cf09a548d5bcc1e432a82b9c2ec0af6ba9d"
     },
     {
       "path": "manifest.webmanifest",
-      "size": 576,
-      "sha256": "8599faa861abf957af01cb70aea1ca32960506c3b830cebafb1e78042919c6a8"
+      "size": 566,
+      "sha256": "8d61299c589206d01690f17022d8d54053bb5d69f7e4d4eac8b34ea72ca375fa"
     },
     {
       "path": "paigow-app.css",
@@ -154,8 +154,8 @@
     },
     {
       "path": "release_config.json",
-      "size": 6724,
-      "sha256": "f6959411cf009a14eeca75b077d49e945ebd83371b69865c34df65cf66050829"
+      "size": 8259,
+      "sha256": "e7390220432ede5bc4e7d532d1c6eda1aa420506978c2c98542e753c4e5ae721"
     },
     {
       "path": "styles.css",
@@ -164,8 +164,8 @@
     },
     {
       "path": "sw.js",
-      "size": 4690,
-      "sha256": "8d88c4e1ac2ab87f5b558b00de03c56f27e3a099e7953380883dc130d3c9949c"
+      "size": 4430,
+      "sha256": "aa799e9e5ae7fd615a8f62664def48aa0f0ad8661fd05cabaa395d5847fcb775"
     },
     {
       "path": "update-guard.js",

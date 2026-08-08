@@ -1992,10 +1992,10 @@
         <article class="lore-panel">
           <span class="eyebrow">仙历 ${escapeHtml(currentWorldYear)} 年 · 现实1日=仙历12年</span>
           <h2>凡尘初生</h2>
-          <p>九霄界灵潮渐起，山野之间异象频现。你生于凡尘，尚不知自己的灵根与命格。今日，仙门测灵石第一次为你亮起。</p>
+          <p>九霄界灵潮渐起，山野之间异象频现。你生于凡尘，天生五行杂灵根；命格与本命五行尚待天道判定。今日，仙门测灵石第一次为你亮起。</p>
           <div class="lore-list">
             <div class="lore-item"><b>一</b><span>每个账号在同一世界只能拥有一位在世角色。</span></div>
-            <div class="lore-item"><b>二</b><span>灵根与命格由天道在服务器端随机判定，无法篡改。</span></div>
+            <div class="lore-item"><b>二</b><span>初生主灵根统一为五行杂灵根；命格与本命五行由天道在服务器端随机判定。</span></div>
             <div class="lore-item"><b>三</b><span>角色一生会被写入命书，未来可留下道统与轮回传承。</span></div>
           </div>
         </article>
@@ -2106,7 +2106,7 @@
 
         <section class="reincarnation-panel panel">
           <div class="panel-title"><h3>续接道统</h3><span class="badge">三择其一</span></div>
-          <p class="reincarnation-intro">转世会生成新的灵根与命格，并继承同一道统和世代编号。请选择一项前世遗泽。</p>
+          <p class="reincarnation-intro">转世会以五行杂灵根重新入世，命格与本命五行重新随机，并继承同一道统和世代编号。请选择一项前世遗泽。</p>
           <form id="reincarnationForm" class="form-stack">
             <div class="legacy-choice-grid">
               <label class="legacy-choice">
@@ -2161,7 +2161,7 @@
             <section class="modal" role="dialog" aria-modal="true">
               <div class="modal-seal">轮</div>
               <h2>${escapeHtml(name)}，第 ${escapeHtml(result?.generation_number || generation + 1)} 世已开</h2>
-              <p>前世命书归卷，新生灵光落入九霄。道统保留，灵根与命格将由天道重新判定。</p>
+              <p>前世命书归卷，新生灵光落入九霄。道统保留；主灵根重置为五行杂灵根，命格与本命五行由天道重新判定。</p>
               <div class="birth-result">
                 <div><span>道统世代</span><strong>第 ${escapeHtml(result?.generation_number || generation + 1)} 世</strong></div>
                 <div><span>继承遗泽</span><strong>${escapeHtml(choiceName)}</strong></div>
@@ -4174,7 +4174,7 @@
           <div class="modal-seal">灵</div>
           <h2 id="spiritWashingTitle">服用洗灵丹</h2>
           <p>当前灵根：<strong>${escapeHtml(currentRoot.name || '未知灵根')}</strong></p>
-          <div class="result-detail">将按创建角色时完全相同的概率重新抽取灵根。结果可能更好、相同或更差，且会直接替换当前灵根。</div>
+          <div class="result-detail">将按洗灵规则重新抽取灵根。结果可能更好、相同或更差，且会直接替换当前灵根；初生五行杂灵根规则不限制后续洗灵。</div>
           <button id="confirmSpiritWashingBtn" class="primary-btn full" type="button">确认重塑灵根</button>
         </section>
       </div>`;

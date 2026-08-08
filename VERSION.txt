@@ -1,14 +1,15 @@
-V2.1.1 CACHE114
-v2-1-1-cache114-equipped-detail-admin25-sql244
+V2.1.1 CACHE115
+v2-1-1-cache115-newserver-admin26r2-sql245
 V2.1.1
-CACHE114
-DATABASE SQL244 已上线并门禁通过（CACHE114无新增SQL）
-ANDROID 2001414 2.1.1-cache114
-NEXT_SQL 245
-ADMIN9 R25
+CACHE115
+DATABASE SQL244 已上线并门禁通过；SQL245 R2 新服规则待执行
+ANDROID 2001415 2.1.1-cache115
+NEXT_SQL 245（SQL245成功后为246）
+ADMIN9 R26 R2
 
 PAGES_DEPLOY default-github-pages-artifact-r3
 DEPLOYMENT_LOCK V2.0.11_VERIFIED_PAGES_R3_ANDROID_RELEASE_R6_DO_NOT_CHANGE
 
-CACHE114：穿戴装备点击详情时不再显示“孔位洗炼”按钮，只保留“卸下”；卸下回背包后仍可进入“孔位 / 升品 / 破境”。
-SQL244_GATE_PASSED_CONFIRMED
+CACHE115：创建/转世页面明确初生主灵根统一五行杂灵根；命格、本命五行随机；洗灵仍按既有随机规则。
+SQL245 R2：新服42阶段累计修为曲线 + 初生五行杂灵根服务端强制 + ADMIN9永久删档重开。
+SQL245_GATE_PASSED_REQUIRED_BEFORE_CACHE115_PRODUCTION

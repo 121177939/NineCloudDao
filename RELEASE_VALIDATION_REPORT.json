@@ -1,45 +1,21 @@
 {
-  "release": "V2.1.1 CACHE113",
-  "buildId": "v2-1-1-cache113-forgecost-combatguard-admin25-sql243",
-  "gm": "ADMIN9 R25",
-  "sql": 243,
-  "nextSql": 244,
-  "productionDatabaseObserved": "SQL241_GATE_PASSED（来自接管资料；本环境未连接生产库）",
-  "pendingDatabaseOrder": [
-    242,
-    243
-  ],
-  "androidVersionCode": 2001413,
-  "androidVersionName": "2.1.1-cache113",
-  "validation": {
-    "pagesBuilder": "PASS_CACHE113_34_FILES",
-    "javascriptSyntax": "PASS_APP_EQUIPMENT_SECRET_REALM",
-    "webAndroidSharedAssetSync": "PASS_28_SHARED_FILES_PLUS_ANDROID_INDEX_VARIANT",
-    "androidStaticValidator": "PASS_NO_WARNINGS",
-    "gmRpcCompatibility": "PASS_61_OLD_RPC_LITERALS_RETAINED_PLUS_1_NEW_SQL243_VERIFY_RPC",
-    "gmInlineJavascriptSyntax": "PASS",
-    "sql243StaticReview": "PASS_NO_LIVE_EXECUTION",
-    "pagesWorkflowMethod": "UNCHANGED_R3",
-    "androidReleaseMethod": "UNCHANGED_R6",
-    "productionSqlExecution": "NOT_EXECUTED_NO_PRODUCTION_DB_CONNECTION",
-    "backpackOnlyForgeGuard": "PASS_UI_AND_SQL243_STATIC_GUARD"
-  },
-  "fixes": [
-    "forge modal inline working/success/error feedback and toast above modal",
-    "equipped gear reroll blocked in UI and SQL243; backpack-only rule preserved",
-    "weapon/armor/bailian extra spirit-stone costs default 200000 and GM configurable separately",
-    "material/lock-jade/spirit-stone debit stays in one transactional RPC",
-    "battle playback renders miss/evasion when server action exposes hit state",
-    "secret realm opponent snapshot renders hit/evasion when returned",
-    "SQL243 production introspection gate verifies battle hit/evasion, V2.1 equipment and secret-realm battle-core wiring"
-  ],
-  "importantLimitation": "上传资料没有包含SQL233天命榜/秘境存储过程的原始函数体；因此无法在离线资料中安全重写未知生产战斗函数。SQL243使用pg_get_functiondef在生产库做硬门禁，未证明接入时不会把release_control推进CACHE113。",
-  "databaseExecutionOrder": [
-    "SQL242 upgrade",
-    "SQL242 gate -> SQL242_GATE_PASSED",
-    "deploy CACHE113 + ADMIN9 R25",
-    "SQL243 upgrade",
-    "SQL243 gate -> SQL243_GATE_PASSED"
-  ],
-  "packageRevision": "R2"
+  "ok": true,
+  "version": "V2.1.1 CACHE115",
+  "buildId": "v2-1-1-cache115-newserver-admin26r2-sql245",
+  "databasePreDeploy": "SQL244_GATE_PASSED",
+  "requiredMigration": "SQL245 R2",
+  "requiredGate": "SQL245_GATE_PASSED",
+  "gm": "ADMIN9 R26 R2",
+  "checks": {
+    "version_label": true,
+    "build_id": true,
+    "newborn_fixed_copy": true,
+    "fate_element_random_copy": true,
+    "washing_not_locked": true,
+    "sql245_in_repo": true,
+    "pages_r3_locked": true,
+    "android_r6_locked": true,
+    "android_2001415": true,
+    "android_cache115": true
+  }
 }

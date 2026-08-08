@@ -1,11 +1,13 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE114",
-  "buildId": "v2-1-1-cache114-equipped-detail-admin25-sql244",
-  "cacheEpoch": 114,
+  "releaseLabel": "V2.1.1 CACHE115",
+  "buildId": "v2-1-1-cache115-newserver-admin26r2-sql245",
+  "cacheEpoch": 115,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-244",
-  "migrationSql": [],
+  "sqlRevision": "211-221 + 229-244 + SQL245 R2 REQUIRED",
+  "migrationSql": [
+    245
+  ],
   "features": [
     "WORLD_BOSS_TEAM_PVE_BWBOSS01",
     "WORLD_BOSS_RARE_REWARD_FIRST3_WINS",
@@ -58,13 +60,17 @@
     "SQL243_COMBAT_INTEGRATION_GUARD",
     "BATTLE_LOG_MISS_RENDER",
     "CLIENT_VERSION_211_CACHE114",
-    "EQUIPPED_DETAIL_HIDE_FORGE_ENTRY"
+    "EQUIPPED_DETAIL_HIDE_FORGE_ENTRY",
+    "CLIENT_VERSION_211_CACHE115",
+    "NEW_SERVER_REALM_CURVE_V1_SQL245",
+    "NEWBORN_FIVE_ELEMENT_MIXED_ROOT_DB_ENFORCED",
+    "ADMIN9_R26_R2_PERMANENT_PLAYER_RESET_NO_BACKUP"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R25_V2.1.1_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R26_R2_V2.1.1_CACHE115_SQL245_新服删档重开_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "EQUIPPED_DETAIL_HIDE_FORGE_ENTRY",
-  "databaseRelease": "生产已确认 SQL244 门禁通过；CACHE114 为纯客户端界面更新，无新增数据库迁移。",
+  "clientHotfix": "NEW_SERVER_RESET_AND_NEWBORN_RULES",
+  "databaseRelease": "生产当前SQL244已通过；CACHE115要求先执行SQL245 R2：新服累计修为曲线、初生五行杂灵根、ADMIN9删档重开。",
   "notes": [
     "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
@@ -89,17 +95,22 @@
     "CACHE113 R2恢复并强化背包专用洗炼规则：穿戴中的装备禁止兵魄/护道属性洗炼和百炼等级重炼，前端禁用且SQL243服务端再次拒绝。",
     "当前资料包不包含SQL233天命榜/秘境存储过程原始函数体；SQL243因此以生产数据库真实pg_get_functiondef做发布门禁，不凭客户端文案假定已接入。",
     "SQL243已由用户确认最终门禁通过；SQL244 R2已由用户确认SQL244_GATE_PASSED，修复天命榜战斗核心JSON参数上限与double precision/numeric运行时兼容。",
-    "CACHE114仅精简穿戴装备详情操作：穿戴状态不显示孔位洗炼按钮；必须先卸下回背包后，才显示孔位/升品/破境入口。"
+    "CACHE114仅精简穿戴装备详情操作：穿戴状态不显示孔位洗炼按钮；必须先卸下回背包后，才显示孔位/升品/破境入口。",
+    "SQL245 R2写入新服42阶段累计修为门槛；本轮计划删档开服，因此不做旧角色境界兼容。",
+    "SQL245 R2服务端强制新创建/新轮回角色初生主灵根为五行杂灵根；命格与本命五行继续随机；后续洗灵不受初生规则限制。",
+    "ADMIN9 R26 R2系统页新增永久删档重开：清空玩家游戏档案及相关历史，不创建玩家备份；auth登录账号、profiles、GM账号、系统/内容配置、版本与SQL状态保留。",
+    "CACHE115同步修正创建角色、转世、洗灵页面说明，使客户端文案与SQL245新服规则一致。"
   ],
-  "gmVersion": "ADMIN9 R25",
+  "gmVersion": "ADMIN9 R26 R2",
   "nextSqlNumber": 245,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "ready_client_only_sql244_passed",
-  "runtimeDatabaseGate": "SQL244_PASSED_NO_NEW_SQL_FOR_CACHE114",
+  "releaseStage": "requires_sql245_r2_then_cache115_deploy",
+  "runtimeDatabaseGate": "SQL245_GATE_PASSED_REQUIRED_FOR_CACHE115",
   "releaseNotes": [
-    "CACHE114：穿戴中的装备点击详情时只保留“卸下”，不再显示“孔位洗炼”入口；背包装备仍显示“孔位 / 升品 / 破境”。",
-    "穿戴装备禁止洗炼的SQL243服务端BACKPACK_ONLY规则保持不变；SQL244战斗运行时热修保持不变。",
-    "CACHE114无新增SQL；生产数据库继续以SQL244_GATE_PASSED为当前基线，下一迁移编号SQL245。",
+    "CACHE115：新角色/新轮回的初生主灵根统一五行杂灵根；命格与本命五行仍随机；后续洗灵继续按洗灵规则随机。",
+    "SQL245 R2：启用新服42阶段累计修为曲线，并提供ADMIN9 R26 R2永久删档重开RPC；玩家旧档不建立备份。",
+    "ADMIN9 R26 R2：游戏页可一键填入推荐境界曲线；系统页新增删档预览、双确认永久删除与无玩家身份信息的重置审计。",
+    "本包部署前必须先看到SQL245_GATE_PASSED；SQL245成功后下一迁移编号为SQL246。",
     "Pages R3 / Android Release R6 发布链、包名与正式签名方式保持锁定不变。"
   ]
 }
