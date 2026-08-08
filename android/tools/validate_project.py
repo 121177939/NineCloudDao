@@ -102,9 +102,9 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001415" in gradle_props, "Android版本号不是CACHE115基线")
-    check('APP_VERSION_NAME=2.1.1-cache115' in gradle_props, "Android版本名不是CACHE115基线")
-    expected_build = "v2-1-1-cache115-newserver-admin26r2-sql245"
+    check("APP_VERSION_CODE=2001416" in gradle_props, "Android版本号不是CACHE116基线")
+    check('APP_VERSION_NAME=2.1.1-cache116' in gradle_props, "Android版本名不是CACHE116基线")
+    expected_build = "v2-1-1-cache116-socketrerollfix-admin26r2-sql246"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
@@ -128,10 +128,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.1.1 CACHE115",
+        "gameBaseline": "V2.1.1 CACHE116",
         "gameBuildId": expected_build,
-        "databaseBaseline": "production SQL244 passed; SQL245 R2 required before CACHE115",
-        "androidVersionCode": 2001415,
+        "databaseBaseline": "production SQL244 confirmed; CACHE116 requires SQL245 R2 + SQL246",
+        "androidVersionCode": 2001416,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

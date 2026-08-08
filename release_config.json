@@ -1,12 +1,13 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE115",
-  "buildId": "v2-1-1-cache115-newserver-admin26r2-sql245",
-  "cacheEpoch": 115,
+  "releaseLabel": "V2.1.1 CACHE116",
+  "buildId": "v2-1-1-cache116-socketrerollfix-admin26r2-sql246",
+  "cacheEpoch": 116,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-244 + SQL245 R2 REQUIRED",
+  "sqlRevision": "211-221 + 229-244 + SQL245 R2 + SQL246 REQUIRED",
   "migrationSql": [
-    245
+    245,
+    246
   ],
   "features": [
     "WORLD_BOSS_TEAM_PVE_BWBOSS01",
@@ -64,13 +65,16 @@
     "CLIENT_VERSION_211_CACHE115",
     "NEW_SERVER_REALM_CURVE_V1_SQL245",
     "NEWBORN_FIVE_ELEMENT_MIXED_ROOT_DB_ENFORCED",
-    "ADMIN9_R26_R2_PERMANENT_PLAYER_RESET_NO_BACKUP"
+    "ADMIN9_R26_R2_PERMANENT_PLAYER_RESET_NO_BACKUP",
+    "CLIENT_VERSION_211_CACHE116",
+    "EQUIPMENT_SOCKET_ATTRIBUTE_AND_LEVEL_REROLL_V246",
+    "EQUIPMENT_PAID_REROLL_NOOP_ROLLBACK_SQL246"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R26_R2_V2.1.1_CACHE115_SQL245_新服删档重开_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R26_R2_V2.1.1_CACHE116_SQL245_SQL246_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "NEW_SERVER_RESET_AND_NEWBORN_RULES",
-  "databaseRelease": "生产当前SQL244已通过；CACHE115要求先执行SQL245 R2：新服累计修为曲线、初生五行杂灵根、ADMIN9删档重开。",
+  "clientHotfix": "SOCKET_ATTRIBUTE_LEVEL_REROLL_AND_PAID_NOOP_ROLLBACK",
+  "databaseRelease": "生产已确认SQL244；CACHE116要求先完成SQL245 R2，再执行SQL246装备孔位洗炼热修。",
   "notes": [
     "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
@@ -102,15 +106,15 @@
     "CACHE115同步修正创建角色、转世、洗灵页面说明，使客户端文案与SQL245新服规则一致。"
   ],
   "gmVersion": "ADMIN9 R26 R2",
-  "nextSqlNumber": 245,
+  "nextSqlNumber": 247,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "requires_sql245_r2_then_cache115_deploy",
-  "runtimeDatabaseGate": "SQL245_GATE_PASSED_REQUIRED_FOR_CACHE115",
+  "releaseStage": "requires_sql245_r2_then_sql246_then_cache116_deploy",
+  "runtimeDatabaseGate": "SQL245_GATE_PASSED_AND_SQL246_GATE_PASSED_REQUIRED_FOR_CACHE116",
   "releaseNotes": [
-    "CACHE115：新角色/新轮回的初生主灵根统一五行杂灵根；命格与本命五行仍随机；后续洗灵继续按洗灵规则随机。",
-    "SQL245 R2：启用新服42阶段累计修为曲线，并提供ADMIN9 R26 R2永久删档重开RPC；玩家旧档不建立备份。",
-    "ADMIN9 R26 R2：游戏页可一键填入推荐境界曲线；系统页新增删档预览、双确认永久删除与无玩家身份信息的重置审计。",
-    "本包部署前必须先看到SQL245_GATE_PASSED；SQL245成功后下一迁移编号为SQL246。",
-    "Pages R3 / Android Release R6 发布链、包名与正式签名方式保持锁定不变。"
+    "CACHE116：兵魄/护道对未锁孔同时重新随机属性类型与等级；锁孔双保护。",
+    "SQL246：百炼只随机未锁已有属性孔等级；有其它可用等级时排除原等级，避免Lv10付费后原样Lv10。",
+    "SQL246：兵魄/护道优先排除原属性组合；若整次无实际变化则事务回滚，材料、锁玉、灵石均不扣。",
+    "SQL245 R2仍是CACHE116前置：新服境界曲线、初生五行杂灵根与ADMIN9永久删档重开。",
+    "Pages R3 / Android Release R6 发布链、包名与签名方式保持锁定不变。"
   ]
 }

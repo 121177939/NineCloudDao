@@ -1,13 +1,13 @@
 {
   "project": "JiuxiaoWendaoAndroid",
-  "version": "V2.1.1 CACHE115",
-  "packageRevision": "R26R2-cache115-newserver",
-  "versionCode": 2001415,
-  "versionName": "2.1.1-cache115",
-  "gameBuildId": "v2-1-1-cache115-newserver-admin26r2-sql245",
-  "releaseTag": "v2.1.1-cache115",
+  "version": "V2.1.1 CACHE116",
+  "packageRevision": "R26R2-cache116-newserver",
+  "versionCode": 2001416,
+  "versionName": "2.1.1-cache116",
+  "gameBuildId": "v2-1-1-cache116-socketrerollfix-admin26r2-sql246",
+  "releaseTag": "v2.1.1-cache116",
   "releaseWorkflowBaseline": "LOCKED: V2.0.11 user-verified; R6 APK chain + R3 Pages strategy; unchanged",
-  "databaseTarget": "Production SQL244 passed; execute SQL245 R2 and require SQL245_GATE_PASSED before CACHE115 production",
+  "databaseTarget": "Production SQL244 passed; execute SQL245 R2 and require SQL245_GATE_PASSED before CACHE116 production",
   "forgeLocationPolicy": "BACKPACK_ONLY",
   "files": [
     {

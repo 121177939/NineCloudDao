@@ -5,8 +5,8 @@ plugins {
 }
 
 val appId = providers.gradleProperty("APP_ID").orElse("com.jiuxiaowendao.game").get()
-val appVersionCode = providers.gradleProperty("APP_VERSION_CODE").orElse("2001415").get().toInt()
-val appVersionName = providers.gradleProperty("APP_VERSION_NAME").orElse("2.1.1-cache115").get()
+val appVersionCode = providers.gradleProperty("APP_VERSION_CODE").orElse("2001416").get().toInt()
+val appVersionName = providers.gradleProperty("APP_VERSION_NAME").orElse("2.1.1-cache116").get()
 val githubOwner = providers.gradleProperty("GITHUB_OWNER").orElse("YOUR_GITHUB_NAME").get()
 val githubRepo = providers.gradleProperty("GITHUB_REPO").orElse("YOUR_REPOSITORY").get()
 
@@ -32,7 +32,7 @@ android {
         buildConfigField("String", "GITHUB_OWNER", quoted(githubOwner))
         buildConfigField("String", "GITHUB_REPO", quoted(githubRepo))
         buildConfigField("String", "SUPABASE_HOST", quoted("fyykkqkovccgmamsdeoq.supabase.co"))
-        buildConfigField("String", "GAME_BUILD_ID", quoted("v2-1-1-cache115-newserver-admin26r2-sql245"))
+        buildConfigField("String", "GAME_BUILD_ID", quoted("v2-1-1-cache116-socketrerollfix-admin26r2-sql246"))
     }
 
     signingConfigs {

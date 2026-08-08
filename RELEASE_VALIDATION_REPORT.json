@@ -1,21 +1,26 @@
 {
   "ok": true,
-  "version": "V2.1.1 CACHE115",
-  "buildId": "v2-1-1-cache115-newserver-admin26r2-sql245",
-  "databasePreDeploy": "SQL244_GATE_PASSED",
-  "requiredMigration": "SQL245 R2",
-  "requiredGate": "SQL245_GATE_PASSED",
+  "version": "V2.1.1 CACHE116",
+  "buildId": "v2-1-1-cache116-socketrerollfix-admin26r2-sql246",
+  "databaseConfirmedInConversation": "SQL244_GATE_PASSED",
+  "requiredMigrations": [
+    245,
+    246
+  ],
+  "requiredFinalGate": "SQL246_GATE_PASSED",
   "gm": "ADMIN9 R26 R2",
   "checks": {
-    "version_label": true,
-    "build_id": true,
-    "newborn_fixed_copy": true,
-    "fate_element_random_copy": true,
-    "washing_not_locked": true,
+    "weapon_guardian_attr_and_level_ui_copy": true,
+    "bailian_level_only_ui_copy": true,
+    "paid_noop_rollback_sql246": true,
+    "old_level_preserve_removed_from_sql246": true,
     "sql245_in_repo": true,
+    "sql246_in_repo": true,
+    "pages_build_pass": true,
+    "core_js_syntax_pass": true,
+    "android_static_pass": true,
+    "android_version_code_2001416": true,
     "pages_r3_locked": true,
-    "android_r6_locked": true,
-    "android_2001415": true,
-    "android_cache115": true
+    "android_r6_locked": true
   }
 }

@@ -1,15 +1,15 @@
-V2.1.1 CACHE115
-v2-1-1-cache115-newserver-admin26r2-sql245
+V2.1.1 CACHE116
+v2-1-1-cache116-socketrerollfix-admin26r2-sql246
 V2.1.1
-CACHE115
-DATABASE SQL244 已上线并门禁通过；SQL245 R2 新服规则待执行
-ANDROID 2001415 2.1.1-cache115
-NEXT_SQL 245（SQL245成功后为246）
+CACHE116
+DATABASE SQL244 已上线并门禁通过；CACHE116要求SQL245 R2 + SQL246
+ANDROID 2001416 2.1.1-cache116
+NEXT_SQL 247（SQL245与SQL246成功后）
 ADMIN9 R26 R2
 
 PAGES_DEPLOY default-github-pages-artifact-r3
 DEPLOYMENT_LOCK V2.0.11_VERIFIED_PAGES_R3_ANDROID_RELEASE_R6_DO_NOT_CHANGE
 
-CACHE115：创建/转世页面明确初生主灵根统一五行杂灵根；命格、本命五行随机；洗灵仍按既有随机规则。
-SQL245 R2：新服42阶段累计修为曲线 + 初生五行杂灵根服务端强制 + ADMIN9永久删档重开。
-SQL245_GATE_PASSED_REQUIRED_BEFORE_CACHE115_PRODUCTION
+CACHE116：兵魄/护道未锁孔同时随机属性+等级；百炼仅随机等级；付费洗炼整次无变化则服务端回滚全部消耗。
+SQL246：修复SQL239/SQL243“兵魄/护道保留旧等级”规则，并增加付费洗炼防空转。
+SQL245 R2：新服42阶段累计修为曲线 + 初生五行杂灵根 + ADMIN9永久删档重开，仍为CACHE116前置。
