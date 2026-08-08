@@ -27,15 +27,17 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.1.1 CACHE111：修复元神中央角色总属性弹窗样式回归；继续沿用CACHE110孔位洗炼、世界BOSS与服务端权威结算。
+  // V2.1.1 CACHE112 / PERF2：玩家可见刷新频率保持不变，只减少无意义的后台云端空转。
+  // 修炼250ms、机缘1秒倒计时、牌九Realtime、战斗、主动操作与恢复前台即时同步全部保留。
   const PERF_E80 = Object.freeze({
-    heartbeatMs: 30 * 1000,
-    cultivationSyncMs: 60 * 1000,
-    opportunityPollMs: 60 * 1000,
-    marketSyncMs: 30 * 1000,
-    worldEventsSyncMs: 60 * 1000,
-    divineNoticeSyncMs: 60 * 1000,
-    heavenBalanceSyncMs: 5 * 60 * 1000,
+    heartbeatMs: 5 * 60 * 1000,
+    cultivationSyncMs: 10 * 60 * 1000,
+    cultivationEntryStaleMs: 2 * 60 * 1000,
+    opportunityPollMs: 10 * 60 * 1000,
+    marketSyncMs: 90 * 1000,
+    worldEventsSyncMs: 5 * 60 * 1000,
+    divineNoticeSyncMs: 5 * 60 * 1000,
+    heavenBalanceSyncMs: 30 * 60 * 1000,
     onDemandStaleMs: 60 * 1000,
     rankingStaleMs: 5 * 60 * 1000,
     resumeCooldownMs: 15 * 1000
@@ -8088,6 +8090,8 @@
     const tasks = [];
     switch (tab) {
       case 'cultivation':
+        // 本地修炼数字持续实时推算；只有云端快照超过2分钟时才在进入页做权威同步。
+        if (force || staleForE80(state.cultivationSyncedAt, PERF_E80.cultivationEntryStaleMs)) tasks.push(syncCultivation(true));
         if (force || staleForE80(state.heavenBalanceFetchedAt, PERF_E80.heavenBalanceSyncMs)) tasks.push(refreshHeavenBalance(true));
         break;
       case 'primordial':
@@ -8289,31 +8293,43 @@
     state.opportunityCountdownTimer = setInterval(updateOpportunityCountdown, 1000);
     state.caveCountdownTimer = setInterval(updateCaveCountdown, 1000);
 
+    // 修炼仍每250ms本地显示；云端只在修炼页做10分钟安全同步。
+    // 登录、恢复前台、突破/领奖等关键操作仍会立即syncCultivation。
     state.cultivationSyncTimer = setInterval(() => {
-      if (!networkVisibleE80() || casinoPublicTableActiveV176()) return;
+      if (!networkVisibleE80() || casinoPublicTableActiveV176() || state.activeMobileTab !== 'cultivation') return;
+      if (!staleForE80(state.cultivationSyncedAt, PERF_E80.cultivationSyncMs)) return;
       syncCultivation(true);
     }, PERF_E80.cultivationSyncMs);
 
+    // 机缘正常由1秒倒计时根据next_available_at精准到点结算；10分钟仅作缺失deadline异常兜底。
     state.opportunityPollTimer = setInterval(() => {
       if (!networkVisibleE80() || casinoPublicTableActiveV176()) return;
+      const nextAt = state.opportunityStatus?.next_available_at ? new Date(state.opportunityStatus.next_available_at).getTime() : 0;
+      if (Number.isFinite(nextAt) && nextAt > 0) return;
+      if (!staleForE80(state.opportunityFetchedAt, PERF_E80.opportunityPollMs)) return;
       refreshOpportunity();
     }, PERF_E80.opportunityPollMs);
 
-    // 洞府、功法、红尘、宗门不再全局轮询；进入对应页面时按需刷新。
+    // 天道环境只在修炼页做30分钟兜底；进入页面仍按需读取。
     state.heavenBalanceSyncTimer = setInterval(() => {
-      if (!networkVisibleE80() || casinoPublicTableActiveV176()) return;
+      if (!networkVisibleE80() || casinoPublicTableActiveV176() || state.activeMobileTab !== 'cultivation') return;
+      if (!staleForE80(state.heavenBalanceFetchedAt, PERF_E80.heavenBalanceSyncMs)) return;
       refreshHeavenBalance(true);
     }, PERF_E80.heavenBalanceSyncMs);
 
+    // 普通市场可见页90秒兜底；购买/挂单/赌场主动操作后的即时刷新逻辑不变。
     state.marketSyncTimer = setInterval(() => {
       if (!networkVisibleE80() || state.activeMobileTab !== 'market' || state.marketView !== 'casino') return;
       const publicGame = state.casinoView === 'house' ? (state.casinoDrafts?.house?.game || 'spirit_dice') : '';
       if (publicGame === 'spirit_dice' || publicGame === 'fish_shrimp') return;
+      if (!staleForE80(state.marketSystemFetchedAt, PERF_E80.marketSyncMs)) return;
       refreshMarketSystem(true);
     }, PERF_E80.marketSyncMs);
 
+    // 世界事件停留页5分钟兜底；进入页时缓存超过1分钟仍由按需刷新立即读取。
     state.worldEventsSyncTimer = setInterval(() => {
       if (!networkVisibleE80() || state.activeMobileTab !== 'market' || casinoPublicTableActiveV176()) return;
+      if (!staleForE80(state.worldEventsFetchedAt, PERF_E80.worldEventsSyncMs)) return;
       refreshWorldEvents(true);
     }, PERF_E80.worldEventsSyncMs);
 
@@ -8440,6 +8456,8 @@
       bundle.worldEvents = worldEvents;
       bundle.treasureShop = treasureShop;
       state.cultivationStatus = cultivationStatus;
+      state.cultivationSyncedAt = Date.now();
+      state.opportunityFetchedAt = Date.now();
       state.breakthroughStatus = breakthroughStatus;
       state.fateStatus = fateStatus;
       state.opportunityStatus = opportunityStatus;

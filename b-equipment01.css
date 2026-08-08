@@ -200,7 +200,7 @@
   .equipment-grid-item-bequipment01 .equipment-icon-bequipment01{transform:translateY(-2px)}
 }
 
-/* V2.1.1 CACHE111 FORGE-UI2：装备详情继续使用单列孔位属性；淬炼页改为紧凑洗炼交互。 */
+/* V2.1.1 CACHE112 FORGE-UI2：装备详情继续使用单列孔位属性；淬炼页改为紧凑洗炼交互。 */
 .equipment-detail-sockets-bequipment01{display:grid;grid-template-columns:1fr;gap:0;margin:2px 0 4px;border-top:1px solid rgba(160,140,100,.16);border-bottom:1px solid rgba(160,140,100,.16)}
 .equipment-detail-socket-row-bequipment01{display:flex;align-items:center;gap:12px;min-height:42px;padding:8px 4px;border-bottom:1px dashed rgba(160,140,100,.18);color:#d8c69b}
 .equipment-detail-socket-row-bequipment01:last-child{border-bottom:0}

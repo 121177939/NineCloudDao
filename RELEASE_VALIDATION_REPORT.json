@@ -1,19 +1,38 @@
 {
-  "release": "V2.1.1 CACHE111 candidate",
-  "buildId": "v2-1-1-cache111-totalstatsfix-admin22-sql240",
-  "gmVersion": "ADMIN9 R22",
-  "androidVersionCode": 2001411,
-  "androidVersionName": "2.1.1-cache111",
-  "checks": [
-    "V2.1.1 CACHE111 Pages artifact build pending local validation",
-    "角色总属性入口 data-total-stats-entry 保留",
-    "total-stats modal CSS restored",
-    "CACHE110孔位洗炼逻辑未改"
-  ],
-  "database": [
-    "SQL239 requires SQL233 equipment socket base",
-    "SQL239 idempotently adds/preserves level_reroll_enabled GM switch",
-    "SQL239 runtime execution not performed in this environment"
-  ],
-  "status": "PASS_STATIC_AND_PAGES_BUILD_SQL239_RUNTIME_GATE_PENDING"
+  "release": "V2.1.1 CACHE112",
+  "buildId": "v2-1-1-cache112-perf2-dbcap03-admin23-sql241",
+  "gm": "ADMIN9 R23",
+  "sql": 241,
+  "nextSql": 242,
+  "androidVersionCode": 2001412,
+  "androidVersionName": "2.1.1-cache112",
+  "validation": {
+    "sourceTaskPackAllFilesRead": true,
+    "nestedCandidateManifestInspected": true,
+    "pagesBuilder": "PASS",
+    "javascriptSyntax": "PASS",
+    "webAndroidSharedAssetSync": "PASS_28_SHARED_FILES_PLUS_ANDROID_INDEX_VARIANT",
+    "androidStaticValidator": "PASS_NO_WARNINGS",
+    "gmOldRpcParity": "PASS_59_OF_59_SAME_RPC_NAMES",
+    "sql241StaticPolicyChecks": "PASS",
+    "pagesWorkflowMethod": "UNCHANGED_R3_AFTER_VERSION_NORMALIZATION",
+    "androidReleaseWorkflowSha256": "da3be228bd6c72cd59b31b8f240da026806fad94d300688acc7831e9b8e0e1c2_UNCHANGED_FROM_CACHE111",
+    "androidApkSecurityVerifierSha256": "c6241288e3c3c978905f0abc668bc3f4c8e9364fffb9d5ded21d06d44ffe8744_UNCHANGED_FROM_CACHE111",
+    "androidGradleAssemble": "NOT_RUN_TO_COMPLETION_ENVIRONMENT_OFFLINE_GRADLE_DISTRIBUTION_DOWNLOAD_BLOCKED",
+    "productionSqlExecution": "NOT_EXECUTED_NO_PRODUCTION_DB_CONNECTION"
+  },
+  "databaseSafety": {
+    "rollingTtl": "24h_database_clock",
+    "batchLimit": 20000,
+    "globalCron": "25 */6 * * *",
+    "bsect06Cron": "35 */6 * * *",
+    "noVacuumFull": true,
+    "noTruncate": true,
+    "forbiddenPaigowTickGuard": true,
+    "releaseControlNotSoleBaseline": true
+  },
+  "notes": [
+    "SQL241 has transactional structural precheck and separate gate.",
+    "Gate must return SQL241_GATE_PASSED on production before treating DB as CACHE112 baseline."
+  ]
 }

@@ -1,12 +1,12 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE111",
-  "buildId": "v2-1-1-cache111-totalstatsfix-admin22-sql240",
-  "cacheEpoch": 111,
+  "releaseLabel": "V2.1.1 CACHE112",
+  "buildId": "v2-1-1-cache112-perf2-dbcap03-admin23-sql241",
+  "cacheEpoch": 112,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-239",
+  "sqlRevision": "211-221 + 229-241",
   "migrationSql": [
-    239
+    241
   ],
   "features": [
     "WORLD_BOSS_TEAM_PVE_BWBOSS01",
@@ -46,13 +46,18 @@
     "FORGE_SOCKET_LOCK_MAX3",
     "BAILIAN_BULK_UNLOCKED_LEVEL_REROLL",
     "FORGE_INLINE_REROLL_NO_FULL_REFRESH",
-    "CLIENT_VERSION_211_CACHE111"
+    "CLIENT_VERSION_211_CACHE111",
+    "CLIENT_VERSION_211_CACHE112",
+    "PERF2_IDLE_RPC_THROTTLING",
+    "DBCAP03_ROLLING_24H_GOVERNANCE",
+    "ADMIN9_R23_SIMPLE_MOBILE_GM",
+    "DBCAP03_SAFE_BATCH_SKIP_LOCKED"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R22_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R23_V2.1.1_手机直用版.html",
   "deploymentAllowed": false,
   "gmPublicDeployment": false,
-  "clientHotfix": "FORGE_UI2",
-  "databaseRelease": "V2.1.1 CACHE111 / SQL211-221 + SQL229-240",
+  "clientHotfix": "PERF2_DBCAP03_ADMIN23",
+  "databaseRelease": "V2.1.1 CACHE112 / SQL211-221 + SQL229-241",
   "notes": [
     "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
@@ -67,14 +72,19 @@
     "CACHE111孔锁最多3个；锁孔同时保护属性类型与等级；每次兵魄/护道/百炼按锁孔数额外消耗定灵锁玉。",
     "CACHE111百炼玄铁从单孔等级刷新改为一次随机重炼整件装备全部未锁且已有属性孔的等级；属性类型不变，空孔不参与。",
     "CACHE111兵魄/护道/百炼成功后仅原地更新孔位和材料数量，不重新渲染整个装备淬炼页面。",
-    "生产已由用户截图确认SQL233 R5安装及门禁通过；SQL239以SQL233装备孔位基线为前提，并幂等吸收百炼GM开关及世界BOSS镇魔令numeric兼容入口。"
+    "生产已由用户截图确认SQL233 R5安装及门禁通过；SQL239以SQL233装备孔位基线为前提，并幂等吸收百炼GM开关及世界BOSS镇魔令numeric兼容入口。",
+    "CACHE112选择性集成B-PERF2：只降低空转固定轮询，修炼250ms本地显示、机缘1秒本地倒计时、页面进入/前台恢复/主动业务即时同步保持。",
+    "SQL241集成DBCAP03：技术历史按数据库权威滚动24小时治理；运行中、未领取、未展示、有效/永久效果和重大/置顶事件绝对保护。",
+    "SQL241复用现有清理与ADMIN9数据库RPC，自动维护改为每6小时；批处理上限20000并使用SKIP LOCKED，禁止常规VACUUM FULL/TRUNCATE。",
+    "ADMIN9 R23重新组织为首页/玩家与运营/游戏控制/内容与经济/宗门管理/数据库/安全与技术，继续复用R22全部既有RPC接口。"
   ],
-  "gmVersion": "ADMIN9 R22",
-  "nextSqlNumber": 241,
+  "gmVersion": "ADMIN9 R23",
+  "nextSqlNumber": 242,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "candidate_sql240_gate_pending",
-  "runtimeDatabaseGate": "SQL240_PENDING_USER_EXECUTION",
+  "releaseStage": "candidate_sql241_gate_pending",
+  "runtimeDatabaseGate": "SQL241_PENDING_USER_EXECUTION",
   "releaseNotes": [
-    "CACHE111回归修复：恢复元神中央“角色总属性”点击弹窗所需CSS；点击事件与服务端总属性RPC保持原实现，不改CACHE110孔位洗炼规则。"
+    "CACHE112：PERF2空转RPC节流 + DBCAP03滚动24小时技术历史治理 + ADMIN9 R23简明手机管理版。",
+    "本次不改变已验证GitHub Pages R3与Android Release R6发布方式；数据库必须执行SQL241升级并在实机验收后执行SQL241制度门禁。"
   ]
 }
