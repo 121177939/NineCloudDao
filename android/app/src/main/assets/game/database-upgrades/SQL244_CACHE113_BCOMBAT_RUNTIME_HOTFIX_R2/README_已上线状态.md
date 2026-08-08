@@ -1,0 +1,3 @@
+# SQL244 R2 已上线
+
+用户已截图确认 `SQL244_GATE_PASSED`。CACHE114 不新增数据库迁移，下一 SQL 为 SQL245。

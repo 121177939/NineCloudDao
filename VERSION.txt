@@ -1,15 +1,15 @@
-V2.1.1 CACHE117
-v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247
+V2.1.1 CACHE118
+v2-1-1-cache118-pagesbuildfix-equipmentstate-admin27-sql247
 V2.1.1
-CACHE117
-DATABASE CACHE117要求SQL245 R2 + SQL246 + SQL247
-ANDROID 2001417 2.1.1-cache117
-NEXT_SQL 248（SQL247成功后）
+CACHE118
+DATABASE SQL247 R2 已上线并门禁通过；CACHE118无新增SQL
+ANDROID 2001418 2.1.1-cache118
+NEXT_SQL 248
 ADMIN9 R27
 
 PAGES_DEPLOY default-github-pages-artifact-r3
 DEPLOYMENT_LOCK V2.0.11_VERIFIED_PAGES_R3_ANDROID_RELEASE_R6_DO_NOT_CHANGE
 
-CACHE117：修复卸下/穿戴后的装备location旧缓存误判；打开淬炼与提交操作前实时核对数据库位置。
-SQL247：修复造化升品玉/乾坤破境石引用不存在ring_element_multiplier导致的运行时失败，统一使用bequipment01_value。
-SQL246：兵魄/护道属性+等级双随机；百炼只随机等级；付费无变化回滚。
+CACHE118：修复GitHub Pages工作流仍校验/调用CACHE116构建器导致build exit 1；统一使用CACHE118专用构建器与线上版本校验。
+CACHE117功能全部保留：装备location实时确认、升品/破境统一bequipment01_value。
+SQL247 R2：已由用户确认执行成功；CACHE118不需要执行SQL248。

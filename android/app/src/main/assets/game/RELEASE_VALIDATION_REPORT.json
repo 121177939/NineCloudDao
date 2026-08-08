@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "version": "V2.1.1 CACHE117",
+  "buildId": "v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247",
+  "databaseRequired": [
+    "SQL245 R2",
+    "SQL246",
+    "SQL247"
+  ],
+  "checks": {
+    "pages_builder": "PASS",
+    "core_js_syntax": "PASS",
+    "web_android_sync": "PASS",
+    "android_static_validation": "PASS",
+    "equipment_location_authority": "PASS",
+    "force_refresh_serialization": "PASS",
+    "sql247_upgrade_value_chain_static_gate": "PACKAGED",
+    "gm_r27_js_syntax": "PASS"
+  },
+  "androidVersionCode": 2001417,
+  "androidVersionName": "2.1.1-cache117",
+  "nextSql": 248,
+  "note": "SQL247 runtime gate must be executed in production before CACHE117 deployment."
+}

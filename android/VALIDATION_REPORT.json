@@ -2,12 +2,12 @@
   "ok": true,
   "errors": [],
   "warnings": [],
-  "gameFileCount": 31,
-  "gameBytes": 1368964,
+  "gameFileCount": 88,
+  "gameBytes": 1674347,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.1.1 CACHE117",
-  "gameBuildId": "v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247",
-  "databaseBaseline": "CACHE117 requires SQL245 R2 + SQL246 + SQL247",
-  "androidVersionCode": 2001417
+  "gameBaseline": "V2.1.1 CACHE118",
+  "gameBuildId": "v2-1-1-cache118-pagesbuildfix-equipmentstate-admin27-sql247",
+  "databaseBaseline": "SQL247 R2 ONLINE; CACHE118 no new SQL",
+  "androidVersionCode": 2001418
 }

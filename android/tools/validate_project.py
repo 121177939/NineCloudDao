@@ -102,9 +102,9 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001417" in gradle_props, "Android版本号不是CACHE117基线")
-    check('APP_VERSION_NAME=2.1.1-cache117' in gradle_props, "Android版本名不是CACHE117基线")
-    expected_build = "v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247"
+    check("APP_VERSION_CODE=2001418" in gradle_props, "Android版本号不是CACHE118基线")
+    check('APP_VERSION_NAME=2.1.1-cache118' in gradle_props, "Android版本名不是CACHE118基线")
+    expected_build = "v2-1-1-cache118-pagesbuildfix-equipmentstate-admin27-sql247"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
@@ -128,10 +128,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.1.1 CACHE117",
+        "gameBaseline": "V2.1.1 CACHE118",
         "gameBuildId": expected_build,
-        "databaseBaseline": "CACHE117 requires SQL245 R2 + SQL246 + SQL247",
-        "androidVersionCode": 2001417,
+        "databaseBaseline": "SQL247 R2 ONLINE; CACHE118 no new SQL",
+        "androidVersionCode": 2001418,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

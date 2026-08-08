@@ -1,16 +1,16 @@
-# 九霄问道 V2.1.1 CACHE117
+# 九霄问道 V2.1.1 CACHE118
 
-当前客户端基线：**V2.1.1 CACHE117**；Android：**versionCode 2001417 / versionName 2.1.1-cache117**；GM：**ADMIN9 R27**。
+当前客户端基线：**V2.1.1 CACHE118**；Android：**versionCode 2001418 / versionName 2.1.1-cache118**；GM：**ADMIN9 R27**。
 
-本轮装备修复：
+## 本次 CACHE118
+- 修复 GitHub Pages 工作流版本漂移：CACHE117代码上传后，deploy-pages.yml仍校验/调用CACHE116构建器，导致build exit 1。
+- 新增 `tools/build_pages_v2_1_1_cache118.py`，工作流源码门禁、构建与线上验收全部统一为CACHE118。
+- 保留已验证的 default github-pages Artifact R3 部署方式；Node.js 20 deprecated提示是非阻断warning。
+- 完整继承CACHE117装备修复：装备主列表location/is_locked为权威值；穿戴/卸下后强制重新拉取；淬炼/升品/破境提交前通过SQL247实时确认数据库位置。
+- SQL247修复造化升品玉/乾坤破境石成功分支，统一使用 `bequipment01_value(template_id, grade_code)`。
 
-- 装备主列表的 `location/is_locked` 以 `get_equipment_system_bequipment01` 返回值为权威，强化状态并行结果不得覆盖装备实际位置。
-- 穿戴/卸下后的强制刷新若遇到并发旧刷新，会等待后再次真实拉取，避免“画面在背包、操作却提示仅背包可用”。
-- 打开孔位/升品/破境以及提交操作前，CACHE117 通过 SQL247 的只读 RPC 再次确认数据库实时 `location/is_locked`。
-- SQL247 修复造化升品玉、乾坤破境石成功分支读取不存在的 `ring_element_multiplier`：统一改用 `bequipment01_value(template_id, grade_code)` 权威装备数值链。
-- SQL246规则继续保留：兵魄/护道对未锁孔同时随机属性+等级；百炼只随机未锁已有属性孔等级；整次无变化则事务回滚不扣材料/锁玉/灵石。
-- 穿戴中的装备仍禁止淬炼、升品、破境；必须先卸下回背包。
+## 数据库状态
+**SQL247 R2 已由用户确认门禁成功。CACHE118无新增SQL，下一编号仍为SQL248。**
 
-数据库要求：**CACHE117 部署前必须确保 SQL245 R2、SQL246、SQL247 已安装且对应门禁通过。** SQL247成功后下一数据库编号为 **SQL248**。
-
-GitHub Pages继续使用已验证的 **R3 default github-pages Artifact** 流程；Android继续使用已验证的 **Release R6** 构建、正式签名与在线更新链。不得因为本轮功能修复更换发布方式、包名或签名链。
+## 发布锁
+沿用已验证的 Pages R3 与 Android Release R6 流程，不更换包名、签名链或Pages部署方式。

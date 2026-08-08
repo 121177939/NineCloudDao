@@ -82,8 +82,8 @@ def main() -> None:
 
         index_path = target / "index.html"
         text = index_path.read_text(encoding="utf-8")
-        text = re.sub(r'\s*<link rel="manifest"[^>]*>\s*', '\n', text)
-        text = re.sub(r'\s*<script src="update-guard\.js[^>]*></script>\s*', '\n', text)
+        text = re.sub(r'^\s*<link rel="manifest"[^\n]*\n', '', text, flags=re.M)
+        text = re.sub(r'^\s*<script src="update-guard\.js[^\n]*\n', '', text, flags=re.M)
         config_script = re.search(r'<script src="config\.js[^>]*></script>', text)
         if not config_script:
             raise RuntimeError("index.html 未找到 config.js 引用")
