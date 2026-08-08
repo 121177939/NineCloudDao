@@ -202,7 +202,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .locked-action { padding: 18px; border: 1px dashed rgba(206,182,126,.25); text-align: center; color: var(--paper-muted); }
 .locked-action strong { display: block; color: var(--paper); margin-bottom: 7px; }
 
-.toast { position: fixed; z-index: 20; right: 22px; bottom: 24px; max-width: min(420px, calc(100% - 44px)); padding: 14px 17px; background: #241f18; color: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); transform: translateY(30px); opacity: 0; pointer-events: none; transition: .25s; }
+.toast { position: fixed; z-index: 180; right: 22px; bottom: 24px; max-width: min(420px, calc(100% - 44px)); padding: 14px 17px; background: #241f18; color: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); transform: translateY(30px); opacity: 0; pointer-events: none; transition: .25s; }
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.success { border-color: rgba(124,167,137,.55); }
 .toast.error { border-color: rgba(207,106,90,.65); }
@@ -4708,3 +4708,7 @@ body.sect-focus-mode{overflow-x:hidden}
 .dashboard-reforge.sect-focus-mode>#sectSystemSection>.panel-title{display:none!important}
 .dashboard-reforge.sect-focus-mode>#sectSystemSection #sectV2RootBSect01{width:100%;max-width:none;min-height:calc(100dvh - 112px)}
 @media(min-width:761px){.dashboard-reforge.sect-focus-mode{padding:8px 12px 104px!important}.dashboard-reforge.sect-focus-mode>#sectSystemSection{padding:0!important}}
+
+/* CACHE113 battle hit/evasion playback */
+.battle-action-bcombat01.is-miss-v210{border-color:rgba(132,167,202,.38)}
+.battle-miss-line-v210{margin:8px 0;padding:9px 10px;border-left:3px solid rgba(132,167,202,.75);background:rgba(52,78,101,.16);color:#b7cbe0;font-size:12px;line-height:1.6}

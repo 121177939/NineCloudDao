@@ -279,9 +279,13 @@
     const stats = [
       ['道攻', opponent.attack], ['道御', opponent.defense], ['生机', opponent.vitality], ['身法', opponent.agility]
     ].filter(([, value]) => number(value) > 0);
+    const rates = [
+      Number.isFinite(Number(opponent.hit_rate)) ? `命中 ${formatNumber(number(opponent.hit_rate) * 100, 2)}%` : '',
+      Number.isFinite(Number(opponent.evasion_bonus ?? opponent.evasion_rate)) ? `闪避 ${formatNumber(number(opponent.evasion_bonus ?? opponent.evasion_rate) * 100, 2)}%` : ''
+    ].filter(Boolean);
     return `<div class="secret-realm-monster-facts-bsecretrealm01 ${isMonster ? 'is-monster' : 'is-player'}">
       <div class="secret-realm-monster-facts-title-bsecretrealm01"><b>${esc(opponent.name || (isMonster ? '秘境妖兽' : '无名修士'))}</b><span>${facts.map(esc).join(' · ')}</span></div>
-      ${stats.length ? `<div class="secret-realm-monster-stat-grid-bsecretrealm01">${stats.map(([label,value]) => `<span>${label}<b>${formatNumber(value)}</b></span>`).join('')}</div>` : ''}
+      ${stats.length ? `<div class="secret-realm-monster-stat-grid-bsecretrealm01">${stats.map(([label,value]) => `<span>${label}<b>${formatNumber(value)}</b></span>`).join('')}</div>` : ''}${rates.length ? `<small>${rates.map(esc).join(' · ')}</small>` : ''}
     </div>`;
   }
 

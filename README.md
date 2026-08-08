@@ -1,16 +1,16 @@
-# 九霄问道 V2.1.1 CACHE112
+# 九霄问道 V2.1.1 CACHE113
 
-当前统一开发基线：**V2.1.1 CACHE112 / ADMIN9 R23 / SQL241 / Android 2001412**。本次为数据库稳定与管理体验统一升级：PERF2降低空转RPC，DBCAP03把技术历史改为滚动24小时安全治理，ADMIN9 R23重做为手机友好的简明管理版。GitHub Pages R3 与 Android Release R6 发布链保持锁定不变。
+当前开发候选基线：**V2.1.1 CACHE113 / ADMIN9 R25 / SQL243 / Android 2001413**。生产数据库现状仍按接管资料认定为 **SQL241 已上线并通过门禁，SQL242 待执行**。
 
-数据库上线必须使用 `database-upgrades/SQL241_CACHE112_DBCAP03_PERF2/` 中的**升级SQL + 制度门禁SQL**；生产执行结果必须由实际数据库返回确认，不能仅凭客户端版本判断。
+本轮升级修复装备孔位洗炼在弹窗内“点击无反应”的可见反馈，并保持原规则：**穿戴中的装备禁止洗炼，必须先卸下回背包**；兵魄道玉、护道灵玉、百炼玄铁默认每次额外消耗 **200,000 灵石**，三项数值在 ADMIN9 R25 分别可调，服务端材料、定灵锁玉与灵石采用同事务原子扣除。
 
-当前客户端目标基线：**V2.1.1 CACHE110**。
+战斗侧，客户端已支持显示未命中/闪避结果；秘境面板可显示命中/闪避快照。由于当前交付源码未包含 SQL233 天命榜/秘境存储过程原始函数体，SQL243 新增 `admin9_verify_combat_socket_integration_v243()` 直接检查生产数据库真实函数定义，SQL243 门禁只有证明天命榜命中/闪避、V2.1装备接入及秘境复用战斗核心后才允许把发布控制更新为 CACHE113。
 
-- Web：V2.1.1 CACHE110，Build `v2-1-1-cache110-forgeui2-admin22-sql239`。
-- Android：`versionCode=2001410`，`versionName=2.1.1-cache110`，内置游戏资源与网页同步。
-- GM：继续使用 **ADMIN9 R22**。
-- 数据库：本次使用 **SQL239 升级 + SQL239制度门禁**；SQL239幂等保留百炼GM总开关。
+数据库执行顺序：
+1. SQL242 升级SQL
+2. SQL242 门禁，必须返回 `SQL242_GATE_PASSED`
+3. 部署 CACHE113 网页 / Android 与 ADMIN9 R25
+4. SQL243 升级SQL
+5. SQL243 门禁，必须返回 `SQL243_GATE_PASSED`
 
-本版重点：材料栏压缩、孔位规则点击查看、单列孔位最终值、最多锁3孔、百炼一次重炼全部未锁已有孔等级、兵魄/护道/百炼操作原地即时更新。
-
-发布方式继续锁定沿用已验证成功的 GitHub Pages 默认 Artifact R3 与 Android Release R6 流程，不更换发布链。
+GitHub Pages R3 与 Android Release R6 的已验证发布/签名链保持锁定，不改变。

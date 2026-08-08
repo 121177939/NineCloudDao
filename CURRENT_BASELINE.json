@@ -1,9 +1,9 @@
 {
   "version": "2.1.1",
-  "releaseLabel": "九霄问道 V2.1.1 CACHE112",
+  "releaseLabel": "九霄问道 V2.1.1 CACHE113",
   "sourceBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "deploymentStatus": "v2_1_1_cache112_candidate_sql241_gate_pending",
+  "deploymentStatus": "v2_1_1_cache113_candidate_sql242_sql243_pending",
   "databaseMigrations": [
     211,
     212,
@@ -27,7 +27,9 @@
     238,
     239,
     240,
-    241
+    241,
+    242,
+    243
   ],
   "supersededMigrations": [
     222,
@@ -39,7 +41,7 @@
     228
   ],
   "databaseReleaseGate": "SQL230 V2.0.3 CACHE95正式发布门禁",
-  "databaseFinalCheck": "SQL241 V2.1.1 CACHE112 制度门禁",
+  "databaseFinalCheck": "SQL243 V2.1.1 CACHE113 孔位灵石消耗与战斗接入制度门禁",
   "modules": [
     "B-WBOSS01-TEAM-PVE-R1-A-V210",
     "B-EQUIPMENT-V210-SOCKET-FORGE",
@@ -100,26 +102,31 @@
     "清理使用索引时间条件、LIMIT、SKIP LOCKED和批量上限20000；正常治理禁止TRUNCATE与VACUUM FULL。",
     "PERF2只降低空闲轮询：会话心跳5分钟、修炼10分钟安全同步、天机5分钟、天道余额30分钟、市场90秒、世界事件5分钟；进入页面/前台恢复/主动业务继续即时同步。",
     "ADMIN9 R23为简明手机管理版，重组导航与数据库页，但继续复用R22全部59个既有RPC接口；不把service_role/Secret key写入客户端。",
-    "数据库容量和自动治理从ADMIN9数据库页统一查看；前端不得直接DELETE业务表，清理只能经原有安全SECURITY DEFINER管理RPC。"
+    "数据库容量和自动治理从ADMIN9数据库页统一查看；前端不得直接DELETE业务表，清理只能经原有安全SECURITY DEFINER管理RPC。",
+    "CACHE113孔位洗炼弹窗提供可见的进行中/成功/失败状态，全局toast层级高于淬炼弹窗，服务端错误不再表现为点击无反应。",
+    "CACHE113保持背包专用洗炼规则：穿戴中的装备禁止孔位属性洗炼与百炼等级重炼，必须先卸下回背包；成功后服务端立即equipment_v210_recompute_item。",
+    "兵魄道玉、护道灵玉、百炼玄铁每次默认额外消耗200000灵石；三项灵石成本由ADMIN9 R25分别配置，材料/锁玉/灵石同事务原子扣除。",
+    "CACHE113战斗日志支持服务端miss/is_hit=false结果显示闪避；秘境敌方快照支持显示命中/闪避。",
+    "SQL243提供admin9_verify_combat_socket_integration_v243只读检查生产天命榜/秘境函数定义；关键命中、闪避、V2.1装备或秘境战斗核心接入未证明时SQL243门禁阻止发布确认。"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R23_V2.1.1_手机直用版.html",
-  "clientRelease": "V2.1.1_CACHE112",
-  "developmentBaseline": "V2.1.1_ADMIN9R23_CACHE112_SQL241_PERF2_DBCAP03",
-  "cacheEpoch": 112,
-  "sqlRevision": "211-221 + 229-241",
+  "gmEntry": "九霄问道_ADMIN9_R25_V2.1.1_手机直用版.html",
+  "clientRelease": "V2.1.1_CACHE113",
+  "developmentBaseline": "V2.1.1_ADMIN9R25_CACHE113_SQL243_FORGECOST_COMBATGUARD",
+  "cacheEpoch": 113,
+  "sqlRevision": "211-221 + 229-243",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "PERF2_DBCAP03_ADMIN23",
-  "clientBuild": "v2-1-1-cache112-perf2-dbcap03-admin23-sql241",
-  "databaseRelease": "V2.1.1 CACHE112 / SQL211-221 + SQL229-241",
-  "gmVersion": "ADMIN9 R23",
-  "handoffRevision": "R39-2026-08-07",
+  "clientHotfix": "FORGE_COST_COMBAT_GUARD_ADMIN25",
+  "clientBuild": "v2-1-1-cache113-forgecost-combatguard-admin25-sql243",
+  "databaseRelease": "生产已确认 SQL241；目标 SQL242 -> SQL243 / V2.1.1 CACHE113",
+  "gmVersion": "ADMIN9 R25",
+  "handoffRevision": "R41-2026-08-08-CACHE113",
   "deploymentVerification": "V2.0.11已由用户确认：Pages部署成功、APK生成成功、APP在线更新成功。后续V2.0.12及以后锁定沿用该成功方式；不得擅自更换Pages部署链或APK生成/签名/Release链。",
-  "buildId": "v2-1-1-cache112-perf2-dbcap03-admin23-sql241",
-  "nextSqlNumber": 242,
+  "buildId": "v2-1-1-cache113-forgecost-combatguard-admin25-sql243",
+  "nextSqlNumber": 244,
   "phase3SqlStart": 234,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "lastObservedProductionDatabase": "SQL240是否已由用户执行/门禁在本轮未确认；SQL241为DBCAP03+PERF2正式统一升级，必须由用户在生产库执行并以门禁结果为准。",
-  "runtimeDatabaseGate": "SQL241_PENDING_USER_EXECUTION",
+  "lastObservedProductionDatabase": "SQL241已由用户资料确认上线并通过门禁；SQL242待执行。CACHE113新增SQL243，必须先执行SQL242升级+门禁，再执行SQL243升级+门禁。",
+  "runtimeDatabaseGate": "SQL242_THEN_SQL243_PENDING_USER_EXECUTION",
   "productionSql233Executed": true
 }

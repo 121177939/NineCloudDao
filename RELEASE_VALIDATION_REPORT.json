@@ -1,38 +1,45 @@
 {
-  "release": "V2.1.1 CACHE112",
-  "buildId": "v2-1-1-cache112-perf2-dbcap03-admin23-sql241",
-  "gm": "ADMIN9 R23",
-  "sql": 241,
-  "nextSql": 242,
-  "androidVersionCode": 2001412,
-  "androidVersionName": "2.1.1-cache112",
+  "release": "V2.1.1 CACHE113",
+  "buildId": "v2-1-1-cache113-forgecost-combatguard-admin25-sql243",
+  "gm": "ADMIN9 R25",
+  "sql": 243,
+  "nextSql": 244,
+  "productionDatabaseObserved": "SQL241_GATE_PASSED（来自接管资料；本环境未连接生产库）",
+  "pendingDatabaseOrder": [
+    242,
+    243
+  ],
+  "androidVersionCode": 2001413,
+  "androidVersionName": "2.1.1-cache113",
   "validation": {
-    "sourceTaskPackAllFilesRead": true,
-    "nestedCandidateManifestInspected": true,
-    "pagesBuilder": "PASS",
-    "javascriptSyntax": "PASS",
+    "pagesBuilder": "PASS_CACHE113_34_FILES",
+    "javascriptSyntax": "PASS_APP_EQUIPMENT_SECRET_REALM",
     "webAndroidSharedAssetSync": "PASS_28_SHARED_FILES_PLUS_ANDROID_INDEX_VARIANT",
     "androidStaticValidator": "PASS_NO_WARNINGS",
-    "gmOldRpcParity": "PASS_59_OF_59_SAME_RPC_NAMES",
-    "sql241StaticPolicyChecks": "PASS",
-    "pagesWorkflowMethod": "UNCHANGED_R3_AFTER_VERSION_NORMALIZATION",
-    "androidReleaseWorkflowSha256": "da3be228bd6c72cd59b31b8f240da026806fad94d300688acc7831e9b8e0e1c2_UNCHANGED_FROM_CACHE111",
-    "androidApkSecurityVerifierSha256": "c6241288e3c3c978905f0abc668bc3f4c8e9364fffb9d5ded21d06d44ffe8744_UNCHANGED_FROM_CACHE111",
-    "androidGradleAssemble": "NOT_RUN_TO_COMPLETION_ENVIRONMENT_OFFLINE_GRADLE_DISTRIBUTION_DOWNLOAD_BLOCKED",
-    "productionSqlExecution": "NOT_EXECUTED_NO_PRODUCTION_DB_CONNECTION"
+    "gmRpcCompatibility": "PASS_61_OLD_RPC_LITERALS_RETAINED_PLUS_1_NEW_SQL243_VERIFY_RPC",
+    "gmInlineJavascriptSyntax": "PASS",
+    "sql243StaticReview": "PASS_NO_LIVE_EXECUTION",
+    "pagesWorkflowMethod": "UNCHANGED_R3",
+    "androidReleaseMethod": "UNCHANGED_R6",
+    "productionSqlExecution": "NOT_EXECUTED_NO_PRODUCTION_DB_CONNECTION",
+    "backpackOnlyForgeGuard": "PASS_UI_AND_SQL243_STATIC_GUARD"
   },
-  "databaseSafety": {
-    "rollingTtl": "24h_database_clock",
-    "batchLimit": 20000,
-    "globalCron": "25 */6 * * *",
-    "bsect06Cron": "35 */6 * * *",
-    "noVacuumFull": true,
-    "noTruncate": true,
-    "forbiddenPaigowTickGuard": true,
-    "releaseControlNotSoleBaseline": true
-  },
-  "notes": [
-    "SQL241 has transactional structural precheck and separate gate.",
-    "Gate must return SQL241_GATE_PASSED on production before treating DB as CACHE112 baseline."
-  ]
+  "fixes": [
+    "forge modal inline working/success/error feedback and toast above modal",
+    "equipped gear reroll blocked in UI and SQL243; backpack-only rule preserved",
+    "weapon/armor/bailian extra spirit-stone costs default 200000 and GM configurable separately",
+    "material/lock-jade/spirit-stone debit stays in one transactional RPC",
+    "battle playback renders miss/evasion when server action exposes hit state",
+    "secret realm opponent snapshot renders hit/evasion when returned",
+    "SQL243 production introspection gate verifies battle hit/evasion, V2.1 equipment and secret-realm battle-core wiring"
+  ],
+  "importantLimitation": "上传资料没有包含SQL233天命榜/秘境存储过程的原始函数体；因此无法在离线资料中安全重写未知生产战斗函数。SQL243使用pg_get_functiondef在生产库做硬门禁，未证明接入时不会把release_control推进CACHE113。",
+  "databaseExecutionOrder": [
+    "SQL242 upgrade",
+    "SQL242 gate -> SQL242_GATE_PASSED",
+    "deploy CACHE113 + ADMIN9 R25",
+    "SQL243 upgrade",
+    "SQL243 gate -> SQL243_GATE_PASSED"
+  ],
+  "packageRevision": "R2"
 }

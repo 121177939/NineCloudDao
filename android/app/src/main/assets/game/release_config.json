@@ -1,12 +1,13 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE112",
-  "buildId": "v2-1-1-cache112-perf2-dbcap03-admin23-sql241",
-  "cacheEpoch": 112,
+  "releaseLabel": "V2.1.1 CACHE113",
+  "buildId": "v2-1-1-cache113-forgecost-combatguard-admin25-sql243",
+  "cacheEpoch": 113,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-241",
+  "sqlRevision": "211-221 + 229-243",
   "migrationSql": [
-    241
+    242,
+    243
   ],
   "features": [
     "WORLD_BOSS_TEAM_PVE_BWBOSS01",
@@ -51,13 +52,20 @@
     "PERF2_IDLE_RPC_THROTTLING",
     "DBCAP03_ROLLING_24H_GOVERNANCE",
     "ADMIN9_R23_SIMPLE_MOBILE_GM",
-    "DBCAP03_SAFE_BATCH_SKIP_LOCKED"
+    "DBCAP03_SAFE_BATCH_SKIP_LOCKED",
+    "CLIENT_VERSION_211_CACHE113",
+    "FORGE_SOCKET_INLINE_STATUS",
+    "FORGE_BACKPACK_ONLY_REROLL_GUARD",
+    "FORGE_THREE_MATERIAL_SPIRIT_STONE_COST",
+    "ADMIN9_R25_FORGE_COST_CONFIG",
+    "SQL243_COMBAT_INTEGRATION_GUARD",
+    "BATTLE_LOG_MISS_RENDER"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R23_V2.1.1_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R25_V2.1.1_手机直用版.html",
   "deploymentAllowed": false,
   "gmPublicDeployment": false,
-  "clientHotfix": "PERF2_DBCAP03_ADMIN23",
-  "databaseRelease": "V2.1.1 CACHE112 / SQL211-221 + SQL229-241",
+  "clientHotfix": "FORGE_COST_COMBAT_GUARD_ADMIN25",
+  "databaseRelease": "生产SQL241已确认；SQL242 -> SQL243待执行",
   "notes": [
     "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
@@ -76,15 +84,20 @@
     "CACHE112选择性集成B-PERF2：只降低空转固定轮询，修炼250ms本地显示、机缘1秒本地倒计时、页面进入/前台恢复/主动业务即时同步保持。",
     "SQL241集成DBCAP03：技术历史按数据库权威滚动24小时治理；运行中、未领取、未展示、有效/永久效果和重大/置顶事件绝对保护。",
     "SQL241复用现有清理与ADMIN9数据库RPC，自动维护改为每6小时；批处理上限20000并使用SKIP LOCKED，禁止常规VACUUM FULL/TRUNCATE。",
-    "ADMIN9 R23重新组织为首页/玩家与运营/游戏控制/内容与经济/宗门管理/数据库/安全与技术，继续复用R22全部既有RPC接口。"
+    "ADMIN9 R23重新组织为首页/玩家与运营/游戏控制/内容与经济/宗门管理/数据库/安全与技术，继续复用R22全部既有RPC接口。",
+    "CACHE113修复淬炼弹窗遮挡全局提示造成的“点击护道无反应”体验；弹窗内增加明确状态，toast层级提升。",
+    "兵魄道玉、护道灵玉、百炼玄铁默认每次额外消耗20万灵石，ADMIN9 R25可分别调整；SQL243服务端原子扣除材料、锁玉与灵石。",
+    "CACHE113 R2恢复并强化背包专用洗炼规则：穿戴中的装备禁止兵魄/护道属性洗炼和百炼等级重炼，前端禁用且SQL243服务端再次拒绝。",
+    "当前资料包不包含SQL233天命榜/秘境存储过程原始函数体；SQL243因此以生产数据库真实pg_get_functiondef做发布门禁，不凭客户端文案假定已接入。"
   ],
-  "gmVersion": "ADMIN9 R23",
-  "nextSqlNumber": 242,
+  "gmVersion": "ADMIN9 R25",
+  "nextSqlNumber": 244,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "candidate_sql241_gate_pending",
-  "runtimeDatabaseGate": "SQL241_PENDING_USER_EXECUTION",
+  "releaseStage": "candidate_sql242_sql243_pending",
+  "runtimeDatabaseGate": "SQL242_THEN_SQL243_PENDING_USER_EXECUTION",
   "releaseNotes": [
-    "CACHE112：PERF2空转RPC节流 + DBCAP03滚动24小时技术历史治理 + ADMIN9 R23简明手机管理版。",
-    "本次不改变已验证GitHub Pages R3与Android Release R6发布方式；数据库必须执行SQL241升级并在实机验收后执行SQL241制度门禁。"
+    "CACHE113：修复护道/兵魄/百炼孔位操作反馈，保持穿戴装备禁止洗炼；新增三种材料的GM可调灵石成本。",
+    "战斗日志支持miss显示；SQL243在生产库核验天命榜与秘境是否真正使用命中/闪避与V2.1装备属性，未证明则拒绝门禁通过。",
+    "执行顺序固定：SQL242升级 -> SQL242门禁 -> 部署CACHE113/ADMIN9 R25 -> SQL243升级 -> SQL243门禁。发布链仍沿用已验证Pages R3 / Android Release R6。"
   ]
 }

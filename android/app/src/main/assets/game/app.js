@@ -27,7 +27,7 @@
 
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
-  // V2.1.1 CACHE112 / PERF2：玩家可见刷新频率保持不变，只减少无意义的后台云端空转。
+  // V2.1.1 CACHE113 / PERF2：玩家可见刷新频率保持不变，只减少无意义的后台云端空转。
   // 修炼250ms、机缘1秒倒计时、牌九Realtime、战斗、主动操作与恢复前台即时同步全部保留。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 5 * 60 * 1000,
@@ -4887,16 +4887,17 @@
         ? `戒指独立提供${formatNumber(ringEffectivePercent, 2)}%本命五行最终伤害加成。`
         : ''
     ].filter(Boolean).join('');
+    const missed = action?.is_hit === false || action?.hit === false || action?.missed === true;
+    const hitChance = Number(action?.hit_chance ?? action?.final_hit_rate ?? NaN);
+    const hitNote = Number.isFinite(hitChance) ? ` · 本次命中率 ${formatNumber(hitChance * 100, 2)}%` : '';
     return `
-      <article class="battle-action-bcombat01 ${action?.defeated ? 'is-finisher' : ''}">
+      <article class="battle-action-bcombat01 ${action?.defeated ? 'is-finisher' : ''} ${missed ? 'is-miss-v210' : ''}">
         <header><span>第 ${formatNumber(action?.round || 1)} 回合</span><strong>${escapeHtml(action?.attacker_name || '')} 出手</strong></header>
         <p>${battleAttackCopyBCombat01(action)}</p>
         <p>${battleDefenseCopyBCombat01(action)}</p>
-        <p class="battle-element-line-bcombat01">${elementLine}</p>${talentLine ? `<p class="battle-talent-line-v12">${talentLine}</p>` : ''}
-        <div class="battle-damage-line-bcombat01">
-          <strong>造成 ${formatNumber(action?.damage || 0)} 点伤害</strong>
-          <span>道御与护体共化去 ${formatNumber(Number(action?.defense_reduction || 0) * 100, 2)}%</span>
-        </div>
+        ${missed
+          ? `<p class="battle-miss-line-v210">${escapeHtml(action?.defender_name || '')}凭身法避开攻势，本回合未造成伤害${hitNote}。</p>`
+          : `<p class="battle-element-line-bcombat01">${elementLine}</p>${talentLine ? `<p class="battle-talent-line-v12">${talentLine}</p>` : ''}<div class="battle-damage-line-bcombat01"><strong>造成 ${formatNumber(action?.damage || 0)} 点伤害</strong><span>道御与护体共化去 ${formatNumber(Number(action?.defense_reduction || 0) * 100, 2)}%${hitNote}</span></div>`}
         <div class="battle-hp-line-bcombat01"><span>${escapeHtml(action?.defender_name || '')} 生机</span><strong>${formatNumber(action?.hp_after || 0)} / ${formatNumber(action?.max_hp || 0)}</strong></div>
         ${action?.low_health ? `<small class="battle-low-health-bcombat01">${escapeHtml(action?.defender_name || '')}气息紊乱，已经显露败象。</small>` : ''}
         ${action?.defeated ? `<small class="battle-defeated-bcombat01">最后一击落下，${escapeHtml(action?.defender_name || '')}生机归零，此战胜负已定。</small>` : ''}
