@@ -3,11 +3,11 @@
   "errors": [],
   "warnings": [],
   "gameFileCount": 31,
-  "gameBytes": 1365627,
+  "gameBytes": 1368964,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.1.1 CACHE116",
-  "gameBuildId": "v2-1-1-cache116-socketrerollfix-admin26r2-sql246",
-  "databaseBaseline": "production SQL244 confirmed; CACHE116 requires SQL245 R2 + SQL246",
-  "androidVersionCode": 2001416
+  "gameBaseline": "V2.1.1 CACHE117",
+  "gameBuildId": "v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247",
+  "databaseBaseline": "CACHE117 requires SQL245 R2 + SQL246 + SQL247",
+  "androidVersionCode": 2001417
 }

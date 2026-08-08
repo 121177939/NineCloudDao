@@ -6,7 +6,7 @@
   const apiKey=String(config.supabasePublishableKey||'');
   const projectRef=(()=>{try{return new URL(baseUrl).hostname.split('.')[0]}catch{return'unknown'}})();
   const sessionKey=`nine_cloud_dao_session_${projectRef}_v1`,deviceKey=`nine_cloud_dao_device_${projectRef}_v1`;
-  const state={overview:null,item:null,busy:false,dirty:false,status:''};
+  const state={overview:null,item:null,busy:false,dirty:false,status:'',serverItem:null};
   const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
   const fmt=v=>Number(v||0).toLocaleString('zh-CN',{maximumFractionDigits:2});
   const pct=v=>`${fmt(Number(v||0)*100)}%`;
@@ -21,6 +21,20 @@
   function host(){return document.getElementById('modalRoot')||document.body}
   function close(){host().innerHTML='';document.body.classList.remove('modal-open');if(state.dirty){state.dirty=false;Promise.resolve(window.B_EQUIPMENT01?.refresh?.(true)).catch(()=>{})}}
   async function overview(){const [data,stones]=await Promise.all([rpc('get_equipment_forge_overview_v210',{}),rpc('get_spirit_stone_balance_v0141',{}).catch(()=>null)]);state.overview=data||{};const raw=Array.isArray(stones)?stones[0]:stones;if(raw!==null&&raw!==undefined&&Number.isFinite(Number(raw)))state.overview.spirit_stones=Math.max(0,Number(raw));return state.overview}
+  async function serverItemState(id){const row=await rpc('get_equipment_forge_item_state_v247',{p_item_id:id});state.serverItem=row||null;return row||null}
+  async function freshItem(item){
+    const id=item?.id;if(!id)throw new Error('EQUIPMENT_ITEM_NOT_FOUND');
+    await window.B_EQUIPMENT01?.refresh?.(true);
+    const fresh=window.B_EQUIPMENT01?.getItem?.(id)||item;
+    const server=await serverItemState(id);
+    return {...fresh,...(server||{})};
+  }
+  async function requireBackpackCurrent(item){
+    const current=await freshItem(item);state.item=current;
+    if(current.location!=='backpack')throw new Error('EQUIPMENT_V210_BACKPACK_ONLY');
+    if(current.is_locked)throw new Error('EQUIPMENT_V210_LOCKED');
+    return current;
+  }
   function material(code){return Number(state.overview?.materials?.[code]||0)}
   function stoneBalance(){return Math.max(0,Number(state.overview?.spirit_stones||0))}
   function stoneCost(item,level=false){const sc=state.overview?.socket_settings||{};if(level)return Math.max(0,Number(sc.level_reroll_spirit_stone_cost??200000));return Math.max(0,Number((item?.slot_code==='weapon'?sc.weapon_reroll_spirit_stone_cost:sc.armor_reroll_spirit_stone_cost)??200000))}
@@ -77,7 +91,7 @@
   async function render(item){
     state.item=item;await overview();
     const fi=forgeItem(item.id),up=state.overview?.upgrade_settings||{},m=rerollMeta(item),locked=Boolean(item.is_locked),inBag=item.location==='backpack';
-    host().innerHTML=`<div class="forge-backdrop-v210"><section class="forge-modal-v210" role="dialog" aria-modal="true"><button class="forge-close-v210" type="button" data-forge-close>×</button><header><small>V2.1.1 CACHE116 · 装备孔位/升品/破境</small><h3>${esc(item.full_name||item.short_name||'装备')} ${Number(item.enhancement_level||0)>0?`+${Number(item.enhancement_level)}`:''}</h3><p>${esc(item.realm_name||'')} · ${esc(item.grade_name||item.grade_code||'')} · 当前开放${Math.min(8,Number(item.opened_sockets??item.total_socket_capacity??0))}孔</p></header><div class="forge-materials-v210" data-forge-materials>${materialRows(item)}</div><div class="forge-status-v210" data-forge-status hidden aria-live="polite"></div>${(!inBag||locked)?`<div class="forge-warning-v210">${locked?'装备已锁定，请先解锁。':'穿戴中的装备不能洗炼；请先卸下放回背包后再进行孔位洗炼、百炼、升品、破境或器魂承接。'}</div>`:''}<section class="forge-section-v210 forge-socket-section-v210"><header><button class="forge-section-title-v210" type="button" data-forge-rules-open>孔位属性 <span>?</span></button></header><div class="forge-sockets-v210" data-forge-sockets>${socketRows(item,fi)}</div><div class="forge-actions-v210"><button class="forge-primary-v210" type="button" data-forge-reroll ${!inBag||locked?'disabled':''}>使用${m.short}×${m.rerollCost} + 灵石${fmt(stoneCost(item,false))}</button><button class="forge-primary-v210 forge-secondary-v210" type="button" data-forge-level-all ${!inBag||locked||!m.levelEnabled?'disabled':''}>使用百炼×${m.levelCost} + 灵石${fmt(stoneCost(item,true))}</button></div></section><section class="forge-section-v210"><header><strong>装备跃迁</strong><small>每次固定消耗1个；失败仅消耗材料，装备不变。</small></header><div class="forge-upgrade-grid-v210"><button type="button" data-forge-grade ${!inBag||locked||item.grade_code==='immortal'?'disabled':''}><b>升品</b><span>${esc(item.grade_name||item.grade_code)} → ${gradeNext(item.grade_code)}</span><small>造化升品玉×${Number(up.grade_item_cost||1)} · ${pct(up.grade_success_rate??.3)}</small></button><button type="button" data-forge-realm ${!inBag||locked?'disabled':''}><b>破境</b><span>${esc(item.realm_name||'当前境界')} → 下一大境界</span><small>乾坤破境石×${Number(up.realm_item_cost||1)} · ${pct(up.realm_success_rate??.3)}</small></button></div></section><section class="forge-section-v210"><header><strong>器魂承接</strong><small>强化失败时孔位灵性凝成器魂；只能同大境界、同品级、同部位整套覆盖承接。</small></header><div class="forge-souls-v210">${soulRows(item)}</div></section>${rulesPanel()}</section></div>`;
+    host().innerHTML=`<div class="forge-backdrop-v210"><section class="forge-modal-v210" role="dialog" aria-modal="true"><button class="forge-close-v210" type="button" data-forge-close>×</button><header><small>V2.1.1 CACHE117 · 装备孔位/升品/破境</small><h3>${esc(item.full_name||item.short_name||'装备')} ${Number(item.enhancement_level||0)>0?`+${Number(item.enhancement_level)}`:''}</h3><p>${esc(item.realm_name||'')} · ${esc(item.grade_name||item.grade_code||'')} · 当前开放${Math.min(8,Number(item.opened_sockets??item.total_socket_capacity??0))}孔</p></header><div class="forge-materials-v210" data-forge-materials>${materialRows(item)}</div><div class="forge-status-v210" data-forge-status hidden aria-live="polite"></div>${(!inBag||locked)?`<div class="forge-warning-v210">${locked?'装备已锁定，请先解锁。':'穿戴中的装备不能洗炼；请先卸下放回背包后再进行孔位洗炼、百炼、升品、破境或器魂承接。'}</div>`:''}<section class="forge-section-v210 forge-socket-section-v210"><header><button class="forge-section-title-v210" type="button" data-forge-rules-open>孔位属性 <span>?</span></button></header><div class="forge-sockets-v210" data-forge-sockets>${socketRows(item,fi)}</div><div class="forge-actions-v210"><button class="forge-primary-v210" type="button" data-forge-reroll ${!inBag||locked?'disabled':''}>使用${m.short}×${m.rerollCost} + 灵石${fmt(stoneCost(item,false))}</button><button class="forge-primary-v210 forge-secondary-v210" type="button" data-forge-level-all ${!inBag||locked||!m.levelEnabled?'disabled':''}>使用百炼×${m.levelCost} + 灵石${fmt(stoneCost(item,true))}</button></div></section><section class="forge-section-v210"><header><strong>装备跃迁</strong><small>每次固定消耗1个；失败仅消耗材料，装备不变。</small></header><div class="forge-upgrade-grid-v210"><button type="button" data-forge-grade ${!inBag||locked||item.grade_code==='immortal'?'disabled':''}><b>升品</b><span>${esc(item.grade_name||item.grade_code)} → ${gradeNext(item.grade_code)}</span><small>造化升品玉×${Number(up.grade_item_cost||1)} · ${pct(up.grade_success_rate??.3)}</small></button><button type="button" data-forge-realm ${!inBag||locked?'disabled':''}><b>破境</b><span>${esc(item.realm_name||'当前境界')} → 下一大境界</span><small>乾坤破境石×${Number(up.realm_item_cost||1)} · ${pct(up.realm_success_rate??.3)}</small></button></div></section><section class="forge-section-v210"><header><strong>器魂承接</strong><small>强化失败时孔位灵性凝成器魂；只能同大境界、同品级、同部位整套覆盖承接。</small></header><div class="forge-souls-v210">${soulRows(item)}</div></section>${rulesPanel()}</section></div>`;
     document.body.classList.add('modal-open');bind(item);setSocketButtons(item)
   }
   function openRules(){const p=host().querySelector('[data-forge-rules-panel]');if(p)p.hidden=false}
@@ -102,17 +116,20 @@
   async function runSocket(name,body,message,keepLocks){
     if(state.busy)return;state.busy=true;setSocketButtons(state.item);setStatus('正在提交孔位操作，请勿重复点击…','working');
     try{
+      await requireBackpackCurrent(state.item);
       const result=await rpc(name,body);
       state.dirty=true;
       await overview();
-      updateDynamic(state.item,keepLocks);
+      const fresh=await freshItem(state.item);
+      state.item=fresh;
+      updateDynamic(fresh,keepLocks);
       const suffix=Number(result?.spirit_stone_cost||0)>0?` · 已消耗${fmt(result.spirit_stone_cost)}灵石`:'';
       const ok=(message||'操作完成。')+suffix;setStatus(ok,'ok');toast(ok);
       window.dispatchEvent(new CustomEvent('jiuxiao:equipment-forge-updated',{detail:result||{}}));
-    }catch(e){const msg=errorText(e);setStatus(msg,'error');toast(msg,'error')}
+    }catch(e){const msg=errorText(e);setStatus(msg,'error');toast(msg,'error');try{state.item=await freshItem(state.item)}catch{}}
     finally{state.busy=false;setSocketButtons(state.item)}
   }
-  async function run(name,body,message,upgrade=false){if(state.busy)return;state.busy=true;try{const result=await rpc(name,body);state.dirty=true;if(upgrade){toast(result?.upgrade_success?'天命应允，装备跃迁成功！':'天命未应，道具已消耗，装备保持不变。',result?.upgrade_success?'success':'error')}else toast(message||'操作完成。');await window.B_EQUIPMENT01?.refresh?.(true);const fresh=window.B_EQUIPMENT01?.getItem?.(state.item.id)||state.item;await render(fresh)}catch(e){toast(errorText(e),'error')}finally{state.busy=false}}
-  async function open(item){try{await render(item)}catch(e){toast(errorText(e),'error')}}
-  window.B_EQUIPMENT_V210=Object.freeze({module:MODULE,version:'2.1.1-cache116',open,refresh:overview,detailRows});
+  async function run(name,body,message,upgrade=false){if(state.busy)return;state.busy=true;try{await requireBackpackCurrent(state.item);const result=await rpc(name,body);state.dirty=true;if(upgrade){toast(result?.upgrade_success?'天命应允，装备跃迁成功！':'天命未应，道具已消耗，装备保持不变。',result?.upgrade_success?'success':'error')}else toast(message||'操作完成。');const fresh=await freshItem(state.item);await render(fresh)}catch(e){toast(errorText(e),'error');try{state.item=await freshItem(state.item)}catch{}}finally{state.busy=false}}
+  async function open(item){try{const fresh=await freshItem(item);await render(fresh)}catch(e){toast(errorText(e),'error')}}
+  window.B_EQUIPMENT_V210=Object.freeze({module:MODULE,version:'2.1.1-cache117',open,refresh:overview,detailRows});
 })();

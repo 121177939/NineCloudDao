@@ -1,26 +1,24 @@
 {
   "ok": true,
-  "version": "V2.1.1 CACHE116",
-  "buildId": "v2-1-1-cache116-socketrerollfix-admin26r2-sql246",
-  "databaseConfirmedInConversation": "SQL244_GATE_PASSED",
-  "requiredMigrations": [
-    245,
-    246
+  "version": "V2.1.1 CACHE117",
+  "buildId": "v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247",
+  "databaseRequired": [
+    "SQL245 R2",
+    "SQL246",
+    "SQL247"
   ],
-  "requiredFinalGate": "SQL246_GATE_PASSED",
-  "gm": "ADMIN9 R26 R2",
   "checks": {
-    "weapon_guardian_attr_and_level_ui_copy": true,
-    "bailian_level_only_ui_copy": true,
-    "paid_noop_rollback_sql246": true,
-    "old_level_preserve_removed_from_sql246": true,
-    "sql245_in_repo": true,
-    "sql246_in_repo": true,
-    "pages_build_pass": true,
-    "core_js_syntax_pass": true,
-    "android_static_pass": true,
-    "android_version_code_2001416": true,
-    "pages_r3_locked": true,
-    "android_r6_locked": true
-  }
+    "pages_builder": "PASS",
+    "core_js_syntax": "PASS",
+    "web_android_sync": "PASS",
+    "android_static_validation": "PASS",
+    "equipment_location_authority": "PASS",
+    "force_refresh_serialization": "PASS",
+    "sql247_upgrade_value_chain_static_gate": "PACKAGED",
+    "gm_r27_js_syntax": "PASS"
+  },
+  "androidVersionCode": 2001417,
+  "androidVersionName": "2.1.1-cache117",
+  "nextSql": 248,
+  "note": "SQL247 runtime gate must be executed in production before CACHE117 deployment."
 }

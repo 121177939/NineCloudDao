@@ -1,9 +1,9 @@
 {
   "version": "2.1.1",
-  "releaseLabel": "九霄问道 V2.1.1 CACHE116",
+  "releaseLabel": "九霄问道 V2.1.1 CACHE117",
   "sourceBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "deploymentStatus": "v2_1_1_cache116_ready_requires_sql245_r2_sql246",
+  "deploymentStatus": "v2_1_1_cache117_ready_requires_sql245_r2_sql246_sql247",
   "databaseMigrations": [
     211,
     212,
@@ -32,7 +32,8 @@
     243,
     244,
     245,
-    246
+    246,
+    247
   ],
   "supersededMigrations": [
     222,
@@ -44,7 +45,7 @@
     228
   ],
   "databaseReleaseGate": "SQL230 V2.0.3 CACHE95正式发布门禁",
-  "databaseFinalCheck": "SQL244 R2 已确认；CACHE116要求SQL245 R2与SQL246均门禁通过",
+  "databaseFinalCheck": "CACHE117要求SQL245 R2、SQL246、SQL247均门禁通过",
   "modules": [
     "B-WBOSS01-TEAM-PVE-R1-A-V210",
     "B-EQUIPMENT-V210-SOCKET-FORGE",
@@ -118,26 +119,30 @@
     "新服境界修为采用SQL245 R2 42阶段累计门槛，凡人0、炼气1层10000起，渡劫圆满19920000000。",
     "ADMIN9 R26 R2提供系统→删档重开；执行前读取目标表和玩家数，必须输入“永久删档重开”并二次确认；不创建玩家备份。",
     "删档清除角色、资产、修炼、装备、功法、宗门、秘境、BOSS、天命榜、赌场、机缘和相关玩家历史；保留auth登录账号、profiles、GM账号、系统/内容配置、版本与SQL状态。",
-    "SQL246付费洗炼防空转：兵魄/护道优先排除原属性组合并重新随机等级；百炼有其它等级时排除原等级；若整次无任何实际变化则事务回滚，材料、锁玉、灵石均不扣。"
+    "SQL246付费洗炼防空转：兵魄/护道优先排除原属性组合并重新随机等级；百炼有其它等级时排除原等级；若整次无任何实际变化则事务回滚，材料、锁玉、灵石均不扣。",
+    "CACHE117：装备列表合并时location/is_locked以get_equipment_system_bequipment01主数据为权威，强化状态RPC不得覆盖位置。",
+    "CACHE117：穿戴/卸下后的force refresh若撞上正在进行的旧刷新，会等待后再次真实拉取，不再直接返回旧缓存。",
+    "SQL247：淬炼/升品/破境前客户端通过get_equipment_forge_item_state_v247实时确认数据库location/is_locked。",
+    "SQL247：造化升品玉/乾坤破境石成功后的基础属性统一由bequipment01_value计算，不再直接读取品级表ring_element_multiplier。"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R26_R2_V2.1.1_CACHE116_SQL245_SQL246_手机直用版.html",
-  "clientRelease": "V2.1.1_CACHE116",
-  "developmentBaseline": "V2.1.1_ADMIN9R26R2_CACHE116_SQL245_SQL246_SOCKET_REROLL_FIX",
-  "cacheEpoch": 116,
-  "sqlRevision": "211-221 + 229-244；SQL245 R2 + SQL246 REQUIRED",
+  "gmEntry": "九霄问道_ADMIN9_R27_V2.1.1_CACHE117_全境界修为比例调整_手机直用版.html",
+  "clientRelease": "V2.1.1_CACHE117",
+  "developmentBaseline": "V2.1.1_ADMIN9R27_CACHE117_SQL247_EQUIPMENT_STATE_UPGRADE_FIX",
+  "cacheEpoch": 117,
+  "sqlRevision": "211-221 + 229-244；SQL245 R2 + SQL246 + SQL247 REQUIRED",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "clientHotfix": "SOCKET_ATTRIBUTE_LEVEL_REROLL_AND_PAID_NOOP_ROLLBACK",
-  "clientBuild": "v2-1-1-cache116-socketrerollfix-admin26r2-sql246",
-  "databaseRelease": "生产已确认SQL244；CACHE116要求SQL245 R2后执行SQL246，SQL246成功后下一SQL247。",
-  "gmVersion": "ADMIN9 R26 R2",
-  "handoffRevision": "R44-2026-08-08-CACHE116-SOCKET-REROLL-FIX",
+  "clientHotfix": "EQUIPMENT_LOCATION_REFRESH_AND_GRADE_REALM_VALUE_FIX",
+  "clientBuild": "v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247",
+  "databaseRelease": "CACHE117要求SQL245 R2 + SQL246 + SQL247；SQL247成功后下一SQL248。",
+  "gmVersion": "ADMIN9 R27",
+  "handoffRevision": "R45-2026-08-08-CACHE117-EQUIPMENT-STATE-UPGRADE-FIX",
   "deploymentVerification": "V2.0.11已由用户确认：Pages部署成功、APK生成成功、APP在线更新成功。后续V2.0.12及以后锁定沿用该成功方式；不得擅自更换Pages部署链或APK生成/签名/Release链。",
-  "buildId": "v2-1-1-cache116-socketrerollfix-admin26r2-sql246",
-  "nextSqlNumber": 247,
+  "buildId": "v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247",
+  "nextSqlNumber": 248,
   "phase3SqlStart": 234,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "lastObservedProductionDatabase": "SQL244 R2已由用户截图确认；SQL245 R2是否已执行尚未在对话中确认；SQL246为CACHE116新热修。",
-  "runtimeDatabaseGate": "SQL245_GATE_PASSED_AND_SQL246_GATE_PASSED_REQUIRED_FOR_CACHE116",
+  "lastObservedProductionDatabase": "已确认SQL244 R2；当前截图客户端为CACHE115。CACHE117交付要求先确保SQL245 R2与SQL246，再执行SQL247。",
+  "runtimeDatabaseGate": "SQL245_GATE_PASSED_AND_SQL246_GATE_PASSED_AND_SQL247_GATE_PASSED_REQUIRED_FOR_CACHE117",
   "productionSql233Executed": true
 }

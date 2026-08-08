@@ -1,15 +1,15 @@
-V2.1.1 CACHE116
-v2-1-1-cache116-socketrerollfix-admin26r2-sql246
+V2.1.1 CACHE117
+v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247
 V2.1.1
-CACHE116
-DATABASE SQL244 已上线并门禁通过；CACHE116要求SQL245 R2 + SQL246
-ANDROID 2001416 2.1.1-cache116
-NEXT_SQL 247（SQL245与SQL246成功后）
-ADMIN9 R26 R2
+CACHE117
+DATABASE CACHE117要求SQL245 R2 + SQL246 + SQL247
+ANDROID 2001417 2.1.1-cache117
+NEXT_SQL 248（SQL247成功后）
+ADMIN9 R27
 
 PAGES_DEPLOY default-github-pages-artifact-r3
 DEPLOYMENT_LOCK V2.0.11_VERIFIED_PAGES_R3_ANDROID_RELEASE_R6_DO_NOT_CHANGE
 
-CACHE116：兵魄/护道未锁孔同时随机属性+等级；百炼仅随机等级；付费洗炼整次无变化则服务端回滚全部消耗。
-SQL246：修复SQL239/SQL243“兵魄/护道保留旧等级”规则，并增加付费洗炼防空转。
-SQL245 R2：新服42阶段累计修为曲线 + 初生五行杂灵根 + ADMIN9永久删档重开，仍为CACHE116前置。
+CACHE117：修复卸下/穿戴后的装备location旧缓存误判；打开淬炼与提交操作前实时核对数据库位置。
+SQL247：修复造化升品玉/乾坤破境石引用不存在ring_element_multiplier导致的运行时失败，统一使用bequipment01_value。
+SQL246：兵魄/护道属性+等级双随机；百炼只随机等级；付费无变化回滚。

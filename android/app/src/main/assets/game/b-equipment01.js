@@ -2,7 +2,7 @@
   'use strict';
 
   const MODULE = 'B-EQUIPMENT01';
-  const VERSION = '2.1.1-cache116-equipped-detail';
+  const VERSION = '2.1.1-cache117-equipment-state-fix';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
@@ -32,6 +32,7 @@
     data: null,
     enhancement: null,
     loading: false,
+    refreshPromise: null,
     view: 'backpack',
     filter: 'all',
     sort: 'grade',
@@ -166,6 +167,11 @@
     if (!item) return item;
     const extra = enhancementById.get(String(item.id)) || {};
     const merged = { ...item, ...extra };
+    // CACHE117：装备主系统返回的位置/锁定状态是权威来源。
+    // 强化状态RPC与装备主RPC并行读取时，旧location不得覆盖刚读取到的新位置。
+    ['id', 'character_id', 'template_id', 'location', 'is_locked', 'slot_code', 'grade_code'].forEach(key => {
+      if (item[key] !== undefined) merged[key] = item[key];
+    });
     merged.enhancement_level = Number(merged.enhancement_level || 0);
     merged.base_main_stat_value = Number(merged.base_main_stat_value ?? merged.main_stat_value ?? 0);
     merged.main_stat_value = Number(merged.main_stat_value ?? merged.base_main_stat_value ?? 0);
@@ -210,10 +216,15 @@
   }
 
   async function refresh(force = false) {
-    if (state.loading || !session()?.access_token) return state.data;
+    if (!session()?.access_token) return state.data;
+    if (state.loading) {
+      if (!force) return state.refreshPromise || state.data;
+      // CACHE117：穿戴/卸下后的强制刷新不能被正在进行的旧刷新直接跳过。
+      try { await state.refreshPromise; } catch {}
+    }
     if (!force && Date.now() - state.lastFetch < 5000) return state.data;
     state.loading = true;
-    try {
+    state.refreshPromise = (async () => {
       const [baseData, enhancementData] = await Promise.all([
         rpc('get_equipment_system_bequipment01'),
         rpc('get_equipment_enhancement_state_v180')
@@ -225,6 +236,9 @@
       state.lastFetch = Date.now();
       renderAll();
       return state.data;
+    })();
+    try {
+      return await state.refreshPromise;
     } catch (error) {
       console.warn(`[${MODULE}] refresh failed`, error);
       state.available = false;
@@ -232,6 +246,7 @@
       return null;
     } finally {
       state.loading = false;
+      state.refreshPromise = null;
     }
   }
 

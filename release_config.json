@@ -1,13 +1,14 @@
 {
   "version": "V2.1.1",
-  "releaseLabel": "V2.1.1 CACHE116",
-  "buildId": "v2-1-1-cache116-socketrerollfix-admin26r2-sql246",
-  "cacheEpoch": 116,
+  "releaseLabel": "V2.1.1 CACHE117",
+  "buildId": "v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247",
+  "cacheEpoch": 117,
   "minimumDatabaseBaseline": "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-  "sqlRevision": "211-221 + 229-244 + SQL245 R2 + SQL246 REQUIRED",
+  "sqlRevision": "211-221 + 229-244 + SQL245 R2 + SQL246 + SQL247 REQUIRED",
   "migrationSql": [
     245,
-    246
+    246,
+    247
   ],
   "features": [
     "WORLD_BOSS_TEAM_PVE_BWBOSS01",
@@ -68,13 +69,17 @@
     "ADMIN9_R26_R2_PERMANENT_PLAYER_RESET_NO_BACKUP",
     "CLIENT_VERSION_211_CACHE116",
     "EQUIPMENT_SOCKET_ATTRIBUTE_AND_LEVEL_REROLL_V246",
-    "EQUIPMENT_PAID_REROLL_NOOP_ROLLBACK_SQL246"
+    "EQUIPMENT_PAID_REROLL_NOOP_ROLLBACK_SQL246",
+    "CLIENT_VERSION_211_CACHE117",
+    "EQUIPMENT_AUTHORITATIVE_LOCATION_REFRESH_CACHE117",
+    "EQUIPMENT_FORGE_REALTIME_STATE_GUARD_SQL247",
+    "EQUIPMENT_GRADE_REALM_CANONICAL_VALUE_SQL247"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R26_R2_V2.1.1_CACHE116_SQL245_SQL246_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R27_V2.1.1_CACHE117_全境界修为比例调整_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "SOCKET_ATTRIBUTE_LEVEL_REROLL_AND_PAID_NOOP_ROLLBACK",
-  "databaseRelease": "生产已确认SQL244；CACHE116要求先完成SQL245 R2，再执行SQL246装备孔位洗炼热修。",
+  "clientHotfix": "EQUIPMENT_LOCATION_REFRESH_AND_GRADE_REALM_VALUE_FIX",
+  "databaseRelease": "CACHE117要求SQL245 R2、SQL246与SQL247；SQL247修复装备位置实时确认及升品/破境数值链。",
   "notes": [
     "V2.1.1 CACHE107集成B-WBOSS01世界BOSS团队副本；底部导航新增“世 / 世界”。",
     "装备孔位基础黄1玄2地3天4仙5，强化+6/+8/+10各额外开放1孔，仙品+10最高8孔。",
@@ -105,16 +110,20 @@
     "ADMIN9 R26 R2系统页新增永久删档重开：清空玩家游戏档案及相关历史，不创建玩家备份；auth登录账号、profiles、GM账号、系统/内容配置、版本与SQL状态保留。",
     "CACHE115同步修正创建角色、转世、洗灵页面说明，使客户端文案与SQL245新服规则一致。"
   ],
-  "gmVersion": "ADMIN9 R26 R2",
-  "nextSqlNumber": 247,
+  "gmVersion": "ADMIN9 R27",
+  "nextSqlNumber": 248,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "requires_sql245_r2_then_sql246_then_cache116_deploy",
-  "runtimeDatabaseGate": "SQL245_GATE_PASSED_AND_SQL246_GATE_PASSED_REQUIRED_FOR_CACHE116",
+  "releaseStage": "requires_sql245_r2_sql246_sql247_then_cache117_deploy",
+  "runtimeDatabaseGate": "SQL245_GATE_PASSED_AND_SQL246_GATE_PASSED_AND_SQL247_GATE_PASSED_REQUIRED_FOR_CACHE117",
   "releaseNotes": [
     "CACHE116：兵魄/护道对未锁孔同时重新随机属性类型与等级；锁孔双保护。",
     "SQL246：百炼只随机未锁已有属性孔等级；有其它可用等级时排除原等级，避免Lv10付费后原样Lv10。",
     "SQL246：兵魄/护道优先排除原属性组合；若整次无实际变化则事务回滚，材料、锁玉、灵石均不扣。",
     "SQL245 R2仍是CACHE116前置：新服境界曲线、初生五行杂灵根与ADMIN9永久删档重开。",
-    "Pages R3 / Android Release R6 发布链、包名与签名方式保持锁定不变。"
+    "Pages R3 / Android Release R6 发布链、包名与签名方式保持锁定不变。",
+    "CACHE117：装备主系统location/is_locked为合并权威值；穿戴/卸下后的强制刷新不会再被并发旧刷新跳过。",
+    "CACHE117：打开孔位/升品/破境以及真正提交操作前，经SQL247只读RPC再次确认数据库实时location/is_locked。",
+    "SQL247：造化升品玉与乾坤破境石不再访问不存在的ring_element_multiplier，统一通过bequipment01_value计算目标装备基础属性。",
+    "CACHE117：孔位洗炼成功后同时刷新装备主状态与forge overview，避免孔位/主属性/location长期不同步。"
   ]
 }
