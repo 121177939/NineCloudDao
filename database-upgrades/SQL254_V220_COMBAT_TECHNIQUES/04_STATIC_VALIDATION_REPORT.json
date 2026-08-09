@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "errors": [],
+  "warnings": [],
+  "revision": "R5",
+  "release": "V2.2.0 CACHE122",
+  "sql": "01_SQL254_R5_V2.2.0_CACHE122_功法三系_黄品5pct与真实概率展示_执行即门禁.sql",
+  "lines": 1565,
+  "bytes": 161214,
+  "sha256": "856cd5058f582010f3190dfa2fb4f7e805a868c5b0a69af024af7a69c76fd2ab",
+  "dollarQuotePairs": 56,
+  "parenthesisBalance": 0,
+  "checks": {
+    "yellowDirectRateDefault5Percent": true,
+    "ordinaryRatesPreservedMainPlusSupport": true,
+    "nonYellowRateOneFifth": true,
+    "batchOpportunityAdapter": true,
+    "combatGate": true
+  }
+}

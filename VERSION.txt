@@ -1,16 +1,7 @@
-V2.1.1 CACHE120
-v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247
-V2.1.1
-CACHE120
-DATABASE SQL247 R2 已上线并门禁通过；CACHE120无新增SQL
-ANDROID 2001420 2.1.1-cache120
-NEXT_SQL 248
-ADMIN9 R27
-
+V2.2.0 CACHE122
+v2-2-0-cache122-combat-techniques-admin33-sql254-r5
+SQL252 ONLINE / SQL253 ADMIN9_R31 PENDING / SQL254 R5 V2.2.0 PENDING
+ADMIN9 R33
+PAGES github-pages default artifact R3 LOCKED
 PAGES_DEPLOY default-github-pages-artifact-r3
-DEPLOYMENT_LOCK V2.0.11_VERIFIED_PAGES_R3_ANDROID_RELEASE_R6_DO_NOT_CHANGE
-
-CACHE120：兵魄/护道/百炼改为单RPC极速提交；SQL246服务端事务继续负责背包、锁定、材料、锁玉、灵石全部权威校验。
-CACHE120：直接使用洗炼RPC返回的sockets/material_after/lock_item_after/spirit_stones_after原地更新，不再等待多轮刷新。
-CACHE120：成功反馈显示本次RPC端到端耗时；正常网络目标约1—2秒，具体以生产网络与Supabase响应为准。
-CACHE119/CACHE118/CACHE117功能全部保留；SQL247 R2已上线，下一SQL248。
+ANDROID 2001501 2.2.0-cache122

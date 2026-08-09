@@ -1,6 +1,6 @@
 {
-  "version": "V2.1.1 CACHE117",
-  "clientBuild": "v2-1-1-cache117-equipmentstate-upgradefix-admin27-sql247",
+  "version": "V2.2.0 CACHE122",
+  "clientBuild": "v2-2-0-cache122-combat-techniques-admin33-sql254-r5",
   "files": [
     {
       "path": ".nojekyll",
@@ -9,23 +9,23 @@
     },
     {
       "path": "404.html",
-      "size": 3657,
-      "sha256": "6149f86e319e38c92bfb830be109cac79fb382e5fd886014cbfe9748ec645403"
+      "size": 3714,
+      "sha256": "c3c2dd3e6fce46793ff6bfbc7a8e740a913e0028a51874458b7637dd4fed6eca"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 12257,
-      "sha256": "589a1a080cdd4cd73c7e6d697665b463c9fcacfed4e9c8e610f7ad6b96fab555"
+      "size": 3848,
+      "sha256": "fccfc4dbc1d1b78b1e9ba77444ad465b094b484c4ab576257384cc0e18dbb803"
     },
     {
       "path": "VERSION.txt",
-      "size": 709,
-      "sha256": "517f28dc8e83b21d5f83f9fad96cc467637741880a9ee5ee15df1f5e29d0799d"
+      "size": 271,
+      "sha256": "2962368e07be1492ae359e43e47fa148c5477ddc33932ea722cc214c1f7fffde"
     },
     {
       "path": "app.js",
-      "size": 501883,
-      "sha256": "759975d74aed0e8917cc444026e810b92b9d868bd22fa5408bb676c8f25fb7e1"
+      "size": 503870,
+      "sha256": "2752cf3cf944b60c5db77933a500516d23a7190092a01ffb19f72e73911bb990"
     },
     {
       "path": "assets/icon-192.png",
@@ -49,8 +49,8 @@
     },
     {
       "path": "b-equipment-v210.js",
-      "size": 21353,
-      "sha256": "20e22ad6c584e374004e846bdd4d00cc369a7bc757283507c2fe8fd125b5cdbc"
+      "size": 23602,
+      "sha256": "1ede0a2de993faa732f44e320fa89b262b51f38001bd6fc63c0c359dd2f75106"
     },
     {
       "path": "b-equipment01.css",
@@ -59,8 +59,8 @@
     },
     {
       "path": "b-equipment01.js",
-      "size": 51280,
-      "sha256": "11c101d5da89c18e0a791bf6c1a653073be7b045b4bb5959e687ca5811788816"
+      "size": 51285,
+      "sha256": "624d550548ab4d525cb88b7e62faa7255372e545bafd3729eb89d6c0c76cda3b"
     },
     {
       "path": "b-paigow01.css",
@@ -99,8 +99,8 @@
     },
     {
       "path": "b-secret-realm01.js",
-      "size": 44291,
-      "sha256": "26718bcc0d216e9326ffaa1a439afc90a4e9c5eb80f64d60d4d57ac4774323c1"
+      "size": 45087,
+      "sha256": "1e0253bc0fbda9b12ed515831329dd090144089216529afd71f07bfdc31b16b0"
     },
     {
       "path": "b-sect-v2.css",
@@ -113,29 +113,39 @@
       "sha256": "54fdd08fd433e5c1752252d2240b614dcb6afbc5728ea6713cd51be1289e948e"
     },
     {
+      "path": "b-technique-v220.css",
+      "size": 5166,
+      "sha256": "2611119006f3e4819be27b9b8822a6cf850578c12d7470f422514fb830440b79"
+    },
+    {
+      "path": "b-technique-v220.js",
+      "size": 17948,
+      "sha256": "31ccd45cb5b76d9f1363c87237244c0c4be174d95b7f2d02e38b2406329bab14"
+    },
+    {
       "path": "b-world-boss01.css",
       "size": 10869,
       "sha256": "c6d9f30505d3d6d74660951565a2a12c2f9cbd96bbf26c97c7fd0e05c228ecd7"
     },
     {
       "path": "b-world-boss01.js",
-      "size": 25605,
-      "sha256": "fffd475ef79e5463362808ef6ff85986e1be00fcbedcf0a4ff77da25d7ee7b23"
+      "size": 26262,
+      "sha256": "166a77430f844a62b4b1c7837069810c0581532b6faae8c44379a65c671cc2fd"
     },
     {
       "path": "config.js",
-      "size": 572,
-      "sha256": "d3e82910593f1165ffd843657909e8836ac41da222c7d741f4e51565601165cd"
+      "size": 540,
+      "sha256": "73574b28ad9c8dc6f9a4c89360239f20b338c350fde40f6c9a9a25bff1a674a9"
     },
     {
       "path": "index.html",
-      "size": 3657,
-      "sha256": "6149f86e319e38c92bfb830be109cac79fb382e5fd886014cbfe9748ec645403"
+      "size": 3770,
+      "sha256": "16d4a04d436f5f3bcc7a6a3f6ec947bff11756f5e5335f11ba10ad28d95ede11"
     },
     {
       "path": "manifest.webmanifest",
-      "size": 580,
-      "sha256": "f4822333e3f485ad91b4c0857e8921d97372c5bf0a373d530023ab6dd3d91da2"
+      "size": 575,
+      "sha256": "d52159af60e93d804e871958c719839590377972754093fe212182edcf2a4cab"
     },
     {
       "path": "paigow-app.css",
@@ -154,8 +164,8 @@
     },
     {
       "path": "release_config.json",
-      "size": 9196,
-      "sha256": "c4b5c367cf57205a2231cfda6d762f8d1d04242ee6d8f72c1299ad9473f5fe94"
+      "size": 4930,
+      "sha256": "dc8e4e31c9e85af0f5d8728f4686eb1c78e6eff4233af5df58810c1eb2dd6fbb"
     },
     {
       "path": "styles.css",
@@ -164,8 +174,8 @@
     },
     {
       "path": "sw.js",
-      "size": 4794,
-      "sha256": "fc87c630e9ebc56d0afecb4dd73d8809b3ae11180b5479bee883b35dec2896ff"
+      "size": 4827,
+      "sha256": "faea174ebbcb5746c6c7c2dbe0e20e922ba4128d0197c0fc23acb87c3aaa0785"
     },
     {
       "path": "update-guard.js",

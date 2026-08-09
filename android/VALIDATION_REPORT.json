@@ -2,12 +2,12 @@
   "ok": true,
   "errors": [],
   "warnings": [],
-  "gameFileCount": 89,
-  "gameBytes": 1680119,
+  "gameFileCount": 33,
+  "gameBytes": 1385044,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.1.1 CACHE120",
-  "gameBuildId": "v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247",
-  "databaseBaseline": "SQL247 R2 ONLINE; CACHE120 no new SQL",
-  "androidVersionCode": 2001420
+  "gameBaseline": "V2.2.0 CACHE122",
+  "gameBuildId": "v2-2-0-cache122-combat-techniques-admin33-sql254-r5",
+  "databaseBaseline": "SQL252 ONLINE; SQL253 pending if not executed; SQL254 required",
+  "androidVersionCode": 2001501
 }

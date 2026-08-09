@@ -1549,7 +1549,7 @@
   }
 
   async function rpcGetTechniqueSystemV2() {
-    const result = await restFetch('rpc/get_technique_system_v2', {
+    const result = await restFetch('rpc/get_cultivation_technique_system_v220', {
       method: 'POST',
       body: {}
     });
@@ -1576,7 +1576,7 @@
   }
 
   async function rpcUpgradeTechniqueV0154(characterTechniqueId, requestId = createUuid()) {
-    const result = await restFetch('rpc/upgrade_technique_v0154', {
+    const result = await restFetch('rpc/upgrade_cultivation_technique_v220', {
       method: 'POST',
       body: { p_character_technique_id: characterTechniqueId, p_request_id: requestId }
     });
@@ -1584,7 +1584,7 @@
   }
 
   async function rpcGetExclusiveTechniqueSystemV1() {
-    const result = await restFetch('rpc/get_exclusive_technique_system_v1', { method: 'POST', body: {} });
+    const result = await restFetch('rpc/get_exclusive_technique_system_v220', { method: 'POST', body: {} });
     return Array.isArray(result) ? result[0] || null : result;
   }
 
@@ -1627,7 +1627,7 @@
   }
 
   async function rpcUpgradeExclusiveTechniqueV0154(characterExclusiveId, requestId = createUuid()) {
-    const result = await restFetch('rpc/upgrade_exclusive_technique_v0154', {
+    const result = await restFetch('rpc/upgrade_exclusive_technique_v220', {
       method: 'POST',
       body: { p_character_exclusive_id: characterExclusiveId, p_request_id: requestId }
     });
@@ -3297,9 +3297,11 @@
 
   function techniqueCostLocalV0154(grade, level, mastery = false) {
     const rule = techniqueGradeRulesLocalV0154(grade);
+    // V2.2.0：服务器返回最终权威费用；本地只在极短暂无云端值时按默认10倍做显示兜底。
+    const fallbackMultiplierV220 = 10;
     return mastery
-      ? Math.ceil(1049 * Math.pow(Math.max(1, rule.maxLevel - 1), 2) * rule.factor * 1.5)
-      : Math.ceil(1049 * Math.pow(Math.max(1, Number(level || 1)), 2) * rule.factor);
+      ? Math.ceil(1049 * Math.pow(Math.max(1, rule.maxLevel - 1), 2) * rule.factor * 1.5 * fallbackMultiplierV220)
+      : Math.ceil(1049 * Math.pow(Math.max(1, Number(level || 1)), 2) * rule.factor * fallbackMultiplierV220);
   }
 
   function localTechniqueContributionV0154() {
@@ -4897,7 +4899,7 @@
         <p>${battleDefenseCopyBCombat01(action)}</p>
         ${missed
           ? `<p class="battle-miss-line-v210">${escapeHtml(action?.defender_name || '')}凭身法避开攻势，本回合未造成伤害${hitNote}。</p>`
-          : `<p class="battle-element-line-bcombat01">${elementLine}</p>${talentLine ? `<p class="battle-talent-line-v12">${talentLine}</p>` : ''}<div class="battle-damage-line-bcombat01"><strong>造成 ${formatNumber(action?.damage || 0)} 点伤害</strong><span>道御与护体共化去 ${formatNumber(Number(action?.defense_reduction || 0) * 100, 2)}%${hitNote}</span></div>`}
+          : `<p class="battle-element-line-bcombat01">${elementLine}</p>${talentLine ? `<p class="battle-talent-line-v12">${talentLine}</p>` : ''}${Array.isArray(action?.technique_effects) && action.technique_effects.length ? `<div class="battle-technique-effects-v220">${action.technique_effects.map(effect => `<span class="battle-technique-effect-v220">${escapeHtml(effect?.name || '功法')}${effect?.text ? ` · ${escapeHtml(effect.text)}` : ''}</span>`).join('')}</div>` : ''}<div class="battle-damage-line-bcombat01"><strong>造成 ${formatNumber(action?.damage || 0)} 点伤害</strong><span>道御与护体共化去 ${formatNumber(Number(action?.defense_reduction || 0) * 100, 2)}%${hitNote}</span></div>`}
         <div class="battle-hp-line-bcombat01"><span>${escapeHtml(action?.defender_name || '')} 生机</span><strong>${formatNumber(action?.hp_after || 0)} / ${formatNumber(action?.max_hp || 0)}</strong></div>
         ${action?.low_health ? `<small class="battle-low-health-bcombat01">${escapeHtml(action?.defender_name || '')}气息紊乱，已经显露败象。</small>` : ''}
         ${action?.defeated ? `<small class="battle-defeated-bcombat01">最后一击落下，${escapeHtml(action?.defender_name || '')}生机归零，此战胜负已定。</small>` : ''}
@@ -7961,32 +7963,44 @@
         </section>
 
         <section id="talentSection" class="panel info-section" data-mobile-screen="techniques">
-          <div class="panel-title"><h3>功法</h3><span class="badge">五槽 · 灵石升级 · 圆满</span></div>
-          <div class="foundation-grid">
-            <article class="path-card">
+          <div class="panel-title"><h3>功法</h3><span class="badge">修炼 · 攻伐 · 护体</span></div>
+          <div class="technique-foundation-v220">
+            <article class="path-card-v220">
               <span>先天灵根 · ${escapeHtml(root.rarity || '未知')}</span>
               <strong>${escapeHtml(root.name || '未测')}</strong>
-              <p>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)}。风、冰、雷变异灵根额外使境界基础道攻提高8%；天生剑心在装备剑类武器时同样使境界基础道攻提高8%。二者冲突时只生效一个；均不增加道御、生机、身法，也不放大装备、强化、功法或戒指。其他灵根只影响修炼速度。${escapeHtml(root.description || '')}</p>
+              <small>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)}</small>
+              <button type="button" data-v220-path-open data-v220-path-kind="先天灵根" data-v220-path-name="${escapeHtml(root.name || '未测')}">查看详情 ›</button>
+              <div class="path-detail-source-v220"><p>修炼系数 ×${formatNumber(root.cultivation_multiplier || 1, 2)}。风、冰、雷变异灵根额外使境界基础道攻提高8%；天生剑心在装备剑类武器时同样使境界基础道攻提高8%。二者冲突时只生效一个；均不增加道御、生机、身法，也不放大装备、强化、功法或戒指。其他灵根只影响修炼速度。${escapeHtml(root.description || '')}</p></div>
             </article>
-            <article class="path-card">
+            <article class="path-card-v220">
               <span>降生命格 · ${escapeHtml(fate.rarity || '未知')}</span>
               <strong>${escapeHtml(fate.name || '未定')}</strong>
-              ${fateEffectHtml(fate, fateStatus)}
+              <small>${fateStatus?.current_adversity_stacks != null ? `当前百折 ${formatNumber(fateStatus.current_adversity_stacks)} / ${formatNumber(fateStatus.max_adversity_stacks || 4)} 层` : '点击查看命格完整说明'}</small>
+              <button type="button" data-v220-path-open data-v220-path-kind="降生命格" data-v220-path-name="${escapeHtml(fate.name || '未定')}">查看详情 ›</button>
+              <div class="path-detail-source-v220">${fateEffectHtml(fate, fateStatus)}</div>
             </article>
           </div>
-          ${exclusiveTechniquePanelHtml(bundle.exclusiveTechniqueSystem || state.exclusiveTechniqueSystem || { status: 'loading', techniques: [] }, inventory)}
-          ${techniquePanelHtml(techniqueSystem, inventory)}
-          ${stackedActiveEffects.length ? `
-            <div class="effect-strip">
-              ${stackedActiveEffects.map(effect => `
-                <article>
-                  <span>${escapeHtml(effectRemainingText(effect))}</span>
-                  <strong>${escapeHtml(effect.display_name)} X${formatNumber(effect.effect_count || 1)}</strong>
-                  <small>${Number(effect.flat_rate_per_second) ? `每秒修为 +${formatNumber(effect.flat_rate_per_second, 3)}` : ''}${Number(effect.flat_rate_per_second) && Number(effect.multiplier_bonus) ? ' · ' : ''}${Number(effect.multiplier_bonus) ? `修炼倍率 +${formatNumber(Number(effect.multiplier_bonus) * 100, 2)}%` : ''}</small>
-                </article>
-              `).join('')}
-            </div>
-          ` : ''}
+          <div id="techniqueTabsV220" class="technique-tabs-v220" role="tablist">
+            <button class="technique-tab-v220 active" type="button" data-v220-tech-tab="cultivation">修炼</button>
+            <button class="technique-tab-v220" type="button" data-v220-tech-tab="attack">攻伐</button>
+            <button class="technique-tab-v220" type="button" data-v220-tech-tab="defense">护体</button>
+          </div>
+          <div data-v220-cultivation-pane>
+            ${exclusiveTechniquePanelHtml(bundle.exclusiveTechniqueSystem || state.exclusiveTechniqueSystem || { status: 'loading', techniques: [] }, inventory)}
+            ${techniquePanelHtml(techniqueSystem, inventory)}
+            ${stackedActiveEffects.length ? `
+              <div class="effect-strip">
+                ${stackedActiveEffects.map(effect => `
+                  <article>
+                    <span>${escapeHtml(effectRemainingText(effect))}</span>
+                    <strong>${escapeHtml(effect.display_name)} X${formatNumber(effect.effect_count || 1)}</strong>
+                    <small>${Number(effect.flat_rate_per_second) ? `每秒修为 +${formatNumber(effect.flat_rate_per_second, 3)}` : ''}${Number(effect.flat_rate_per_second) && Number(effect.multiplier_bonus) ? ' · ' : ''}${Number(effect.multiplier_bonus) ? `修炼倍率 +${formatNumber(Number(effect.multiplier_bonus) * 100, 2)}%` : ''}</small>
+                  </article>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+          <div id="combatTechniqueRootV220"><div class="empty-state">正在查阅攻防道藏……</div></div>
         </section>
 
         <section id="inventorySection" class="panel info-section" data-mobile-screen="cave">

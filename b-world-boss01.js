@@ -223,13 +223,19 @@
     return '';
   }
 
+  function combatTechniqueShardHtml(run) {
+    const shard = run?.combat_technique_shard_v220 || run?.my_reward?.combat_technique_shard_v220 || null;
+    if (!shard?.technique_code) return '';
+    return `<div class="world-boss-rare-bwboss01 win"><b>功法残卷</b><span>${esc(shard.technique_name || shard.technique_code)} ×${fmt(shard.quantity || 1)}</span><small>V2.2.0独立掉落，不挤占原珍稀奖励</small></div>`;
+  }
+
   function runSummaryHtml(run) {
     if (!run?.id) return '';
     const result = run.result || {};
     const won = Boolean(result.victory);
     return `<section class="world-boss-run-summary-bwboss01 ${won ? 'win' : 'lose'}">
       <div><small>${time(run.ended_at || run.created_at)} · ${difficultyName(run.difficulty)}</small><strong>${won ? '镇压成功' : '挑战失败'}</strong><p>${esc(result.summary || (won ? '九幽吞天兽的投影已经被击退。' : '本次队伍未能在狂暴前完成镇压。'))}</p></div>
-      <div><span>回合 ${fmt(result.rounds || 0)}</span><span>镇魔令 +${fmt(result.token_reward || 0)}</span><button class="primary-btn" type="button" data-wboss-playback="${esc(run.id)}">查看战报</button></div>${rareRewardHtml(run)}
+      <div><span>回合 ${fmt(result.rounds || 0)}</span><span>镇魔令 +${fmt(result.token_reward || 0)}</span><button class="primary-btn" type="button" data-wboss-playback="${esc(run.id)}">查看战报</button></div>${rareRewardHtml(run)}${combatTechniqueShardHtml(run)}
     </section>`;
   }
 
@@ -303,6 +309,7 @@
       if (!confirm('确认开始世界BOSS挑战？开战后本场角色快照锁定，服务端会一次完成权威结算。')) return;
       const result = await action('start_world_boss_run_bwboss01', {}, '世界BOSS战已经结算。');
       const run = result?.run || result;
+      if (result?.combat_technique_shard_v220?.technique_code) { toast('世界BOSS额外掉落功法残卷。'); window.dispatchEvent(new CustomEvent('jiuxiao:combat-technique-refresh')); }
       if (run?.id) showPlayback(run);
     });
     el.querySelectorAll('[data-wboss-playback]').forEach(button => button.addEventListener('click', async () => {

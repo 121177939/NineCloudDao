@@ -487,7 +487,7 @@
           <div><span>击败妖兽</span><strong>${formatNumber(run.monsters_defeated)}</strong></div>
           <div><span>玩家交锋</span><strong>${formatNumber(run.pvp_count)}</strong></div>
         </div>
-        <div class="secret-realm-risk-note-bsecretrealm01"><strong>当前所得仍处于风险中</strong><span>被玩家击败后，堆叠资源转移50%，每件装备独立判定50%易主；被妖兽击败则保留全部当前所得。离境结算后仍需手动领取。</span></div>
+        <div class="secret-realm-risk-note-bsecretrealm01"><strong>当前所得仍处于风险中</strong><span>被玩家击败后，堆叠资源转移50%，功法残卷按本轮全部残卷总数50%向下取整后随机原物转移；同一对玩家6小时内重复夺卷会触发反对刷。每件装备仍独立判定50%易主；被妖兽击败则保留全部当前所得。离境结算后仍需手动领取。</span></div>
         <div class="secret-realm-reward-summary-bsecretrealm01">
           <div><span>临时修为</span><strong>${formatNumber(rewardValue(rewards, 'cultivation'))}</strong></div>
           <div><span>临时灵石</span><strong>${formatNumber(rewardValue(rewards, 'spirit_stones'))}</strong></div>
@@ -666,7 +666,9 @@
       } else {
         await refresh(true);
       }
-      if (!silent && result?.message) toast(result.message);
+      const shardRows = Array.isArray(result?.combat_technique_shards_v220) ? result.combat_technique_shards_v220.filter(row => row?.technique_code) : [];
+      if (!silent && shardRows.length) toast(`秘境获得功法残卷 ×${shardRows.reduce((n,row)=>n+Number(row.quantity||0),0)}（风险中）`);
+      else if (!silent && result?.message) toast(result.message);
       state.historyLoadedAt = 0;
       window.dispatchEvent(new CustomEvent('jiuxiao:secret-realm-settled', { detail: result || state.data }));
       render();
@@ -691,7 +693,9 @@
       } else {
         await refresh(true);
       }
-      toast(result?.message || '秘境奖励已全部领取。');
+      const claimed = Array.isArray(result?.combat_technique_shards_claimed_v220) ? result.combat_technique_shards_claimed_v220 : [];
+      toast(claimed.length ? `秘境奖励已领取，功法残卷安全入藏 ×${claimed.reduce((n,row)=>n+Number(row.quantity||0),0)}。` : (result?.message || '秘境奖励已全部领取。'));
+      window.dispatchEvent(new CustomEvent('jiuxiao:combat-technique-refresh'));
       state.historyLoadedAt = 0;
       window.dispatchEvent(new CustomEvent('jiuxiao:secret-realm-claimed', { detail: result || state.data }));
       render();

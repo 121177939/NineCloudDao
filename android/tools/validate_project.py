@@ -28,6 +28,7 @@ def main() -> None:
         "gradle/wrapper/gradle-wrapper.properties", "app/build.gradle.kts",
         "app/src/main/AndroidManifest.xml", "app/src/main/assets/game/index.html",
         "app/src/main/assets/game/app.js", "app/src/main/assets/game/config.js",
+        "app/src/main/assets/game/b-technique-v220.js", "app/src/main/assets/game/b-technique-v220.css",
         "app/src/main/assets/game/android-local.js",
         "app/src/main/java/com/jiuxiaowendao/game/MainActivity.java",
         "app/src/main/java/com/jiuxiaowendao/game/update/UpdateManager.java",
@@ -102,14 +103,15 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001420" in gradle_props, "Android版本号不是CACHE120基线")
-    check('APP_VERSION_NAME=2.1.1-cache120' in gradle_props, "Android版本名不是CACHE120基线")
-    expected_build = "v2-1-1-cache120-forgefastpath-equipmentstate-admin27-sql247"
+    check("APP_VERSION_CODE=2001501" in gradle_props, "Android版本号不是CACHE122基线")
+    check('APP_VERSION_NAME=2.2.0-cache122' in gradle_props, "Android版本名不是CACHE122基线")
+    expected_build = "v2-2-0-cache122-combat-techniques-admin33-sql254-r5"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
-    check(baseline.get("minimumDatabaseBaseline") == "V2.0.12 CACHE104 / SQL211-221 + SQL229-232 / ADMIN9 R20",
-          "数据库最低基线不一致")
+    check(baseline.get("runtimeDatabaseGate") == "SQL254_GATE_REQUIRED_BEFORE_V220_CLIENT",
+          "数据库运行门禁不是SQL254")
+    check(baseline.get("nextSqlNumber") == 255, "下一SQL编号不是255")
 
     game_files = [p for p in game_root.rglob("*") if p.is_file()]
     check(len(game_files) >= 20, f"游戏资源数量异常：{len(game_files)}")
@@ -128,10 +130,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.1.1 CACHE120",
+        "gameBaseline": "V2.2.0 CACHE122",
         "gameBuildId": expected_build,
-        "databaseBaseline": "SQL247 R2 ONLINE; CACHE120 no new SQL",
-        "androidVersionCode": 2001420,
+        "databaseBaseline": "SQL252 ONLINE; SQL253 pending if not executed; SQL254 required",
+        "androidVersionCode": 2001501,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
