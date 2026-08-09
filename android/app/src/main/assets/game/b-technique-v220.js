@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const MODULE = 'B-TECHNIQUE-V220-CACHE122-R5';
+  const MODULE = 'B-TECHNIQUE-V220-CACHE123-TAB-ISOLATION';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');
@@ -78,11 +78,20 @@
   }
   function render(){
     const root=document.getElementById('combatTechniqueRootV220'); if(!root)return;
-    root.innerHTML=state.loading?'<div class="empty-state">正在查阅攻防道藏……</div>':!state.data?'<div class="empty-state">SQL254尚未部署，攻伐/护体功法暂不可用。</div>':`${pane('attack')}${pane('defense')}`;
-    root.querySelectorAll('.combat-technique-pane-v220').forEach((el,i)=>el.hidden=(state.tab==='attack'?i!==0:state.tab==='defense'?i!==1:true));
+    const combatTab=state.tab==='attack'||state.tab==='defense';
+    root.hidden=!combatTab;
+    root.style.display=combatTab?'':'none';
+    if(!combatTab){root.innerHTML='';return;}
+    root.innerHTML=state.loading?'<div class="empty-state">正在查阅攻防道藏……</div>':!state.data?'<div class="empty-state">SQL254尚未部署，攻伐/护体功法暂不可用。</div>':pane(state.tab);
     bindRoot(root);
   }
-  function tabSwitch(tab){state.tab=tab;document.querySelectorAll('[data-v220-tech-tab]').forEach(b=>b.classList.toggle('active',b.dataset.v220TechTab===tab));document.querySelectorAll('[data-v220-cultivation-pane]').forEach(el=>el.hidden=tab!=='cultivation');render();}
+  function tabSwitch(tab){
+    if(!['cultivation','attack','defense'].includes(tab))tab='cultivation';
+    state.tab=tab;
+    document.querySelectorAll('[data-v220-tech-tab]').forEach(b=>{const active=b.dataset.v220TechTab===tab;b.classList.toggle('active',active);b.setAttribute('aria-selected',active?'true':'false');});
+    document.querySelectorAll('[data-v220-cultivation-pane]').forEach(el=>{const visible=tab==='cultivation';el.hidden=!visible;el.style.display=visible?'':'none';});
+    render();
+  }
   async function refresh(){if(state.loading)return;state.loading=true;render();try{const d=await rpc('get_combat_technique_system_v220');state.data=d?.status==='ok'?d:null;}catch(e){console.warn(MODULE,e);state.data=null;}finally{state.loading=false;render();}}
   function modalHtml(row){
     const s=state.data?.settings||{}, need=num(s.shard_combine_count||10), learned=row.learned;

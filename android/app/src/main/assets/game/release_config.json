@@ -1,13 +1,11 @@
 {
   "version": "V2.2.0",
-  "releaseLabel": "V2.2.0 CACHE122",
-  "buildId": "v2-2-0-cache122-combat-techniques-admin33-sql254-r5",
-  "cacheEpoch": 122,
-  "minimumDatabaseBaseline": "SQL252 ONLINE + SQL254 V2.2.0 COMBAT_TECHNIQUES_GATE",
-  "sqlRevision": "SQL252 ONLINE（用户确认）；SQL253 ADMIN9_R31账号管理待执行；SQL254 R5 V2.2.0功法三系待执行；SQL255 NEXT",
-  "migrationSql": [
-    254
-  ],
+  "releaseLabel": "V2.2.0 CACHE123",
+  "buildId": "v2-2-0-cache123-technique-tabs-isolated-admin33-sql254-online",
+  "cacheEpoch": 123,
+  "minimumDatabaseBaseline": "SQL254 R5 ONLINE / SQL254_GATE_PASSED",
+  "sqlRevision": "SQL254 R5 ONLINE；本次CACHE123无新增SQL；SQL255 NEXT",
+  "migrationSql": [],
   "features": [
     "TECHNIQUE_THREE_FAMILIES_V220",
     "CULTIVATION_TECHNIQUES_KEEP_EXISTING_DROP_RULES",
@@ -26,14 +24,16 @@
     "COMBAT_TECHNIQUE_EFFECT_CODE_SERVER_ENGINE",
     "COMBAT_TECHNIQUE_SERVER_SNAPSHOT",
     "COMBAT_REPORT_TECHNIQUE_EFFECT_VISIBLE",
-    "DESTINY_SECRET_MONSTER_WORLDBOSS_COMBAT_GATE"
+    "DESTINY_SECRET_MONSTER_WORLDBOSS_COMBAT_GATE",
+    "TECHNIQUE_TAB_STRICT_SINGLE_FAMILY_RENDER"
   ],
   "gmEntry": "九霄问道_ADMIN9_R33_V2.2.0_CACHE122_SQL253_SQL254_账号管理_功法三系_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "clientHotfix": "TECHNIQUE_THREE_FAMILIES_COMBAT_EFFECT_ENGINE",
-  "databaseRelease": "生产已确认SQL252；部署V2.2.0前按顺序执行SQL253（如尚未执行）与SQL254，SQL254成功必须显示SQL254_GATE_PASSED。",
+  "clientHotfix": "TECHNIQUE_TAB_STRICT_SINGLE_FAMILY_RENDER",
+  "databaseRelease": "生产已确认 SQL254_GATE_PASSED。CACHE123 只修复功法页签显示隔离，不需要执行新SQL。",
   "notes": [
+    "CACHE123：修炼/攻伐/护体页签改为单家族严格渲染，当前页签之外的功法内容不生成DOM。",
     "现有全部功法保持修炼功法，原获取方式与概率不变；普通五槽和专属槽不拆档。",
     "新增攻伐10本、护体10本，各只能运转1本；无参悟境界门槛，不赠送初始攻防功法。",
     "新功法只产同名残卷：10张合1完整道卷；同品其它功法残卷可混合5换1指定残卷。",
@@ -48,9 +48,10 @@
   "gmVersion": "ADMIN9 R33",
   "nextSqlNumber": 255,
   "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
-  "releaseStage": "sql254_r5_required_before_cache122_client",
+  "releaseStage": "client_hotfix_cache123_no_sql",
   "runtimeDatabaseGate": "SQL254_GATE_PASSED",
   "releaseNotes": [
+    "CACHE123：修炼/攻伐/护体页签严格隔离显示。",
     "现有全部功法保持修炼功法，原获取方式与概率不变；普通五槽和专属槽不拆档。",
     "新增攻伐10本、护体10本，各只能运转1本；无参悟境界门槛，不赠送初始攻防功法。",
     "新功法只产同名残卷：10张合1完整道卷；同品其它功法残卷可混合5换1指定残卷。",
@@ -63,9 +64,10 @@
     "CACHE120装备洗炼极速链和已验证Pages/Android发布链完整继承，不改变包名与正式签名方式。"
   ],
   "featureFlags": [
-    "CLIENT_VERSION_220_CACHE122",
     "TECHNIQUE_THREE_FAMILIES_V220",
     "COMBAT_TECHNIQUE_SERVER_EFFECT_ENGINE",
-    "COMBAT_TECHNIQUE_SHARDS_V220"
+    "COMBAT_TECHNIQUE_SHARDS_V220",
+    "CLIENT_VERSION_220_CACHE123",
+    "TECHNIQUE_TAB_STRICT_SINGLE_FAMILY_RENDER"
   ]
 }

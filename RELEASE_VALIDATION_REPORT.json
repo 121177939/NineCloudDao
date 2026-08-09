@@ -1,44 +1,24 @@
 {
-  "release": "V2.2.0 CACHE122",
-  "buildId": "v2-2-0-cache122-combat-techniques-admin33-sql254-r5",
-  "gm": "ADMIN9 R33",
-  "database": "SQL252 ONLINE confirmed; SQL253 pending confirmation; SQL254 R5 required before CACHE122 client; SQL255 next only after SQL254_GATE_PASSED",
-  "sql254Revision": "R5",
-  "productionSql254Online": false,
+  "release": "V2.2.0 CACHE123",
+  "buildId": "v2-2-0-cache123-technique-tabs-isolated-admin33-sql254-online",
+  "gm": "ADMIN9 R33 unchanged",
+  "database": "SQL254 R5 ONLINE / SQL254_GATE_PASSED confirmed by user; no new SQL; SQL255 next",
+  "change": "Technique tabs strict single-family rendering",
   "checks": {
-    "pagesBuilder": "PASS",
-    "webAndroidSharedResources": "PASS",
-    "androidStaticValidation": "PASS 0 errors / 0 warnings",
-    "playerTechniqueJsSyntax": "PASS node --check",
-    "gmR33ScriptSyntax": "PASS all inline scripts node --check",
-    "gmDuplicateIds": "PASS",
-    "sqlStaticDollarQuoteAndBoundary": "PASS",
-    "sqlParenthesisBalance": "PASS",
-    "oldOrdinaryTechniqueRatesModified": false,
-    "yellowCombatShardConditionalRateDefault": 0.05,
-    "mysticCombatShardConditionalRate": "ordinary(main+support)*0.20",
-    "earthCombatShardConditionalRate": "ordinary(main+support)*0.20",
-    "heavenCombatShardConditionalRate": "ordinary(main+support)*0.20",
-    "immortalCombatShardConditionalRate": "ordinary(main+support)*0.20",
-    "combatTechniqueRealDatabaseGate": "SQL254 R5: SQL254_GATE_PASSED required on production"
+    "nodeTechniqueSyntax": "PASS",
+    "nodeAppSyntax": "PASS",
+    "pagesBuildGate": "PASS",
+    "pagesArtifactFiles": 36,
+    "strictTabIsolation": "PASS",
+    "webAndroidSync": "PASS",
+    "androidValidation": "PASS",
+    "androidErrors": 0,
+    "androidWarnings": 0,
+    "databaseChange": "NONE"
   },
-  "knownProductionOrdinaryConditionalRates": {
-    "mystic": 0.041666666666666664,
-    "earth": 0.1,
-    "heaven": 0.25,
-    "immortal": 0.5,
-    "meaning": "These are conditional rates after the corresponding grade/opportunity branch, not global per-opportunity probabilities."
-  },
-  "newCombatShardConditionalPoolRates": {
-    "yellow": 0.05,
-    "mystic": 0.008333333333333333,
-    "earth": 0.02,
-    "heaven": 0.05,
-    "immortal": 0.1
-  },
-  "artifacts": {
-    "sqlSha256": "856cd5058f582010f3190dfa2fb4f7e805a868c5b0a69af024af7a69c76fd2ab",
-    "gmSha256": "4d20268013b9f406db24e61de5a289aac1f2c348aad9d8800ae52e8cea74fd79"
-  },
-  "status": "STATIC_PACKAGE_R5_PASS_PRODUCTION_SQL254_R5_PENDING"
+  "behavior": {
+    "cultivation": "only cultivation content; combat root hidden and emptied",
+    "attack": "only attack pane is generated",
+    "defense": "only defense pane is generated"
+  }
 }

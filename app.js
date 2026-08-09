@@ -7981,9 +7981,9 @@
             </article>
           </div>
           <div id="techniqueTabsV220" class="technique-tabs-v220" role="tablist">
-            <button class="technique-tab-v220 active" type="button" data-v220-tech-tab="cultivation">修炼</button>
-            <button class="technique-tab-v220" type="button" data-v220-tech-tab="attack">攻伐</button>
-            <button class="technique-tab-v220" type="button" data-v220-tech-tab="defense">护体</button>
+            <button class="technique-tab-v220 active" type="button" data-v220-tech-tab="cultivation" aria-selected="true">修炼</button>
+            <button class="technique-tab-v220" type="button" data-v220-tech-tab="attack" aria-selected="false">攻伐</button>
+            <button class="technique-tab-v220" type="button" data-v220-tech-tab="defense" aria-selected="false">护体</button>
           </div>
           <div data-v220-cultivation-pane>
             ${exclusiveTechniquePanelHtml(bundle.exclusiveTechniqueSystem || state.exclusiveTechniqueSystem || { status: 'loading', techniques: [] }, inventory)}

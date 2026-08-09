@@ -5,8 +5,8 @@ plugins {
 }
 
 val appId = providers.gradleProperty("APP_ID").orElse("com.jiuxiaowendao.game").get()
-val appVersionCode = providers.gradleProperty("APP_VERSION_CODE").orElse("2001501").get().toInt()
-val appVersionName = providers.gradleProperty("APP_VERSION_NAME").orElse("2.2.0-cache122").get()
+val appVersionCode = providers.gradleProperty("APP_VERSION_CODE").orElse("2001502").get().toInt()
+val appVersionName = providers.gradleProperty("APP_VERSION_NAME").orElse("2.2.0-cache123").get()
 val githubOwner = providers.gradleProperty("GITHUB_OWNER").orElse("YOUR_GITHUB_NAME").get()
 val githubRepo = providers.gradleProperty("GITHUB_REPO").orElse("YOUR_REPOSITORY").get()
 
@@ -32,7 +32,7 @@ android {
         buildConfigField("String", "GITHUB_OWNER", quoted(githubOwner))
         buildConfigField("String", "GITHUB_REPO", quoted(githubRepo))
         buildConfigField("String", "SUPABASE_HOST", quoted("fyykkqkovccgmamsdeoq.supabase.co"))
-        buildConfigField("String", "GAME_BUILD_ID", quoted("v2-2-0-cache122-combat-techniques-admin33-sql254-r5"))
+        buildConfigField("String", "GAME_BUILD_ID", quoted("v2-2-0-cache123-technique-tabs-isolated-admin33-sql254-online"))
     }
 
     signingConfigs {

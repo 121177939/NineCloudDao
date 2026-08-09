@@ -103,13 +103,13 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001501" in gradle_props, "Android版本号不是CACHE122基线")
-    check('APP_VERSION_NAME=2.2.0-cache122' in gradle_props, "Android版本名不是CACHE122基线")
-    expected_build = "v2-2-0-cache122-combat-techniques-admin33-sql254-r5"
+    check("APP_VERSION_CODE=2001502" in gradle_props, "Android版本号不是CACHE123基线")
+    check('APP_VERSION_NAME=2.2.0-cache123' in gradle_props, "Android版本名不是CACHE123基线")
+    expected_build = "v2-2-0-cache123-technique-tabs-isolated-admin33-sql254-online"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
-    check(baseline.get("runtimeDatabaseGate") == "SQL254_GATE_REQUIRED_BEFORE_V220_CLIENT",
+    check(baseline.get("runtimeDatabaseGate") == "SQL254_GATE_PASSED",
           "数据库运行门禁不是SQL254")
     check(baseline.get("nextSqlNumber") == 255, "下一SQL编号不是255")
 
@@ -130,10 +130,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.2.0 CACHE122",
+        "gameBaseline": "V2.2.0 CACHE123",
         "gameBuildId": expected_build,
-        "databaseBaseline": "SQL252 ONLINE; SQL253 pending if not executed; SQL254 required",
-        "androidVersionCode": 2001501,
+        "databaseBaseline": "SQL254 R5 ONLINE / SQL254_GATE_PASSED; SQL255 next",
+        "androidVersionCode": 2001502,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

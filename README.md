@@ -1,8 +1,14 @@
-# 九霄问道 V2.2.0 CACHE122
+# 九霄问道 V2.2.0 CACHE123
 
-当前客户端基线：**V2.2.0 CACHE122**；Android：**versionCode 2001501 / versionName 2.2.0-cache122**；GM：**ADMIN9 R33**。
+当前客户端基线：**V2.2.0 CACHE123**；Android：**versionCode 2001502 / versionName 2.2.0-cache123**；GM：**ADMIN9 R33（本次未修改）**。
 
-数据库生产状态已由用户确认到 **SQL252 ONLINE**。若 SQL253（ADMIN9 R31账号管理）尚未执行，部署本版前先执行 SQL253；随后执行 **SQL254**。SQL254 是执行即门禁，成功末尾必须出现 `SQL254_GATE_PASSED`，再发布 CACHE122 客户端。
+数据库生产状态已经由用户截图确认 **SQL254 R5 ONLINE / SQL254_GATE_PASSED**。CACHE123 是纯客户端页签隔离修复，**无需新增SQL**；下一数据库编号仍为 SQL255。
+
+## V2.2.0 CACHE123
+
+- 修复功法三页签串显示：修炼只显示修炼，攻伐只显示攻伐，护体只显示护体。
+- 攻伐/护体改为当前页签单家族DOM渲染；修炼页签不生成攻防DOM。
+- 数据库沿用 SQL254 ONLINE，无新增SQL。
 
 ## V2.2.0 CACHE122
 
