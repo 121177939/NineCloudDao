@@ -1,50 +1,55 @@
 {
   "version": "V2.2.0",
-  "releaseLabel": "V2.2.0 CACHE127",
-  "buildId": "v2-2-0-cache127-tianxu-detail-admin34-sql258",
-  "cacheEpoch": 127,
-  "minimumDatabaseBaseline": "SQL258 ONLINE / SQL258_GATE_PASSED",
-  "sqlRevision": "SQL258 ONLINE；本版无数据库变更；SQL259 NEXT",
-  "migrationSql": [],
-  "features": [
-    "TIANXU_MARKET_V255",
-    "TIANXU_ALL_INVENTORY_ITEMS_TRADABLE",
-    "TIANXU_FREE_PRICING",
-    "TIANXU_ESCROW_ATOMIC_TRADE",
-    "TIANXU_PARTIAL_STACK_BUY",
-    "TIANXU_LISTING_FEE_1PCT",
-    "TIANXU_TRADE_TAX_5PCT",
-    "TIANXU_LISTING_72H",
-    "TIANXU_ACTIVE_LIMIT_10",
-    "TIANXU_COMPACT_LIST_GRADE_NAME_PRICE",
-    "CASINO_PLAYER_RUNTIME_RETIRED",
-    "TECHNIQUE_THREE_FAMILIES_V220",
-    "TIANXU_EQUIPMENT_DETAIL_CHINESE_V127",
-    "CLIENT_VERSION_220_CACHE127"
+  "releaseLabel": "V2.2.0 CACHE129",
+  "buildId": "v2-2-0-cache129-tiandao-cloudflare-ai-admin36-sql259r2",
+  "cacheEpoch": 129,
+  "minimumDatabaseBaseline": "SQL259 ONLINE / SQL259_GATE_PASSED",
+  "sqlRevision": "SQL259 R2 REQUIRED；成功后 SQL260 NEXT",
+  "migrationSql": [
+    "database-upgrades/SQL259_TIANDAO_PEOPLE_CLOUDFLARE_AI/01_SQL259_R2_V2.2.0_CACHE129_天道人物_CloudflareWorkersAI_执行即门禁.sql"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R34_V2.2.0_CACHE124_SQL255_天墟管理_手机直用版.html",
+  "features": [
+    "TIANDAO_PEOPLE_V259",
+    "TIANDAO_50_NPCS",
+    "TIANDAO_ROMANCE_COMPANION",
+    "LEGACY_HONGCHEN_CLIENT_REMOVED",
+    "TIANXU_MARKET_V255",
+    "TECHNIQUE_THREE_FAMILIES_V220",
+    "TIANDAO_CLOUDFLARE_WORKERS_AI",
+    "TIANDAO_SERVER_RULE_AUDIT",
+    "TIANDAO_LOCAL_FALLBACK_V1",
+    "EDGE_FUNCTION_TIANDAO_AI",
+    "CLIENT_VERSION_220_CACHE129"
+  ],
+  "gmEntry": "九霄问道_ADMIN9_R36_V2.2.0_CACHE129_SQL259_R2_CloudflareAI_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "databaseRelease": "生产已生效至 SQL258；CACHE127 不需要新增 SQL。",
+  "databaseRelease": "生产当前 SQL258 ONLINE；发布本版前执行 SQL259 R2 并确认 SQL259_GATE_PASSED。",
   "notes": [
-    "CACHE127：天墟装备详情改为玩家版中文属性展示，隐藏数据库技术字段。",
-    "装备详情显示主属性与完整开放孔位；有孔位词条显示中文属性/数值/LV，空孔显示“空”。",
-    "生产 SQL258 已生效；本版无需 SQL，下一 SQL 为259。"
+    "CACHE129：玩家人物写操作统一经 Supabase Edge Function tiandao-ai 调用 Cloudflare Workers AI，再由服务端规则复核。",
+    "Cloudflare模型固定 @cf/qwen/qwen3-30b-a3b-fp8；AI不能修改灵石、装备、境界、NPC境界、战斗胜负、道侣关系或任意数据库字段。",
+    "Cloudflare失败/超时/未配置时自动 server_personality_v1 fallback；SQL259 R2保留确定性本地人格引擎。",
+    "ADMIN9 R36新增AI状态、测试AI连接、最近AI决策、AI耗时、失败原因和当前模型。",
+    "Cloudflare API凭据只放Supabase服务端 Secrets；客户端与公开GitHub交付不包含凭据。"
   ],
-  "gmVersion": "ADMIN9 R34",
-  "nextSqlNumber": 259,
+  "gmVersion": "ADMIN9 R36",
+  "nextSqlNumber": 260,
   "deploymentMethod": "github_actions_pages_prebuilt_directory_official_artifact_r1",
-  "releaseStage": "ready_sql258_online_cache127",
-  "runtimeDatabaseGate": "SQL258_GATE_PASSED",
+  "releaseStage": "ready_sql259_r2_required_cache129",
+  "runtimeDatabaseGate": "SQL259_GATE_PASSED",
   "releaseNotes": [
-    "CACHE127：天墟装备详情改为玩家版中文属性展示，隐藏数据库技术字段。",
-    "装备详情显示主属性与完整开放孔位；有孔位词条显示中文属性/数值/LV，空孔显示“空”。",
-    "生产 SQL258 已生效；本版无需 SQL，下一 SQL 为259。"
+    "CACHE129：玩家人物写操作统一经 Supabase Edge Function tiandao-ai 调用 Cloudflare Workers AI，再由服务端规则复核。",
+    "Cloudflare模型固定 @cf/qwen/qwen3-30b-a3b-fp8；AI不能修改灵石、装备、境界、NPC境界、战斗胜负、道侣关系或任意数据库字段。",
+    "Cloudflare失败/超时/未配置时自动 server_personality_v1 fallback；SQL259 R2保留确定性本地人格引擎。",
+    "ADMIN9 R36新增AI状态、测试AI连接、最近AI决策、AI耗时、失败原因和当前模型。",
+    "Cloudflare API凭据只放Supabase服务端 Secrets；客户端与公开GitHub交付不包含凭据。"
   ],
   "featureFlags": [
-    "TIANXU_MARKET_V255",
-    "CASINO_RUNTIME_RETIRED",
-    "CLIENT_VERSION_220_CACHE127",
-    "TIANXU_EQUIPMENT_DETAIL_CHINESE_V127"
-  ]
+    "TIANDAO_PEOPLE_V259",
+    "LEGACY_HONGCHEN_CLIENT_REMOVED",
+    "TIANDAO_CLOUDFLARE_WORKERS_AI",
+    "TIANDAO_LOCAL_FALLBACK_V1",
+    "CLIENT_VERSION_220_CACHE129"
+  ],
+  "minimumDatabaseSql": 259
 }

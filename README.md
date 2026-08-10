@@ -1,3 +1,23 @@
+# 九霄问道 · V2.2.0 CACHE129
+
+当前正式交付：**天道人物 Cloudflare Workers AI + 服务端规则审核 + 本地人格Fallback**。
+
+- 生产数据库当前确认：**SQL258 ONLINE**。
+- 发布前执行：**SQL259 R2**，最后必须看到 `SQL259_GATE_PASSED`；成功后 NEXT SQL260。
+- GM：**ADMIN9 R36**。
+- Edge Function：**tiandao-ai**。
+- AI模型：**@cf/qwen/qwen3-30b-a3b-fp8**。
+- Pages：继续使用已验证的预构建 `pages/` + GitHub 官方 artifact/deploy 链。
+- Android：**versionCode 2001508 / 2.2.0-cache129**。
+
+玩家人物写操作不再直接调用数据库写RPC，而是先进入 Edge Function；Cloudflare 只提供人物提案，数据库服务端重新校验后才允许状态变化。外部AI失败或超时时自动走 `server_personality_v1`。
+
+公开客户端与 `pages/` / Android assets 不包含 Cloudflare 服务端凭据。Edge Function 与 Secrets 配置放在服务端私有交付中。
+
+详见 `V2.2.0_CACHE129_Cloudflare_Workers_AI正式接入升级说明.md`。
+
+---
+
 # 九霄问道 V2.2.0 CACHE127
 
 当前开发交付基线：**V2.2.0 CACHE127**；Android：**versionCode 2001506 / versionName 2.2.0-cache127**；GM：**ADMIN9 R34**。

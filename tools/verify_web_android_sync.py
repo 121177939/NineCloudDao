@@ -7,7 +7,7 @@ GAME = ROOT / 'android/app/src/main/assets/game'
 SHARED = [
     'CURRENT_BASELINE.json','VERSION.txt','app.js','b-equipment01.css','b-equipment01.js',
     'b-tianxu-v220.css','b-equipment-v210.css','b-equipment-v210.js',
-    'b-secret-realm01.css','b-secret-realm01.js','b-world-boss01.css','b-world-boss01.js','b-sect-v2.css','b-sect-v2.js','b-technique-v220.css','b-technique-v220.js',
+    'b-secret-realm01.css','b-secret-realm01.js','b-tiandao-person-v220.css','b-tiandao-person-v220.js','b-world-boss01.css','b-world-boss01.js','b-sect-v2.css','b-sect-v2.js','b-technique-v220.css','b-technique-v220.js',
     'config.js','release_config.json','styles.css'
 ]
 ASSETS = ['assets/icon-192.png','assets/icon-512.png','assets/secret-realm-portal.webp']

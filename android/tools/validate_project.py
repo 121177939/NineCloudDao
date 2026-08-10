@@ -29,6 +29,7 @@ def main() -> None:
         "app/src/main/AndroidManifest.xml", "app/src/main/assets/game/index.html",
         "app/src/main/assets/game/app.js", "app/src/main/assets/game/config.js",
         "app/src/main/assets/game/b-technique-v220.js", "app/src/main/assets/game/b-technique-v220.css",
+        "app/src/main/assets/game/b-tiandao-person-v220.js", "app/src/main/assets/game/b-tiandao-person-v220.css",
         "app/src/main/assets/game/android-local.js",
         "app/src/main/java/com/jiuxiaowendao/game/MainActivity.java",
         "app/src/main/java/com/jiuxiaowendao/game/update/UpdateManager.java",
@@ -63,8 +64,18 @@ def main() -> None:
     for name in retired_casino_assets:
         check(not (game_root / name).exists(), f"赌场退役后APK不应包含：{name}")
     check((game_root / "b-tianxu-v220.css").is_file(), "APK缺少天墟样式资源")
+    check((game_root / "b-tiandao-person-v220.js").is_file() and (game_root / "b-tiandao-person-v220.css").is_file(), "APK缺少天道人物模块资源")
     app_js_live = read("app/src/main/assets/game/app.js")
     check("get_tianxu_market_v255" in app_js_live and "create_tianxu_listing_v255" in app_js_live and "buy_tianxu_listing_v255" in app_js_live, "APK未接入天墟核心RPC")
+    tiandao_js = read("app/src/main/assets/game/b-tiandao-person-v220.js")
+    for rpc_name in ["get_tiandao_people_hub_v1","get_tiandao_person_detail_v1"]:
+        check(rpc_name in tiandao_js, f"APK天道人物缺少只读RPC：{rpc_name}")
+    for rpc_name in ["resolve_tiandao_encounter_v1","tiandao_npc_interact_v1","tiandao_romance_action_v1","tiandao_companion_action_v1"]:
+        check(rpc_name not in tiandao_js, f"APK天道人物仍直连写RPC，绕过AI网关：{rpc_name}")
+    check("/functions/v1/tiandao-ai" in tiandao_js and "tryEdgeAi" in tiandao_js, "APK天道人物未接入tiandao-ai Edge Function")
+    check("CLOUDFLARE_AUTH_TOKEN" not in tiandao_js and "CLOUDFLARE_ACCOUNT_ID" not in tiandao_js, "APK天道人物资源包含Cloudflare Secret标识")
+    for old_rpc in ["get_npc_social_v1","interact_with_npc_v1","form_npc_relationship_v1"]:
+        check(old_rpc not in app_js_live, f"APK仍依赖旧红尘RPC：{old_rpc}")
 
     main_java = read("app/src/main/java/com/jiuxiaowendao/game/MainActivity.java")
     client_java = read("app/src/main/java/com/jiuxiaowendao/game/web/LocalGameWebViewClient.java")
@@ -113,15 +124,15 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001506" in gradle_props, "Android版本号不是CACHE127基线")
-    check('APP_VERSION_NAME=2.2.0-cache127' in gradle_props, "Android版本名不是CACHE127基线")
-    expected_build = "v2-2-0-cache127-tianxu-detail-admin34-sql258"
+    check("APP_VERSION_CODE=2001508" in gradle_props, "Android版本号不是CACHE129基线")
+    check('APP_VERSION_NAME=2.2.0-cache129' in gradle_props, "Android版本名不是CACHE129基线")
+    expected_build = "v2-2-0-cache129-tiandao-cloudflare-ai-admin36-sql259r2"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
-    check(baseline.get("runtimeDatabaseGate") == "SQL258_GATE_PASSED",
-          "数据库运行门禁不是SQL255")
-    check(baseline.get("nextSqlNumber") == 259, "下一SQL编号不是259")
+    check(baseline.get("runtimeDatabaseGate") == "SQL259_GATE_PASSED",
+          "数据库运行门禁不是SQL259")
+    check(baseline.get("nextSqlNumber") == 260, "下一SQL编号不是260")
 
     game_files = [p for p in game_root.rglob("*") if p.is_file()]
     check(len(game_files) >= 20, f"游戏资源数量异常：{len(game_files)}")
@@ -140,10 +151,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.2.0 CACHE127",
+        "gameBaseline": "V2.2.0 CACHE129",
         "gameBuildId": expected_build,
-        "databaseBaseline": "SQL258 ONLINE / SQL258_GATE_PASSED; SQL259 NEXT",
-        "androidVersionCode": 2001506,
+        "databaseBaseline": "SQL258 ONLINE; SQL259 REQUIRED / SQL259_GATE_PASSED; SQL260 NEXT",
+        "androidVersionCode": 2001508,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

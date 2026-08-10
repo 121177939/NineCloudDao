@@ -2,12 +2,12 @@
   "ok": true,
   "errors": [],
   "warnings": [],
-  "gameFileCount": 25,
-  "gameBytes": 1032984,
+  "gameFileCount": 27,
+  "gameBytes": 1053351,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.2.0 CACHE127",
-  "gameBuildId": "v2-2-0-cache127-tianxu-detail-admin34-sql258",
-  "databaseBaseline": "SQL258 ONLINE / SQL258_GATE_PASSED; SQL259 NEXT",
-  "androidVersionCode": 2001506
+  "gameBaseline": "V2.2.0 CACHE129",
+  "gameBuildId": "v2-2-0-cache129-tiandao-cloudflare-ai-admin36-sql259r2",
+  "databaseBaseline": "SQL258 ONLINE; SQL259 REQUIRED / SQL259_GATE_PASSED; SQL260 NEXT",
+  "androidVersionCode": 2001508
 }

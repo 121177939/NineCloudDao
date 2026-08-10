@@ -133,10 +133,6 @@
     battleSnapshotV1: null,
     battleSnapshotSyncingV1: false,
     battlePlaybackTimer: null,
-    npcSocial: null,
-    npcSocialSyncTimer: null,
-    npcSocialSyncing: false,
-    npcSocialFetchedAt: 0,
     sectSystem: null,
     sectSystemSyncTimer: null,
     sectSystemSyncing: false,
@@ -307,23 +303,6 @@
     if (raw.includes('world_event_publish_v0140') && raw.includes('does not exist')) return '挑战战报发布接口尚未完成兼容修复，请先执行 V1.0 FIX1 SQL。';
     if (raw.includes('INVALID_RANKING_PAGE')) return '榜单分页参数无效，请重新进入榜单。';
     if (raw.includes('V091_REQUIRED')) return 'V0.9.1修为榜基础尚未完成，请先部署并检查。';
-    if (raw.includes('NPC_SOCIAL_SETTINGS_MISSING')) return '红尘录配置缺失，请执行V0.10.0数据库升级。';
-    if (raw.includes('NPC_INTERACTIONS_DISABLED')) return '红尘交游目前处于暂停状态。';
-    if (raw.includes('NPC_RELATIONSHIPS_DISABLED')) return '关系缔结目前处于暂停状态。';
-    if (raw.includes('NPC_CONTACT_NOT_FOUND')) return '没有找到这位红尘故人，请重新读取。';
-    if (raw.includes('INVALID_NPC_ACTION')) return '交游方式无效，请重新选择。';
-    if (raw.includes('NPC_INTERACTION_COOLDOWN')) return '刚刚交谈过，请等待片刻再来往。';
-    if (raw.includes('NPC_GIFT_INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法准备这份赠礼。';
-    if (raw.includes('NPC_GUIDANCE_RELATION_REQUIRED')) return '双方交情与信任尚不足以开口请教。';
-    if (raw.includes('NPC_GUIDANCE_COOLDOWN')) return '今日指点尚需消化，请稍后再来。';
-    if (raw.includes('INVALID_NPC_RELATIONSHIP')) return '关系类型无效。';
-    if (raw.includes('NPC_RELATIONSHIP_HOSTILE')) return '双方已成仇敌，无法缔结正向关系。';
-    if (raw.includes('NPC_MASTER_REQUIREMENTS')) return '拜师需要对方修为足够，并达到好感45、信任40。';
-    if (raw.includes('NPC_MASTER_ALREADY_EXISTS')) return '你当前已经有一位师尊。';
-    if (raw.includes('NPC_PARTNER_REQUIREMENTS')) return '结为道侣需要好感75、信任60。';
-    if (raw.includes('NPC_PARTNER_ALREADY_EXISTS')) return '你当前已经有一位道侣。';
-    if (raw.includes('NPC_SWORN_FRIEND_REQUIREMENTS')) return '义结金兰需要好感60、信任50。';
-    if (raw.includes('V010_REQUIRED')) return 'V0.10.0红尘录尚未成功部署，请先完成数据库升级。';
     if (raw.includes('SECT_SETTINGS_MISSING')) return '宗门配置缺失，请执行V0.11.0数据库升级。';
     if (raw.includes('SECT_JOINING_DISABLED')) return '宗门收徒目前处于暂停状态。';
     if (raw.includes('SECT_CREATION_DISABLED')) return '开山立派目前处于暂停状态。';
@@ -398,15 +377,8 @@
     if (state.techniqueSyncTimer) clearInterval(state.techniqueSyncTimer);
     if (state.heavenBalanceSyncTimer) clearInterval(state.heavenBalanceSyncTimer);
     if (state.destinyRankingSyncTimer) clearInterval(state.destinyRankingSyncTimer);
-    if (state.npcSocialSyncTimer) clearInterval(state.npcSocialSyncTimer);
     if (state.sectSystemSyncTimer) clearInterval(state.sectSystemSyncTimer);
     if (state.marketSyncTimer) clearInterval(state.marketSyncTimer);
-    if (state.fishShrimpBetFlushTimer) clearTimeout(state.fishShrimpBetFlushTimer);
-    if (state.fishShrimpTimer) clearInterval(state.fishShrimpTimer);
-    if (state.fishShrimpBoundaryRefreshTimer) clearTimeout(state.fishShrimpBoundaryRefreshTimer);
-    if (state.spiritDiceBetFlushTimer) clearTimeout(state.spiritDiceBetFlushTimer);
-    if (state.spiritDiceTimer) clearInterval(state.spiritDiceTimer);
-    if (state.spiritDiceBoundaryRefreshTimer) clearTimeout(state.spiritDiceBoundaryRefreshTimer);
     if (state.worldEventsSyncTimer) clearInterval(state.worldEventsSyncTimer);
     if (state.divineNoticeTimer) clearInterval(state.divineNoticeTimer);
     state.cultivationTicker = null;
@@ -418,15 +390,8 @@
     state.techniqueSyncTimer = null;
     state.heavenBalanceSyncTimer = null;
     state.destinyRankingSyncTimer = null;
-    state.npcSocialSyncTimer = null;
     state.sectSystemSyncTimer = null;
     state.marketSyncTimer = null;
-    state.fishShrimpBetFlushTimer = null;
-    state.fishShrimpTimer = null;
-    state.fishShrimpBoundaryRefreshTimer = null;
-    state.spiritDiceBetFlushTimer = null;
-    state.spiritDiceTimer = null;
-    state.spiritDiceBoundaryRefreshTimer = null;
     state.worldEventsSyncTimer = null;
     state.divineNoticeTimer = null;
     state.cultivationSyncing = false;
@@ -436,7 +401,6 @@
     state.techniqueSyncing = false;
     state.heavenBalanceSyncing = false;
     state.destinyRankingSyncing = false;
-    state.npcSocialSyncing = false;
     state.sectSystemSyncing = false;
     state.marketSyncing = false;
     state.worldEventsSyncing = false;
@@ -480,8 +444,6 @@
     state.battleSnapshotSyncingV1 = false;
     if (state.battlePlaybackTimer) clearTimeout(state.battlePlaybackTimer);
     state.battlePlaybackTimer = null;
-    state.npcSocial = null;
-    state.npcSocialFetchedAt = 0;
     state.sectSystem = null;
     state.sectSystemFetchedAt = 0;
     state.divineNoticeActive = null;
@@ -1283,30 +1245,6 @@
     const result = await restFetch('rpc/challenge_battle_power_bcombat01', {
       method: 'POST',
       body: { p_target_character_id: targetCharacterId, p_request_id: requestId }
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-  async function rpcGetNpcSocialV1() {
-    const result = await restFetch('rpc/get_npc_social_v1', {
-      method: 'POST',
-      body: {}
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-  async function rpcInteractWithNpcV1(npcId, action) {
-    const result = await restFetch('rpc/interact_with_npc_v1', {
-      method: 'POST',
-      body: { p_npc_id: npcId, p_action: action }
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-  async function rpcFormNpcRelationshipV1(npcId, relationshipType) {
-    const result = await restFetch('rpc/form_npc_relationship_v1', {
-      method: 'POST',
-      body: { p_npc_id: npcId, p_relationship_type: relationshipType }
     });
     return Array.isArray(result) ? result[0] || null : result;
   }
@@ -4819,146 +4757,6 @@
   }
 
 
-  function npcRelationClass(type) {
-    return ['master', 'partner', 'sworn_friend', 'enemy'].includes(type) ? `relation-${type}` : '';
-  }
-
-  function npcSocialPanelHtml(system) {
-    const data = system || { status: 'loading', contacts: [], recent_events: [], settings: {} };
-    if (data.status === 'unavailable') {
-      return `<div id="npcSocialRoot" class="npc-social-root"><div class="empty-state"><h4>红尘录尚未开启</h4><p>${escapeHtml(data.error || '请先执行V0.10.0数据库升级。')}</p><button class="primary-btn" type="button" data-npc-refresh>重新读取</button></div></div>`;
-    }
-    if (data.status === 'loading') return '<div id="npcSocialRoot" class="npc-social-root"><div class="empty-state">正在推演红尘因缘……</div></div>';
-    const contacts = Array.isArray(data.contacts) ? data.contacts : [];
-    const events = Array.isArray(data.recent_events) ? data.recent_events : [];
-    const giftCost = Number(data.settings?.gift_spirit_stone_cost || 100);
-    return `
-      <div id="npcSocialRoot" class="npc-social-root">
-        <div class="npc-social-head">
-          <div><strong>红尘故人 ${formatNumber(contacts.length)} 位</strong><small>论道、赠礼、请教或结下师徒与道侣因缘</small></div>
-          <button class="secondary-btn" type="button" data-npc-refresh>刷新红尘</button>
-        </div>
-        <div class="npc-contact-grid">
-          ${contacts.map(row => {
-            const ready = Boolean(row.interaction_ready);
-            const guidanceReady = Boolean(row.guidance_ready) && Boolean(row.can_ask_guidance);
-            return `<article class="npc-contact-card ${npcRelationClass(row.relationship_type)}">
-              <div class="npc-card-head">
-                <div><span>${escapeHtml(row.title || row.archetype || '九霄修士')}</span><strong>${escapeHtml(row.name)}</strong></div>
-                <em>${escapeHtml(row.relationship_name || '陌路')}</em>
-              </div>
-              <p class="npc-realm-line">${escapeHtml(row.realm_label)} · ${escapeHtml(row.element)}属 · ${escapeHtml(row.personality)}</p>
-              <p>${escapeHtml(row.description || '')}</p>
-              <div class="npc-score-grid">
-                <div><span>好感</span><strong>${formatNumber(row.affinity)}</strong></div>
-                <div><span>信任</span><strong>${formatNumber(row.trust)}</strong></div>
-                <div><span>恩怨</span><strong>${formatNumber(row.grudge)}</strong></div>
-              </div>
-              <div class="npc-action-grid">
-                <button type="button" data-npc-action="talk" data-npc-id="${escapeHtml(row.npc_id)}" ${ready ? '' : 'disabled'}>论道</button>
-                <button type="button" data-npc-action="gift" data-npc-id="${escapeHtml(row.npc_id)}" ${ready ? '' : 'disabled'}>赠礼·${formatNumber(giftCost)}灵石</button>
-                <button type="button" data-npc-action="guidance" data-npc-id="${escapeHtml(row.npc_id)}" ${ready && guidanceReady ? '' : 'disabled'}>请教</button>
-                <button type="button" data-npc-action="provoke" data-npc-id="${escapeHtml(row.npc_id)}" ${ready ? '' : 'disabled'}>挑衅</button>
-              </div>
-              ${!ready && row.next_interaction_at ? `<small class="npc-cooldown" data-npc-ready-at="${escapeHtml(row.next_interaction_at)}">交游冷却中</small>` : ''}
-              <div class="npc-bond-actions">
-                ${row.can_form_master ? `<button type="button" data-npc-bond="master" data-npc-id="${escapeHtml(row.npc_id)}">拜师</button>` : ''}
-                ${row.can_form_partner ? `<button type="button" data-npc-bond="partner" data-npc-id="${escapeHtml(row.npc_id)}">结为道侣</button>` : ''}
-                ${row.can_form_sworn_friend ? `<button type="button" data-npc-bond="sworn_friend" data-npc-id="${escapeHtml(row.npc_id)}">义结金兰</button>` : ''}
-              </div>
-            </article>`;
-          }).join('') || '<div class="empty-state">红尘尚无人来。</div>'}
-        </div>
-        <div class="subsection-title"><strong>近日因缘</strong><span>同步写入命书</span></div>
-        <div class="npc-event-list">
-          ${events.map(row => `<article><time>仙历${escapeHtml(row.world_year)}年</time><strong>${escapeHtml(row.title)}</strong><p>${escapeHtml(row.content)}</p></article>`).join('') || '<div class="empty-state">尚无交游记录。</div>'}
-        </div>
-      </div>
-    `;
-  }
-
-  function updateNpcSocialPanel() {
-    const root = document.getElementById('npcSocialRoot');
-    if (!root) return;
-    root.outerHTML = npcSocialPanelHtml(state.npcSocial);
-    bindNpcSocialActions();
-    updateNpcCountdowns();
-  }
-
-  async function refreshNpcSocial(silent = true) {
-    if (state.npcSocialSyncing || !state.character) return;
-    state.npcSocialSyncing = true;
-    try {
-      state.npcSocial = await rpcGetNpcSocialV1();
-      state.npcSocialFetchedAt = Date.now();
-      updateNpcSocialPanel();
-      if (!silent) showToast('红尘因缘已刷新。');
-    } catch (error) {
-      state.npcSocial = { status: 'unavailable', contacts: [], recent_events: [], error: translateError(error) };
-      updateNpcSocialPanel();
-      if (!silent) showToast(translateError(error), 'error');
-    } finally {
-      state.npcSocialSyncing = false;
-    }
-  }
-
-  function updateNpcCountdowns() {
-    document.querySelectorAll('[data-npc-ready-at]').forEach(node => {
-      const remaining = Math.max(0, Math.ceil((new Date(node.dataset.npcReadyAt).getTime() - Date.now()) / 1000));
-      node.textContent = remaining > 0 ? `交游冷却 ${formatDuration(remaining)}` : '可以再次交游';
-      if (remaining <= 0) node.removeAttribute('data-npc-ready-at');
-    });
-  }
-
-  function bindNpcSocialActions() {
-    document.querySelectorAll('[data-npc-refresh]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button, true, '推演中……');
-        await refreshNpcSocial(false);
-        setBusy(button, false);
-      });
-    });
-    document.querySelectorAll('[data-npc-action]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button, true, '交游中……');
-        try {
-          const result = await rpcInteractWithNpcV1(button.dataset.npcId, button.dataset.npcAction);
-          const gain = Number(result?.cultivation_gain || 0);
-          if (gain > 0) applyLocalCultivationGain(gain);
-          const karmaDelta = Number(result?.karma_delta || 0);
-          if (karmaDelta && state.character) state.character.karma = Math.max(-100, Math.min(100, Number(state.character.karma || 0) + karmaDelta));
-          showToast(result?.content || '红尘因缘已有变化。');
-          await Promise.all([refreshNpcSocial(true), refreshSpiritStoneBalanceV0141(true)]);
-        } catch (error) {
-          showToast(translateError(error), 'error');
-        } finally {
-          setBusy(button, false);
-        }
-      });
-    });
-    document.querySelectorAll('[data-npc-bond]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button, true, '立誓中……');
-        try {
-          const result = await rpcFormNpcRelationshipV1(button.dataset.npcId, button.dataset.npcBond);
-          showToast(result?.content || '红尘关系已经缔结。');
-          await refreshNpcSocial(true);
-        } catch (error) {
-          showToast(translateError(error), 'error');
-        } finally {
-          setBusy(button, false);
-        }
-      });
-    });
-  }
-
-
   function sectPositionClass(code) {
     return ['master', 'elder', 'true', 'core'].includes(code) ? `position-${code}` : '';
   }
@@ -5667,7 +5465,7 @@
       ['secret_realm', '秘', '秘境'],
       ['world_boss', '世', '世界'],
       ['market', '市', '市坊'],
-      ['social', '人', '红尘'],
+      ['social', '人', '人物'],
       ['sect', '宗', '宗门'],
       ['history', '书', '命书']
     ];
@@ -5873,7 +5671,6 @@
     const caveSystem = bundle.caveSystem || state.caveSystem || { resources: [], buildings: [], recipes: [], rules: {} };
     const techniqueLibrary = bundle.techniqueLibrary || state.techniqueLibrary || { status: 'loading', books: [] };
     const destinyRanking = bundle.destinyRanking || state.destinyRanking || { status: 'loading', entries: [], total_count: 0 };
-    const npcSocial = bundle.npcSocial || state.npcSocial || { status: 'loading', contacts: [], recent_events: [], settings: {} };
     const sectSystem = bundle.sectSystem || state.sectSystem || { status: 'loading', sects: [], buildings: [], tasks: [], recent_events: [], settings: {} };
     const worldEvents = bundle.worldEvents || state.worldEvents || { status: 'loading', entries: [] };
     const activeEffects = (bundle.cultivationEffects || []).filter(row => {
@@ -5946,7 +5743,7 @@
             <a href="#secretRealmSection">秘境</a>
             <a href="#worldBossSection">世界</a>
             <a href="#marketSection">市坊</a>
-            <a href="#npcSocialSection">红尘录</a>
+            <a href="#npcSocialSection">人物</a>
             <a href="#sectSystemSection">宗门</a>
             <a href="#historySection">命书</a>
           </nav>
@@ -6066,8 +5863,8 @@
         </section>
 
         <section id="npcSocialSection" class="panel" data-mobile-screen="social">
-          <div class="panel-title"><h3>红尘录</h3><span class="badge">故人 · 师徒 · 道侣</span></div>
-          ${npcSocialPanelHtml(npcSocial)}
+          <div class="panel-title"><h3>九霄人物</h3><span class="badge">缘遇 · 人物志 · 仙缘 · 道侣</span></div>
+          <div class="empty-state">正在推演九霄人物因果……</div>
         </section>
 
         <section id="sectSystemSection" class="panel" data-mobile-screen="sect">
@@ -6102,7 +5899,6 @@
     refreshMyBattleSnapshotV1(false);
     bindInventoryTechniqueActions();
     bindExclusiveTechniqueActions();
-    bindNpcSocialActions();
     bindSectSystemActions();
     bindBazaarActions();
     bindMobileDashboardNav();
@@ -6122,7 +5918,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshTianxuMarket(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshTianxuMarket(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -6160,7 +5956,7 @@
         if (force || staleForE80(state.destinyRankingFetchedAt, PERF_E80.rankingStaleMs)) tasks.push(refreshDestinyRanking(false, true));
         break;
       case 'social':
-        if (force || staleForE80(state.npcSocialFetchedAt)) tasks.push(refreshNpcSocial(true));
+        if (window.B_TIANDAO_PERSON_V04?.refresh) tasks.push(window.B_TIANDAO_PERSON_V04.refresh());
         break;
       case 'world_boss':
         if (window.B_WORLD_BOSS01?.refresh) tasks.push(window.B_WORLD_BOSS01.refresh(Boolean(force)));
@@ -6259,7 +6055,6 @@
 
   function updateLiveCultivationDisplay() {
     updateGameTimeDisplay();
-    updateNpcCountdowns();
     const value = document.getElementById('cultivationValue');
     if (!value || !state.cultivationStatus) return;
     const rate = Number(state.cultivationStatus.current_rate_per_second || 0);
@@ -6432,7 +6227,7 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, fateStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, techniqueLibrary, destinyRanking, npcSocial, sectSystem, tianxuMarket, worldEvents, treasureShop] = await Promise.all([
+      const [breakthroughStatus, fateStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, techniqueLibrary, destinyRanking, sectSystem, tianxuMarket, worldEvents, treasureShop] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetFateStatusB01().catch(() => null),
         rpcGetTechniqueSystemV2(),
@@ -6448,9 +6243,6 @@
         })),
         rpcGetDestinyRankingV1(50, 0).catch(error => ({
           status: 'unavailable', entries: [], total_count: 0, error: translateError(error)
-        })),
-        rpcGetNpcSocialV1().catch(error => ({
-          status: 'unavailable', contacts: [], recent_events: [], error: translateError(error)
         })),
         Promise.resolve({ status: 'module', module: 'B-SECT01' }),
         rpcGetTianxuMarketV255({ search: '', category: 'all', sort: 'newest', limit: 100, offset: 0 }).catch(error => ({
@@ -6470,7 +6262,6 @@
       bundle.caveSystem = caveSystem;
       bundle.techniqueLibrary = techniqueLibrary;
       bundle.destinyRanking = destinyRanking;
-      bundle.npcSocial = npcSocial;
       bundle.sectSystem = sectSystem;
       bundle.tianxuMarket = tianxuMarket;
       bundle.worldEvents = worldEvents;
@@ -6490,8 +6281,6 @@
       state.destinyRankingFetchedAt = Date.now();
       state.battleRanking = { status: 'idle', entries: [], total_count: 0 };
       state.battleRankingSyncing = false;
-      state.npcSocial = npcSocial;
-      state.npcSocialFetchedAt = Date.now();
       state.sectSystem = sectSystem;
       state.sectSystemFetchedAt = Date.now();
       state.tianxuMarket = tianxuMarket;

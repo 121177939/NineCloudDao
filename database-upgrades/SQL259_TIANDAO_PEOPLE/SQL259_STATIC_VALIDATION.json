@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "checks": {
+    "lexical_balance": true,
+    "transaction": true,
+    "npc_20_core": true,
+    "npc_30_romance": true,
+    "romance_gender_20_10": true,
+    "all_adult_constraint": true,
+    "six_player_rpc": true,
+    "gm_rpc": true,
+    "legacy_revoke": true,
+    "raw_table_revoke": true,
+    "final_gate": true,
+    "no_cloudflare_token": true,
+    "no_direct_old_partner_core": true,
+    "known_person_guard": true,
+    "world_news_reuse": true
+  },
+  "errors": [],
+  "lines": 687,
+  "bytes": 76564,
+  "sha256": "c3250964633b6be6298667b6e365996377a284130f7835f334f9295bdd3a3d53"
+}

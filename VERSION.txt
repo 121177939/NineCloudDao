@@ -1,7 +1,8 @@
-V2.2.0 CACHE127
-v2-2-0-cache127-tianxu-detail-admin34-sql258
-SQL258 ONLINE / SQL259 NEXT
-ADMIN9 R34
+V2.2.0 CACHE129
+v2-2-0-cache129-tiandao-cloudflare-ai-admin36-sql259r2
+SQL258 ONLINE / SQL259 R2 REQUIRED BEFORE FEATURE CONFIRMATION
+ADMIN9 R36
 PAGES github-actions prebuilt pages directory R1
 PAGES_DEPLOY prebuilt-pages-directory-official-artifact-r1
-ANDROID 2001506 2.2.0-cache127
+ANDROID 2001508 2.2.0-cache129
+EDGE tiandao-ai / Cloudflare Workers AI + server_personality_v1 fallback

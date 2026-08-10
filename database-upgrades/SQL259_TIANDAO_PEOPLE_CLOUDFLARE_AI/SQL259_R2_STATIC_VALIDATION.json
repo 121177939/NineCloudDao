@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "checks": {
+    "lexical_balance": true,
+    "transaction": true,
+    "npc_20_core": true,
+    "npc_30_romance": true,
+    "romance_gender_20_10": true,
+    "all_adult_constraint": true,
+    "cloudflare_model": true,
+    "fallback_exists": true,
+    "internal_gate_functions": true,
+    "request_ticket": true,
+    "ai_goal_intent_state": true,
+    "state_server_audit": true,
+    "direct_write_player_revoked": true,
+    "internal_only_service_role": true,
+    "player_read_only": true,
+    "gm_ai_fields": true,
+    "r1_compat_alters": true,
+    "legacy_revoke": true,
+    "raw_table_revoke": true,
+    "final_gate": true,
+    "no_cloudflare_secret_value_or_id": true,
+    "world_news_reuse": true
+  },
+  "errors": [],
+  "lines": 1003,
+  "bytes": 117384,
+  "sha256": "99411f2c20adbeb369ace722c5cc08fe676d6411a3958190c578aeefdf45eaf8"
+}
