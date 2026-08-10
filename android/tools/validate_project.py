@@ -56,6 +56,16 @@ def main() -> None:
     for name in forbidden_runtime:
         check(not (game_root / name).exists(), f"APK运行资源不应包含：{name}")
 
+    retired_casino_assets = [
+        "b-paigow01.css", "b-paigow01.html", "b-paigow01.js", "b-paigow02-ui.css",
+        "b-paigow02-ui.js", "b-paigow02-ui03.css", "paigow-app.css", "paigow-app.js", "paigow-realtime.js"
+    ]
+    for name in retired_casino_assets:
+        check(not (game_root / name).exists(), f"赌场退役后APK不应包含：{name}")
+    check((game_root / "b-tianxu-v220.css").is_file(), "APK缺少天墟样式资源")
+    app_js_live = read("app/src/main/assets/game/app.js")
+    check("get_tianxu_market_v255" in app_js_live and "create_tianxu_listing_v255" in app_js_live and "buy_tianxu_listing_v255" in app_js_live, "APK未接入天墟核心RPC")
+
     main_java = read("app/src/main/java/com/jiuxiaowendao/game/MainActivity.java")
     client_java = read("app/src/main/java/com/jiuxiaowendao/game/web/LocalGameWebViewClient.java")
     check("WebViewAssetLoader" in client_java and ".setDomain(LOCAL_HOST)" in client_java,
@@ -103,15 +113,15 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001502" in gradle_props, "Android版本号不是CACHE123基线")
-    check('APP_VERSION_NAME=2.2.0-cache123' in gradle_props, "Android版本名不是CACHE123基线")
-    expected_build = "v2-2-0-cache123-technique-tabs-isolated-admin33-sql254-online"
+    check("APP_VERSION_CODE=2001503" in gradle_props, "Android版本号不是CACHE124基线")
+    check('APP_VERSION_NAME=2.2.0-cache124' in gradle_props, "Android版本名不是CACHE124基线")
+    expected_build = "v2-2-0-cache124-tianxu-admin34-sql255"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
-    check(baseline.get("runtimeDatabaseGate") == "SQL254_GATE_PASSED",
-          "数据库运行门禁不是SQL254")
-    check(baseline.get("nextSqlNumber") == 255, "下一SQL编号不是255")
+    check(baseline.get("runtimeDatabaseGate") == "SQL255_GATE_PASSED",
+          "数据库运行门禁不是SQL255")
+    check(baseline.get("nextSqlNumber") == 256, "下一SQL编号不是256")
 
     game_files = [p for p in game_root.rglob("*") if p.is_file()]
     check(len(game_files) >= 20, f"游戏资源数量异常：{len(game_files)}")
@@ -130,10 +140,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.2.0 CACHE123",
+        "gameBaseline": "V2.2.0 CACHE124",
         "gameBuildId": expected_build,
-        "databaseBaseline": "SQL254 R5 ONLINE / SQL254_GATE_PASSED; SQL255 next",
-        "androidVersionCode": 2001502,
+        "databaseBaseline": "SQL254 R5 ONLINE; SQL255 REQUIRED / SQL255_GATE_PASSED",
+        "androidVersionCode": 2001503,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

@@ -28,7 +28,7 @@
   const GAME_SESSION_ID = getOrCreateDeviceSessionId();
 
   // V2.1.1 CACHE113 / PERF2：玩家可见刷新频率保持不变，只减少无意义的后台云端空转。
-  // 修炼250ms、机缘1秒倒计时、牌九Realtime、战斗、主动操作与恢复前台即时同步全部保留。
+  // 修炼250ms、机缘1秒倒计时、战斗、主动操作与恢复前台即时同步全部保留。
   const PERF_E80 = Object.freeze({
     heartbeatMs: 5 * 60 * 1000,
     cultivationSyncMs: 10 * 60 * 1000,
@@ -141,48 +141,20 @@
     sectSystemSyncTimer: null,
     sectSystemSyncing: false,
     sectSystemFetchedAt: 0,
-    marketSystem: null,
-    casinoFeature: null,
-    casinoFeatureFetchedAt: 0,
-    casinoFeatureSyncing: false,
-    casinoDisabledNoticeAt: 0,
+    tianxuMarket: null,
+    tianxuSellAssets: null,
+    tianxuMine: null,
+    tianxuSyncing: false,
+    tianxuFetchedAt: 0,
+    tianxuMode: 'browse',
+    tianxuCategory: 'all',
+    tianxuSearch: '',
+    tianxuSort: 'newest',
+    tianxuOffset: 0,
     treasureShop: null,
     treasureShopSyncing: false,
     treasureShopFetchedAt: 0,
     marketView: 'home',
-    casinoView: 'lobby',
-    casinoHouseMode: 'system',
-    casinoDrafts: {
-      house: { stakeType: 'spirit_stone', amount: 100, multiplier: null, game: 'spirit_dice', choice: 'big' },
-      duel: { stakeType: 'spirit_stone', amount: 100, multiplier: null, game: 'spirit_fist', choice: 'rock' }
-    },
-    casinoJoinChoices: {},
-    fishShrimpState: null,
-    fishShrimpDraft: { stakeType: 'spirit_stone', quantity: 100, multiplier: 1 },
-    fishShrimpSyncing: false,
-    fishShrimpTimer: null,
-    fishShrimpBoundaryRefreshTimer: null,
-    fishShrimpRefreshGuard: false,
-    fishShrimpBetQueue: [],
-    fishShrimpBetProcessing: false,
-    fishShrimpBetFlushTimer: null,
-    fishShrimpLastBetMessage: '',
-    spiritDiceState: null,
-    spiritDiceDraft: { stakeType: 'spirit_stone', quantity: 100, multiplier: 1 },
-    spiritDiceSyncing: false,
-    spiritDiceTimer: null,
-    spiritDiceBoundaryRefreshTimer: null,
-    spiritDiceRefreshGuard: false,
-    spiritDiceBetQueue: [],
-    spiritDiceBetProcessing: false,
-    spiritDiceBetFlushTimer: null,
-    spiritDiceLastBetMessage: '',
-    spiritDiceAcceptedBetRounds: {},
-    spiritDiceLastFullHistoryAt: 0,
-    spiritDiceBoundaryHistoryLimit: 1,
-    marketSyncing: false,
-    marketSyncTimer: null,
-    marketSystemFetchedAt: 0,
     worldEvents: null,
     worldEventsSyncing: false,
     worldEventsSyncTimer: null,
@@ -253,7 +225,6 @@
     if (raw.includes('SEED_DATA_INCOMPLETE')) return '数据库初始数据不完整，请检查阶段1部署。';
     if (raw.includes('INSUFFICIENT_CULTIVATION')) return '当前修为尚未达到突破门槛。';
     if (raw.includes('BREAKTHROUGH_V0130_DISABLED')) return '天劫突破当前处于维护状态，请稍后再试。';
-    if (raw.includes('CULTIVATION_FULL_CASINO_BLOCKED')) return '你当前境界修为已经圆满，请先完成突破，再参与修为博弈。';
     if (raw.includes('MAXIMUM_REALM_REACHED')) return '你已经抵达当前版本可用的最高境界。';
     if (raw.includes('OPPORTUNITY_EXPIRED')) return '这次机缘已经消散，天道会重新推演。';
     if (raw.includes('OPPORTUNITY_ALREADY_RESOLVED')) return '这次机缘已经选择过了。';
@@ -290,43 +261,10 @@
     if (raw.includes('MAIN_TECHNIQUE_SLOT_ONLY')) return '主修功法只能放入主修槽。';
     if (raw.includes('SUPPORT_TECHNIQUE_SLOT_ONLY')) return '这门功法只能放入辅修槽。';
     if (raw.includes('INSUFFICIENT_SPIRIT_STONES')) return '灵石不足，无法提升功法。';
-    if (raw.includes('MARKET_DISABLED')) return '万运博弈楼尚未开放。';
-    if (raw.includes('CASINO_GLOBAL_DISABLED')) return '服务器检查到当前游戏进行非法活动，已暂停此项功能。';
-    if (raw.includes('CASINO_INSUFFICIENT_SPIRIT_STONES')) return '统一灵石余额不足，无法落注。';
-    if (raw.includes('CASINO_INSUFFICIENT_CULTIVATION')) return '当前小境界内可动用修为不足；境界保底修为不可下注。';
     if (raw.includes('CULTIVATION_STAKE_MINIMUM')) return '修为赌注通常最低五万点；若当前30%下注上限低于五万，则按该上限落注。';
-    if (raw.includes('CASINO_CULTIVATION_REQUIRES_NASCENT_SOUL')) return '修为局仅对元婴期及以上修士开放。';
-    if (raw.includes('CASINO_CULTIVATION_STAKE_EXCEEDS_TWENTY_PERCENT')) return '修为赌注超过当前规则允许范围。';
-    if (raw.includes('CASINO_STAKE_EXCEEDS_TEN_PERCENT') || raw.includes('CASINO_STAKE_EXCEEDS_THIRTY_PERCENT')) return '单局累计下注不得超过开局时可用灵石或修为的30%。';
-    if (raw.includes('CASINO_REQUEST_ID_REQUIRED')) return '本局唯一凭证缺失，请刷新页面后重新落注。';
-    if (raw.includes('CASINO_REQUEST_IN_PROGRESS')) return '上一笔赌契仍在结算；同一角色同时只能处理一局，请稍后再试。';
-    if (raw.includes('CASINO_REQUEST_PARAMETER_MISMATCH')) return '赌契凭证与本次下注内容不一致，请重新落注。';
-    if (raw.includes('CASINO_STAKE_BELOW_MINIMUM')) return '本玩法赌注低于最低限制。';
-    if (raw.includes('CASINO_STAKE_ABOVE_MAXIMUM')) return '本玩法赌注超过单局上限。';
-    if (raw.includes('CASINO_STAKE_TOO_LARGE')) return '赌注数值过大，请降低后重试。';
-    if (raw.includes('CASINO_PERIOD_CLOSED')) return '本期赌场已进入开奖前一分钟封盘，清算完成后自动开放下一期。';
-    if (raw.includes('CASINO_BANKROLL_INSUFFICIENT')) return '赌场当前资金不足以承担该笔最大赔付，请降低下注金额或等待下一期资金重置。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_STAKE_MULTIPLE_80') || raw.includes('CASINO_PLAYER_HOUSE_STAKE_MULTIPLE_40')) return '玩家庄与联合庄采用100:97.5精确整数结算，下注额必须为80灵石的整数倍。';
-    if (raw.includes('CASINO_ACTIVE_DUEL_EXISTS')) return '你已有一张等待或封存中的赌契，请先处理。';
-    if (raw.includes('CASINO_INVALID_CHOICE')) return '招式或押注选项无效。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_NOT_ELIGIBLE')) return '统一灵石达到500万后才能申请上庄。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_COOLDOWN')) return '触发联合庄或资金接管后，需等待30分钟才能再次申请上庄。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_NOT_CURRENT_DEALER')) return '你当前并不是大堂玩家庄家，无法执行下庄。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_SELF_BET_FORBIDDEN')) return '庄家不能下注自己坐庄的大堂赌局。';
-    if (raw.includes('DICE_BETTING_CLOSED')) return '灵骰本局已经封盘，请等待下一局。';
-    if (raw.includes('DICE_INVALID_BET_BATCH')) return '本次灵骰批量下注内容无效，请重新落注。';
-    if (raw.includes('CASINO_SPIRIT_DICE_PUBLIC_ROUND_ONLY')) return '灵骰问道已升级为10秒公共牌桌，请刷新游戏后进入新牌桌。';
     if (raw.includes('FISH_BETTING_CLOSED')) return '本局已经封盘，请等待下一局。';
     if (raw.includes('FISH_INVALID_SYMBOL')) return '所选法印无效。';
     if (raw.includes('FISH_INVALID_HOUSE_MODE')) return '庄家类型无效。';
-    if (raw.includes('FISH_ROUND_INVALID')) return '鱼虾灵局轮次异常，请刷新后重试。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_ONLY_SPIRIT_STONE')) return '玩家坐庄期间，大堂只接受灵石下注。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_DEALER_INSUFFICIENT')) return '玩家庄已不足以继续承担新责任；系统将按规则触发联合庄或由荷老接管。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_RESERVE_MISSING')) return '玩家庄赔付保证金异常，本局未结算，请联系维护。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_DISABLED')) return '玩家坐庄功能当前已停用，荷老继续坐庄。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_OCCUPIED')) return '已有其他修士正在坐庄，请等待其下庄或任期结束。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_EXPIRED')) return '本次玩家庄任期已经结束，请重新申请上庄。';
-    if (raw.includes('CASINO_PLAYER_HOUSE_NOT_ACTIVE')) return '当前没有有效玩家庄，公共牌桌由荷老接管。';
     if (raw.includes('DIVINE_NOTICE_NOT_FOUND')) return '这道天谕不存在或已经确认。';
     if (raw.includes('DIVINE_NOTICE_ALREADY_CLAIMED')) return '这道天谕已由其他在线会话领取。';
     if (raw.includes('DUEL_NOT_AVAILABLE')) return '这张赌桌已不可加入。';
@@ -557,22 +495,17 @@
     state.resumeSyncingE80 = false;
     state.lastResumeSyncAtE80 = 0;
     state.activeMobileTab = 'cultivation';
-    state.marketSystem = null;
-    state.marketSystemFetchedAt = 0;
+    state.tianxuMarket = null;
+    state.tianxuSellAssets = null;
+    state.tianxuMine = null;
+    state.tianxuSyncing = false;
+    state.tianxuFetchedAt = 0;
+    state.tianxuMode = 'browse';
+    state.tianxuCategory = 'all';
+    state.tianxuSearch = '';
+    state.tianxuSort = 'newest';
+    state.tianxuOffset = 0;
     state.marketView = 'home';
-    state.casinoView = 'lobby';
-    state.casinoHouseMode = 'system';
-    state.fishShrimpBetQueue = [];
-    state.fishShrimpBetProcessing = false;
-    state.fishShrimpBetFlushTimer = null;
-    state.fishShrimpLastBetMessage = '';
-    state.fishShrimpState = null;
-    state.spiritDiceState = null;
-    state.spiritDiceBetQueue = [];
-    state.spiritDiceBetProcessing = false;
-    state.spiritDiceBetFlushTimer = null;
-    state.spiritDiceLastBetMessage = '';
-    state.marketSyncing = false;
     state.worldEvents = null;
     state.worldEventsSyncing = false;
     state.worldEventsFetchedAt = 0;
@@ -790,11 +723,6 @@
     }, PERF_E80.heartbeatMs);
   }
 
-  async function rpcGetMarketV1() {
-    const result = await restFetch('rpc/get_market_v1', { method: 'POST', body: {} });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
   async function rpcGetWorldEventsV1(limit = 30) {
     const result = await restFetch('rpc/get_world_events_v1', {
       method: 'POST',
@@ -803,165 +731,44 @@
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  function casinoRequestIdFix4() {
-    if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
-    const bytes = new Uint8Array(16);
-    globalThis.crypto?.getRandomValues?.(bytes);
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    const hex = [...bytes].map(value => value.toString(16).padStart(2, '0')).join('');
-    return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
-  }
-
-  async function rpcPlayHouseGameV1Fix4(houseMode, gameCode, stakeType, stakeAmount, choice, requestId = casinoRequestIdFix4()) {
-    const result = await restFetch('rpc/play_house_game_v1_fix4', { method: 'POST', body: {
-      p_request_id: requestId,
-      p_house_mode: houseMode === 'player' ? 'player' : 'system',
-      p_game_code: gameCode, p_stake_type: stakeType, p_stake_amount: Number(stakeAmount), p_choice: choice
+  async function rpcGetTianxuMarketV255({ search = '', category = 'all', sort = 'newest', limit = 30, offset = 0 } = {}) {
+    const result = await restFetch('rpc/get_tianxu_market_v255', { method: 'POST', body: {
+      p_search: search || null, p_category: category || 'all', p_sort: sort || 'newest', p_limit: Number(limit), p_offset: Number(offset)
     }});
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  const CASINO_DISABLED_NOTICE_V198 = '服务器检查到当前游戏进行非法活动，已暂停此项功能。';
-
-  async function rpcGetCasinoFeatureSwitchV198() {
-    const result = await restFetch('rpc/get_casino_feature_switch_v198', { method: 'POST', body: {} });
+  async function rpcGetTianxuListingDetailV255(listingId) {
+    const result = await restFetch('rpc/get_tianxu_listing_detail_v255', { method: 'POST', body: { p_listing_id: listingId } });
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  function casinoFeatureEnabledV198(snapshot = state.casinoFeature) {
-    return snapshot?.enabled !== false && snapshot?.status !== 'disabled';
-  }
-
-  function casinoDisabledNoticeV198(snapshot = state.casinoFeature) {
-    return String(snapshot?.notice || CASINO_DISABLED_NOTICE_V198);
-  }
-
-  function notifyCasinoDisabledV198(snapshot = state.casinoFeature, force = false) {
-    const now = Date.now();
-    if (!force && now - Number(state.casinoDisabledNoticeAt || 0) < 2200) return;
-    state.casinoDisabledNoticeAt = now;
-    showToast(casinoDisabledNoticeV198(snapshot), 'error');
-  }
-
-  async function refreshCasinoFeatureSwitchV198({ force = false, silent = true } = {}) {
-    if (!state.session || !state.character) return state.casinoFeature;
-    if (!force && state.casinoFeature && Date.now() - Number(state.casinoFeatureFetchedAt || 0) < 8000) return state.casinoFeature;
-    if (state.casinoFeatureSyncing) return state.casinoFeature;
-    state.casinoFeatureSyncing = true;
-    try {
-      const snapshot = await rpcGetCasinoFeatureSwitchV198();
-      state.casinoFeature = snapshot || { enabled: true, status: 'active' };
-      state.casinoFeatureFetchedAt = Date.now();
-      return state.casinoFeature;
-    } catch (error) {
-      // SQL198未完成或临时断网时，不把赌场误判为关闭；实际下注仍由数据库守卫。
-      if (!silent) showToast(translateError(error), 'error');
-      return state.casinoFeature || { enabled: true, status: 'unknown' };
-    } finally {
-      state.casinoFeatureSyncing = false;
-    }
-  }
-
-  async function requireCasinoEnabledV198({ force = false, notify = true } = {}) {
-    const snapshot = await refreshCasinoFeatureSwitchV198({ force, silent: true });
-    if (!casinoFeatureEnabledV198(snapshot)) {
-      if (notify) notifyCasinoDisabledV198(snapshot, true);
-      return false;
-    }
-    return true;
-  }
-
-  async function rpcGetCasinoPlayerHouseStatusV1() {
-    const result = await restFetch('rpc/get_casino_player_house_status_v1', { method: 'POST', body: {} });
+  async function rpcGetTianxuSellAssetsV255() {
+    const result = await restFetch('rpc/get_tianxu_sell_assets_v255', { method: 'POST', body: {} });
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcSetCasinoPlayerHouseV1(active) {
-    const result = await restFetch('rpc/set_casino_player_house_v1', {
-      method: 'POST', body: { p_active: Boolean(active) }
-    });
+  async function rpcGetMyTianxuV255() {
+    const result = await restFetch('rpc/get_my_tianxu_v255', { method: 'POST', body: {} });
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-
-  async function rpcGetFishShrimpStateV0148(limit = 20) {
-    const result = await restFetch('rpc/get_fish_shrimp_state_v0148', {
-      method: 'POST', body: { p_limit: Math.max(1, Math.min(20, Number(limit) || 20)) }
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-  async function rpcPlaceFishShrimpBetV1Fix4(houseMode, stakeType, symbolCode, stakeAmount, requestId = casinoRequestIdFix4()) {
-    const result = await restFetch('rpc/place_fish_shrimp_bet_v1_fix4', {
-      method: 'POST', body: {
-        p_request_id: requestId,
-        p_house_mode: houseMode === 'player' ? 'player' : 'system',
-        p_stake_type: stakeType === 'cultivation' ? 'cultivation' : 'spirit_stone',
-        p_symbol_code: symbolCode,
-        p_stake_amount: Number(stakeAmount)
-      }
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-
-  async function rpcPlaceFishShrimpBetsV175(stakeType, bets, requestId = casinoRequestIdFix4()) {
-    const result = await restFetch('rpc/place_fish_shrimp_bets_v175', {
-      method: 'POST', body: {
-        p_request_id: requestId,
-        p_stake_type: stakeType === 'cultivation' ? 'cultivation' : 'spirit_stone',
-        p_bets: Array.isArray(bets) ? bets : []
-      }
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-  async function rpcGetSpiritDiceStateV175(limit = 20) {
-    const result = await restFetch('rpc/get_spirit_dice_state_v175', {
-      method: 'POST', body: { p_limit: Math.max(1, Math.min(20, Number(limit) || 20)) }
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-  async function rpcPlaceSpiritDiceBetsV175(stakeType, bets, requestId = casinoRequestIdFix4()) {
-    const result = await restFetch('rpc/place_spirit_dice_bets_v175', {
-      method: 'POST', body: {
-        p_request_id: requestId,
-        p_stake_type: stakeType === 'cultivation' ? 'cultivation' : 'spirit_stone',
-        p_bets: Array.isArray(bets) ? bets : []
-      }
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-
-  async function rpcClaimNextDivineNoticeV1() {
-    const result = await restFetch('rpc/claim_next_divine_notice_v1', { method: 'POST', body: {} });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-  async function rpcAcknowledgeDivineNoticeV1(noticeId) {
-    const result = await restFetch('rpc/acknowledge_divine_notice_v1', {
-      method: 'POST', body: { p_notice_id: noticeId }
-    });
-    return Array.isArray(result) ? result[0] || null : result;
-  }
-
-  async function rpcCreateDuelV1(gameCode, stakeType, stakeAmount, choice) {
-    const result = await restFetch('rpc/create_duel_v1', { method: 'POST', body: {
-      p_game_code: gameCode, p_stake_type: stakeType, p_stake_amount: Number(stakeAmount), p_choice: choice
+  async function rpcCreateTianxuListingV255(assetType, assetRef, quantity, unitPrice, requestId = createUuid()) {
+    const result = await restFetch('rpc/create_tianxu_listing_v255', { method: 'POST', body: {
+      p_asset_type: assetType, p_asset_ref: assetRef, p_quantity: Number(quantity), p_unit_price: Number(unitPrice), p_request_id: requestId
     }});
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcJoinDuelV1(duelId, choice) {
-    const result = await restFetch('rpc/join_duel_v1', { method: 'POST', body: { p_duel_id: duelId, p_choice: choice }});
+  async function rpcBuyTianxuListingV255(listingId, quantity, requestId = createUuid()) {
+    const result = await restFetch('rpc/buy_tianxu_listing_v255', { method: 'POST', body: {
+      p_listing_id: listingId, p_quantity: Number(quantity), p_request_id: requestId
+    }});
     return Array.isArray(result) ? result[0] || null : result;
   }
 
-  async function rpcCancelDuelV1(duelId) {
-    const result = await restFetch('rpc/cancel_duel_v1', { method: 'POST', body: { p_duel_id: duelId }});
+  async function rpcCancelTianxuListingV255(listingId, requestId = createUuid()) {
+    const result = await restFetch('rpc/cancel_tianxu_listing_v255', { method: 'POST', body: { p_listing_id: listingId, p_request_id: requestId } });
     return Array.isArray(result) ? result[0] || null : result;
   }
 
@@ -999,7 +806,8 @@
     }
     row.quantity = normalized;
     row.is_bound = false;
-    if (state.marketSystem?.character) state.marketSystem.character.spirit_stones = normalized;
+    if (state.tianxuMarket && Number.isFinite(Number(state.tianxuMarket.spirit_stones))) state.tianxuMarket.spirit_stones = normalized;
+    if (state.tianxuSellAssets && Number.isFinite(Number(state.tianxuSellAssets.spirit_stones))) state.tianxuSellAssets.spirit_stones = normalized;
     document.querySelectorAll('[data-spirit-stone-balance]').forEach(node => {
       node.textContent = formatNumber(normalized);
     });
@@ -1020,7 +828,7 @@
 
   function currentSpiritStoneBalance() {
     const row = state.details?.inventory?.find(item => item.definition?.code === 'spirit_stone');
-    return Math.max(0, Number(row?.quantity ?? state.techniqueSystem?.spirit_stones ?? state.marketSystem?.character?.spirit_stones ?? 0));
+    return Math.max(0, Number(row?.quantity ?? state.techniqueSystem?.spirit_stones ?? state.tianxuMarket?.spirit_stones ?? state.tianxuSellAssets?.spirit_stones ?? state.treasureShop?.spirit_stones ?? 0));
   }
 
   function findInventoryRow(inventoryId) {
@@ -1157,43 +965,47 @@
     }
   }
 
-  async function refreshMarketSystem(silent = false) {
-    if (state.marketSyncing) return state.marketSystem;
-    captureCasinoUiDrafts();
-    state.marketSyncing = true;
+  async function refreshTianxuMarket(silent = false) {
+    if (state.tianxuSyncing || !state.character) return state.tianxuMarket;
+    state.tianxuSyncing = true;
     try {
-      const casinoFeature = await refreshCasinoFeatureSwitchV198({ force: true, silent: true });
-      if (!casinoFeatureEnabledV198(casinoFeature)) {
-        state.marketSystemFetchedAt = Date.now();
-        if (state.marketView === 'casino') {
-          state.marketView = 'home';
-          updateBazaarPanel();
-          notifyCasinoDisabledV198(casinoFeature);
-        }
-        return state.marketSystem;
-      }
-      const [marketSystem, playerHouse] = await Promise.all([
-        rpcGetMarketV1(),
-        rpcGetCasinoPlayerHouseStatusV1().catch(error => ({
-          status: 'unavailable', mode: 'system', dealer_name: '荷老', error: translateError(error)
-        }))
-      ]);
-      state.marketSystem = { ...(marketSystem || {}), player_house: playerHouse || { mode: 'system', dealer_name: '荷老' } };
-      state.marketSystemFetchedAt = Date.now();
-      if (Number.isFinite(Number(state.marketSystem?.character?.spirit_stones))) {
-        setLocalSpiritStoneBalance(Number(state.marketSystem.character.spirit_stones));
-      }
-      const host = document.getElementById('marketPanelHost');
-      if (host) {
-        host.innerHTML = marketPanelHtml(state.marketSystem || {}, state.casinoView || 'lobby');
-        bindMarketActions();
-        afterCasinoRenderV0148();
-      }
-      return state.marketSystem;
+      const data = await rpcGetTianxuMarketV255({
+        search: state.tianxuSearch, category: state.tianxuCategory, sort: state.tianxuSort, limit: 100, offset: state.tianxuOffset
+      });
+      state.tianxuMarket = data || { status: 'ok', listings: [], total: 0 };
+      state.tianxuFetchedAt = Date.now();
+      if (Number.isFinite(Number(data?.spirit_stones))) setLocalSpiritStoneBalance(Number(data.spirit_stones));
+      if (state.marketView === 'tianxu') updateBazaarPanel();
+      return state.tianxuMarket;
     } catch (error) {
       if (!silent) showToast(translateError(error), 'error');
-      return state.marketSystem;
-    } finally { state.marketSyncing = false; }
+      state.tianxuMarket = state.tianxuMarket || { status: 'unavailable', listings: [], error: translateError(error) };
+      if (state.marketView === 'tianxu') updateBazaarPanel();
+      return state.tianxuMarket;
+    } finally { state.tianxuSyncing = false; }
+  }
+
+  async function refreshTianxuSellAssets(silent = false) {
+    try {
+      state.tianxuSellAssets = await rpcGetTianxuSellAssetsV255();
+      if (Number.isFinite(Number(state.tianxuSellAssets?.spirit_stones))) setLocalSpiritStoneBalance(Number(state.tianxuSellAssets.spirit_stones));
+      if (state.marketView === 'tianxu' && state.tianxuMode === 'sell') updateBazaarPanel();
+      return state.tianxuSellAssets;
+    } catch (error) {
+      if (!silent) showToast(translateError(error), 'error');
+      return state.tianxuSellAssets;
+    }
+  }
+
+  async function refreshMyTianxu(silent = false) {
+    try {
+      state.tianxuMine = await rpcGetMyTianxuV255();
+      if (state.marketView === 'tianxu' && state.tianxuMode === 'mine') updateBazaarPanel();
+      return state.tianxuMine;
+    } catch (error) {
+      if (!silent) showToast(translateError(error), 'error');
+      return state.tianxuMine;
+    }
   }
 
   async function refreshWorldEvents(silent = false) {
@@ -3159,7 +2971,7 @@
     const definition = item?.definition || {};
     const effects = definition.effects || {};
     const useType = effects.use_type || '';
-    if (definition.code === 'spirit_stone') return '九霄界唯一通用货币；机缘、洞府、宗门、功法与赌坊统一使用。';
+    if (definition.code === 'spirit_stone') return '九霄界唯一通用货币；机缘、洞府、宗门、功法与天墟统一使用。';
     if (useType === 'instant_cultivation') return `使用后立即修为 +${formatNumber(effects.instant_cultivation || 0)}。`;
     if (useType === 'timed_rate') return '使用后获得限时自动修炼速度加成。';
     if (useType === 'comprehension') return `使用后永久悟性 +${formatNumber(effects.comprehension || 0)}。`;
@@ -4300,7 +4112,8 @@
           showToast(`兑换成功，获得 ${formatNumber(result?.spirit_stones_gained || total)} 灵石。`);
           await Promise.all([
             refreshTechniqueLibrary(true),
-            refreshMarketSystem(true),
+            refreshTianxuSellAssets(true),
+            refreshTianxuMarket(true),
             refreshTechniqueSystem(true),
             refreshSpiritStoneBalanceV0141(true)
           ]);
@@ -5379,7 +5192,6 @@
     if (type.startsWith('breakthrough')) return '劫';
     if (type.startsWith('opportunity')) return '缘';
     if (type.startsWith('secret_realm')) return '秘';
-    if (type.startsWith('casino')) return '赌';
     if (type.startsWith('admin')) return '罚';
     return '闻';
   }
@@ -5463,23 +5275,72 @@
       </div>`;
   }
 
-  function bazaarPanelHtml(view = 'home', marketSystem = {}, ranking = {}, worldEvents = {}, treasureShop = {}) {
-    const safeView = ['home', 'ranking', 'casino', 'treasure'].includes(view) ? view : 'home';
+  function tianxuCategoryLabelV255(value) {
+    return ({ all: '全部', equipment: '装备', technique: '功法', shard: '残卷', pill: '丹药', material: '材料', other: '其他' })[value] || '其他';
+  }
+
+  function tianxuListingsHtmlV255(data = {}) {
+    const rows = Array.isArray(data?.listings) ? data.listings : [];
+    if (data?.status === 'unavailable') return `<div class="empty-state">${escapeHtml(data.error || '天墟暂时无法开启。')}</div>`;
+    if (!rows.length) return '<div class="empty-state">当前没有符合条件的挂单。</div>';
+    return `<div class="tianxu-list-v255">${rows.map(row => `<article class="tianxu-listing-v255 grade-${escapeHtml(row.grade_code || 'yellow')}">
+      <span class="tianxu-grade-v255">${escapeHtml(row.grade_name || '黄品')}</span>
+      <strong class="tianxu-name-v255">${escapeHtml(row.item_name || '未知物品')}</strong>
+      <b class="tianxu-price-v255">${formatNumber(row.unit_price || 0)} 灵石</b>
+      <button class="ghost-btn" type="button" data-tianxu-detail="${escapeHtml(row.id)}">详情</button>
+    </article>`).join('')}</div>`;
+  }
+
+  function tianxuBrowseHtmlV255(data = {}) {
+    const total = Number(data?.total || 0), offset = Number(data?.offset ?? state.tianxuOffset ?? 0), limit = Number(data?.limit || 30);
+    const prev = Math.max(0, offset - limit), next = offset + limit;
+    return `<section class="tianxu-shell-v255">
+      <div class="tianxu-toolbar-v255">
+        <form data-tianxu-search-form><input type="search" value="${escapeHtml(state.tianxuSearch || '')}" placeholder="搜索物品名称" data-tianxu-search><button class="ghost-btn" type="submit">搜索</button></form>
+        <select data-tianxu-sort><option value="newest" ${state.tianxuSort==='newest'?'selected':''}>最新上架</option><option value="price_asc" ${state.tianxuSort==='price_asc'?'selected':''}>价格从低到高</option><option value="price_desc" ${state.tianxuSort==='price_desc'?'selected':''}>价格从高到低</option></select>
+      </div>
+      <div class="tianxu-categories-v255">${['all','equipment','technique','shard','pill','material','other'].map(cat=>`<button type="button" data-tianxu-category="${cat}" class="${state.tianxuCategory===cat?'active':''}">${tianxuCategoryLabelV255(cat)}</button>`).join('')}</div>
+      ${tianxuListingsHtmlV255(data)}
+      <div class="tianxu-pager-v255"><button class="ghost-btn" type="button" data-tianxu-page="${prev}" ${offset<=0?'disabled':''}>上一页</button><span>${formatNumber(Math.min(total,offset+1))}-${formatNumber(Math.min(total,offset+limit))} / ${formatNumber(total)}</span><button class="ghost-btn" type="button" data-tianxu-page="${next}" ${next>=total?'disabled':''}>下一页</button></div>
+    </section>`;
+  }
+
+  function tianxuSellHtmlV255(data = {}) {
+    const rows = Array.isArray(data?.assets) ? data.assets : [];
+    if (!rows.length) return '<div class="empty-state">当前没有可上架物品。穿戴中的装备需先卸下；锁定装备需先解锁。</div>';
+    return `<div class="tianxu-sell-grid-v255">${rows.map(row=>`<article><span>${escapeHtml(row.grade_name || '黄品')}</span><strong>${escapeHtml(row.item_name || '未知物品')}</strong><small>可用 ${formatNumber(row.quantity || 0)}</small><button class="primary-btn" type="button" data-tianxu-sell="${escapeHtml(row.asset_type)}" data-tianxu-ref="${escapeHtml(row.asset_ref)}">上架</button></article>`).join('')}</div>`;
+  }
+
+  function tianxuMineHtmlV255(data = {}) {
+    const active = Array.isArray(data?.active) ? data.active : [], sold = Array.isArray(data?.sold) ? data.sold : [], bought = Array.isArray(data?.bought) ? data.bought : [];
+    const activeHtml = active.length ? active.map(row=>`<article class="tianxu-my-row-v255"><div><span>${escapeHtml(row.grade_name||'')}</span><strong>${escapeHtml(row.item_name||'')}</strong><small>剩余 ${formatNumber(row.quantity_remaining||0)} · ${formatNumber(row.unit_price||0)} 灵石/件</small></div><button class="ghost-btn" data-tianxu-cancel="${escapeHtml(row.id)}">下架</button></article>`).join('') : '<div class="empty-state">暂无出售中的挂单。</div>';
+    const soldHtml = sold.length ? sold.map(row=>`<article class="tianxu-history-row-v255"><strong>${escapeHtml(row.item_name||'')}</strong><span>×${formatNumber(row.quantity||0)} · 实得 ${formatNumber(row.seller_net||0)} 灵石</span></article>`).join('') : '<div class="empty-state">暂无售出记录。</div>';
+    const boughtHtml = bought.length ? bought.map(row=>`<article class="tianxu-history-row-v255"><strong>${escapeHtml(row.item_name||'')}</strong><span>×${formatNumber(row.quantity||0)} · 支付 ${formatNumber(row.gross_amount||0)} 灵石</span></article>`).join('') : '<div class="empty-state">暂无购买记录。</div>';
+    return `<div class="tianxu-mine-v255"><h4>出售中</h4>${activeHtml}<h4>已售出</h4>${soldHtml}<h4>已购买</h4>${boughtHtml}</div>`;
+  }
+
+  function tianxuPanelHtmlV255() {
+    const mode = ['browse','sell','mine'].includes(state.tianxuMode) ? state.tianxuMode : 'browse';
+    let body = '';
+    if (mode === 'browse') body = tianxuBrowseHtmlV255(state.tianxuMarket || { listings: [], total: 0 });
+    if (mode === 'sell') body = tianxuSellHtmlV255(state.tianxuSellAssets || { assets: [] });
+    if (mode === 'mine') body = tianxuMineHtmlV255(state.tianxuMine || {});
+    return `<div class="tianxu-root-v255"><div class="tianxu-head-v255"><div><span>万物流转 · 各取所需</span><h3>天墟</h3></div><div class="resource-inline"><span>灵石</span><strong data-spirit-stone-balance>${formatNumber(currentSpiritStoneBalance())}</strong></div></div><nav class="tianxu-nav-v255"><button data-tianxu-mode="browse" class="${mode==='browse'?'active':''}">逛天墟</button><button data-tianxu-mode="sell" class="${mode==='sell'?'active':''}">我要出售</button><button data-tianxu-mode="mine" class="${mode==='mine'?'active':''}">我的</button></nav>${body}</div>`;
+  }
+
+  function bazaarPanelHtml(view = 'home', ranking = {}, worldEvents = {}, treasureShop = {}) {
+    const safeView = ['home', 'ranking', 'tianxu', 'treasure'].includes(view) ? view : 'home';
     if (safeView === 'home') {
-      return `
-        <div class="bazaar-root" data-bazaar-view="home">
-          <div class="bazaar-entry-grid" aria-label="市坊功能入口">
-            <button class="bazaar-entry-button" type="button" data-bazaar-target="ranking"><span aria-hidden="true">榜</span><strong>天命榜</strong><small>修为 · 财富 · 战力</small></button>
-            <button class="bazaar-entry-button" type="button" data-bazaar-target="casino"><span aria-hidden="true">赌</span><strong>赌坊</strong><small>一筹问造化</small></button>
-            <button class="bazaar-entry-button" type="button" data-bazaar-target="treasure"><span aria-hidden="true">珍</span><strong>珍宝阁</strong><small>渡境 · 洗灵</small></button>
-          </div>
-          <section class="bazaar-world-section" aria-labelledby="worldEventsHeading"><div class="bazaar-world-heading"><div><span>天道传音</span><h4 id="worldEventsHeading">九霄界闻</h4></div><small>突破 · 强化 · 机缘 · 秘境 · 赌坊</small></div>${worldEventsPanelHtml(worldEvents || { status: 'loading', entries: [] })}</section>
-        </div>`;
+      return `<div class="bazaar-root" data-bazaar-view="home"><div class="bazaar-entry-grid" aria-label="市坊功能入口">
+        <button class="bazaar-entry-button" type="button" data-bazaar-target="tianxu"><span aria-hidden="true">墟</span><strong>天墟</strong><small>万物皆可交易</small></button>
+        <button class="bazaar-entry-button" type="button" data-bazaar-target="ranking"><span aria-hidden="true">榜</span><strong>天命榜</strong><small>修为 · 财富 · 战力</small></button>
+        <button class="bazaar-entry-button" type="button" data-bazaar-target="treasure"><span aria-hidden="true">珍</span><strong>珍宝阁</strong><small>渡境 · 洗灵</small></button>
+      </div><section class="bazaar-world-section" aria-labelledby="worldEventsHeading"><div class="bazaar-world-heading"><div><span>天道传音</span><h4 id="worldEventsHeading">九霄界闻</h4></div><small>突破 · 强化 · 机缘 · 秘境 · 天墟</small></div>${worldEventsPanelHtml(worldEvents || { status: 'loading', entries: [] })}</section></div>`;
     }
-    const pageMeta = { ranking: ['天命榜', '修为、财富与战力总览'], casino: ['赌坊 · 万运博弈楼', '灵石 · 修为 · 造化彩池'], treasure: ['珍宝阁', '渡境清元丹 · 洗灵丹'] }[safeView];
+    const pageMeta = { ranking: ['天命榜', '修为、财富与战力总览'], tianxu: ['天墟', '公开一口价 · 万物自由流通'], treasure: ['珍宝阁', '渡境清元丹 · 洗灵丹'] }[safeView];
     let body = '';
     if (safeView === 'ranking') body = destinyRankingPanelHtml(ranking || { status: 'loading', entries: [] });
-    if (safeView === 'casino') body = `<div id="marketPanelHost">${marketPanelHtml(marketSystem || {}, state.casinoView || 'lobby')}</div>`;
+    if (safeView === 'tianxu') body = tianxuPanelHtmlV255();
     if (safeView === 'treasure') body = treasureShopPanelHtmlV0154(treasureShop || { status: 'loading', items: [] });
     return `<div class="bazaar-root bazaar-subpage" data-bazaar-view="${safeView}"><div class="bazaar-subpage-head"><button class="ghost-btn" type="button" data-bazaar-back>返回市坊</button><div><strong>${escapeHtml(pageMeta[0])}</strong><small>${escapeHtml(pageMeta[1])}</small></div></div>${body}</div>`;
   }
@@ -5487,1944 +5348,75 @@
   function updateBazaarPanel() {
     const host = document.getElementById('bazaarPanelHost');
     if (!host) return;
-    host.innerHTML = bazaarPanelHtml(state.marketView || 'home', state.marketSystem || {}, state.destinyRanking || {}, state.worldEvents || { status: 'loading', entries: [] }, state.treasureShop || {});
+    host.innerHTML = bazaarPanelHtml(state.marketView || 'home', state.destinyRanking || {}, state.worldEvents || { status: 'loading', entries: [] }, state.treasureShop || {});
     bindBazaarActions();
   }
 
   function setBazaarView(view = 'home', pushHistory = false) {
-    const safeView = ['home', 'ranking', 'casino', 'treasure'].includes(view) ? view : 'home';
-    const previousView = state.marketView;
-    state.marketView = safeView;
-    if (safeView === 'casino' && previousView !== 'casino') state.casinoView = 'lobby';
+    const safeView = ['home', 'ranking', 'tianxu', 'treasure'].includes(view) ? view : 'home';
+    const previousView = state.marketView; state.marketView = safeView;
     if (safeView === 'ranking' && previousView !== 'ranking') state.rankingBoard = 'cultivation';
     updateBazaarPanel();
     if (pushHistory && safeView !== 'home') window.history.pushState({ nineCloudBazaarView: safeView }, '', '#marketSection');
     if (safeView === 'ranking' && previousView !== 'ranking') refreshRankingBoard('cultivation', false, true);
-    if (safeView === 'casino') refreshMarketSystem(true);
+    if (safeView === 'tianxu') { state.tianxuMode='browse'; state.tianxuOffset=0; refreshTianxuMarket(true); }
     if (safeView === 'treasure' && Date.now() - Number(state.treasureShopFetchedAt || 0) > 15000) refreshTreasureShopV0154(false);
     if (safeView === 'home' && Date.now() - Number(state.worldEventsFetchedAt || 0) > 15000) refreshWorldEvents(true);
   }
 
+  function tianxuSnapshotLinesV255(snapshot = {}) {
+    const skip = new Set(['id','character_id','user_id','created_at','updated_at','template_id']);
+    const labels = {
+      enhancement_level:'强化', grade_code:'品级代码', slot_code:'部位', weapon_kind:'武器类型', main_stat_value:'主属性', base_main_stat_value:'基础主属性', opened_sockets:'开放孔位',
+      code:'物品代码', category:'类别', rarity:'品质', stack_limit:'堆叠上限', description:'说明', book_kind:'道卷类型', technique_code:'功法代码', technique_name:'功法名称', family:'功法系别'
+    };
+    const source = snapshot?.item || snapshot?.definition || snapshot;
+    let html = Object.entries(source || {}).filter(([k,v])=>!skip.has(k) && v!==null && v!=='' && typeof v!=='object').slice(0,18).map(([k,v])=>`<div><span>${escapeHtml(labels[k] || k)}</span><strong>${escapeHtml(String(v))}</strong></div>`).join('');
+    const sockets = Array.isArray(snapshot?.sockets) ? snapshot.sockets : [];
+    if (sockets.length) html += sockets.map((row,index)=>{
+      const label=String(row?.label || row?.attribute_name || row?.attribute_code || `孔位${index+1}`).replace('+数值','').replace('+%','');
+      const raw = row?.value_percent ?? row?.value ?? '';
+      const value = raw==='' ? '' : (row?.value_percent!==undefined ? ` +${formatNumber(Number(raw),2)}%` : ` +${escapeHtml(String(raw))}`);
+      return `<div><span>孔位 ${index+1} · LV.${formatNumber(row?.level || 1)}</span><strong>${escapeHtml(label)}${value}</strong></div>`;
+    }).join('');
+    return html;
+  }
+
+  async function openTianxuDetailV255(listingId) {
+    try {
+      const data = await rpcGetTianxuListingDetailV255(listingId); const row=data?.listing;if(!row)throw new Error('TIANXU_LISTING_NOT_AVAILABLE');
+      const maxQty=Math.max(1,Number(row.quantity_remaining||1));
+      modalRoot.innerHTML=`<div id="tianxuDetailBackdrop" class="modal-backdrop"><section class="modal tianxu-detail-modal-v255" role="dialog" aria-modal="true"><button class="modal-close-button" type="button" data-tianxu-detail-close>×</button><span class="eyebrow">${escapeHtml(row.grade_name||'')}</span><h2>${escapeHtml(row.item_name||'未知物品')}</h2><div class="tianxu-detail-price-v255">${formatNumber(row.unit_price||0)} 灵石 / 件</div><div class="tianxu-detail-meta-v255"><span>数量 ${formatNumber(row.quantity_remaining||0)}</span><span>卖家 ${escapeHtml(row.seller_name||'无名修士')}${row.seller_realm?` · ${escapeHtml(row.seller_realm)}`:''}</span><span>最近成交 ${data?.recent_price?formatNumber(data.recent_price)+' 灵石':'暂无'}</span><span>7日中位 ${data?.median_7d?formatNumber(data.median_7d)+' 灵石':'样本不足'}</span></div><div class="tianxu-snapshot-v255">${tianxuSnapshotLinesV255(row.item_snapshot||{}) || '<p>暂无更多属性说明。</p>'}</div>${row.is_own?'<div class="empty-state">这是你自己的挂单。</div>':`<div class="tianxu-buy-v255"><input type="number" min="1" max="${maxQty}" value="1" inputmode="numeric" data-tianxu-buy-qty><button class="primary-btn" type="button" data-tianxu-buy="${escapeHtml(row.id)}">购买</button></div>`}</section></div>`;
+      const close=()=>{modalRoot.innerHTML='';};modalRoot.querySelector('[data-tianxu-detail-close]')?.addEventListener('click',close);modalRoot.querySelector('#tianxuDetailBackdrop')?.addEventListener('click',e=>{if(e.target.id==='tianxuDetailBackdrop')close();});
+      modalRoot.querySelector('[data-tianxu-buy]')?.addEventListener('click',async e=>{const btn=e.currentTarget,qty=Math.max(1,Math.min(maxQty,Math.floor(Number(modalRoot.querySelector('[data-tianxu-buy-qty]')?.value||1))));if(!confirm(`确认支付 ${formatNumber(Number(row.unit_price||0)*qty)} 灵石购买 ×${qty}？`))return;setBusy(btn,true,'成交中……');try{const result=await rpcBuyTianxuListingV255(row.id,qty,createUuid());setLocalSpiritStoneBalance(result?.buyer_spirit_stones_after??currentSpiritStoneBalance());close();showToast(`已购得 ${row.item_name} ×${qty}`);await Promise.all([refreshTianxuMarket(true),refreshInventoryV0147().catch(()=>null)]);renderCaveSystemFromState();}catch(err){showToast(translateError(err),'error');setBusy(btn,false);}});
+    } catch(error){showToast(translateError(error),'error');}
+  }
+
+  function openTianxuSellModalV255(asset) {
+    const maxQty=Math.max(1,Number(asset.quantity||1));
+    const listingRate=Number(state.tianxuSellAssets?.settings?.listing_fee_rate??.01);
+    modalRoot.innerHTML=`<div id="tianxuSellBackdrop" class="modal-backdrop"><section class="modal tianxu-sell-modal-v255" role="dialog" aria-modal="true"><button class="modal-close-button" data-tianxu-sell-close>×</button><span class="eyebrow">${escapeHtml(asset.grade_name||'')}</span><h2>上架 · ${escapeHtml(asset.item_name||'未知物品')}</h2><label>数量<input data-tianxu-list-qty type="number" min="1" max="${maxQty}" value="1" ${asset.asset_type==='equipment'?'disabled':''}></label><label>单价（灵石）<input data-tianxu-list-price type="number" min="1" step="1" inputmode="numeric" placeholder="输入每件价格"></label><div class="tianxu-fee-preview-v255" data-tianxu-fee-preview>上架费按总挂牌额的 ${formatNumber(listingRate*100,2)}% 收取，取消或过期不退。</div><button class="primary-btn" data-tianxu-list-confirm>确认上架</button></section></div>`;
+    const close=()=>{modalRoot.innerHTML='';};modalRoot.querySelector('[data-tianxu-sell-close]')?.addEventListener('click',close);modalRoot.querySelector('#tianxuSellBackdrop')?.addEventListener('click',e=>{if(e.target.id==='tianxuSellBackdrop')close();});
+    const qty=modalRoot.querySelector('[data-tianxu-list-qty]'),price=modalRoot.querySelector('[data-tianxu-list-price]'),preview=modalRoot.querySelector('[data-tianxu-fee-preview]');const update=()=>{const q=Math.max(1,Math.min(maxQty,Math.floor(Number(qty?.value||1)))),p=Math.max(0,Math.floor(Number(price?.value||0))),rate=listingRate;preview.textContent=`总挂牌额 ${formatNumber(q*p)} 灵石 · 预计上架费 ${formatNumber(Math.ceil(q*p*rate))} 灵石`;};qty?.addEventListener('input',update);price?.addEventListener('input',update);
+    modalRoot.querySelector('[data-tianxu-list-confirm]')?.addEventListener('click',async e=>{const btn=e.currentTarget,q=asset.asset_type==='equipment'?1:Math.max(1,Math.min(maxQty,Math.floor(Number(qty?.value||1)))),p=Math.max(1,Math.floor(Number(price?.value||0)));if(!Number.isFinite(p)||p<=0){showToast('请输入正确的单价。','error');return;}if(!confirm(`确认上架 ${asset.item_name} ×${q}，单价 ${formatNumber(p)} 灵石？`))return;setBusy(btn,true,'上架中……');try{const result=await rpcCreateTianxuListingV255(asset.asset_type,asset.asset_ref,q,p,createUuid());setLocalSpiritStoneBalance(result?.spirit_stones_after??currentSpiritStoneBalance());close();showToast('已上架天墟。');await Promise.all([refreshTianxuSellAssets(true),refreshTianxuMarket(true),refreshMyTianxu(true)]);}catch(err){showToast(translateError(err),'error');setBusy(btn,false);}});
+  }
+
   function bindBazaarActions() {
-    document.querySelectorAll('[data-bazaar-target]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        const target = button.dataset.bazaarTarget || 'home';
-        if (target === 'casino' && !(await requireCasinoEnabledV198({ force: true, notify: true }))) return;
-        setBazaarView(target, true);
-      });
-    });
-    document.querySelectorAll('[data-bazaar-back]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => { if (window.history.state?.nineCloudBazaarView) window.history.back(); else setBazaarView('home', false); });
-    });
-    document.querySelectorAll('[data-world-events-refresh]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => { setBusy(button, true, '聆听中……'); await refreshWorldEvents(false); setBusy(button, false); });
-    });
-    document.querySelectorAll('[data-treasure-quantity-delta]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        const input = document.querySelector(`[data-treasure-quantity="${CSS.escape(button.dataset.treasureCode || '')}"]`);
-        if (!input) return;
-        input.value = String(Math.max(1, Math.min(99, Math.floor(Number(input.value || 1) + Number(button.dataset.treasureQuantityDelta || 0)))));
-      });
-    });
-    document.querySelectorAll('[data-purchase-treasure]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        const code = button.dataset.purchaseTreasure;
-        const input = document.querySelector(`[data-treasure-quantity="${CSS.escape(code || '')}"]`);
-        const quantity = Math.max(1, Math.min(99, Math.floor(Number(input?.value || 1))));
-        setBusy(button, true, '成交中……');
-        try {
-          const result = await rpcPurchaseTreasureItemV0154(code, quantity, createUuid());
-          applyTreasurePurchaseResultV0154(result);
-          setBusy(button, false);
-          showToast(`已购得${result?.item_name || '丹药'} ×${formatNumber(result?.quantity || quantity)}，已收入储物袋，可立即使用。`);
-          void (async () => {
-            try {
-              await refreshInventoryV0147();
-              renderCaveSystemFromState();
-              await refreshTreasureShopV0154(true);
-              if (code === 'breakthrough_clear_origin_pill_v0154') await refreshBreakthroughStatus();
-            } catch (syncError) {
-              console.error(syncError);
-            }
-          })();
-        } catch (error) {
-          showToast(translateError(error), 'error');
-          setBusy(button, false);
-        }
-      });
-    });
-    bindMarketActions();
+    document.querySelectorAll('[data-bazaar-target]').forEach(button=>{if(button.dataset.bound==='1')return;button.dataset.bound='1';button.addEventListener('click',()=>setBazaarView(button.dataset.bazaarTarget||'home',true));});
+    document.querySelectorAll('[data-bazaar-back]').forEach(button=>{if(button.dataset.bound==='1')return;button.dataset.bound='1';button.addEventListener('click',()=>{if(window.history.state?.nineCloudBazaarView)window.history.back();else setBazaarView('home',false);});});
+    document.querySelectorAll('[data-world-events-refresh]').forEach(button=>{if(button.dataset.bound==='1')return;button.dataset.bound='1';button.addEventListener('click',async()=>{setBusy(button,true,'聆听中……');await refreshWorldEvents(false);setBusy(button,false);});});
+    document.querySelectorAll('[data-treasure-quantity-delta]').forEach(button=>{if(button.dataset.bound==='1')return;button.dataset.bound='1';button.addEventListener('click',()=>{const input=document.querySelector(`[data-treasure-quantity="${CSS.escape(button.dataset.treasureCode||'')}"]`);if(input)input.value=String(Math.max(1,Math.min(99,Math.floor(Number(input.value||1)+Number(button.dataset.treasureQuantityDelta||0)))));});});
+    document.querySelectorAll('[data-purchase-treasure]').forEach(button=>{if(button.dataset.bound==='1')return;button.dataset.bound='1';button.addEventListener('click',async()=>{const code=button.dataset.purchaseTreasure,input=document.querySelector(`[data-treasure-quantity="${CSS.escape(code||'')}"]`),quantity=Math.max(1,Math.min(99,Math.floor(Number(input?.value||1))));setBusy(button,true,'成交中……');try{const result=await rpcPurchaseTreasureItemV0154(code,quantity,createUuid());applyTreasurePurchaseResultV0154(result);setBusy(button,false);showToast(`已购得${result?.item_name||'丹药'} ×${formatNumber(result?.quantity||quantity)}，已收入储物袋。`);await refreshInventoryV0147();renderCaveSystemFromState();await refreshTreasureShopV0154(true);}catch(error){showToast(translateError(error),'error');setBusy(button,false);}});});
+    document.querySelectorAll('[data-tianxu-mode]').forEach(button=>{if(button.dataset.bound==='1')return;button.dataset.bound='1';button.addEventListener('click',async()=>{state.tianxuMode=button.dataset.tianxuMode||'browse';updateBazaarPanel();if(state.tianxuMode==='browse')await refreshTianxuMarket(true);if(state.tianxuMode==='sell')await refreshTianxuSellAssets(true);if(state.tianxuMode==='mine')await refreshMyTianxu(true);});});
+    document.querySelector('[data-tianxu-search-form]')?.addEventListener('submit',async e=>{e.preventDefault();state.tianxuSearch=String(document.querySelector('[data-tianxu-search]')?.value||'').trim();state.tianxuOffset=0;await refreshTianxuMarket(false);});
+    document.querySelector('[data-tianxu-sort]')?.addEventListener('change',async e=>{state.tianxuSort=e.currentTarget.value||'newest';state.tianxuOffset=0;await refreshTianxuMarket(true);});
+    document.querySelectorAll('[data-tianxu-category]').forEach(button=>{button.addEventListener('click',async()=>{state.tianxuCategory=button.dataset.tianxuCategory||'all';state.tianxuOffset=0;await refreshTianxuMarket(true);});});
+    document.querySelectorAll('[data-tianxu-page]').forEach(button=>{button.addEventListener('click',async()=>{state.tianxuOffset=Math.max(0,Number(button.dataset.tianxuPage||0));await refreshTianxuMarket(true);});});
+    document.querySelectorAll('[data-tianxu-detail]').forEach(button=>button.addEventListener('click',()=>openTianxuDetailV255(button.dataset.tianxuDetail)));
+    document.querySelectorAll('[data-tianxu-sell]').forEach(button=>button.addEventListener('click',()=>{const assets=state.tianxuSellAssets?.assets||[],asset=assets.find(x=>x.asset_type===button.dataset.tianxuSell&&String(x.asset_ref)===String(button.dataset.tianxuRef));if(asset)openTianxuSellModalV255(asset);}));
+    document.querySelectorAll('[data-tianxu-cancel]').forEach(button=>button.addEventListener('click',async()=>{if(!confirm('确认下架？上架费不退，未成交物品将返还。'))return;setBusy(button,true,'下架中……');try{await rpcCancelTianxuListingV255(button.dataset.tianxuCancel,createUuid());showToast('挂单已下架，物品已返还。');await Promise.all([refreshMyTianxu(true),refreshTianxuSellAssets(true),refreshTianxuMarket(true)]);}catch(error){showToast(translateError(error),'error');setBusy(button,false);}}));
     bindDestinyRankingActions();
-    if (!bindBazaarActions.historyBound) {
-      bindBazaarActions.historyBound = true;
-      window.addEventListener('popstate', () => { if (state.marketView !== 'home') setBazaarView('home', false); });
-    }
-  }
-
-  function renderCasinoPanel() {
-    captureCasinoUiDrafts();
-    const host = document.getElementById('marketPanelHost');
-    if (!host) return;
-    host.innerHTML = marketPanelHtml(state.marketSystem || {}, state.casinoView || 'lobby');
-    bindMarketActions();
-    afterCasinoRenderV0148();
-  }
-
-  function marketPoolCard(title, pool = {}, myTickets = 0, unit = '灵石') {
-    const seconds = Number(pool.seconds_remaining || 0);
-    const totalTickets = Number(pool.ticket_count || 0);
-    let lastResult = '<p>尚无开奖记录。</p>';
-    if (pool.last_draw_hit === true && Number(pool.last_prize || 0) > 0) {
-      lastResult = `<p>上期抽中：${escapeHtml(pool.last_winner_name || pool.last_candidate_name || '无名修士')} · 领取 ${formatNumber(pool.last_prize || 0)} ${unit}，其余留池。</p>`;
-    } else if (pool.last_draw_hit === true) {
-      lastResult = `<p>上期抽中：${escapeHtml(pool.last_candidate_name || '无名修士')} · 因整数取整或修为硬上限未实际到账，奖池继续留存。</p>`;
-    } else if (pool.last_draw_hit === false) {
-      lastResult = `<p>上期未完成有效开奖，奖池继续留存。</p>`;
-    }
-    return `<article class="casino-pool-card">
-      <span>${escapeHtml(title)}</span>
-      <strong>${formatNumber(pool.amount || 0)} ${escapeHtml(unit)}</strong>
-      <div class="casino-pool-meta"><p>本期参与 ${formatNumber(totalTickets)} 人</p><p>我的资格 ${Number(myTickets || 0) > 0 ? '已取得' : '未取得'}</p></div>
-      <p>有效参与者等概率抽取 · 抽中即获奖</p>
-      <p>中奖者最多领取当前奖池70% · 至少30%留存下期</p>
-      <p>距开奖 ${formatDuration(seconds)}</p>
-      ${lastResult}
-    </article>`;
-  }
-
-  function casinoModeHeader(title, subtitle) {
-    return `<div class="casino-mode-head">
-      <button class="ghost-btn" type="button" data-casino-back>返回赌坊</button>
-      <div><strong>${escapeHtml(title)}</strong><small>${escapeHtml(subtitle)}</small></div>
-    </div>`;
-  }
-
-  function casinoPrimaryNavHtml(activeView = 'lobby', disabled = false) {
-    const items = [
-      ['lobby', '首页'],
-      ['house', '大堂'],
-      ['duel', '贵宾雅间'],
-      ['pools', '全服造化池']
-    ];
-    return `<nav class="casino-primary-nav" aria-label="万运博弈楼内部导航">${items.map(([value, label]) => `<button type="button" data-casino-view="${value}" class="${activeView === value ? 'active' : ''}" ${value === 'house' && disabled ? 'disabled' : ''}>${label}</button>`).join('')}</nav>`;
-  }
-
-  function playerHouseLobbyCardsHtml(data = {}) {
-    const house = data.player_house || {};
-    const character = data.character || {};
-    const wealth = Math.max(0, Number(house.current_wealth ?? character.spirit_stones ?? 0));
-    const threshold = 5000000;
-    const progress = Math.max(0, Math.min(100, threshold > 0 ? wealth / threshold * 100 : 0));
-    const remaining = Math.max(0, threshold - wealth);
-
-    if (house.status === 'unavailable') {
-      return `<section id="casinoDealerStatus" class="casino-lobby-dealer-grid" aria-label="庄家状态">
-        <article class="casino-lobby-dealer-card"><div class="casino-lobby-dealer-head"><strong>当前庄家</strong><span>系统庄</span></div><b>荷老</b><p>${escapeHtml(house.error || '玩家庄状态暂不可用，当前公共牌桌由荷老接管。')}</p></article>
-        <article class="casino-lobby-dealer-card"><div class="casino-lobby-dealer-head"><strong>我的上庄资格</strong><span>暂不可读取</span></div><b>${formatNumber(wealth)} 灵石</b><p>统一灵石达到500万即可申请上庄。</p></article>
-      </section>`;
-    }
-
-    const playerActive = house.mode === 'player';
-    const dealerName = playerActive ? (house.dealer_name || '无名修士') : '荷老';
-    const dealerTag = playerActive ? '玩家庄' : '系统庄';
-    const dealerNote = playerActive
-      ? `本次任期剩余 ${formatDuration(house.remaining_seconds || 0)}。玩家庄是公共牌桌唯一庄家；资金不足时按规则触发联合庄并在下一局下庄。`
-      : '当前没有玩家庄，由荷老接管公共牌桌。';
-
-    let eligibilityTag = '未取得';
-    let eligibilityTitle = `${formatNumber(wealth)} 灵石`;
-    let eligibilityNote = `距离500万上庄门槛还差 ${formatNumber(remaining)} 灵石。`;
-    let eligibilityAction = '<button class="ghost-btn" type="button" data-casino-view="house">查看资格</button>';
-
-    const cooldownSeconds = Math.max(0, Number(house.cooldown_remaining_seconds || 0));
-    if (house.is_self_dealer) {
-      eligibilityTag = '坐庄中';
-      eligibilityTitle = '你当前正在坐庄';
-      eligibilityNote = `本次任期剩余 ${formatDuration(house.remaining_seconds || 0)}，到期后需重新申请。`;
-      eligibilityAction = house.can_deactivate ? '<button class="ghost-btn" type="button" data-player-house-toggle="off">主动下庄</button>' : '';
-    } else if (cooldownSeconds > 0) {
-      eligibilityTag = '冷却中';
-      eligibilityTitle = `还需 ${formatDuration(cooldownSeconds)}`;
-      eligibilityNote = '上一轮触发联合庄或风险接管，冷却结束后可再次申请上庄；期间仍可正常当闲家。';
-      eligibilityAction = '<button class="ghost-btn" type="button" data-casino-view="house">进入大堂</button>';
-    } else if (house.can_activate) {
-      eligibilityTag = '已取得';
-      eligibilityTitle = `${formatNumber(wealth)} 灵石`;
-      eligibilityNote = '余额已达到500万，可自愿申请上庄，每次最多2小时。';
-      eligibilityAction = '<button class="primary-btn" type="button" data-player-house-toggle="on">自愿上庄</button>';
-    } else if (playerActive) {
-      eligibilityTag = '已有玩家庄';
-      eligibilityNote = `当前由${escapeHtml(house.dealer_name || '其他修士')}坐庄；闲家不能另选荷老。`;
-    }
-
-    return `<section id="casinoDealerStatus" class="casino-lobby-dealer-grid" aria-label="庄家状态">
-      <article class="casino-lobby-dealer-card">
-        <div class="casino-lobby-dealer-head"><strong>当前庄家</strong><span>${escapeHtml(dealerTag)}</span></div>
-        <b>${escapeHtml(dealerName)}</b>
-        <p>${dealerNote}</p>
-        <div class="casino-lobby-dealer-actions"><button class="ghost-btn" type="button" data-casino-view="house">进入大堂</button></div>
-      </article>
-      <article class="casino-lobby-dealer-card">
-        <div class="casino-lobby-dealer-head"><strong>我的上庄资格</strong><span>${escapeHtml(eligibilityTag)}</span></div>
-        <b>${eligibilityTitle}</b>
-        <p>${eligibilityNote}</p>
-        ${!house.is_self_dealer && !house.can_activate ? `<div class="casino-lobby-dealer-progress"><i style="width:${progress.toFixed(2)}%"></i></div>` : ''}
-        ${eligibilityAction ? `<div class="casino-lobby-dealer-actions">${eligibilityAction}</div>` : ''}
-      </article>
-    </section>`;
-  }
-
-  function getCasinoDraft(prefix, data = {}) {
-    const key = prefix === 'duel' ? 'duel' : 'house';
-    if (!state.casinoDrafts || typeof state.casinoDrafts !== 'object') state.casinoDrafts = {};
-    const defaults = key === 'duel'
-      ? { stakeType: 'spirit_stone', amount: 100, multiplier: null, game: 'spirit_fist', choice: 'rock' }
-      : { stakeType: 'spirit_stone', amount: 100, multiplier: null, game: 'spirit_dice', choice: 'big' };
-    const draft = { ...defaults, ...(state.casinoDrafts[key] || {}) };
-    const character = data.character || state.marketSystem?.character || {};
-    if (draft.stakeType === 'cultivation' && character.cultivation_eligible === false) {
-      draft.stakeType = 'spirit_stone';
-      draft.amount = casinoStakeBase('spirit_stone');
-      draft.multiplier = null;
-    }
-    const playerHouse = data.player_house || state.marketSystem?.player_house || {};
-    if (key === 'house' && state.casinoHouseMode === 'player' && playerHouse.mode === 'player' && draft.stakeType !== 'spirit_stone') {
-      draft.stakeType = 'spirit_stone';
-      draft.amount = casinoStakeBase('spirit_stone', 'house');
-      draft.multiplier = null;
-    }
-    if (key === 'house' && state.casinoHouseMode === 'player' && playerHouse.mode === 'player' && Number(draft.amount) % 80 !== 0) {
-      draft.amount = casinoStakeBase('spirit_stone', 'house');
-      draft.multiplier = null;
-    }
-    // V1.2 FIX1：气运龟卜入口已由九霄灵牌替换。兼容旧客户端本地草稿，
-    // 防止隐藏的 turtle_oracle 选择继续调用旧即时开奖RPC。
-    if (key === 'house' && draft.game === 'turtle_oracle') {
-      draft.game = 'spirit_dice';
-      draft.choice = 'big';
-    }
-    if (key === 'house' && !['spirit_dice','fish_shrimp'].includes(draft.game)) {
-      draft.game = 'spirit_dice';
-    }
-    if (key === 'house' && draft.game === 'spirit_dice' && !['big', 'small', 'triple'].includes(draft.choice)) {
-      draft.choice = 'big';
-    }
-    draft.amount = Number.isSafeInteger(Number(draft.amount)) && Number(draft.amount) >= 0
-      ? Math.floor(Number(draft.amount))
-      : casinoStakeBase(draft.stakeType);
-    state.casinoDrafts[key] = draft;
-    return draft;
-  }
-
-  function captureCasinoDraft(prefix) {
-    const key = prefix === 'duel' ? 'duel' : 'house';
-    const draft = getCasinoDraft(key);
-    const typeSelect = document.getElementById(`${key}StakeType`);
-    const amountInput = document.getElementById(`${key}StakeAmount`);
-    if (typeSelect) draft.stakeType = typeSelect.value === 'cultivation' ? 'cultivation' : 'spirit_stone';
-    if (amountInput && Number.isFinite(Number(amountInput.value))) draft.amount = Math.max(0, Math.floor(Number(amountInput.value)));
-    if (key === 'house') {
-      const gameInput = document.getElementById('houseGame');
-      const choiceInput = document.getElementById('houseChoice');
-      if (gameInput) draft.game = gameInput.value || draft.game;
-      if (choiceInput) draft.choice = choiceInput.value || draft.choice;
-    } else {
-      const gameInput = document.getElementById('duelGame');
-      const choiceInput = document.getElementById('duelChoice');
-      if (gameInput) draft.game = gameInput.value || draft.game;
-      if (choiceInput) draft.choice = choiceInput.value || draft.choice;
-    }
-    state.casinoDrafts[key] = draft;
-    return draft;
-  }
-
-  function captureCasinoUiDrafts() {
-    if (typeof document === 'undefined') return;
-    captureCasinoDraft('house');
-    captureCasinoDraft('duel');
-    captureFishShrimpDraftV0148();
-    captureSpiritDiceDraftV175();
-    document.querySelectorAll('[data-duel-choice-for]').forEach(select => {
-      if (!state.casinoJoinChoices || typeof state.casinoJoinChoices !== 'object') state.casinoJoinChoices = {};
-      state.casinoJoinChoices[select.dataset.duelChoiceFor] = select.value;
-    });
-  }
-
-  function casinoStakeControlsHtml(prefix, data = {}) {
-    const character = data.character || {};
-    const settings = data.settings || {};
-    const multipliers = Array.isArray(settings.quick_multipliers) && settings.quick_multipliers.length
-      ? settings.quick_multipliers
-      : [1, 5, 10, 50, 100];
-    const cultivationDisabled = !character.cultivation_eligible || Number(character.cultivation_available || 0) <= 0;
-    const playerHouse = data.player_house || state.marketSystem?.player_house || {};
-    const playerHouseOnlyStones = prefix === 'house' && state.casinoHouseMode === 'player' && playerHouse.mode === 'player';
-    const draft = getCasinoDraft(prefix, data);
-    const cultivation = draft.stakeType === 'cultivation';
-    const unit = cultivation ? '修为' : '灵石';
-    const base = casinoStakeBase(draft.stakeType, prefix);
-    return `<div class="casino-stake-controls" data-stake-control="${escapeHtml(prefix)}">
-      <label>赌注资源
-        <select id="${escapeHtml(prefix)}StakeType" data-casino-stake-type="${escapeHtml(prefix)}">
-          <option value="spirit_stone" ${draft.stakeType === 'spirit_stone' ? 'selected' : ''}>灵石 · 当前 ${formatNumber(character.spirit_stones || 0)}</option>
-          ${playerHouseOnlyStones ? '' : `<option value="cultivation" ${draft.stakeType === 'cultivation' ? 'selected' : ''} ${cultivationDisabled ? 'disabled' : ''}>修为 · 可动用 ${formatNumber(character.cultivation_available || 0)}</option>`}
-        </select>
-      </label>
-      <div class="casino-balance-strip">
-        <span>统一灵石 <b data-spirit-stone-balance>${formatNumber(character.spirit_stones || 0)}</b></span>
-        ${playerHouseOnlyStones ? '<span>玩家庄模式仅接受灵石 · 单局上限30%</span>' : `<span>当前小境界可动用 <b>${formatNumber(character.cultivation_available || 0)}</b></span><span>${prefix === 'house' ? '大堂单局上限30%' : '雅间沿用既有规则'}</span>`}
-      </div>
-      <div class="casino-multiplier-group">
-        <span>快捷倍数</span>
-        <div class="casino-multiplier-grid">
-          ${multipliers.map(multiplier => `<button class="${Number(draft.multiplier) === Number(multiplier) ? 'active' : ''}" type="button" data-stake-prefix="${escapeHtml(prefix)}" data-stake-multiplier="${Number(multiplier)}">×${formatNumber(multiplier)}</button>`).join('')}
-        </div>
-        <small data-stake-base-hint="${escapeHtml(prefix)}">以 ${formatNumber(base)} ${unit}为基数，也可在下方直接填写任意整数。</small>
-      </div>
-      <label>自定义赌注数量
-        <input id="${escapeHtml(prefix)}StakeAmount" data-casino-stake-amount="${escapeHtml(prefix)}" type="number" min="${cultivation ? Math.min(50000, Math.max(1, prefix === 'house' ? Math.floor(Number(character.cultivation_available || 0) * 0.30) : Number(character.cultivation_available || 0))) : 10}" step="1" inputmode="numeric" value="${escapeHtml(draft.amount)}">
-      </label>
-      ${cultivation && prefix !== 'house' ? `<button class="ghost-btn casino-all-in-btn" type="button" data-cultivation-all-in="${escapeHtml(prefix)}">全部修为 · ${formatNumber(character.cultivation_available || 0)}</button>` : ''}
-      <div class="casino-stake-summary" data-stake-summary="${escapeHtml(prefix)}">本局确定下注：${formatNumber(draft.amount)} ${unit}</div>
-    </div>`;
-  }
-
-  function houseChoiceOptions(game) {
-    return game === 'turtle_oracle'
-      ? [['auspicious', '押吉 · 25% · 荷老100赔280'], ['neutral', '押平 · 50% · 荷老100赔90'], ['ominous', '押凶 · 25% · 荷老100赔280']]
-      : [['big', '押大 · 非豹子11～17 · 荷老100赔95'], ['small', '押小 · 非豹子4～10 · 荷老100赔95'], ['triple', '押任意豹子 · 1/36 · 荷老100赔3325']];
-  }
-
-  function casinoDrawRowsHtml(draws = []) {
-    if (!draws.length) return '<div class="empty-state">造化池尚未留下开奖记录。</div>';
-    return `<div class="casino-record-list">${draws.map(draw => {
-      const unit = draw.stake_type === 'cultivation' ? '修为' : '灵石';
-      const hit = Boolean(draw.did_hit);
-      const prize = Math.max(0, Number(draw.prize_amount || 0));
-      const poolAmount = Math.max(0, Number(draw.pool_amount || 0));
-      const retained = Math.max(0, poolAmount - prize);
-      const awarded = hit && prize > 0;
-      const name = draw.candidate_name || draw.winner_name || '无名修士';
-      return `<article class="casino-record-row ${hit ? 'is-hit' : 'is-miss'}">
-        <div><span>${draw.stake_type === 'cultivation' ? '修为造化池' : '灵石造化池'}</span><strong>${awarded ? `票号抽中 · ${escapeHtml(name)}` : hit ? `票号抽中但未到账 · ${escapeHtml(name)}` : '未完成有效开奖'}</strong></div>
-        <div><b>${awarded ? `领取 ${formatNumber(prize)} ${unit} · 留存 ${formatNumber(retained)} ${unit}` : `${formatNumber(poolAmount)} ${unit}全部留存`}</b><small>${formatNumber(draw.ticket_count || 0)} 名修士参与</small></div>
-        <p>${escapeHtml(draw.result_text || '')}</p>
-      </article>`;
-    }).join('')}</div>`;
-  }
-
-  function casinoDuelListsHtml(data = {}) {
-    const character = data.character || {};
-    const cultivationAvailable = Number(character.cultivation_available || 0);
-    const open = Array.isArray(data.open_duels) ? data.open_duels : [];
-    const mine = Array.isArray(data.my_duels) ? data.my_duels : [];
-    const openRows = open.length ? open.map(duel => {
-      const savedChoice = state.casinoJoinChoices?.[duel.id];
-      const options = duelChoices(duel.game_code).map(([value, name]) => `<option value="${value}" ${savedChoice === value ? 'selected' : ''}>${name}</option>`).join('');
-      const unit = duel.stake_type === 'cultivation' ? '修为' : '灵石';
-      return `<article class="casino-duel-card">
-        <div class="casino-duel-title"><span>${escapeHtml(duel.creator_name || '无名修士')}</span><strong>${duel.game_code === 'five_elements' ? '五行灵拳' : '灵拳对弈'}</strong></div>
-        <p>赌注 ${formatNumber(duel.stake_amount || 0)} ${unit} · ${formatDuration(duel.expires_in || 0)} 后无人应局则返还</p>
-        <label>暗选招式<select data-duel-choice-for="${escapeHtml(duel.id)}">${options}</select></label>
-        <button class="ghost-btn" type="button" data-duel-join="${escapeHtml(duel.id)}" ${duel.stake_type === 'cultivation' && cultivationAvailable < Number(duel.stake_amount || 0) ? 'disabled title="当前小境界可动用修为不足"' : ''}>应局并立即开契</button>
-      </article>`;
-    }).join('') : '<div class="empty-state">当前没有等待应局的公开赌桌。</div>';
-    const myRows = mine.length ? mine.map(duel => {
-      const unit = duel.stake_type === 'cultivation' ? '修为' : '灵石';
-      const choices = duel.my_choice ? `<p>你：【${escapeHtml(duel.my_choice)}】　对手：【${escapeHtml(duel.opponent_choice || '未知')}】</p>` : '';
-      const outcome = duel.outcome === 'win' ? '你胜' : duel.outcome === 'loss' ? '你负' : duel.outcome === 'draw' ? '流局' : '';
-      const result = escapeHtml(duel.result_text || (duel.status === 'open' ? '等待道友应局' : '结算中'));
-      return `<article class="casino-duel-card mine">
-        <div class="casino-duel-title"><span>${escapeHtml(duel.status_name || duel.status)}${outcome ? ` · ${outcome}` : ''}</span><strong>${escapeHtml(duel.opponent_name || '等待道友')}</strong></div>
-        <p>赌注 ${formatNumber(duel.stake_amount || 0)} ${unit}</p>${choices}<p>${result}</p>
-        ${duel.can_cancel ? `<button class="ghost-btn" type="button" data-duel-cancel="${escapeHtml(duel.id)}">散去赌契并返还</button>` : ''}
-      </article>`;
-    }).join('') : '<div class="empty-state">你暂时没有进行中的赌契。</div>';
-    return `<div class="casino-duel-sections">
-      <section><div class="subsection-title"><strong>公开赌桌</strong><span>${formatNumber(open.length)} 桌待应</span></div><div class="casino-duel-grid">${openRows}</div></section>
-      <section><div class="subsection-title"><strong>我的赌契</strong><span>等待应局与即时结算记录</span></div><div class="casino-duel-grid">${myRows}</div></section>
-    </div>`;
-  }
-
-  function playerHouseControlHtml(data = {}) {
-    const house = data.player_house || {};
-    if (house.status === 'unavailable') {
-      return `<div class="market-lore"><p><b>玩家庄状态暂不可用。</b>${escapeHtml(house.error || '当前由荷老接管公共牌桌。')}</p></div>`;
-    }
-    const cooldown = Math.max(0, Number(house.cooldown_remaining_seconds || 0));
-    if (house.mode === 'player') {
-      const action = house.can_deactivate
-        ? '<button class="ghost-btn" type="button" data-player-house-toggle="off">主动下庄</button>'
-        : '';
-      const pending = house.exit_pending
-        ? `<p><b>本轮已触发联合庄/风险接管。</b>当前轮完整结算后自动下庄，随后30分钟不能再次上庄。</p>`
-        : '';
-      return `<div class="market-lore"><p><b>当前唯一庄家：${escapeHtml(house.dealer_name || '无名修士')}</b></p><p>本次任期剩余 ${formatDuration(house.remaining_seconds || 0)}，最多坐庄2小时。玩家庄存在时，闲家不能另选荷老。</p><p>玩家庄采用对称100:97.5：输家承担标准责任100%，赢家取得97.5%，2.5%固定进入赌场。玩家庄无法独立承担新责任但还能承担50%时，本轮后续由玩家庄与荷老各50%共同承担风险和庄家净收益；触发后下一轮玩家自动下庄并冷却30分钟。玩家庄/联合庄下注须为80灵石整数倍。</p>${pending}${action}</div>`;
-    }
-    if (cooldown > 0) {
-      return `<div class="market-lore"><p><b>当前唯一庄家：荷老</b></p><p>你因上一轮触发联合庄或资金接管，距再次上庄还有 ${formatDuration(cooldown)}。冷却期间仍可正常作为闲家下注。</p></div>`;
-    }
-    if (house.can_activate) {
-      return `<div class="market-lore"><p><b>你的统一灵石为 ${formatNumber(house.current_wealth || 0)}。</b></p><p>余额达到500万即可自愿上庄，每次最多2小时。上庄后成为公共牌桌唯一庄家；闲家不能同时选择荷老。</p><button class="primary-btn" type="button" data-player-house-toggle="on">自愿上庄</button></div>`;
-    }
-    return `<div class="market-lore"><p><b>当前唯一庄家：荷老</b></p><p>统一灵石达到500万即可申请上庄。没有玩家庄时，由荷老接管公共牌桌。</p></div>`;
-  }
-
-
-  const FISH_SHRIMP_SYMBOLS_V0148 = [
-    ['fish','鱼','鱼纹法印'],
-    ['shrimp','虾','虾纹法印'],
-    ['crab','蟹','蟹甲法印'],
-    ['coin','铜钱','古钱法印'],
-    ['gourd','葫芦','葫芦法印'],
-    ['frog','青蛙','蟾纹法印']
-  ];
-
-  function fishShrimpSymbolMetaV0148(code) {
-    return FISH_SHRIMP_SYMBOLS_V0148.find(item => item[0] === code) || ['unknown','?','未知法印'];
-  }
-
-  const FISH_SHRIMP_SEAL_SVG_V0149 = Object.freeze({
-    fish: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><path d="M24 50c16-20 37-25 55-9l10-8-2 16 2 16-10-8c-18 16-39 12-55-7Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="60" cy="44" r="3" fill="currentColor"/></svg>`,
-    shrimp: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><path d="M73 28c-25-8-45 10-42 30 3 18 26 24 38 9 8-10 4-21-7-23-10-2-17 7-12 15" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><path d="M73 28l12-6M72 33l14 1" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>`,
-    crab: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><ellipse cx="50" cy="56" rx="22" ry="14" fill="none" stroke="currentColor" stroke-width="7"/><path d="M29 49 17 37m54 12 12-12M31 61 19 65m50-4 12 4M36 68 24 80m40-12 12 12" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M20 39c-5-8 2-14 10-10M80 39c5-8-2-14-10-10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>`,
-    coin: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="8"/><rect x="39" y="39" width="22" height="22" rx="2" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="2"/></svg>`,
-    gourd: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><path d="M52 19c-6 6-4 13 1 19-10-2-18 4-17 14 1 6 6 11 11 13-10 2-19 10-18 21 1 12 12 19 24 17 11-2 18-12 15-23-1-7-6-11-12-14 6-4 9-9 8-16-2-8-7-12-15-11 2-6 5-11 3-20Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    frog: `<svg viewBox="0 0 100 100" focusable="false"><rect x="10" y="10" width="80" height="80" rx="18" fill="rgba(199,155,88,.04)" stroke="rgba(199,155,88,.18)"/><circle cx="35" cy="36" r="9" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="65" cy="36" r="9" fill="none" stroke="currentColor" stroke-width="6"/><ellipse cx="50" cy="58" rx="24" ry="16" fill="none" stroke="currentColor" stroke-width="7"/><path d="M39 63c8 6 14 6 22 0" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>`
-  });
-
-  function fishShrimpGlyphV0148(code) {
-    const svg = FISH_SHRIMP_SEAL_SVG_V0149[code];
-    if (!svg) {
-      const meta = fishShrimpSymbolMetaV0148(code);
-      return `<span class="fish-seal-glyph" aria-hidden="true">${escapeHtml(meta[1].slice(0,1))}</span>`;
-    }
-    return `<span class="fish-seal-glyph fish-seal-${escapeHtml(code)}" aria-hidden="true">${svg}</span>`;
-  }
-
-  function fishShrimpDraftV0148() {
-    if (!state.fishShrimpDraft || typeof state.fishShrimpDraft !== 'object') {
-      state.fishShrimpDraft = { stakeType: 'spirit_stone', quantity: 100, multiplier: 1 };
-    }
-    const draft = state.fishShrimpDraft;
-    const round = state.fishShrimpState?.round || {};
-    const playerBacked = Boolean(round.dealer_character_id);
-    draft.stakeType = draft.stakeType === 'cultivation' ? 'cultivation' : 'spirit_stone';
-    draft.quantity = Number.isSafeInteger(Number(draft.quantity)) && Number(draft.quantity) > 0
-      ? Math.floor(Number(draft.quantity)) : 100;
-    draft.multiplier = [1,10,100].includes(Number(draft.multiplier)) ? Number(draft.multiplier) : 1;
-    if (playerBacked) {
-      draft.stakeType = 'spirit_stone';
-      if ((draft.quantity * draft.multiplier) % 80 !== 0) {
-        draft.quantity = 80;
-        draft.multiplier = 1;
-      }
-    }
-    return draft;
-  }
-
-  function captureFishShrimpDraftV0148() {
-    if (typeof document === 'undefined') return fishShrimpDraftV0148();
-    const draft = fishShrimpDraftV0148();
-    const quantity = document.getElementById('fishStakeQuantity');
-    if (quantity && Number.isFinite(Number(quantity.value))) {
-      draft.quantity = Math.max(1, Math.floor(Number(quantity.value)));
-    }
-    const activeType = document.querySelector('[data-fish-stake-type].active');
-    if (activeType) draft.stakeType = activeType.dataset.fishStakeType === 'cultivation' ? 'cultivation' : 'spirit_stone';
-    const activeMultiplier = document.querySelector('[data-fish-multiplier].active');
-    if (activeMultiplier) draft.multiplier = [1,10,100].includes(Number(activeMultiplier.dataset.fishMultiplier))
-      ? Number(activeMultiplier.dataset.fishMultiplier) : 1;
-    state.fishShrimpDraft = draft;
-    return draft;
-  }
-
-  function fishShrimpBetAmountV0148() {
-    const draft = fishShrimpDraftV0148();
-    const amount = Number(draft.quantity) * Number(draft.multiplier);
-    return Number.isSafeInteger(amount) && amount > 0 ? amount : 0;
-  }
-
-
-  function fishShrimpBetQueueV0150() {
-    if (!Array.isArray(state.fishShrimpBetQueue)) state.fishShrimpBetQueue = [];
-    return state.fishShrimpBetQueue;
-  }
-
-  function fishShrimpBetQueueKeyV0150(roundId, houseMode, stakeType, symbolCode) {
-    return [roundId || '', houseMode || 'system', stakeType || 'spirit_stone', symbolCode || ''].join('|');
-  }
-
-  function fishShrimpQueuedAmountV0150(roundId, houseMode, stakeType, symbolCode) {
-    const key = fishShrimpBetQueueKeyV0150(roundId, houseMode, stakeType, symbolCode);
-    return fishShrimpBetQueueV0150()
-      .filter(item => item.key === key)
-      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-  }
-
-  function fishShrimpQueuedClickCountV0150() {
-    return fishShrimpBetQueueV0150().reduce((sum, item) => sum + Number(item.clickCount || 0), 0);
-  }
-
-  function updateFishShrimpQueueFeedbackV0150(message = '') {
-    if (typeof document === 'undefined') return;
-    const payload = state.fishShrimpState || {};
-    const roundId = payload.round?.id || '';
-    const draft = fishShrimpDraftV0148();
-    const houseMode = payload.round?.dealer_character_id ? 'player' : 'system';
-
-    document.querySelectorAll('[data-fish-symbol]').forEach(button => {
-      const pending = fishShrimpQueuedAmountV0150(roundId, houseMode, draft.stakeType, button.dataset.fishSymbol);
-      button.classList.toggle('queued', pending > 0);
-      const pendingNode = button.querySelector?.('[data-fish-pending]');
-      if (pendingNode) pendingNode.textContent = pending > 0 ? `待提交 +${formatNumber(pending)}` : '';
-    });
-
-    const status = document.getElementById('fishBetStatus');
-    if (!status) return;
-    const clicks = fishShrimpQueuedClickCountV0150();
-    if (clicks > 0) {
-      status.textContent = `已合并 ${formatNumber(clicks)} 次点击，本批只提交一次事务；本局累计不得超过首次落注时资源30%。`;
-      status.classList.add('is-queueing');
-      return;
-    }
-    status.classList.remove('is-queueing');
-    if (message) status.textContent = message;
-    else if (state.fishShrimpLastBetMessage) status.textContent = state.fishShrimpLastBetMessage;
-  }
-
-  function scheduleFishShrimpBetQueueV0150() {
-    if (state.fishShrimpBetProcessing || state.fishShrimpBetFlushTimer) return;
-    state.fishShrimpBetFlushTimer = setTimeout(() => {
-      state.fishShrimpBetFlushTimer = null;
-      processFishShrimpBetQueueV0150();
-    }, 120);
-  }
-
-  function enqueueFishShrimpBetV0150(_houseMode, stakeType, symbolCode, amount) {
-    const round = state.fishShrimpState?.round || {};
-    const roundId = round.id || '';
-    const houseMode = round.dealer_character_id ? 'player' : 'system';
-    if (!roundId || round.phase !== 'betting') {
-      showToast('本局已封盘，请等待下一局。', 'error');
-      return false;
-    }
-    if (!Number.isSafeInteger(Number(amount)) || Number(amount) < 1) {
-      showToast('请输入有效的下注数量。', 'error');
-      return false;
-    }
-    if (round.dealer_character_id && Number(amount) % 80 !== 0) {
-      showToast('玩家庄与联合庄下注必须为80灵石的整数倍。', 'error');
-      return false;
-    }
-    const queue = fishShrimpBetQueueV0150();
-    const character = state.fishShrimpState?.character || state.marketSystem?.character || {};
-    const available = stakeType === 'cultivation'
-      ? Number(character.cultivation_available || 0)
-      : Number(character.spirit_stones || 0);
-    const alreadyAccepted = (state.fishShrimpState?.my_bets || [])
-      .filter(item => item.stake_type === stakeType)
-      .reduce((sum,item) => sum + Number(item.stake_amount || 0),0);
-    // 服务端以首次落注前可用资源为30%基准；当前余额已扣除已接受下注，故本地用“当前可用+已接受”近似还原基准。
-    const maximum = Math.max(0, Math.floor((available + alreadyAccepted) * 0.30));
-    const queuedForResource = queue
-      .filter(item => item.roundId === roundId && item.stakeType === stakeType)
-      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    if (alreadyAccepted + queuedForResource + Number(amount) > maximum) {
-      showToast(`本局累计下注不得超过首次落注时可用${stakeType === 'cultivation' ? '修为' : '灵石'}的30%（约${formatNumber(maximum)}）。`, 'error');
-      return false;
-    }
-    const key = fishShrimpBetQueueKeyV0150(roundId, houseMode, stakeType, symbolCode);
-    const existing = queue.find(item => item.key === key && !item.processing);
-    if (existing) {
-      const nextAmount = Number(existing.amount || 0) + Number(amount);
-      if (!Number.isSafeInteger(nextAmount) || nextAmount > 9007199254740991) {
-        showToast('连续下注金额过大，请稍后再试。', 'error');
-        return false;
-      }
-      existing.amount = nextAmount;
-      existing.clickCount = Number(existing.clickCount || 0) + 1;
-    } else {
-      queue.push({ key, roundId, houseMode, stakeType, symbolCode, amount: Number(amount), clickCount: 1, processing: false });
-    }
-    const meta = fishShrimpSymbolMetaV0148(symbolCode);
-    const unit = stakeType === 'cultivation' ? '修为' : '灵石';
-    state.fishShrimpLastBetMessage = `已点${meta[1]} +${formatNumber(amount)} ${unit}；等待120ms合并本批点击。`;
-    updateFishShrimpQueueFeedbackV0150();
-    scheduleFishShrimpBetQueueV0150();
-    return true;
-  }
-
-  function applyFishShrimpBatchPayloadV175(payload) {
-    if (!payload || !payload.batch_only) {
-      if (payload) { payload.client_fetched_at = Date.now(); state.fishShrimpState = payload; }
-      return;
-    }
-    const current = state.fishShrimpState;
-    if (!current?.round || String(current.round.id || '') !== String(payload.round_id || '')) {
-      setTimeout(() => refreshFishShrimpStateV0148(true), 0);
-      return;
-    }
-    current.server_now = payload.server_now || current.server_now;
-    current.client_fetched_at = Date.now();
-    current.character = { ...(current.character || {}), ...(payload.character || {}) };
-    Object.assign(current.round, payload.round_patch || {});
-    if (!Array.isArray(current.my_bets)) current.my_bets = [];
-    if (!Array.isArray(current.round_totals)) current.round_totals = [];
-    const accepted = Array.isArray(payload.accepted_bets) ? payload.accepted_bets : [];
-    spiritDiceRememberAcceptedBetsV175(payload.round_id || current.round?.id, accepted);
-    accepted.forEach(row => {
-      const item = { ...row, stake_amount: Number(row.stake_amount || 0), net_profit: 0, result_count: null, is_settled: false };
-      current.my_bets.push(item);
-      const total = current.round_totals.find(x => x.house_mode === item.house_mode && x.stake_type === item.stake_type && x.symbol_code === item.symbol_code);
-      if (total) total.stake_amount = Number(total.stake_amount || 0) + item.stake_amount;
-      else current.round_totals.push({ house_mode: item.house_mode, stake_type: item.stake_type, symbol_code: item.symbol_code, stake_amount: item.stake_amount });
-    });
-    if (payload.character && state.marketSystem?.character) {
-      state.marketSystem.character.spirit_stones = Number(payload.character.spirit_stones || 0);
-      state.marketSystem.character.cultivation_available = Number(payload.character.cultivation_available || 0);
-      setLocalSpiritStoneBalance(Number(payload.character.spirit_stones || 0));
-    }
-  }
-
-  async function processFishShrimpBetQueueV0150() {
-    if (state.fishShrimpBetProcessing) return;
-    const queue = fishShrimpBetQueueV0150();
-    if (!queue.length) return;
-    state.fishShrimpBetProcessing = true;
-    try {
-      const first = queue[0];
-      const batch = queue.filter(item => item.roundId === first.roundId && item.stakeType === first.stakeType && !item.processing).slice(0,6);
-      batch.forEach(item => { item.processing = true; });
-      const bets = batch.map(item => ({ symbol_code: item.symbolCode, stake_amount: Number(item.amount) }));
-      try {
-        const payload = await rpcPlaceFishShrimpBetsV175(first.stakeType, bets);
-        state.fishShrimpBetQueue = queue.filter(item => !batch.includes(item));
-        applyFishShrimpBatchPayloadV175(payload);
-        const unit = first.stakeType === 'cultivation' ? '修为' : '灵石';
-        const clicks = batch.reduce((sum,item)=>sum+Number(item.clickCount||0),0);
-        const amount = batch.reduce((sum,item)=>sum+Number(item.amount||0),0);
-        state.fishShrimpLastBetMessage = `本批${formatNumber(clicks)}次点击已用1次事务提交，共 ${formatNumber(amount)} ${unit}。`;
-      } catch (error) {
-        state.fishShrimpBetQueue = queue.filter(item => !batch.includes(item));
-        const message = translateError(error);
-        state.fishShrimpLastBetMessage = `本批落注失败：${message}`;
-        showToast(message, 'error');
-        if (String(error?.message || error).includes('FISH_BETTING_CLOSED')) {
-          state.fishShrimpBetQueue = state.fishShrimpBetQueue.filter(item => item.roundId !== first.roundId);
-        }
-      }
-      renderFishShrimpPanelV0148();
-      startFishShrimpTimerV0148();
-      updateFishShrimpQueueFeedbackV0150(state.fishShrimpLastBetMessage);
-    } finally {
-      state.fishShrimpBetProcessing = false;
-      // 批量下注RPC已返回最新可用余额，避免每批再追加两次余额/修为请求。
-      if (fishShrimpBetQueueV0150().length) scheduleFishShrimpBetQueueV0150();
-    }
-  }
-
-  function fishShrimpBetLookupV0148(list, _houseMode, stakeType, symbolCode) {
-    const rows = (Array.isArray(list) ? list : []).filter(item =>
-      item.stake_type === stakeType && item.symbol_code === symbolCode
-    );
-    if (!rows.length) return null;
-    return rows.reduce((acc, item) => ({
-      ...acc,
-      stake_amount: Number(acc.stake_amount || 0) + Number(item.stake_amount || 0),
-      net_profit: Number(acc.net_profit || 0) + Number(item.net_profit || 0),
-      bet_count: Number(acc.bet_count || 0) + Number(item.bet_count || 0)
-    }), { ...rows[0], stake_amount: 0, net_profit: 0, bet_count: 0 });
-  }
-
-  function fishShrimpRoundTotalV0148(list, _houseMode, stakeType, symbolCode) {
-    return (Array.isArray(list) ? list : [])
-      .filter(item => item.stake_type === stakeType && item.symbol_code === symbolCode)
-      .reduce((sum, item) => sum + Number(item.stake_amount || 0), 0);
-  }
-
-  function fishShrimpPhaseTextV0148(phase) {
-    if (phase === 'betting') return ['开放下注','限时下注'];
-    if (phase === 'locked') return ['封盘核对','落注已锁定'];
-    if (phase === 'revealing') return ['正在开盘','灵骰依次停定'];
-    if (phase === 'settled') return ['结算展示','查看本局结果'];
-    return ['读取天机','正在同步'];
-  }
-
-  function fishShrimpHistoryGroupHtmlV0148(group) {
-    const items = Array.isArray(group?.items) ? group.items : [];
-    const rows = items.map(item => {
-      const unit = item.stake_type === 'cultivation' ? '修为' : '灵石';
-      const net = Number(item.net_profit || 0);
-      return `<div class="fish-settlement-line"><span>${escapeHtml(item.symbol_name || fishShrimpSymbolMetaV0148(item.symbol_code)[1])}：${formatNumber(item.stake_amount || 0)} ${unit}</span><b class="${net >= 0 ? 'positive' : 'negative'}">${net >= 0 ? '赢' : '输'} ${formatNumber(Math.abs(net))}</b></div>`;
-    }).join('');
-    return `<div class="fish-settlement-group"><strong>${escapeHtml(group?.dealer_label || (group?.house_mode === 'player' ? '玩家局' : '荷老局'))}</strong>${rows || '<small>本桌无下注。</small>'}</div>`;
-  }
-
-  function fishShrimpHistoryHtmlV0148(history = []) {
-    if (!Array.isArray(history) || !history.length) return '<div class="empty-state">尚无已结算轮次。</div>';
-    return history.slice(0,20).map(item => {
-      const result = Array.isArray(item.results) ? item.results : [];
-      const groups = Array.isArray(item.groups) ? item.groups : [];
-      const groupRows = groups.length ? groups.map(group => {
-        const label = group.dealer_label || (group.house_mode === 'player' ? '玩家局' : '荷老局');
-        const items = Array.isArray(group.items) ? group.items : [];
-        const itemText = items.map(x => {
-          const unit = x.stake_type === 'cultivation' ? '修为' : '灵石';
-          const net = Number(x.net_profit || 0);
-          return `${x.symbol_name || fishShrimpSymbolMetaV0148(x.symbol_code)[1]} ${formatNumber(x.stake_amount || 0)} ${unit}，${net >= 0 ? '赢' : '输'} ${formatNumber(Math.abs(net))}`;
-        }).join('；') || '无个人下注';
-        return `<div class="fish-history-group-summary"><strong>${escapeHtml(label)}</strong><small>${escapeHtml(itemText)}</small></div>`;
-      }).join('') : '<div class="fish-history-group-summary"><strong>无下注</strong><small>本局没有个人下注记录。</small></div>';
-      return `<article class="fish-history-row"><b>${String(item.round_no || '').slice(-6)}</b><div><div class="fish-history-dice">${result.map(code => `<span>${fishShrimpGlyphV0148(code)}</span>`).join('')}</div>${groupRows}</div></article>`;
-    }).join('');
-  }
-
-  function fishShrimpPanelHtmlV0148(data = {}) {
-    const payload = state.fishShrimpState || {};
-    const round = payload.round || {};
-    const character = payload.character || data.character || {};
-    const draft = fishShrimpDraftV0148();
-    const dealerMode = round.dealer_mode || (round.dealer_character_id ? 'player' : 'system');
-    const playerBacked = Boolean(round.dealer_character_id);
-    if (playerBacked && draft.stakeType === 'cultivation') draft.stakeType = 'spirit_stone';
-    const houseMode = playerBacked ? 'player' : 'system';
-    const dealerLabel = dealerMode === 'joint'
-      ? `${round.dealer_name || '玩家庄'} · 荷老联庄`
-      : dealerMode === 'system_takeover'
-        ? '荷老接管'
-        : playerBacked ? (round.dealer_name || '玩家庄') : '荷老';
-    const dealerTag = dealerMode === 'joint' ? '50/50联合庄' : dealerMode === 'system_takeover' ? '风险接管' : playerBacked ? '玩家庄' : '系统庄';
-    const unit = draft.stakeType === 'cultivation' ? '修为' : '灵石';
-    const amount = fishShrimpBetAmountV0148();
-    const phaseInfo = fishShrimpPhaseTextV0148(round.phase);
-    const results = Array.isArray(round.results) ? round.results : [];
-    const elapsed = Number(round.elapsed_seconds || 0);
-    const myBets = Array.isArray(payload.my_bets) ? payload.my_bets : [];
-    const totals = Array.isArray(payload.round_totals) ? payload.round_totals : [];
-    const open = round.phase === 'betting';
-    const history = Array.isArray(payload.history) ? payload.history : [];
-    const latest = history.find(item => item?.has_bets) || null;
-    const resultCounts = {};
-    results.forEach(code => { resultCounts[code] = (resultCounts[code] || 0) + 1; });
-
-    const diceHtml = [0,1,2].map(index => {
-      const stopAt = 33 + index * 2;
-      const visible = results[index] && elapsed >= stopAt;
-      const code = visible ? results[index] : '';
-      return `<div class="fish-die ${open ? '' : visible ? 'stopped' : 'rolling'}" data-fish-die-index="${index}" data-result-code="${escapeHtml(results[index] || '')}"><div>${code ? fishShrimpGlyphV0148(code) : '<span class="fish-die-idle">灵</span>'}</div></div>`;
-    }).join('');
-
-    const targetHtml = FISH_SHRIMP_SYMBOLS_V0148.map(([code,name,note]) => {
-      const bet = fishShrimpBetLookupV0148(myBets,houseMode,draft.stakeType,code);
-      const myAmount = Number(bet?.stake_amount || 0);
-      const total = fishShrimpRoundTotalV0148(totals,houseMode,draft.stakeType,code);
-      const hit = Boolean(round.is_settled && myAmount > 0 && Number(bet?.result_count || resultCounts[code] || 0) > 0);
-      const pending = fishShrimpQueuedAmountV0150(round.id,houseMode,draft.stakeType,code);
-      const cardClass = ['fish-target-card',hit ? 'win' : '',pending > 0 ? 'queued' : ''].filter(Boolean).join(' ');
-      return `<button type="button" class="${cardClass}" data-fish-symbol="${code}" ${open ? '' : 'disabled'}>
-        <div class="fish-target-head"><span>${fishShrimpGlyphV0148(code)}</span><div><strong>${name}</strong><small>${note}</small></div></div>
-        <div class="fish-target-meta"><span>我的下注 <b>${formatNumber(myAmount)}</b></span><span>全场总额 <b>${formatNumber(total)}</b></span></div>
-        <em class="fish-target-pending" data-fish-pending>${pending > 0 ? `待提交 +${formatNumber(pending)}` : ''}</em>
-      </button>`;
-    }).join('');
-
-    const latestDetail = latest
-      ? `<div class="fish-latest-result"><div class="fish-result-title">第${escapeHtml(latest.round_no)}局 · 开出 ${(latest.results || []).map(code => fishShrimpSymbolMetaV0148(code)[1]).join('、')}</div>${(latest.groups || []).map(fishShrimpHistoryGroupHtmlV0148).join('')}</div>`
-      : '<div class="empty-state">尚无个人结算明细。</div>';
-
-    return `<section id="fishShrimpRoot" class="fish-game-shell" data-round-id="${escapeHtml(round.id || '')}" data-server-now="${escapeHtml(payload.server_now || '')}" data-round-start="${escapeHtml(round.starts_at || '')}" data-betting-close="${escapeHtml(round.betting_closes_at || '')}" data-reveal-at="${escapeHtml(round.reveal_at || '')}" data-settle-at="${escapeHtml(round.settles_at || '')}" data-round-end="${escapeHtml(round.ends_at || '')}">
-      <div class="fish-compact-top">
-        <div class="fish-title-row"><div><strong>鱼虾灵局</strong><small>三骰共开 · 六门同押 · 单一庄家</small></div><span id="fishPhaseBadge">${phaseInfo[0]}</span></div>
-        <div class="fish-balance-grid"><div><span>可用灵石</span><b data-spirit-stone-balance>${formatNumber(character.spirit_stones || 0)}</b></div><div><span>可用修为</span><b>${formatNumber(character.cultivation_available || 0)}</b></div></div>
-      </div>
-      <div class="fish-compact-block fish-time-block"><div><strong>下注时间</strong><small id="fishPhaseText">${phaseInfo[1]}</small></div><b id="fishCountdown">${formatNumber(round.seconds_remaining || 0)}秒</b><div class="fish-progress"><i id="fishProgressFill" style="width:${Math.max(0,Math.min(100,elapsed/40*100))}%"></i></div></div>
-      <div class="fish-compact-block fish-dealer-block"><div><span>当前庄家 · ${dealerTag}</span><b>${escapeHtml(dealerLabel)}</b></div><div class="fish-dealer-switch single"><button type="button" class="active" disabled>${escapeHtml(dealerTag)}</button></div></div>
-      <div class="fish-compact-block fish-settings-block">
-        <div class="fish-settings-title"><strong>押注设置</strong><span id="fishQuickPreview">${unit} · ${formatNumber(draft.quantity)} × ${draft.multiplier}</span></div>
-        <div class="fish-resource-switch"><button type="button" data-fish-stake-type="spirit_stone" class="${draft.stakeType === 'spirit_stone' ? 'active' : ''}">灵石</button><button type="button" data-fish-stake-type="cultivation" class="${draft.stakeType === 'cultivation' ? 'active' : ''}" ${playerBacked ? 'disabled title="本轮由玩家庄参与，只接受灵石"' : ''}>修为</button></div>
-        <div class="fish-setting-row"><label>数量<input id="fishStakeQuantity" type="number" min="${playerBacked ? 80 : 1}" step="${playerBacked ? 80 : 1}" inputmode="numeric" value="${escapeHtml(draft.quantity)}"></label><div><span>倍率</span><div class="fish-multiplier-grid">${[1,10,100].map(multiplier => `<button type="button" data-fish-multiplier="${multiplier}" class="${draft.multiplier === multiplier ? 'active' : ''}">${multiplier}倍</button>`).join('')}</div></div></div>
-        <div class="fish-bet-preview" id="fishBetPreview">本次下注：<b>${formatNumber(amount)} ${unit}</b></div>
-      </div>
-      <div class="fish-draw-block"><div class="fish-section-head"><div><strong>开盘灵骰</strong><small>封盘后疾转，依次停定</small></div><span>${round.round_no ? `第${escapeHtml(round.round_no)}局` : '同步中'}</span></div><div class="fish-orbit"><div class="fish-dice-row">${diceHtml}</div></div><small class="fish-draw-note">同轮所有闲家共用同一份开奖结果；本轮庄家在开盘前锁定，玩家庄存在时不能另选荷老。</small></div>
-      <div class="fish-target-block"><div class="fish-section-head"><div><strong>选择压什么</strong><small>120毫秒内连续点击会合并为一次批量事务</small></div><button type="button" class="ghost-btn fish-refresh-btn" data-fish-refresh>刷新</button></div><div class="fish-target-grid">${targetHtml}</div><div class="fish-bet-status" id="fishBetStatus">${open ? '开放下注；本局累计下注不得超过首次落注时资源的30%。' : '本局已封盘，等待开盘与结算。'}</div></div>
-      <div class="fish-history-block"><div class="fish-section-head"><div><strong>最近20局结算历史</strong><small>历史固定20局，避免长时间运行累积DOM</small></div></div><div class="fish-history-list">${fishShrimpHistoryHtmlV0148(history)}</div></div>
-      <div class="fish-detail-block"><div class="fish-section-head"><div><strong>结算明细</strong><small>按法印列出下注与本局输赢</small></div></div>${latestDetail}</div>
-      <details class="fish-rules-block"><summary>规则</summary><p>每局40秒：前30秒下注、2秒封盘、5秒依次开骰、3秒展示结算。荷老系统庄命中1、2、3枚时，每100净赢95、190、285；未出现则损失该门下注。</p><p>玩家庄是本轮唯一庄家，只接受灵石，下注须为80灵石整数倍。无论庄赢或闲家赢，输家承担标准责任100%，赢家取得97.5%，2.5%进入赌场。玩家庄无法独立承担新责任但能承担50%时，本轮后续进入玩家庄+荷老50/50联合庄；触发后下一轮玩家自动下庄并冷却30分钟。连50%也无法承担时，荷老接管后续新责任。</p></details>
-    </section>`;
-  }
-
-  function renderFishShrimpPanelV0148() {
-    const current = document.getElementById('fishShrimpRoot');
-    if (!current) return;
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = fishShrimpPanelHtmlV0148(state.marketSystem || {});
-    const next = wrapper.firstElementChild;
-    if (!next) return;
-    current.replaceWith(next);
-    bindMarketActions();
-    updateFishShrimpClockV0148();
-  }
-
-  async function refreshFishShrimpStateV0148(silent = false) {
-    if (state.fishShrimpSyncing || state.fishShrimpBetProcessing || !state.character || document.hidden) return state.fishShrimpState;
-    state.fishShrimpSyncing = true;
-    try {
-      const payload = await rpcGetFishShrimpStateV0148(20);
-      if (payload) {
-        payload.client_fetched_at = Date.now();
-        state.fishShrimpState = payload;
-        if (payload.character && state.marketSystem?.character) {
-          state.marketSystem.character.spirit_stones = Number(payload.character.spirit_stones || 0);
-          state.marketSystem.character.cultivation_available = Number(payload.character.cultivation_available || 0);
-          setLocalSpiritStoneBalance(Number(payload.character.spirit_stones || 0));
-        }
-      }
-      renderFishShrimpPanelV0148();
-      startFishShrimpTimerV0148();
-      return state.fishShrimpState;
-    } catch (error) {
-      if (!silent) showToast(translateError(error), 'error');
-      return state.fishShrimpState;
-    } finally {
-      state.fishShrimpSyncing = false;
-    }
-  }
-
-  function stopFishShrimpTimerV0148() {
-    if (state.fishShrimpTimer) clearInterval(state.fishShrimpTimer);
-    if (state.fishShrimpBoundaryRefreshTimer) clearTimeout(state.fishShrimpBoundaryRefreshTimer);
-    state.fishShrimpTimer = null;
-    state.fishShrimpBoundaryRefreshTimer = null;
-    state.fishShrimpRefreshGuard = false;
-  }
-
-  function startFishShrimpTimerV0148() {
-    stopFishShrimpTimerV0148();
-    if (!document.getElementById('fishShrimpRoot')) return;
-    state.fishShrimpTimer = setInterval(updateFishShrimpClockV0148, 500);
-    updateFishShrimpClockV0148();
-  }
-
-  function updateFishShrimpClockV0148() {
-    const root = document.getElementById('fishShrimpRoot');
-    const payload = state.fishShrimpState;
-    const round = payload?.round;
-    if (!root || !round) return;
-    const fetchedAt = Number(payload.client_fetched_at || Date.now());
-    const serverBase = Date.parse(payload.server_now || '') || Date.now();
-    const now = serverBase + (Date.now() - fetchedAt);
-    const start = Date.parse(round.starts_at || '') || now;
-    const close = Date.parse(round.betting_closes_at || '') || start + 30000;
-    const reveal = Date.parse(round.reveal_at || '') || start + 32000;
-    const settle = Date.parse(round.settles_at || '') || start + 37000;
-    const end = Date.parse(round.ends_at || '') || start + 40000;
-    const elapsed = Math.max(0,(now-start)/1000);
-    let phase = 'betting';
-    let phaseEnd = close;
-    if (now >= close && now < reveal) { phase = 'locked'; phaseEnd = reveal; }
-    else if (now >= reveal && now < settle) { phase = 'revealing'; phaseEnd = settle; }
-    else if (now >= settle && now < settle + 3000) { phase = 'settled'; phaseEnd = settle + 3000; }
-    else if (now >= settle + 3000 && now < end) { phase = 'settled'; phaseEnd = end; }
-    else if (now >= end) { phase = 'next'; phaseEnd = end; }
-    const info = fishShrimpPhaseTextV0148(phase);
-    const countdown = Math.max(0,Math.ceil((phaseEnd-now)/1000));
-    const badge = document.getElementById('fishPhaseBadge');
-    const phaseText = document.getElementById('fishPhaseText');
-    const countdownNode = document.getElementById('fishCountdown');
-    const progress = document.getElementById('fishProgressFill');
-    if (badge) badge.textContent = info[0];
-    if (phaseText) phaseText.textContent = info[1];
-    if (countdownNode) countdownNode.textContent = `${countdown}秒`;
-    if (progress) progress.style.width = `${Math.max(0,Math.min(100,elapsed/40*100))}%`;
-
-    root.querySelectorAll('[data-fish-die-index]').forEach(node => {
-      const index = Number(node.dataset.fishDieIndex || 0);
-      const code = node.dataset.resultCode || '';
-      const visible = code && elapsed >= 33 + index * 2;
-      node.classList.toggle('rolling', phase !== 'betting' && !visible);
-      node.classList.toggle('stopped', Boolean(visible));
-      const inner = node.firstElementChild;
-      if (inner) inner.innerHTML = visible ? fishShrimpGlyphV0148(code) : '<span class="fish-die-idle">灵</span>';
-    });
-    root.querySelectorAll('[data-fish-symbol]').forEach(button => { button.disabled = phase !== 'betting'; });
-
-    // 多人桌只在“开奖结果需要公开”和“下一轮切换”两个边界取权威状态；结算展示阶段不额外轮询。
-    const needsRefresh = phase === 'next'
-      || (phase === 'revealing' && (!Array.isArray(round.results) || !round.results.length));
-    if (needsRefresh && !state.fishShrimpRefreshGuard && !state.fishShrimpSyncing && !state.fishShrimpBoundaryRefreshTimer) {
-      state.fishShrimpRefreshGuard = true;
-      // 阶段边界给不同客户端40～200ms轻微抖动，避免大量在线玩家在同一毫秒同时请求权威状态。
-      const jitter = 40 + Math.floor(Math.random() * 161);
-      state.fishShrimpBoundaryRefreshTimer = setTimeout(() => {
-        state.fishShrimpBoundaryRefreshTimer = null;
-        refreshFishShrimpStateV0148(true).finally(() => { state.fishShrimpRefreshGuard = false; });
-      }, jitter);
-    }
-  }
-
-
-  const SPIRIT_DICE_TARGETS_V175 = [
-    ['big','大','总点11～17，豹子不算大'],
-    ['small','小','总点4～10，豹子不算小'],
-    ['triple','豹子','任意三骰相同'],
-    ['face1','1','每出现1枚按1倍标准责任'],
-    ['face2','2','每出现1枚按1倍标准责任'],
-    ['face3','3','每出现1枚按1倍标准责任'],
-    ['face4','4','每出现1枚按1倍标准责任'],
-    ['face5','5','每出现1枚按1倍标准责任'],
-    ['face6','6','每出现1枚按1倍标准责任']
-  ];
-
-  function spiritDiceTargetMetaV175(code) {
-    return SPIRIT_DICE_TARGETS_V175.find(item => item[0] === code) || ['unknown','?','未知'];
-  }
-
-  // V1.7.5.3 CACHE54：灵骰命中高亮直接按本局公共三骰结果计算，
-  // 不依赖结算明细里的 result_count；这样大/小/豹子/数字命中都能和鱼虾灵局复用同一 .win 发光边框。
-  function spiritDiceChoiceHitV175(results, choiceCode) {
-    const dice = Array.isArray(results) ? results.map(Number).filter(v => Number.isInteger(v) && v >= 1 && v <= 6) : [];
-    if (dice.length !== 3) return false;
-    const triple = dice[0] === dice[1] && dice[1] === dice[2];
-    const total = dice[0] + dice[1] + dice[2];
-    if (choiceCode === 'triple') return triple;
-    if (choiceCode === 'big') return !triple && total >= 11 && total <= 17;
-    if (choiceCode === 'small') return !triple && total >= 4 && total <= 10;
-    const match = /^face([1-6])$/.exec(String(choiceCode || ''));
-    if (match) return dice.includes(Number(match[1]));
-    return false;
-  }
-
-  // V1.7.5.3 CACHE54：本人已接受下注使用“服务端my_bets + 本机已确认批次”双源判断。
-  // 不再依赖当前灵石/修为切换，也不依赖DOM上一次重绘留下的data属性。
-  function spiritDiceRememberAcceptedBetsV175(roundId, rows = []) {
-    const id = String(roundId || '');
-    if (!id) return;
-    if (!state.spiritDiceAcceptedBetRounds || typeof state.spiritDiceAcceptedBetRounds !== 'object') {
-      state.spiritDiceAcceptedBetRounds = {};
-    }
-    const bucket = state.spiritDiceAcceptedBetRounds[id] || {};
-    (Array.isArray(rows) ? rows : []).forEach(row => {
-      const code = String(row?.choice_code || '');
-      const amount = Number(row?.stake_amount || 0);
-      if (code && amount > 0) bucket[code] = Number(bucket[code] || 0) + amount;
-    });
-    state.spiritDiceAcceptedBetRounds = { [id]: bucket };
-  }
-
-  function spiritDiceHasAcceptedBetV175(roundId, choiceCode) {
-    const id = String(roundId || '');
-    const code = String(choiceCode || '');
-    if (!id || !code) return false;
-    const serverHas = (Array.isArray(state.spiritDiceState?.my_bets) ? state.spiritDiceState.my_bets : [])
-      .some(row => String(row?.choice_code || '') === code && Number(row?.stake_amount || 0) > 0);
-    if (serverHas) return true;
-    return Number(state.spiritDiceAcceptedBetRounds?.[id]?.[code] || 0) > 0;
-  }
-
-  function spiritDiceDraftV175() {
-    if (!state.spiritDiceDraft || typeof state.spiritDiceDraft !== 'object') {
-      state.spiritDiceDraft = { stakeType: 'spirit_stone', quantity: 100, multiplier: 1 };
-    }
-    const draft = state.spiritDiceDraft;
-    const round = state.spiritDiceState?.round || {};
-    const playerBacked = Boolean(round.dealer_character_id);
-    draft.stakeType = draft.stakeType === 'cultivation' ? 'cultivation' : 'spirit_stone';
-    draft.quantity = Number.isSafeInteger(Number(draft.quantity)) && Number(draft.quantity) > 0 ? Math.floor(Number(draft.quantity)) : 100;
-    draft.multiplier = [1,10,100].includes(Number(draft.multiplier)) ? Number(draft.multiplier) : 1;
-    if (playerBacked) {
-      draft.stakeType = 'spirit_stone';
-      if ((draft.quantity * draft.multiplier) % 80 !== 0) {
-        draft.quantity = 80;
-        draft.multiplier = 1;
-      }
-    }
-    return draft;
-  }
-
-  function captureSpiritDiceDraftV175() {
-    const draft = spiritDiceDraftV175();
-    if (typeof document === 'undefined') return draft;
-    const quantity = document.getElementById('diceStakeQuantity');
-    if (quantity && Number.isFinite(Number(quantity.value))) draft.quantity = Math.max(1, Math.floor(Number(quantity.value)));
-    const activeType = document.querySelector('[data-dice-stake-type].active');
-    if (activeType) draft.stakeType = activeType.dataset.diceStakeType === 'cultivation' ? 'cultivation' : 'spirit_stone';
-    const activeMultiplier = document.querySelector('[data-dice-multiplier].active');
-    if (activeMultiplier) draft.multiplier = [1,10,100].includes(Number(activeMultiplier.dataset.diceMultiplier)) ? Number(activeMultiplier.dataset.diceMultiplier) : 1;
-    state.spiritDiceDraft = draft;
-    return draft;
-  }
-
-  function spiritDiceBetAmountV175() {
-    const draft = spiritDiceDraftV175();
-    const amount = Number(draft.quantity) * Number(draft.multiplier);
-    return Number.isSafeInteger(amount) && amount > 0 ? amount : 0;
-  }
-
-  function spiritDiceQueueV175() {
-    if (!Array.isArray(state.spiritDiceBetQueue)) state.spiritDiceBetQueue = [];
-    return state.spiritDiceBetQueue;
-  }
-
-  function spiritDiceQueueKeyV175(roundId, houseMode, stakeType, choiceCode) {
-    return [roundId || '', houseMode || 'system', stakeType || 'spirit_stone', choiceCode || ''].join('|');
-  }
-
-  function spiritDiceQueuedAmountV175(roundId, houseMode, stakeType, choiceCode) {
-    const key = spiritDiceQueueKeyV175(roundId, houseMode, stakeType, choiceCode);
-    return spiritDiceQueueV175().filter(item => item.key === key).reduce((sum,item)=>sum+Number(item.amount||0),0);
-  }
-
-  function spiritDiceQueuedClicksV175() {
-    return spiritDiceQueueV175().reduce((sum,item)=>sum+Number(item.clickCount||0),0);
-  }
-
-  function updateSpiritDiceQueueFeedbackV175(message = '') {
-    if (typeof document === 'undefined') return;
-    const payload = state.spiritDiceState || {};
-    const roundId = payload.round?.id || '';
-    const houseMode = payload.round?.dealer_character_id ? 'player' : 'system';
-    const draft = spiritDiceDraftV175();
-    document.querySelectorAll('[data-dice-choice]').forEach(button => {
-      const pending = spiritDiceQueuedAmountV175(roundId,houseMode,draft.stakeType,button.dataset.diceChoice);
-      button.classList.toggle('queued',pending>0);
-      const node = button.querySelector('[data-dice-pending]');
-      if (node) node.textContent = pending > 0 ? `待提交 +${formatNumber(pending)}` : '';
-    });
-    const status = document.getElementById('diceBetStatus');
-    if (!status) return;
-    const clicks = spiritDiceQueuedClicksV175();
-    if (clicks > 0) {
-      status.textContent = `已合并 ${formatNumber(clicks)} 次点击，本批只提交一次事务；本局累计不得超过首次落注时资源30%。`;
-      status.classList.add('is-queueing');
-    } else {
-      status.classList.remove('is-queueing');
-      if (message) status.textContent = message;
-      else if (state.spiritDiceLastBetMessage) status.textContent = state.spiritDiceLastBetMessage;
-    }
-  }
-
-  function scheduleSpiritDiceQueueV175() {
-    if (state.spiritDiceBetProcessing || state.spiritDiceBetFlushTimer) return;
-    state.spiritDiceBetFlushTimer = setTimeout(() => {
-      state.spiritDiceBetFlushTimer = null;
-      processSpiritDiceQueueV175();
-    },120);
-  }
-
-  function enqueueSpiritDiceBetV175(stakeType, choiceCode, amount) {
-    const round = state.spiritDiceState?.round || {};
-    const roundId = round.id || '';
-    const houseMode = round.dealer_character_id ? 'player' : 'system';
-    if (!roundId || round.phase !== 'betting') return showToast('本局已封盘，请等待下一局。','error');
-    if (!Number.isSafeInteger(Number(amount)) || Number(amount)<1) return showToast('请输入有效的下注数量。','error');
-    if (round.dealer_character_id && Number(amount)%80!==0) return showToast('玩家庄与联合庄下注必须为80灵石的整数倍。','error');
-    const queue = spiritDiceQueueV175();
-    const character = state.spiritDiceState?.character || state.marketSystem?.character || {};
-    const available = stakeType === 'cultivation' ? Number(character.cultivation_available||0) : Number(character.spirit_stones||0);
-    const accepted = (state.spiritDiceState?.my_bets||[]).filter(item=>item.stake_type===stakeType).reduce((sum,item)=>sum+Number(item.stake_amount||0),0);
-    // 与服务端“首次落注前可用资源×30%”一致：当前余额已扣掉accepted，因此加回已接受下注。
-    const maximum = Math.max(0,Math.floor((available+accepted)*0.30));
-    const queued = queue.filter(item=>item.roundId===roundId&&item.stakeType===stakeType).reduce((sum,item)=>sum+Number(item.amount||0),0);
-    if (accepted+queued+Number(amount)>maximum) return showToast(`本局累计下注不得超过首次落注时可用${stakeType==='cultivation'?'修为':'灵石'}的30%（约${formatNumber(maximum)}）。`,'error');
-    const key = spiritDiceQueueKeyV175(roundId,houseMode,stakeType,choiceCode);
-    const existing = queue.find(item=>item.key===key&&!item.processing);
-    if (existing) {
-      const next = Number(existing.amount||0)+Number(amount);
-      if (!Number.isSafeInteger(next)||next>9007199254740991) return showToast('连续下注金额过大，请稍后再试。','error');
-      existing.amount=next; existing.clickCount=Number(existing.clickCount||0)+1;
-    } else {
-      queue.push({key,roundId,houseMode,stakeType,choiceCode,amount:Number(amount),clickCount:1,processing:false});
-    }
-    state.spiritDiceLastBetMessage = `已点${spiritDiceTargetMetaV175(choiceCode)[1]} +${formatNumber(amount)} ${stakeType==='cultivation'?'修为':'灵石'}；等待120ms合并本批点击。`;
-    updateSpiritDiceQueueFeedbackV175();
-    scheduleSpiritDiceQueueV175();
-    return true;
-  }
-
-  function applySpiritDiceBatchPayloadV175(payload) {
-    if (!payload || !payload.batch_only) {
-      if (payload) { payload.client_fetched_at = Date.now(); state.spiritDiceState = payload; }
-      return;
-    }
-    const current = state.spiritDiceState;
-    if (!current?.round || String(current.round.id || '') !== String(payload.round_id || '')) {
-      setTimeout(() => refreshSpiritDiceStateV175(true), 0);
-      return;
-    }
-    current.server_now = payload.server_now || current.server_now;
-    current.client_fetched_at = Date.now();
-    current.character = { ...(current.character || {}), ...(payload.character || {}) };
-    Object.assign(current.round, payload.round_patch || {});
-    if (!Array.isArray(current.my_bets)) current.my_bets = [];
-    if (!Array.isArray(current.round_totals)) current.round_totals = [];
-    const accepted = Array.isArray(payload.accepted_bets) ? payload.accepted_bets : [];
-    accepted.forEach(row => {
-      const item = { ...row, stake_amount: Number(row.stake_amount || 0), net_profit: 0, result_count: null, is_settled: false };
-      current.my_bets.push(item);
-      const total = current.round_totals.find(x => x.stake_type === item.stake_type && x.choice_code === item.choice_code);
-      if (total) total.stake_amount = Number(total.stake_amount || 0) + item.stake_amount;
-      else current.round_totals.push({ stake_type: item.stake_type, choice_code: item.choice_code, stake_amount: item.stake_amount });
-    });
-    if (payload.character && state.marketSystem?.character) {
-      state.marketSystem.character.spirit_stones = Number(payload.character.spirit_stones || 0);
-      state.marketSystem.character.cultivation_available = Number(payload.character.cultivation_available || 0);
-      setLocalSpiritStoneBalance(Number(payload.character.spirit_stones || 0));
-    }
-  }
-
-  // V1.7.6 CACHE55：下注成功只补丁当前九门数字与余额，不再 replaceWith 整块灵骰DOM。
-  function patchSpiritDiceBetDomV176() {
-    const root = document.getElementById('spiritDiceRoot');
-    const payload = state.spiritDiceState;
-    if (!root || !payload?.round) return;
-    const draft = spiritDiceDraftV175();
-    const myBets = Array.isArray(payload.my_bets) ? payload.my_bets : [];
-    const totals = Array.isArray(payload.round_totals) ? payload.round_totals : [];
-    root.querySelectorAll('[data-dice-choice]').forEach(button => {
-      const code = button.dataset.diceChoice || '';
-      const meta = button.querySelector('.fish-target-meta');
-      const bet = spiritDiceBetLookupV175(myBets, draft.stakeType, code);
-      const mine = Number(bet?.stake_amount || 0);
-      const total = spiritDiceRoundTotalV175(totals, draft.stakeType, code);
-      if (meta) {
-        const values = meta.querySelectorAll('b');
-        if (values[0]) values[0].textContent = formatNumber(mine);
-        if (values[1]) values[1].textContent = formatNumber(total);
-      }
-      button.dataset.diceHasBet = spiritDiceHasAcceptedBetV175(payload.round.id, code) ? '1' : '0';
-    });
-    root.querySelectorAll('[data-spirit-stone-balance]').forEach(node => {
-      node.textContent = formatNumber(payload.character?.spirit_stones || 0);
-    });
-    updateSpiritDiceQueueFeedbackV175(state.spiritDiceLastBetMessage);
-    updateSpiritDiceClockV175();
-  }
-
-  async function processSpiritDiceQueueV175() {
-    if (state.spiritDiceBetProcessing) return;
-    const queue = spiritDiceQueueV175();
-    if (!queue.length) return;
-    state.spiritDiceBetProcessing = true;
-    try {
-      const first = queue[0];
-      const batch = queue.filter(item=>item.roundId===first.roundId&&item.stakeType===first.stakeType&&!item.processing).slice(0,9);
-      batch.forEach(item=>{item.processing=true;});
-      try {
-        const payload = await rpcPlaceSpiritDiceBetsV175(first.stakeType,batch.map(item=>({choice_code:item.choiceCode,stake_amount:Number(item.amount)})));
-        state.spiritDiceBetQueue = queue.filter(item=>!batch.includes(item));
-        applySpiritDiceBatchPayloadV175(payload);
-        const clicks=batch.reduce((sum,item)=>sum+Number(item.clickCount||0),0);
-        const amount=batch.reduce((sum,item)=>sum+Number(item.amount||0),0);
-        state.spiritDiceLastBetMessage=`本批${formatNumber(clicks)}次点击已用1次事务提交，共 ${formatNumber(amount)} ${first.stakeType==='cultivation'?'修为':'灵石'}。`;
-      } catch(error) {
-        state.spiritDiceBetQueue = queue.filter(item=>!batch.includes(item));
-        const message=translateError(error); state.spiritDiceLastBetMessage=`本批落注失败：${message}`; showToast(message,'error');
-        if (String(error?.message||error).includes('DICE_BETTING_CLOSED')) state.spiritDiceBetQueue=state.spiritDiceBetQueue.filter(item=>item.roundId!==first.roundId);
-      }
-      patchSpiritDiceBetDomV176();
-      if (!state.spiritDiceTimer) startSpiritDiceTimerV175();
-    } finally {
-      state.spiritDiceBetProcessing=false;
-      // 批量下注RPC已返回最新可用余额，避免每批再追加两次余额/修为请求。
-      if (spiritDiceQueueV175().length) scheduleSpiritDiceQueueV175();
-    }
-  }
-
-  function spiritDicePhaseTextV175(phase) {
-    if (phase==='betting') return ['下注中','开放下注'];
-    if (phase==='locked') return ['已封盘','等待开骰'];
-    if (phase==='revealing') return ['开骰','三骰停定'];
-    if (phase==='settled') return ['已结算','准备下一局'];
-    return ['换局','同步下一局'];
-  }
-
-  function spiritDiceBetLookupV175(list, stakeType, choiceCode) {
-    const rows=(list||[]).filter(item=>item.stake_type===stakeType&&item.choice_code===choiceCode);
-    if(!rows.length) return null;
-    return rows.reduce((acc,item)=>({
-      ...acc,
-      stake_amount:Number(acc.stake_amount||0)+Number(item.stake_amount||0),
-      net_profit:Number(acc.net_profit||0)+Number(item.net_profit||0),
-      bet_count:Number(acc.bet_count||0)+Number(item.bet_count||0)
-    }),{...rows[0],stake_amount:0,net_profit:0,bet_count:0});
-  }
-  function spiritDiceRoundTotalV175(list, stakeType, choiceCode) {
-    return Number((list||[]).filter(item=>item.stake_type===stakeType&&item.choice_code===choiceCode).reduce((sum,item)=>sum+Number(item.stake_amount||0),0));
-  }
-  function spiritDiceGlyphV175(value) {
-    return `<span class="spirit-dice-pip" aria-hidden="true">${escapeHtml(value || '灵')}</span>`;
-  }
-  function spiritDiceHistoryHtmlV175(history=[]) {
-    if (!history.length) return '<div class="empty-state">尚无灵骰公共轮次记录。</div>';
-    return history.map(item=>{
-      const results=Array.isArray(item.results)?item.results:[];
-      const items=Array.isArray(item.items)?item.items:[];
-      const detail=items.length?items.map(row=>{const net=Number(row.net_profit||0);return `${spiritDiceTargetMetaV175(row.choice_code)[1]} ${formatNumber(row.stake_amount||0)}，${net>=0?'赢':'输'} ${formatNumber(Math.abs(net))}`;}).join(' · '):'本局未下注';
-      const dealer=item.dealer_mode==='joint'?`${item.dealer_name||'玩家庄'}·荷老联庄`:item.dealer_mode==='system_takeover'?'荷老接管':(item.dealer_name||'荷老');
-      return `<article class="fish-history-row"><b>${String(item.round_no||'').slice(-6)}</b><div><div class="fish-history-dice">${results.map(v=>`<span>${spiritDiceGlyphV175(v)}</span>`).join('')}</div><small>${escapeHtml(dealer)} · ${escapeHtml(detail)}</small></div></article>`;
-    }).join('');
-  }
-
-  function spiritDicePanelHtmlV175(data={}) {
-    const payload=state.spiritDiceState||{};
-    const round=payload.round||{};
-    const character=payload.character||data.character||{};
-    const draft=spiritDiceDraftV175();
-    const playerBacked=Boolean(round.dealer_character_id);
-    if (playerBacked&&draft.stakeType==='cultivation') draft.stakeType='spirit_stone';
-    const dealerMode=round.dealer_mode||(playerBacked?'player':'system');
-    const dealerLabel=dealerMode==='joint'?`${round.dealer_name||'玩家庄'} · 荷老联庄`:dealerMode==='system_takeover'?'荷老接管':playerBacked?(round.dealer_name||'玩家庄'):'荷老';
-    const dealerTag=dealerMode==='joint'?'50/50联合庄':dealerMode==='system_takeover'?'风险接管':playerBacked?'玩家庄':'系统庄';
-    const unit=draft.stakeType==='cultivation'?'修为':'灵石';
-    const amount=spiritDiceBetAmountV175();
-    const phaseInfo=spiritDicePhaseTextV175(round.phase);
-    const results=Array.isArray(round.results)?round.results:[];
-    const elapsed=Number(round.elapsed_seconds||0);
-    const open=round.phase==='betting';
-    const myBets=Array.isArray(payload.my_bets)?payload.my_bets:[];
-    const totals=Array.isArray(payload.round_totals)?payload.round_totals:[];
-    const history=Array.isArray(payload.history)?payload.history:[];
-    const houseMode=playerBacked?'player':'system';
-    const diceHtml=[0,1,2].map(index=>{
-      const visible=results[index]&&elapsed>=8+index*0.28;
-      return `<div class="fish-die spirit-die ${open?'':visible?'stopped':'rolling'}" data-dice-die-index="${index}" data-result-value="${escapeHtml(results[index]||'')}"><div>${visible?spiritDiceGlyphV175(results[index]):'<span class="fish-die-idle">骰</span>'}</div></div>`;
-    }).join('');
-    const targets=SPIRIT_DICE_TARGETS_V175.map(([code,name,note])=>{
-      const bet=spiritDiceBetLookupV175(myBets,draft.stakeType,code);
-      const myAmount=Number(bet?.stake_amount||0);
-      const total=spiritDiceRoundTotalV175(totals,draft.stakeType,code);
-      const pending=spiritDiceQueuedAmountV175(round.id,houseMode,draft.stakeType,code);
-      const hasAcceptedBet=spiritDiceHasAcceptedBetV175(round.id,code);
-      const hit=Boolean(
-        hasAcceptedBet &&
-        results.length===3 &&
-        (round.is_settled || round.phase==='settled') &&
-        spiritDiceChoiceHitV175(results,code)
-      );
-      return `<button type="button" class="fish-target-card dice-target-card ${hit?'win dice-win-glow':''} ${pending>0?'queued':''}" data-dice-choice="${code}" data-dice-has-bet="${hasAcceptedBet?'1':'0'}" ${open?'':'disabled'}><div class="fish-target-head"><span class="dice-choice-seal">${code.startsWith('face')?name:(code==='triple'?'豹':name)}</span><div><strong>${name}</strong><small>${note}</small></div></div><div class="fish-target-meta"><span>我的下注 <b>${formatNumber(myAmount)}</b></span><span>全场总额 <b>${formatNumber(total)}</b></span></div><em class="fish-target-pending" data-dice-pending>${pending>0?`待提交 +${formatNumber(pending)}`:''}</em></button>`;
-    }).join('');
-    const latest=history.find(item=>item?.has_bets)||null;
-    const latestDetail=latest?`<div class="fish-latest-result"><div class="fish-result-title">第${escapeHtml(latest.round_no)}局 · 开出 ${(latest.results||[]).join('、')}</div>${(latest.items||[]).map(row=>{const net=Number(row.net_profit||0);return `<div class="fish-settlement-line"><span>${escapeHtml(spiritDiceTargetMetaV175(row.choice_code)[1])}：${formatNumber(row.stake_amount||0)} ${row.stake_type==='cultivation'?'修为':'灵石'}</span><b class="${net>=0?'positive':'negative'}">${net>=0?'赢':'输'} ${formatNumber(Math.abs(net))}</b></div>`;}).join('')}</div>`:'<div class="empty-state">尚无个人结算明细。</div>';
-    return `<section id="spiritDiceRoot" class="fish-game-shell spirit-dice-shell" data-round-id="${escapeHtml(round.id||'')}">
-      <div class="fish-compact-top"><div class="fish-title-row"><div><strong>灵骰问道</strong><small>10秒公共牌桌 · 一庄多闲 · 九门同押</small></div><span id="dicePhaseBadge">${phaseInfo[0]}</span></div><div class="fish-balance-grid"><div><span>可用灵石</span><b data-spirit-stone-balance>${formatNumber(character.spirit_stones||0)}</b></div><div><span>可用修为</span><b>${formatNumber(character.cultivation_available||0)}</b></div></div></div>
-      <div class="fish-compact-block fish-time-block"><div><strong>本局10秒</strong><small id="dicePhaseText">${phaseInfo[1]}</small></div><b id="diceCountdown">${formatNumber(round.seconds_remaining||0)}秒</b><div class="fish-progress"><i id="diceProgressFill" style="width:${Math.max(0,Math.min(100,elapsed/10*100))}%"></i></div></div>
-      <div class="fish-compact-block fish-dealer-block"><div><span>当前庄家 · ${dealerTag}</span><b>${escapeHtml(dealerLabel)}</b></div><div class="fish-dealer-switch single"><button type="button" class="active" disabled>${escapeHtml(dealerTag)}</button></div></div>
-      <div class="fish-compact-block fish-settings-block"><div class="fish-settings-title"><strong>押注设置</strong><span id="diceQuickPreview">${unit} · ${formatNumber(draft.quantity)} × ${draft.multiplier}</span></div><div class="fish-resource-switch"><button type="button" data-dice-stake-type="spirit_stone" class="${draft.stakeType==='spirit_stone'?'active':''}">灵石</button><button type="button" data-dice-stake-type="cultivation" class="${draft.stakeType==='cultivation'?'active':''}" ${playerBacked?'disabled title="本轮由玩家庄参与，只接受灵石"':''}>修为</button></div><div class="fish-setting-row"><label>数量<input id="diceStakeQuantity" type="number" min="${playerBacked?80:1}" step="${playerBacked?80:1}" inputmode="numeric" value="${escapeHtml(draft.quantity)}"></label><div><span>倍率</span><div class="fish-multiplier-grid">${[1,10,100].map(m=>`<button type="button" data-dice-multiplier="${m}" class="${draft.multiplier===m?'active':''}">${m}倍</button>`).join('')}</div></div></div><div class="fish-bet-preview" id="diceBetPreview">本次下注：<b>${formatNumber(amount)} ${unit}</b></div></div>
-      <div class="fish-draw-block"><div class="fish-section-head"><div><strong>三骰公共开奖</strong><small>第0～7秒下注 · 7～8秒封盘 · 8～9秒开奖 · 9～10秒结算</small></div><span>${round.round_no?`第${escapeHtml(round.round_no)}局`:'同步中'}</span></div><div class="fish-orbit"><div class="fish-dice-row">${diceHtml}</div></div><small class="fish-draw-note">同一轮只生成一次结果，所有闲家共用；倒计时只在本机更新，不每秒请求数据库。</small></div>
-      <div class="fish-target-block"><div class="fish-section-head"><div><strong>选择下注</strong><small>大 / 小 / 豹子 / 1～6，可多门同押；120ms点击合并</small></div><button type="button" class="ghost-btn fish-refresh-btn" data-dice-refresh>刷新</button></div><div class="fish-target-grid dice-target-grid">${targets}</div><div class="fish-bet-status" id="diceBetStatus">${open?'开放下注；本局累计下注不得超过首次落注时资源的30%。':'本局已封盘，等待开奖与结算。'}</div></div>
-      <div class="fish-history-block"><div class="fish-section-head"><div><strong>最近20局</strong><small>固定20局，长时间多人运行不累积页面节点</small></div></div><div class="fish-history-list">${spiritDiceHistoryHtmlV175(history)}</div></div>
-      <div class="fish-detail-block"><div class="fish-section-head"><div><strong>结算明细</strong><small>本人的最近有效下注结果</small></div></div>${latestDetail}</div>
-      <details class="fish-rules-block"><summary>规则</summary><p>灵骰问道改为公共10秒轮次：一名庄家对多名闲家，所有玩家共用同一组三骰。大为非豹子总点11～17，小为非豹子总点4～10；任意豹子独立命中并通杀大、小；数字1～6按该数字实际出现1、2、3枚分别结算。</p><p>荷老系统庄：大/小每100净赢95；数字命中1/2/3枚每100净赢95/190/285；任意豹子每100净赢3325，本金另返。玩家庄采用对称100:97.5和80灵石步进；触发联合庄后本轮风险与庄家净收益各50%，下一轮玩家自动下庄并冷却30分钟。</p></details>
-    </section>`;
-  }
-
-  function renderSpiritDicePanelV175() {
-    const current=document.getElementById('spiritDiceRoot');
-    if (!current) return;
-    const wrapper=document.createElement('div'); wrapper.innerHTML=spiritDicePanelHtmlV175(state.marketSystem||{}); const next=wrapper.firstElementChild; if (!next) return;
-    current.replaceWith(next); bindMarketActions(); updateSpiritDiceClockV175();
-  }
-
-  function mergeSpiritDiceHistoryV176(previous = [], incoming = []) {
-    const map = new Map();
-    [...(Array.isArray(incoming) ? incoming : []), ...(Array.isArray(previous) ? previous : [])].forEach(item => {
-      const key = String(item?.round_no ?? '');
-      if (key && !map.has(key)) map.set(key, item);
-    });
-    return [...map.values()].sort((a,b)=>Number(b?.round_no||0)-Number(a?.round_no||0)).slice(0,20);
-  }
-
-  async function refreshSpiritDiceStateV175(silent=false, historyLimit=20, mergeHistory=false) {
-    if (state.spiritDiceSyncing||state.spiritDiceBetProcessing||!state.character||document.hidden) return state.spiritDiceState;
-    state.spiritDiceSyncing=true;
-    try {
-      const previousHistory = Array.isArray(state.spiritDiceState?.history) ? state.spiritDiceState.history : [];
-      const payload=await rpcGetSpiritDiceStateV175(historyLimit);
-      if (payload) {
-        if (mergeHistory && previousHistory.length) payload.history = mergeSpiritDiceHistoryV176(previousHistory, payload.history);
-        payload.client_fetched_at=Date.now(); state.spiritDiceState=payload;
-        if (Number(historyLimit) >= 20) state.spiritDiceLastFullHistoryAt = Date.now();
-        const activeRoundId=String(payload.round?.id||'');
-        if (activeRoundId) {
-          const localBucket=state.spiritDiceAcceptedBetRounds?.[activeRoundId]||{};
-          state.spiritDiceAcceptedBetRounds={ [activeRoundId]: localBucket };
-          spiritDiceRememberAcceptedBetsV175(activeRoundId,payload.my_bets||[]);
-        }
-        if (payload.character&&state.marketSystem?.character) {
-          state.marketSystem.character.spirit_stones=Number(payload.character.spirit_stones||0);
-          state.marketSystem.character.cultivation_available=Number(payload.character.cultivation_available||0);
-          setLocalSpiritStoneBalance(Number(payload.character.spirit_stones||0));
-        }
-      }
-      renderSpiritDicePanelV175(); startSpiritDiceTimerV175(); return state.spiritDiceState;
-    } catch(error) { if (!silent) showToast(translateError(error),'error'); return state.spiritDiceState; }
-    finally { state.spiritDiceSyncing=false; }
-  }
-
-  function stopSpiritDiceTimerV175() {
-    if (state.spiritDiceTimer) clearTimeout(state.spiritDiceTimer);
-    if (state.spiritDiceBoundaryRefreshTimer) clearTimeout(state.spiritDiceBoundaryRefreshTimer);
-    state.spiritDiceTimer=null; state.spiritDiceBoundaryRefreshTimer=null; state.spiritDiceRefreshGuard=false;
-  }
-  function scheduleSpiritDiceClockV176(delay=500) {
-    if (state.spiritDiceTimer) clearTimeout(state.spiritDiceTimer);
-    state.spiritDiceTimer=setTimeout(() => {
-      state.spiritDiceTimer=null;
-      updateSpiritDiceClockV175();
-      const round=state.spiritDiceState?.round;
-      if (!document.getElementById('spiritDiceRoot') || !round) return;
-      const fetchedAt=Number(state.spiritDiceState?.client_fetched_at||Date.now());
-      const serverBase=Date.parse(state.spiritDiceState?.server_now||'')||Date.now();
-      const now=serverBase+(Date.now()-fetchedAt);
-      const reveal=Date.parse(round.reveal_at||'')||0;
-      const settle=Date.parse(round.settles_at||'')||0;
-      // 只有约1秒开骰动画窗口提高到160ms，其余时间500ms即可满足秒级倒计时。
-      const nextDelay = reveal && settle && now>=reveal-180 && now<settle+120 ? 160 : 500;
-      scheduleSpiritDiceClockV176(nextDelay);
-    }, Math.max(80,Number(delay)||500));
-  }
-  function startSpiritDiceTimerV175() {
-    stopSpiritDiceTimerV175(); if (!document.getElementById('spiritDiceRoot')) return;
-    updateSpiritDiceClockV175(); scheduleSpiritDiceClockV176(500);
-  }
-  function updateSpiritDiceClockV175() {
-    const root=document.getElementById('spiritDiceRoot'); const payload=state.spiritDiceState; const round=payload?.round; if (!root||!round) return;
-    const fetchedAt=Number(payload.client_fetched_at||Date.now()); const serverBase=Date.parse(payload.server_now||'')||Date.now(); const now=serverBase+(Date.now()-fetchedAt);
-    const start=Date.parse(round.starts_at||'')||now; const close=Date.parse(round.betting_closes_at||'')||start+7000; const reveal=Date.parse(round.reveal_at||'')||start+8000; const settle=Date.parse(round.settles_at||'')||start+9000; const end=Date.parse(round.ends_at||'')||start+10000;
-    const elapsed=Math.max(0,(now-start)/1000); let phase='betting',phaseEnd=close;
-    if(now>=close&&now<reveal){phase='locked';phaseEnd=reveal;}else if(now>=reveal&&now<settle){phase='revealing';phaseEnd=settle;}else if(now>=settle&&now<end){phase='settled';phaseEnd=end;}else if(now>=end){phase='next';phaseEnd=end;}
-    const info=spiritDicePhaseTextV175(phase); const countdown=Math.max(0,Math.ceil((phaseEnd-now)/1000));
-    const badge=document.getElementById('dicePhaseBadge'); const text=document.getElementById('dicePhaseText'); const count=document.getElementById('diceCountdown'); const progress=document.getElementById('diceProgressFill');
-    if(badge)badge.textContent=info[0]; if(text)text.textContent=info[1]; if(count)count.textContent=`${countdown}秒`; if(progress)progress.style.width=`${Math.max(0,Math.min(100,elapsed/10*100))}%`;
-    root.querySelectorAll('[data-dice-die-index]').forEach(node=>{const index=Number(node.dataset.diceDieIndex||0);const value=node.dataset.resultValue||'';const visible=value&&elapsed>=8+index*0.28;node.classList.toggle('rolling',phase!=='betting'&&!visible);node.classList.toggle('stopped',Boolean(visible));const inner=node.firstElementChild;if(inner)inner.innerHTML=visible?spiritDiceGlyphV175(value):'<span class="fish-die-idle">骰</span>';});
-    // CACHE54：命中边框不再等待服务端 settlement 状态。三颗骰子全部停定后，
-    // 直接使用本局已经公开的公共结果 + 本人已接受下注在本机计算命中。
-    // 这样不新增任何数据库请求，也不会因为10秒公共桌的 settlement 边界错过发光阶段。
-    const revealComplete=Array.isArray(round.results)&&round.results.length===3&&elapsed>=8.56;
-    root.querySelectorAll('[data-dice-choice]').forEach(button=>{
-      button.disabled=phase!=='betting';
-      const choiceCode=button.dataset.diceChoice||'';
-      const hasBet=spiritDiceHasAcceptedBetV175(round.id,choiceCode);
-      const shouldGlow=Boolean(revealComplete&&hasBet&&spiritDiceChoiceHitV175(round.results,choiceCode));
-      button.dataset.diceHasBet=hasBet?'1':'0';
-      button.classList.toggle('win',shouldGlow);
-      button.classList.toggle('dice-win-glow',shouldGlow);
-      button.setAttribute('aria-current',shouldGlow?'true':'false');
-    });
-    // 10秒公共桌每轮最多在开奖边界与下一轮边界各取一次权威状态，不做逐秒/结算阶段轮询。
-    const needsRefresh=phase==='next'||(phase==='revealing'&&(!Array.isArray(round.results)||!round.results.length));
-    if(needsRefresh&&!state.spiritDiceRefreshGuard&&!state.spiritDiceSyncing&&!state.spiritDiceBoundaryRefreshTimer){
-      state.spiritDiceRefreshGuard=true;
-      // CACHE55：120～620ms错峰，并且边界只取1条历史；首次进入才读取完整20局。
-      const jitter=120+Math.floor(Math.random()*501);
-      state.spiritDiceBoundaryRefreshTimer=setTimeout(()=>{
-        state.spiritDiceBoundaryRefreshTimer=null;
-        refreshSpiritDiceStateV175(true,state.spiritDiceBoundaryHistoryLimit||1,true).finally(()=>{state.spiritDiceRefreshGuard=false;});
-      },jitter);
-    }
-  }
-
-  function afterCasinoRenderV0148() {
-    const draft = getCasinoDraft('house', state.marketSystem || {});
-    const houseActive = state.casinoView === 'house';
-    const fishActive = houseActive && draft.game === 'fish_shrimp';
-    const diceActive = houseActive && draft.game === 'spirit_dice';
-
-    if (!fishActive) stopFishShrimpTimerV0148();
-    else {
-      startFishShrimpTimerV0148();
-      if (!state.fishShrimpState && !state.fishShrimpSyncing) setTimeout(() => refreshFishShrimpStateV0148(true), 0);
-    }
-
-    if (!diceActive) stopSpiritDiceTimerV175();
-    else {
-      startSpiritDiceTimerV175();
-      if (!state.spiritDiceState && !state.spiritDiceSyncing) setTimeout(() => refreshSpiritDiceStateV175(true), 0);
-    }
-  }
-
-  function marketPanelHtml(data = {}, view = 'lobby') {
-    const safeView = ['lobby', 'house', 'duel', 'pools'].includes(view) ? view : 'lobby';
-    const pools = data.pools || {};
-    const tickets = data.tickets || {};
-    const character = data.character || {};
-    const activity = data.activity || {};
-    const settings = data.settings || {};
-    const draws = Array.isArray(data.latest_draws) ? data.latest_draws : [];
-    const hitChance = Number(settings.pool_hit_chance ?? 1);
-    const casinoPeriod = data.casino_period || {};
-    const bankrolls = data.bankrolls || {};
-    const periodClosed = casinoPeriod.betting_open === false;
-    const disabled = data.status !== 'active' || periodClosed;
-    const playerHouse = data.player_house || {};
-    const playerDealerActive = playerHouse.mode === 'player';
-    if (!playerDealerActive && state.casinoHouseMode === 'player') state.casinoHouseMode = 'system';
-    const selectedPlayerHouse = playerDealerActive;
-    const houseDealerName = selectedPlayerHouse ? (playerHouse.dealer_name || '无名庄家') : '荷老';
-    const error = data.error ? `<div class="market-lore"><p><b>赌坊数据暂不可用：</b>${escapeHtml(data.error)}</p></div>` : '';
-    const stoneBankroll = bankrolls.spirit_stone || {};
-    const cultivationBankroll = bankrolls.cultivation || {};
-    const periodNotice = `<div class="market-lore"><p><b>本期赌场：</b>${periodClosed ? '开奖前一分钟封盘清算中' : `距离封盘 ${formatDuration(casinoPeriod.seconds_to_close || 0)}`}；灵石资金 ${formatNumber(stoneBankroll.balance || 0)} / 1亿，修为资金 ${formatNumber(cultivationBankroll.balance || 0)} / 10亿。</p><p>每两小时独立重置；正利润的50%进入造化池；无正利润不追加，但已有奖池仍照常开奖。获奖者领取70%，至少30%滚存。</p></div>`;
-    const fullNotice = character.cultivation_full ? '<div class="market-lore cultivation-full-market"><p><b>当前境界修为已圆满。</b></p><p>仍可押注当前小境界起始线以上的修为；输光后境界保持不变。</p></div>' : '';
-
-    if (safeView === 'house') {
-      const draft = getCasinoDraft('house', data);
-      const fishSelected = draft.game === 'fish_shrimp';
-      const diceSelected = draft.game === 'spirit_dice';
-      const selector = `<section class="casino-play-sheet casino-game-selector-v0148"><div class="subsection-title"><strong>选择玩法</strong><span>${diceSelected ? '灵骰10秒公共轮次 · 一庄多闲' : fishSelected ? '鱼虾40秒公共轮次 · 一庄多闲' : '选择玩法'}</span></div><div class="casino-game-buttons"><button class="${diceSelected ? 'active' : ''}" type="button" data-house-select-game="spirit_dice"><b>骰</b><span>灵骰问道</span><small>10秒共开 · 大小豹子 · 1～6</small></button><button type="button" data-paigow-open><b>牌</b><span>九霄灵牌</span><small>牌九 · 大牌九 · 房间对局</small></button><button class="${fishSelected ? 'active' : ''}" type="button" data-house-select-game="fish_shrimp"><b>鱼</b><span>鱼虾灵局</span><small>六门同押 · 三骰公共开盘</small></button></div></section>`;
-      const publicRule = playerDealerActive
-        ? `当前由${escapeHtml(playerHouse.dealer_name || '玩家庄')}作为公共牌桌唯一庄家，闲家不能另选荷老。玩家庄不足以独立承担新责任但可承担50%时，本轮触发50/50联合庄；触发后下一轮自动下庄并冷却30分钟。`
-        : '当前公共牌桌由荷老坐庄；所有闲家在同一轮共享同一份开奖结果。';
-      const publicHeader = `${playerHouseControlHtml(data)}${fullNotice}${selector}<div class="market-lore"><p><b>单一庄家规则：</b>${publicRule}</p><p>多人下注采用120毫秒点击合并 + 单批一次数据库事务；倒计时由服务器时间戳在本机计算，不使用1秒数据库轮询。</p></div>`;
-      if (fishSelected) {
-        return `${error}${periodNotice}${casinoPrimaryNavHtml('house', disabled)}${casinoModeHeader('大堂 · 鱼虾灵局', '40秒公共开盘 · 单一庄家 · 批量下注')}${publicHeader}${fishShrimpPanelHtmlV0148(data)}`;
-      }
-      return `${error}${periodNotice}${casinoPrimaryNavHtml('house', disabled)}${casinoModeHeader('大堂 · 灵骰问道', '10秒公共开盘 · 一庄多闲 · 九门同押')}${publicHeader}${spiritDicePanelHtmlV175(data)}`;
-    }
-
-    if (safeView === 'duel') {
-      const draft = getCasinoDraft('duel', data);
-      return `${error}${periodNotice}${casinoPrimaryNavHtml('duel', disabled)}${casinoModeHeader('贵宾雅间 · 无相赌契', '有人应局 · 立即开契结算')}${fullNotice}
-        <section class="casino-play-sheet">
-          <div class="subsection-title"><strong>开设赌桌</strong><span>无人应局可主动取消并原数返还</span></div>
-          <div class="casino-form-grid">
-            <label>雅间玩法<select id="duelGame"><option value="spirit_fist" ${draft.game === 'spirit_fist' ? 'selected' : ''}>灵拳对弈</option><option value="five_elements" ${draft.game === 'five_elements' ? 'selected' : ''}>五行灵拳</option></select></label>
-            <label>暗选招式<select id="duelChoice"></select></label>
-          </div>
-          ${casinoStakeControlsHtml('duel', data)}
-          <div class="casino-confirm-row">
-            <button class="primary-btn" type="button" id="createDuelBtn" ${disabled ? 'disabled' : ''}>确认赌注并封招开桌</button>
-            <small>双方各押同额赌注；分出胜负后，5%平台费进入赌场资金，不再直接进入奖池。赌场在两小时周期形成正利润后，其中50%统一加入造化池；双方仍按旧规则纳入本期等权候选，同招流局全额返还。</small>
-          </div>
-        </section>
-        ${casinoDuelListsHtml(data)}`;
-    }
-
-    if (safeView === 'pools') {
-      return `${error}${periodNotice}${casinoPrimaryNavHtml('pools', disabled)}${casinoModeHeader('全服造化池', '每名本期参与者拥有一份候选资格')}
-        <div class="casino-pool-grid">
-          ${marketPoolCard('灵石造化池', pools.spirit_stone || {}, tickets.spirit_stone || 0, '灵石')}
-          ${marketPoolCard('修为造化池', pools.cultivation || {}, tickets.cultivation || 0, '修为')}
-        </div>
-        <div class="market-lore"><p><b>开奖规则：</b>系统赌场每两小时独立清算一次，开奖前一分钟停止新注。灵石赌场每期固定以1亿开局，修为赌场固定以10亿开局；本期形成正利润时，利润的50%加入对应造化池；亏损或零利润时不追加赌场利润，但已有造化池仍按期照常开奖。玩家庄2.5%平台费与雅间5%平台费先进入赌场资金，再参与周期利润清算。</p><p>奖票沿用旧等权规则：同一角色重复游玩不会叠加抽中权重。获奖者领取开奖前奖池的70%，整数奖励向下取整；至少30%继续滚存。游玩次数不设上限，但同一角色同时只能结算一局。</p></div>
-        <div class="subsection-title"><strong>近期造化</strong><span>抽中、领取与留存都会留下记录</span></div>
-        ${casinoDrawRowsHtml(draws)}`;
-    }
-
-    const lobbyDealerName = playerDealerActive ? (playerHouse.dealer_name || '无名修士') : '荷老';
-    const lobbyDealerNote = playerDealerActive ? '玩家庄为公共牌桌唯一庄家；不能另选荷老' : '当前没有玩家庄，由荷老坐庄';
-    return `${error}${periodNotice}
-      <div class="casino-lobby-summary">
-        <div><span>统一灵石</span><strong data-spirit-stone-balance>${formatNumber(character.spirit_stones || 0)}</strong><small>机缘、洞府、功法与赌坊共用</small></div>
-        <div><span>当前境界可动用修为</span><strong>${formatNumber(character.cultivation_available || 0)}</strong><small>大堂单局最多30%，雅间沿用既有规则</small></div>
-        <div><span>今日参与</span><strong>${formatNumber(activity.total_count || 0)} 局</strong><small>已取消每日次数限制</small></div>
-        <div><span>当前庄家</span><strong>${escapeHtml(lobbyDealerName)}</strong><small>${escapeHtml(lobbyDealerNote)}</small></div>
-      </div>
-      ${casinoPrimaryNavHtml('lobby', disabled)}
-      ${selectedPlayerHouse ? '' : fullNotice}
-      ${disabled ? '<div class="market-lore"><p><b>万运博弈楼当前暂停接受新赌契。</b>已有赌契仍会正常结算或返还。</p></div>' : ''}
-      <div class="casino-mode-grid">
-        <button type="button" data-casino-view="house" ${disabled ? 'disabled' : ''}><b>堂</b><strong>大堂</strong><span>${playerDealerActive ? `${escapeHtml(playerHouse.dealer_name || '玩家庄')}独立坐庄；必要时本轮触发荷老50%联庄` : '荷老坐庄；灵骰10秒公共开奖、鱼虾40秒公共开奖'}</span></button>
-        <button type="button" data-casino-view="duel"><b>雅</b><strong>贵宾雅间</strong><span>开桌等待应局，有人接受即刻结算</span></button>
-        <button type="button" data-casino-view="pools"><b>池</b><strong>全服造化池</strong><span>查看两类共享奖池、造化签和开奖记录</span></button>
-        <button type="button" data-casino-dealer-status><b>庄</b><strong>庄家状态</strong><span>查看当前庄家、上庄资格、任期与下庄入口</span></button>
-      </div>
-      ${playerHouseLobbyCardsHtml(data)}
-      <div class="market-lore"><p>市坊西街灯火不息，墨玉匾额上书：<b>一念定盈亏，一签候造化。</b></p><p>统一灵石达到500万即可自愿上庄，每次最多2小时。玩家庄存在时即为公共牌桌唯一庄家，闲家不能另选荷老；单局累计下注最多为首次落注时可用资源的30%。玩家庄采用对称100:97.5；资金不足以独立承保但仍能承担50%时，本轮由玩家庄与荷老50/50联合承担风险和庄家净收益，触发后下一轮玩家自动下庄并冷却30分钟。2.5%平台费始终进入赌场，两小时正利润的50%再统一分配造化池；无正利润时造化池仍照常开奖。</p></div>`;
-  }
-
-  function duelChoices(game) {
-    return game === 'five_elements'
-      ? [['metal','金锐拳'],['wood','青木拳'],['earth','厚土拳'],['water','浪涛拳'],['fire','焚天拳']]
-      : [['rock','磐石势'],['scissors','疾风刃'],['paper','流云盾']];
-  }
-
-  function casinoStakeBase(stakeType, prefix = '') {
-    if (stakeType === 'cultivation') return 50000;
-    return prefix === 'house' && state.casinoHouseMode === 'player' ? 200 : 100;
-  }
-
-  function updateCasinoStakeControl(prefix) {
-    const typeSelect = document.getElementById(`${prefix}StakeType`);
-    const amountInput = document.getElementById(`${prefix}StakeAmount`);
-    const summary = document.querySelector(`[data-stake-summary="${CSS.escape(prefix)}"]`);
-    const hint = document.querySelector(`[data-stake-base-hint="${CSS.escape(prefix)}"]`);
-    if (!typeSelect || !amountInput) return;
-    const cultivation = typeSelect.value === 'cultivation';
-    const base = casinoStakeBase(typeSelect.value, prefix);
-    const character = state.marketSystem?.character || {};
-    const available = cultivation ? Number(character.cultivation_available || 0) : Number(character.spirit_stones || 0);
-    const houseMaximum = Math.max(0, Math.floor(available * 0.30));
-    const exactPlayerHouse = prefix === 'house' && state.casinoHouseMode === 'player' && !cultivation;
-    const effectiveMaximum = exactPlayerHouse ? Math.floor(houseMaximum / 40) * 40 : houseMaximum;
-    amountInput.min = cultivation ? String(Math.min(50000, Math.max(1, prefix === 'house' ? houseMaximum : available))) : (exactPlayerHouse ? '40' : '10');
-    if (prefix === 'house') amountInput.max = String(effectiveMaximum);
-    else amountInput.removeAttribute('max');
-    amountInput.step = exactPlayerHouse ? '40' : '1';
-    let value = Math.max(0, Math.floor(Number(amountInput.value || 0)));
-    if (exactPlayerHouse && value % 40 !== 0) {
-      value = effectiveMaximum >= 200 ? 200 : effectiveMaximum;
-      amountInput.value = String(value);
-      const draft = getCasinoDraft(prefix);
-      draft.amount = value;
-      draft.multiplier = null;
-      state.casinoDrafts[prefix] = draft;
-    }
-    const unit = cultivation ? '修为' : '灵石';
-    if (hint) hint.textContent = cultivation
-      ? (prefix === 'house' ? `通常最低 50,000 修为；单局最多当前可动用修为30%，当前上限 ${formatNumber(houseMaximum)}。` : `通常最低 50,000 修为；不足 50,000 时按雅间既有规则处理。`)
-      : (prefix === 'house' ? (exactPlayerHouse
-        ? `玩家庄与联合庄为保证100:97.5及50/50精确整数结算，下注须为80灵石整数倍；当前30%上限 ${formatNumber(effectiveMaximum)}。`
-        : `单局最多当前可用灵石30%，当前上限 ${formatNumber(houseMaximum)}。`) : `以 ${formatNumber(base)} ${unit}为基数，也可在下方直接填写任意整数。`);
-    if (summary) summary.textContent = `本局确定下注：${formatNumber(value)} ${unit}`;
-  }
-
-  function readCasinoStake(prefix) {
-    const typeSelect = document.getElementById(`${prefix}StakeType`);
-    const amountInput = document.getElementById(`${prefix}StakeAmount`);
-    const stakeType = typeSelect?.value || 'spirit_stone';
-    const amount = Math.floor(Number(amountInput?.value || 0));
-    const character = state.marketSystem?.character || {};
-    const available = stakeType === 'cultivation' ? Number(character.cultivation_available || 0) : Number(character.spirit_stones || 0);
-    const maximum = prefix === 'house' ? Math.max(0, Math.floor(available * 0.30)) : available;
-    const exactPlayerHouse = prefix === 'house' && state.casinoHouseMode === 'player' && stakeType === 'spirit_stone';
-    const minimum = stakeType === 'cultivation' ? Math.min(50000, Math.max(1, prefix === 'house' ? maximum : available)) : (exactPlayerHouse ? 40 : 10);
-    if (!Number.isSafeInteger(amount) || amount < minimum) {
-      throw new Error(stakeType === 'cultivation' ? 'CULTIVATION_STAKE_MINIMUM' : 'CASINO_STAKE_BELOW_MINIMUM');
-    }
-    if (exactPlayerHouse && amount % 40 !== 0) throw new Error('CASINO_PLAYER_HOUSE_STAKE_MULTIPLE_40');
-    if (amount > available) {
-      throw new Error(stakeType === 'cultivation' ? 'CASINO_INSUFFICIENT_CULTIVATION' : 'CASINO_INSUFFICIENT_SPIRIT_STONES');
-    }
-    if (prefix === 'house' && amount > maximum) throw new Error('CASINO_STAKE_EXCEEDS_THIRTY_PERCENT');
-    return { stakeType, amount };
-  }
-
-  function bindMarketActions() {
-    document.querySelectorAll('[data-casino-view]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        state.casinoView = button.dataset.casinoView || 'lobby';
-        renderCasinoPanel();
-      });
-    });
-    document.querySelectorAll('[data-casino-back]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        state.casinoView = 'lobby';
-        renderCasinoPanel();
-      });
-    });
-
-    document.querySelectorAll('[data-casino-dealer-status]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        document.getElementById('casinoDealerStatus')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
-
-    document.querySelectorAll('[data-house-mode]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        state.casinoHouseMode = button.dataset.houseMode === 'player' ? 'player' : 'system';
-        renderCasinoPanel();
-      });
-    });
-
-    document.querySelectorAll('[data-player-house-toggle]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        const active = button.dataset.playerHouseToggle === 'on';
-        setBusy(button, true, active ? '上庄中……' : '下庄中……');
-        try {
-          const result = await rpcSetCasinoPlayerHouseV1(active);
-          showToast(active
-            ? `你已自愿上庄，当前大堂庄家为【${result?.dealer_name || '你'}】。`
-            : '你已主动下庄，荷老重新接管大堂。', 'success');
-          await Promise.all([refreshMarketSystem(true), refreshSpiritStoneBalanceV0141(true)]);
-        } catch (error) {
-          showToast(translateError(error), 'error');
-        } finally {
-          setBusy(button, false);
-        }
-      });
-    });
-
-    document.querySelectorAll('[data-cultivation-all-in]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        const prefix = button.dataset.cultivationAllIn;
-        const typeSelect = document.getElementById(`${prefix}StakeType`);
-        const amountInput = document.getElementById(`${prefix}StakeAmount`);
-        const available = Math.max(0, Math.floor(Number(state.marketSystem?.character?.cultivation_available || 0)));
-        if (!typeSelect || !amountInput || available <= 0) return;
-        typeSelect.value = 'cultivation';
-        amountInput.value = String(available);
-        const draft = getCasinoDraft(prefix);
-        draft.stakeType = 'cultivation';
-        draft.amount = available;
-        draft.multiplier = null;
-        state.casinoDrafts[prefix] = draft;
-        document.querySelectorAll(`[data-stake-prefix="${CSS.escape(prefix)}"]`).forEach(node => node.classList.remove('active'));
-        updateCasinoStakeControl(prefix);
-      });
-    });
-
-    document.querySelectorAll('[data-casino-stake-type]').forEach(select => {
-      const prefix = select.dataset.casinoStakeType;
-      const amountInput = document.getElementById(`${prefix}StakeAmount`);
-      if (select.dataset.bound !== '1') {
-        select.dataset.bound = '1';
-        select.addEventListener('change', () => {
-          const draft = getCasinoDraft(prefix);
-          draft.stakeType = select.value === 'cultivation' ? 'cultivation' : 'spirit_stone';
-          draft.amount = casinoStakeBase(draft.stakeType, prefix);
-          draft.multiplier = null;
-          if (amountInput) amountInput.value = String(draft.amount);
-          state.casinoDrafts[prefix] = draft;
-          document.querySelectorAll(`[data-stake-prefix="${CSS.escape(prefix)}"]`).forEach(button => button.classList.remove('active'));
-          updateCasinoStakeControl(prefix);
-        });
-      }
-      if (amountInput && amountInput.dataset.bound !== '1') {
-        amountInput.dataset.bound = '1';
-        amountInput.addEventListener('input', () => {
-          const draft = getCasinoDraft(prefix);
-          draft.amount = Math.max(0, Math.floor(Number(amountInput.value || 0)));
-          draft.multiplier = null;
-          state.casinoDrafts[prefix] = draft;
-          document.querySelectorAll(`[data-stake-prefix="${CSS.escape(prefix)}"]`).forEach(button => button.classList.remove('active'));
-          updateCasinoStakeControl(prefix);
-        });
-      }
-      updateCasinoStakeControl(prefix);
-    });
-
-    document.querySelectorAll('[data-stake-multiplier]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        const prefix = button.dataset.stakePrefix;
-        const typeSelect = document.getElementById(`${prefix}StakeType`);
-        const amountInput = document.getElementById(`${prefix}StakeAmount`);
-        if (!typeSelect || !amountInput) return;
-        const multiplier = Math.max(1, Math.floor(Number(button.dataset.stakeMultiplier || 1)));
-        const draft = getCasinoDraft(prefix);
-        draft.stakeType = typeSelect.value === 'cultivation' ? 'cultivation' : 'spirit_stone';
-        draft.multiplier = multiplier;
-        draft.amount = casinoStakeBase(draft.stakeType, prefix) * multiplier;
-        state.casinoDrafts[prefix] = draft;
-        amountInput.value = String(draft.amount);
-        document.querySelectorAll(`[data-stake-prefix="${CSS.escape(prefix)}"]`).forEach(node => node.classList.toggle('active', node === button));
-        updateCasinoStakeControl(prefix);
-      });
-    });
-
-
-    document.querySelectorAll('[data-dice-stake-type]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        if (button.disabled) return;
-        const draft = captureSpiritDiceDraftV175();
-        draft.stakeType = button.dataset.diceStakeType === 'cultivation' ? 'cultivation' : 'spirit_stone';
-        state.spiritDiceDraft = draft;
-        renderSpiritDicePanelV175();
-      });
-    });
-
-    document.querySelectorAll('[data-dice-multiplier]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        const draft = captureSpiritDiceDraftV175();
-        draft.multiplier = [1,10,100].includes(Number(button.dataset.diceMultiplier)) ? Number(button.dataset.diceMultiplier) : 1;
-        state.spiritDiceDraft = draft;
-        renderSpiritDicePanelV175();
-      });
-    });
-
-    const diceQuantity = document.getElementById('diceStakeQuantity');
-    if (diceQuantity && diceQuantity.dataset.bound !== '1') {
-      diceQuantity.dataset.bound = '1';
-      diceQuantity.addEventListener('input', () => {
-        const draft = spiritDiceDraftV175();
-        draft.quantity = Math.max(1,Math.floor(Number(diceQuantity.value || 1)));
-        state.spiritDiceDraft = draft;
-        const unit = draft.stakeType === 'cultivation' ? '修为' : '灵石';
-        const amount = spiritDiceBetAmountV175();
-        const preview = document.getElementById('diceBetPreview');
-        const quick = document.getElementById('diceQuickPreview');
-        if (preview) preview.innerHTML = `本次下注：<b>${formatNumber(amount)} ${unit}</b>`;
-        if (quick) quick.textContent = `${unit} · ${formatNumber(draft.quantity)} × ${draft.multiplier}`;
-      });
-    }
-
-    document.querySelectorAll('[data-dice-choice]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        if (button.disabled) return;
-        const draft = captureSpiritDiceDraftV175();
-        const amount = spiritDiceBetAmountV175();
-        if (!amount) return showToast('请输入有效的下注数量。','error');
-        enqueueSpiritDiceBetV175(draft.stakeType,button.dataset.diceChoice,amount);
-      });
-    });
-
-    document.querySelectorAll('[data-dice-refresh]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button,true,'刷新中…');
-        await refreshSpiritDiceStateV175(false);
-        setBusy(button,false);
-      });
-    });
-
-    document.querySelectorAll('[data-fish-stake-type]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        if (button.disabled) return;
-        const draft = captureFishShrimpDraftV0148();
-        draft.stakeType = button.dataset.fishStakeType === 'cultivation' ? 'cultivation' : 'spirit_stone';
-        state.fishShrimpDraft = draft;
-        renderFishShrimpPanelV0148();
-      });
-    });
-
-    document.querySelectorAll('[data-fish-multiplier]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        const draft = captureFishShrimpDraftV0148();
-        draft.multiplier = [1,10,100].includes(Number(button.dataset.fishMultiplier)) ? Number(button.dataset.fishMultiplier) : 1;
-        state.fishShrimpDraft = draft;
-        renderFishShrimpPanelV0148();
-      });
-    });
-
-    const fishQuantity = document.getElementById('fishStakeQuantity');
-    if (fishQuantity && fishQuantity.dataset.bound !== '1') {
-      fishQuantity.dataset.bound = '1';
-      fishQuantity.addEventListener('input', () => {
-        const draft = fishShrimpDraftV0148();
-        draft.quantity = Math.max(1,Math.floor(Number(fishQuantity.value || 1)));
-        state.fishShrimpDraft = draft;
-        const unit = draft.stakeType === 'cultivation' ? '修为' : '灵石';
-        const amount = fishShrimpBetAmountV0148();
-        const preview = document.getElementById('fishBetPreview');
-        const quick = document.getElementById('fishQuickPreview');
-        if (preview) preview.innerHTML = `本次下注：<b>${formatNumber(amount)} ${unit}</b>`;
-        if (quick) quick.textContent = `${unit} · ${formatNumber(draft.quantity)} × ${draft.multiplier}`;
-      });
-    }
-
-    document.querySelectorAll('[data-fish-symbol]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        if (button.disabled) return;
-        const draft = captureFishShrimpDraftV0148();
-        const amount = fishShrimpBetAmountV0148();
-        if (!amount) return showToast('请输入有效的下注数量。','error');
-        enqueueFishShrimpBetV0150(
-          state.casinoHouseMode,
-          draft.stakeType,
-          button.dataset.fishSymbol,
-          amount
-        );
-      });
-    });
-
-    document.querySelectorAll('[data-fish-refresh]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button,true,'刷新中…');
-        await refreshFishShrimpStateV0148(false);
-        setBusy(button,false);
-      });
-    });
-
-    const houseGameInput = document.getElementById('houseGame');
-    const houseChoice = document.getElementById('houseChoice');
-    const fillHouseChoices = game => {
-      if (!houseChoice) return;
-      houseChoice.innerHTML = houseChoiceOptions(game).map(([value, name]) => `<option value="${value}">${name}</option>`).join('');
-    };
-    document.querySelectorAll('[data-paigow-open]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        if (!(await requireCasinoEnabledV198({ force: true, notify: true }))) return;
-        const moduleApi = window.JiuxiaoPaiGowB01;
-        if (!moduleApi || typeof moduleApi.open !== 'function') {
-          showToast('九霄灵牌模块尚未加载，请刷新页面后重试。', 'error');
-          return;
-        }
-        moduleApi.open({ source: 'casino-house', baseline: 'V1.2_FIX1_CACHE38' });
-      });
-    });
-
-    document.querySelectorAll('[data-house-select-game]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', () => {
-        const game = button.dataset.houseSelectGame || 'spirit_dice';
-        const draft = getCasinoDraft('house');
-        const previousGame = draft.game;
-        draft.game = game;
-        draft.choice = game === 'fish_shrimp' ? '' : (houseChoiceOptions(game)[0]?.[0] || 'big');
-        state.casinoDrafts.house = draft;
-        // FIX1：先同步旧页面里的隐藏玩法字段，再触发重绘。
-        // 否则 renderCasinoPanel() 开头会从旧DOM重新抓取 spirit_dice，
-        // 将刚选择的 fish_shrimp 覆盖回去，表现为点击鱼虾灵局没有反应。
-        if (houseGameInput) houseGameInput.value = game;
-        if (game === 'fish_shrimp' || previousGame === 'fish_shrimp') {
-          renderCasinoPanel();
-          return;
-        }
-        document.querySelectorAll('[data-house-select-game]').forEach(node => node.classList.toggle('active', node === button));
-        fillHouseChoices(game);
-        if (houseChoice) houseChoice.value = draft.choice;
-      });
-    });
-
-    if (houseChoice && houseChoice.dataset.bound !== '1') {
-      houseChoice.dataset.bound = '1';
-      houseChoice.addEventListener('change', () => {
-        const draft = getCasinoDraft('house');
-        draft.choice = houseChoice.value || draft.choice;
-        state.casinoDrafts.house = draft;
-      });
-    }
-
-    const houseConfirm = document.getElementById('confirmHouseGameBtn');
-    if (houseConfirm && houseConfirm.dataset.bound !== '1') {
-      houseConfirm.dataset.bound = '1';
-      houseConfirm.addEventListener('click', async () => {
-        setBusy(houseConfirm, true, '推演中……');
-        try {
-          const stake = readCasinoStake('house');
-          const result = await rpcPlayHouseGameV1Fix4(state.casinoHouseMode, houseGameInput?.value || 'spirit_dice', stake.stakeType, stake.amount, houseChoice?.value || 'big');
-          showToast(result?.result_text || '赌契已结算。', result?.won ? 'success' : 'error');
-          await Promise.all([refreshMarketSystem(true), refreshWorldEvents(true), refreshSpiritStoneBalanceV0141(true)]);
-        } catch (error) {
-          showToast(translateError(error), 'error');
-        } finally {
-          setBusy(houseConfirm, false);
-        }
-      });
-    }
-
-    const duelGame = document.getElementById('duelGame');
-    const duelChoice = document.getElementById('duelChoice');
-    const fillDuelChoices = (preserveChoice = true) => {
-      if (!duelChoice) return;
-      const draft = getCasinoDraft('duel');
-      const game = duelGame?.value || draft.game || 'spirit_fist';
-      const choices = duelChoices(game);
-      const desired = preserveChoice && choices.some(([value]) => value === draft.choice)
-        ? draft.choice
-        : (choices[0]?.[0] || 'rock');
-      duelChoice.innerHTML = choices.map(([value, name]) => `<option value="${value}" ${desired === value ? 'selected' : ''}>${name}</option>`).join('');
-      draft.game = game;
-      draft.choice = desired;
-      state.casinoDrafts.duel = draft;
-    };
-    fillDuelChoices(true);
-    if (duelGame && duelGame.dataset.bound !== '1') {
-      duelGame.dataset.bound = '1';
-      duelGame.addEventListener('change', () => fillDuelChoices(false));
-    }
-    if (duelChoice && duelChoice.dataset.bound !== '1') {
-      duelChoice.dataset.bound = '1';
-      duelChoice.addEventListener('change', () => {
-        const draft = getCasinoDraft('duel');
-        draft.choice = duelChoice.value || draft.choice;
-        state.casinoDrafts.duel = draft;
-      });
-    }
-    const createDuel = document.getElementById('createDuelBtn');
-    if (createDuel && createDuel.dataset.bound !== '1') {
-      createDuel.dataset.bound = '1';
-      createDuel.addEventListener('click', async () => {
-        setBusy(createDuel, true, '封存中……');
-        try {
-          const stake = readCasinoStake('duel');
-          const result = await rpcCreateDuelV1(duelGame?.value || 'spirit_fist', stake.stakeType, stake.amount, duelChoice?.value || 'rock');
-          showToast(result?.content || '招式已封入无相阵盘。');
-          await Promise.all([refreshMarketSystem(true), refreshSpiritStoneBalanceV0141(true)]);
-        } catch (error) {
-          showToast(translateError(error), 'error');
-        } finally {
-          setBusy(createDuel, false);
-        }
-      });
-    }
-
-    document.querySelectorAll('[data-duel-choice-for]').forEach(select => {
-      if (select.dataset.bound === '1') return;
-      select.dataset.bound = '1';
-      select.addEventListener('change', () => {
-        if (!state.casinoJoinChoices || typeof state.casinoJoinChoices !== 'object') state.casinoJoinChoices = {};
-        state.casinoJoinChoices[select.dataset.duelChoiceFor] = select.value;
-      });
-    });
-
-    document.querySelectorAll('[data-duel-join]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        const choice = document.querySelector(`[data-duel-choice-for="${CSS.escape(button.dataset.duelJoin)}"]`);
-        if (!choice) return;
-        setBusy(button, true, '应局中……');
-        try {
-          const result = await rpcJoinDuelV1(button.dataset.duelJoin, choice.value);
-          showToast(result?.content || result?.result_text || '应局成功，赌契已经立即结算。', result?.outcome === 'win' ? 'success' : result?.outcome === 'loss' ? 'error' : undefined);
-          await Promise.all([refreshMarketSystem(true), refreshSpiritStoneBalanceV0141(true)]);
-        } catch (error) {
-          showToast(translateError(error), 'error');
-        } finally {
-          setBusy(button, false);
-        }
-      });
-    });
-    document.querySelectorAll('[data-duel-cancel]').forEach(button => {
-      if (button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      button.addEventListener('click', async () => {
-        setBusy(button, true, '散契中……');
-        try {
-          const result = await rpcCancelDuelV1(button.dataset.duelCancel);
-          showToast(result?.content || '赌契已散，赌注原数返还。');
-          await Promise.all([refreshMarketSystem(true), refreshSpiritStoneBalanceV0141(true)]);
-        } catch (error) {
-          showToast(translateError(error), 'error');
-        } finally {
-          setBusy(button, false);
-        }
-      });
-    });
+    if(!bindBazaarActions.historyBound){bindBazaarActions.historyBound=true;window.addEventListener('popstate',()=>{if(state.marketView!=='home')setBazaarView('home',false);});}
   }
 
 
@@ -7838,7 +5830,6 @@
     const destinyRanking = bundle.destinyRanking || state.destinyRanking || { status: 'loading', entries: [], total_count: 0 };
     const npcSocial = bundle.npcSocial || state.npcSocial || { status: 'loading', contacts: [], recent_events: [], settings: {} };
     const sectSystem = bundle.sectSystem || state.sectSystem || { status: 'loading', sects: [], buildings: [], tasks: [], recent_events: [], settings: {} };
-    const marketSystem = bundle.marketSystem || state.marketSystem || { status: 'loading', pools: {}, open_duels: [], my_duels: [] };
     const worldEvents = bundle.worldEvents || state.worldEvents || { status: 'loading', entries: [] };
     const activeEffects = (bundle.cultivationEffects || []).filter(row => {
       const isCurrent = !row.expires_at || new Date(row.expires_at).getTime() > Date.now();
@@ -8025,8 +6016,8 @@
         </section>
 
         <section id="marketSection" class="panel" data-mobile-screen="market">
-          <div class="panel-title"><h3>市坊</h3><span class="badge">天命 · 赌坊 · 珍宝 · 界闻</span></div>
-          <div id="bazaarPanelHost">${bazaarPanelHtml(state.marketView || 'home', marketSystem, destinyRanking, worldEvents, state.treasureShop || {})}</div>
+          <div class="panel-title"><h3>市坊</h3><span class="badge">天墟 · 天命 · 珍宝 · 界闻</span></div>
+          <div id="bazaarPanelHost">${bazaarPanelHtml(state.marketView || 'home', destinyRanking, worldEvents, state.treasureShop || {})}</div>
         </section>
 
         <section id="npcSocialSection" class="panel" data-mobile-screen="social">
@@ -8086,7 +6077,7 @@
         try {
           const alive = await syncCultivation(false);
           if (alive !== false && state.character?.status !== 'dead') {
-            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshMarketSystem(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
+            await Promise.all([refreshBreakthroughStatus(), refreshOpportunity(), refreshHeavenBalance(true), refreshCaveSystem(true), refreshNpcSocial(true), refreshTianxuMarket(true), refreshDestinyRanking(false, true), refreshMyBattleSnapshotV1(true), refreshWorldEvents(true)]);
             showToast('仙历、寿元与修炼结果均已同步到云端。');
           }
         } catch (error) {
@@ -8119,7 +6110,7 @@
         if (force || staleForE80(state.caveSystemFetchedAt)) tasks.push(refreshCaveSystem(true));
         break;
       case 'market':
-        if (force || staleForE80(state.marketSystemFetchedAt)) tasks.push(refreshMarketSystem(true));
+        if (force || staleForE80(state.tianxuFetchedAt)) tasks.push(refreshTianxuMarket(true));
         if (force || staleForE80(state.worldEventsFetchedAt)) tasks.push(refreshWorldEvents(true));
         if (force || staleForE80(state.destinyRankingFetchedAt, PERF_E80.rankingStaleMs)) tasks.push(refreshDestinyRanking(false, true));
         break;
@@ -8292,71 +6283,40 @@
     }
   }
 
-  // V1.7.6 CACHE55：公共赌场桌运行期间暂停与当前牌桌无关的后台网络同步。
-  // 本地修为/洞府倒计时继续运行；离开公共桌后原有定时器会自然恢复联网同步。
-  function casinoPublicTableActiveV176() {
-    if (document.hidden || state.marketView !== 'casino' || state.casinoView !== 'house') return false;
-    const game = state.casinoDrafts?.house?.game || 'spirit_dice';
-    return game === 'spirit_dice' || game === 'fish_shrimp';
-  }
-
   function startCultivationLoop() {
     stopCultivationLoop();
-
-    // 纯本地显示仍保持流畅；只有云端读写降频。
     state.cultivationTicker = setInterval(updateLiveCultivationDisplay, 250);
     state.opportunityCountdownTimer = setInterval(updateOpportunityCountdown, 1000);
     state.caveCountdownTimer = setInterval(updateCaveCountdown, 1000);
-
-    // 修炼仍每250ms本地显示；云端只在修炼页做10分钟安全同步。
-    // 登录、恢复前台、突破/领奖等关键操作仍会立即syncCultivation。
     state.cultivationSyncTimer = setInterval(() => {
-      if (!networkVisibleE80() || casinoPublicTableActiveV176() || state.activeMobileTab !== 'cultivation') return;
+      if (!networkVisibleE80() || state.activeMobileTab !== 'cultivation') return;
       if (!staleForE80(state.cultivationSyncedAt, PERF_E80.cultivationSyncMs)) return;
       syncCultivation(true);
     }, PERF_E80.cultivationSyncMs);
-
-    // 机缘正常由1秒倒计时根据next_available_at精准到点结算；10分钟仅作缺失deadline异常兜底。
     state.opportunityPollTimer = setInterval(() => {
-      if (!networkVisibleE80() || casinoPublicTableActiveV176()) return;
+      if (!networkVisibleE80()) return;
       const nextAt = state.opportunityStatus?.next_available_at ? new Date(state.opportunityStatus.next_available_at).getTime() : 0;
       if (Number.isFinite(nextAt) && nextAt > 0) return;
       if (!staleForE80(state.opportunityFetchedAt, PERF_E80.opportunityPollMs)) return;
       refreshOpportunity();
     }, PERF_E80.opportunityPollMs);
-
-    // 天道环境只在修炼页做30分钟兜底；进入页面仍按需读取。
     state.heavenBalanceSyncTimer = setInterval(() => {
-      if (!networkVisibleE80() || casinoPublicTableActiveV176() || state.activeMobileTab !== 'cultivation') return;
+      if (!networkVisibleE80() || state.activeMobileTab !== 'cultivation') return;
       if (!staleForE80(state.heavenBalanceFetchedAt, PERF_E80.heavenBalanceSyncMs)) return;
       refreshHeavenBalance(true);
     }, PERF_E80.heavenBalanceSyncMs);
-
-    // 普通市场可见页90秒兜底；购买/挂单/赌场主动操作后的即时刷新逻辑不变。
     state.marketSyncTimer = setInterval(() => {
-      if (!networkVisibleE80() || state.activeMobileTab !== 'market' || state.marketView !== 'casino') return;
-      const publicGame = state.casinoView === 'house' ? (state.casinoDrafts?.house?.game || 'spirit_dice') : '';
-      if (publicGame === 'spirit_dice' || publicGame === 'fish_shrimp') return;
-      if (!staleForE80(state.marketSystemFetchedAt, PERF_E80.marketSyncMs)) return;
-      refreshMarketSystem(true);
+      if (!networkVisibleE80() || state.activeMobileTab !== 'market' || state.marketView !== 'tianxu') return;
+      if (!staleForE80(state.tianxuFetchedAt, PERF_E80.marketSyncMs)) return;
+      refreshTianxuMarket(true);
     }, PERF_E80.marketSyncMs);
-
-    // 世界事件停留页5分钟兜底；进入页时缓存超过1分钟仍由按需刷新立即读取。
     state.worldEventsSyncTimer = setInterval(() => {
-      if (!networkVisibleE80() || state.activeMobileTab !== 'market' || casinoPublicTableActiveV176()) return;
+      if (!networkVisibleE80() || state.activeMobileTab !== 'market') return;
       if (!staleForE80(state.worldEventsFetchedAt, PERF_E80.worldEventsSyncMs)) return;
       refreshWorldEvents(true);
     }, PERF_E80.worldEventsSyncMs);
-
-    state.divineNoticeTimer = setInterval(() => {
-      if (!networkVisibleE80() || casinoPublicTableActiveV176()) return;
-      checkDivineNotice(true);
-    }, PERF_E80.divineNoticeSyncMs);
-
-    updateLiveCultivationDisplay();
-    updateOpportunityCountdown();
-    updateCaveCountdown();
-    if (networkVisibleE80()) setTimeout(() => checkDivineNotice(true), 500);
+    state.divineNoticeTimer = setInterval(() => { if (networkVisibleE80()) checkDivineNotice(true); }, PERF_E80.divineNoticeSyncMs);
+    updateLiveCultivationDisplay();updateOpportunityCountdown();updateCaveCountdown();if(networkVisibleE80())setTimeout(()=>checkDivineNotice(true),500);
   }
 
   function historyHtml(rows) {
@@ -8427,7 +6387,7 @@
         bundle.cultivationStatus = cultivationStatus;
         bundle.character.cultivation = cultivationStatus.cultivation_total;
       }
-      const [breakthroughStatus, fateStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, techniqueLibrary, destinyRanking, npcSocial, sectSystem, marketSystem, worldEvents, treasureShop] = await Promise.all([
+      const [breakthroughStatus, fateStatus, techniqueSystem, exclusiveTechniqueSystem, heavenBalance, caveSystem, techniqueLibrary, destinyRanking, npcSocial, sectSystem, tianxuMarket, worldEvents, treasureShop] = await Promise.all([
         rpcGetBreakthroughStatus(),
         rpcGetFateStatusB01().catch(() => null),
         rpcGetTechniqueSystemV2(),
@@ -8448,8 +6408,8 @@
           status: 'unavailable', contacts: [], recent_events: [], error: translateError(error)
         })),
         Promise.resolve({ status: 'module', module: 'B-SECT01' }),
-        rpcGetMarketV1().catch(error => ({
-          status: 'unavailable', pools: {}, tickets: {}, open_duels: [], my_duels: [], latest_draws: [], error: translateError(error)
+        rpcGetTianxuMarketV255({ search: '', category: 'all', sort: 'newest', limit: 100, offset: 0 }).catch(error => ({
+          status: 'unavailable', listings: [], total: 0, error: translateError(error)
         })),
         rpcGetWorldEventsV1(30).catch(error => ({
           status: 'unavailable', entries: [], error: translateError(error)
@@ -8467,7 +6427,7 @@
       bundle.destinyRanking = destinyRanking;
       bundle.npcSocial = npcSocial;
       bundle.sectSystem = sectSystem;
-      bundle.marketSystem = marketSystem;
+      bundle.tianxuMarket = tianxuMarket;
       bundle.worldEvents = worldEvents;
       bundle.treasureShop = treasureShop;
       state.cultivationStatus = cultivationStatus;
@@ -8489,7 +6449,8 @@
       state.npcSocialFetchedAt = Date.now();
       state.sectSystem = sectSystem;
       state.sectSystemFetchedAt = Date.now();
-      state.marketSystem = marketSystem;
+      state.tianxuMarket = tianxuMarket;
+      state.tianxuFetchedAt = Date.now();
       state.worldEvents = worldEvents;
       state.worldEventsFetchedAt = Date.now();
       state.treasureShop = treasureShop;

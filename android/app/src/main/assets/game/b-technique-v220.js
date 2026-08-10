@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const MODULE = 'B-TECHNIQUE-V220-CACHE123-TAB-ISOLATION';
+  const MODULE = 'B-TECHNIQUE-V220-CACHE124-TIANXU';
   const config = window.GAME_CONFIG || {};
   const baseUrl = String(config.supabaseUrl || '').replace(/\/+$/, '');
   const apiKey = String(config.supabasePublishableKey || '');

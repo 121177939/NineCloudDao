@@ -1,24 +1,50 @@
 {
-  "release": "V2.2.0 CACHE123",
-  "buildId": "v2-2-0-cache123-technique-tabs-isolated-admin33-sql254-online",
-  "gm": "ADMIN9 R33 unchanged",
-  "database": "SQL254 R5 ONLINE / SQL254_GATE_PASSED confirmed by user; no new SQL; SQL255 next",
-  "change": "Technique tabs strict single-family rendering",
+  "release": "V2.2.0 CACHE124",
+  "buildId": "v2-2-0-cache124-tianxu-admin34-sql255",
+  "gm": "ADMIN9 R34",
+  "database": {
+    "currentProduction": "SQL254 R5 ONLINE / SQL254_GATE_PASSED confirmed by user",
+    "requiredUpgrade": "SQL255 PENDING",
+    "requiredGate": "SQL255_GATE_PASSED",
+    "nextAfterSuccess": "SQL256",
+    "productionExecutionValidated": false
+  },
+  "change": "Casino player runtime retired; Tianxu free player market added",
+  "rules": {
+    "marketName": "天墟",
+    "freePricing": true,
+    "listingFeeRate": 0.01,
+    "tradeTaxRate": 0.05,
+    "listingHours": 72,
+    "maxActiveListings": 10,
+    "allInventoryAssetsTradeable": true,
+    "publicListingsOnly": true,
+    "selfPurchaseBlocked": true,
+    "resaleAllowed": true,
+    "stackPartialPurchase": true,
+    "equipmentUniqueInstanceTransfer": true,
+    "escrow": true
+  },
+  "ui": {
+    "browseCard": "grade + name + price + detail button only",
+    "compactBrowseCardCheck": "PASS",
+    "detailsDeferredToModal": true
+  },
   "checks": {
-    "nodeTechniqueSyntax": "PASS",
-    "nodeAppSyntax": "PASS",
     "pagesBuildGate": "PASS",
-    "pagesArtifactFiles": 36,
-    "strictTabIsolation": "PASS",
+    "pagesArtifactFiles": 29,
+    "liveJsSyntax": "PASS",
+    "casinoRuntimeAssetsRemoved": "PASS",
+    "casinoRuntimeStringHits": [],
     "webAndroidSync": "PASS",
     "androidValidation": "PASS",
     "androidErrors": 0,
     "androidWarnings": 0,
-    "databaseChange": "NONE"
+    "gmStaticValidation": "PASS",
+    "sql255StaticStructureSecurity": "PASS",
+    "sql255ProductionGate": "PENDING"
   },
-  "behavior": {
-    "cultivation": "only cultivation content; combat root hidden and emptied",
-    "attack": "only attack pane is generated",
-    "defense": "only defense pane is generated"
-  }
+  "deploymentAllowed": false,
+  "deploymentCondition": "Execute SQL255 in production and confirm SQL255_GATE_PASSED before publishing CACHE124.",
+  "generatedAtUtc": "2026-08-10T08:17:19.310310+00:00"
 }

@@ -2,12 +2,12 @@
   "ok": true,
   "errors": [],
   "warnings": [],
-  "gameFileCount": 33,
-  "gameBytes": 1385986,
+  "gameFileCount": 25,
+  "gameBytes": 1030900,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.2.0 CACHE123",
-  "gameBuildId": "v2-2-0-cache123-technique-tabs-isolated-admin33-sql254-online",
-  "databaseBaseline": "SQL254 R5 ONLINE / SQL254_GATE_PASSED; SQL255 next",
-  "androidVersionCode": 2001502
+  "gameBaseline": "V2.2.0 CACHE124",
+  "gameBuildId": "v2-2-0-cache124-tianxu-admin34-sql255",
+  "databaseBaseline": "SQL254 R5 ONLINE; SQL255 REQUIRED / SQL255_GATE_PASSED",
+  "androidVersionCode": 2001503
 }
