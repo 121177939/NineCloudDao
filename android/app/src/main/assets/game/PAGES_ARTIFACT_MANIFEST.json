@@ -1,6 +1,6 @@
 {
-  "version": "V2.2.0 CACHE124",
-  "clientBuild": "v2-2-0-cache124-tianxu-admin34-sql255",
+  "version": "V2.2.0 CACHE125",
+  "clientBuild": "v2-2-0-cache125-tianxu-admin34-sql255",
   "files": [
     {
       "path": ".nojekyll",
@@ -10,17 +10,17 @@
     {
       "path": "404.html",
       "size": 3399,
-      "sha256": "4d2dc3e0a80f9bfbe51d6eec05325ef36283ea68961f5cc7edf2de28a9232207"
+      "sha256": "9d3844f47591ba2ae8f30aebf5cf465318b60236d863ee16b9c24c7e90cb1897"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 2830,
-      "sha256": "afd05087d6084751d88cef86f8f2a2a8143c0dd533ed19d9d69211ea468a1645"
+      "size": 3081,
+      "sha256": "99ac2d0c33a58a1a76332fc66659f71152f79fd639bd18e201a4013844680f2e"
     },
     {
       "path": "VERSION.txt",
-      "size": 246,
-      "sha256": "8d0b3da906c322fff154f6dd5ab5c34f0e3a5644f8c641b16e7f0b901c4d5aed"
+      "size": 249,
+      "sha256": "0943124f0804bd8d2e50d35866af031432dc53b3a6d0ac025bc86646beff0528"
     },
     {
       "path": "app.js",
@@ -85,17 +85,17 @@
     {
       "path": "b-technique-v220.css",
       "size": 5315,
-      "sha256": "90f8b7d2c6af459641599bb7ad1d000b4adbebfbb98ab24c149d580e7e1cdfaf"
+      "sha256": "c75c8b52fab021ecf079d0df7c726dda6966efb5538d939a2955df014f444840"
     },
     {
       "path": "b-technique-v220.js",
       "size": 18203,
-      "sha256": "47f2753dd9fb381633bba26e9faf471a3beb1ff26a3d79e3482647a70984cb0d"
+      "sha256": "867a0ceedb44cc3b6601a3813b665486ce6c2fddbe95e2b595c08ef00a0e8c48"
     },
     {
       "path": "b-tianxu-v220.css",
       "size": 5268,
-      "sha256": "e9fae83f9beea0e561c67d083915f271351c773d69633ecbaadaf335a76f5e65"
+      "sha256": "5a94188ad3129749d1836f2c8e75d6c12cb017e98f432a3efaf8716284e4da1d"
     },
     {
       "path": "b-world-boss01.css",
@@ -110,22 +110,22 @@
     {
       "path": "config.js",
       "size": 523,
-      "sha256": "769419f9ef8fffcc8e35d471ccd8819bb2e3910aceced541340542bf5b406909"
+      "sha256": "904b2dfc710ff0b89dfd58a0f0462f302bfc93f0ef544f884197155874e4d746"
     },
     {
       "path": "index.html",
       "size": 3399,
-      "sha256": "4d2dc3e0a80f9bfbe51d6eec05325ef36283ea68961f5cc7edf2de28a9232207"
+      "sha256": "9d3844f47591ba2ae8f30aebf5cf465318b60236d863ee16b9c24c7e90cb1897"
     },
     {
       "path": "manifest.webmanifest",
       "size": 561,
-      "sha256": "a413406a3ae55c9be02e79869f285bc3f9e5d328c072dc7f6dc3bb1714485de4"
+      "sha256": "0aba6ed2b78a505fc615c98d2ab77bf24599d6d6ab62721e0eb39d8595c39dbd"
     },
     {
       "path": "release_config.json",
-      "size": 3802,
-      "sha256": "bfde326591ea0f1fdd39c67f3b32d2d3a450aa2853e0a4d53a9a33ccb559ef25"
+      "size": 4263,
+      "sha256": "9c675d224a508e668d906d791f2091c8ce95035af5a4403c89e8040032470c00"
     },
     {
       "path": "styles.css",
@@ -135,7 +135,7 @@
     {
       "path": "sw.js",
       "size": 3929,
-      "sha256": "ab87a8bfbaa81ff387d68a615089e0b73f0b18ecd0d1f7192af8381cd78d0b2d"
+      "sha256": "4e7f1665c001ca4cc1299b1a8a9f334978542fef02fd9a30640111a6b1b1bff8"
     },
     {
       "path": "update-guard.js",

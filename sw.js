@@ -1,28 +1,28 @@
-const CACHE_NAME = 'nine-cloud-dao-v2-2-0-cache124-tianxu-admin34-sql255';
+const CACHE_NAME = 'nine-cloud-dao-v2-2-0-cache125-tianxu-admin34-sql255';
 const CACHE_PREFIX = 'nine-cloud-dao-';
 const NAVIGATION_FALLBACK = './index.html';
 const APP_SHELL = [
   './index.html',
   './404.html',
-  './styles.css?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-tianxu-v220.css?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './config.js?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './update-guard.js?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './app.js?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './manifest.webmanifest?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './assets/icon-192.png?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './assets/icon-512.png?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-equipment01.css?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-equipment01.js?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-equipment-v210.css?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-equipment-v210.js?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-secret-realm01.css?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-secret-realm01.js?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-technique-v220.css?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-technique-v220.js?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-sect-v2.css?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './b-sect-v2.js?v=v2-2-0-cache124-tianxu-admin34-sql255',
-  './assets/secret-realm-portal.webp?v=v2-2-0-cache124-tianxu-admin34-sql255',
+  './styles.css?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-tianxu-v220.css?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './config.js?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './update-guard.js?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './app.js?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './manifest.webmanifest?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './assets/icon-192.png?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './assets/icon-512.png?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-equipment01.css?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-equipment01.js?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-equipment-v210.css?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-equipment-v210.js?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-secret-realm01.css?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-secret-realm01.js?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-technique-v220.css?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-technique-v220.js?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-sect-v2.css?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './b-sect-v2.js?v=v2-2-0-cache125-tianxu-admin34-sql255',
+  './assets/secret-realm-portal.webp?v=v2-2-0-cache125-tianxu-admin34-sql255',
 ];
 
 self.addEventListener('message', event => {

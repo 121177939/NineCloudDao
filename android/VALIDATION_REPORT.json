@@ -3,11 +3,11 @@
   "errors": [],
   "warnings": [],
   "gameFileCount": 25,
-  "gameBytes": 1030900,
+  "gameBytes": 1031615,
   "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.2.0 CACHE124",
-  "gameBuildId": "v2-2-0-cache124-tianxu-admin34-sql255",
+  "gameBaseline": "V2.2.0 CACHE125",
+  "gameBuildId": "v2-2-0-cache125-tianxu-admin34-sql255",
   "databaseBaseline": "SQL254 R5 ONLINE; SQL255 REQUIRED / SQL255_GATE_PASSED",
-  "androidVersionCode": 2001503
+  "androidVersionCode": 2001504
 }

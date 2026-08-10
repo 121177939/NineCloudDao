@@ -113,9 +113,9 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001503" in gradle_props, "Android版本号不是CACHE124基线")
-    check('APP_VERSION_NAME=2.2.0-cache124' in gradle_props, "Android版本名不是CACHE124基线")
-    expected_build = "v2-2-0-cache124-tianxu-admin34-sql255"
+    check("APP_VERSION_CODE=2001504" in gradle_props, "Android版本号不是CACHE125基线")
+    check('APP_VERSION_NAME=2.2.0-cache125' in gradle_props, "Android版本名不是CACHE125基线")
+    expected_build = "v2-2-0-cache125-tianxu-admin34-sql255"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
@@ -140,10 +140,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.2.0 CACHE124",
+        "gameBaseline": "V2.2.0 CACHE125",
         "gameBuildId": expected_build,
         "databaseBaseline": "SQL254 R5 ONLINE; SQL255 REQUIRED / SQL255_GATE_PASSED",
-        "androidVersionCode": 2001503,
+        "androidVersionCode": 2001504,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

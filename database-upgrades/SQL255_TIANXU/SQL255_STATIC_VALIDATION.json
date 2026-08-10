@@ -1,31 +1,7 @@
 {
-  "file": "01_SQL255_R2_V2.2.0_CACHE124_赌场退役_天墟自由交易_装备RPC自适应_执行即门禁.sql",
-  "sha256": "bf65e2540f76302e3137e72eff2dba1fbba6eb4271909205c80df750528e2548",
-  "lines": 622,
-  "scanner": {
-    "final_state": "code",
-    "unclosed_dollar_tag": null,
-    "paren_balance": 0,
-    "paren_min": 0,
-    "semicolon_count": 52
-  },
-  "checks": {
-    "balanced_lexical_state": true,
-    "balanced_top_level_parentheses": true,
-    "single_begin_transaction": true,
-    "single_commit": true,
-    "final_gate_present": true,
-    "sql254_precondition": true,
-    "adaptive_move_rpc_discovery": true,
-    "adaptive_lock_rpc_discovery": true,
-    "wrapper_uses_dynamic_dispatch": true,
-    "no_fixed_pre_signature_dependency": true,
-    "renamed_originals_revoked": true,
-    "guard_body_gate": true,
-    "defaults_1_5_72_10": true,
-    "casino_retirement_gate": true,
-    "next_sql_256": true
-  },
-  "ok": true,
-  "note": "Static SQL lexical/security-contract validation only; Supabase production execution is still required."
+  "file": "01_SQL255_R4_V2.2.0_CACHE124_赌场退役_天墟自由交易_Cron_API兼容_执行即门禁.sql",
+  "sha256": "db5448ea04776b7b54c1bd459fb71fa9029752f88df0d4818f122bad230ba2ee",
+  "status": "PACKAGED_NOT_EXECUTED",
+  "gate": "SQL255_GATE_PASSED",
+  "nextSql": 256
 }

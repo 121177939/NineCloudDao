@@ -1,50 +1,44 @@
 {
-  "release": "V2.2.0 CACHE124",
-  "buildId": "v2-2-0-cache124-tianxu-admin34-sql255",
-  "gm": "ADMIN9 R34",
+  "version": "V2.2.0 CACHE125",
+  "buildId": "v2-2-0-cache125-tianxu-admin34-sql255",
+  "android": {
+    "versionCode": 2001504,
+    "versionName": "2.2.0-cache125",
+    "staticValidation": "PASS",
+    "errors": 0,
+    "warnings": 0
+  },
+  "pages": {
+    "localArtifactBuild": "PASS",
+    "artifactFiles": 29,
+    "workflow": "default GitHub Pages artifact",
+    "workflowRevision": "R4_NODE24"
+  },
+  "workflowChecks": {
+    "checkoutV5": true,
+    "setupPythonV6": true,
+    "setupNodeV5": true,
+    "node24": true,
+    "runnerPinnedUbuntu2404": true,
+    "pagesBuildIndependentOfAndroid": true,
+    "pagesBuildIndependentOfSqlFilename": true
+  },
   "database": {
-    "currentProduction": "SQL254 R5 ONLINE / SQL254_GATE_PASSED confirmed by user",
-    "requiredUpgrade": "SQL255 PENDING",
+    "confirmedOnline": "SQL254 R5",
+    "pending": "SQL255 R4",
     "requiredGate": "SQL255_GATE_PASSED",
-    "nextAfterSuccess": "SQL256",
-    "productionExecutionValidated": false
+    "nextSql": 256,
+    "sql255R4Packaged": true,
+    "sql255R4Sha256": "db5448ea04776b7b54c1bd459fb71fa9029752f88df0d4818f122bad230ba2ee"
   },
-  "change": "Casino player runtime retired; Tianxu free player market added",
-  "rules": {
-    "marketName": "天墟",
-    "freePricing": true,
-    "listingFeeRate": 0.01,
-    "tradeTaxRate": 0.05,
-    "listingHours": 72,
-    "maxActiveListings": 10,
-    "allInventoryAssetsTradeable": true,
-    "publicListingsOnly": true,
-    "selfPurchaseBlocked": true,
-    "resaleAllowed": true,
-    "stackPartialPurchase": true,
-    "equipmentUniqueInstanceTransfer": true,
-    "escrow": true
+  "gm": {
+    "version": "ADMIN9 R34",
+    "changed": false
   },
-  "ui": {
-    "browseCard": "grade + name + price + detail button only",
-    "compactBrowseCardCheck": "PASS",
-    "detailsDeferredToModal": true
-  },
-  "checks": {
-    "pagesBuildGate": "PASS",
-    "pagesArtifactFiles": 29,
-    "liveJsSyntax": "PASS",
-    "casinoRuntimeAssetsRemoved": "PASS",
-    "casinoRuntimeStringHits": [],
-    "webAndroidSync": "PASS",
-    "androidValidation": "PASS",
-    "androidErrors": 0,
-    "androidWarnings": 0,
-    "gmStaticValidation": "PASS",
-    "sql255StaticStructureSecurity": "PASS",
-    "sql255ProductionGate": "PENDING"
-  },
-  "deploymentAllowed": false,
-  "deploymentCondition": "Execute SQL255 in production and confirm SQL255_GATE_PASSED before publishing CACHE124.",
-  "generatedAtUtc": "2026-08-10T08:17:19.310310+00:00"
+  "casinoRuntimeRemoved": true,
+  "tianxuRuntimePresent": true,
+  "notes": [
+    "CACHE125只修部署链/缓存版本，不改变天墟业务规则。",
+    "SQL255 R4未收到SQL255_GATE_PASSED前仍不得记为ONLINE。"
+  ]
 }

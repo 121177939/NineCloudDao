@@ -1,12 +1,12 @@
 {
   "version": "V2.2.0",
-  "releaseLabel": "V2.2.0 CACHE124",
-  "buildId": "v2-2-0-cache124-tianxu-admin34-sql255",
-  "cacheEpoch": 124,
+  "releaseLabel": "V2.2.0 CACHE125",
+  "buildId": "v2-2-0-cache125-tianxu-admin34-sql255",
+  "cacheEpoch": 125,
   "minimumDatabaseBaseline": "SQL254 R5 ONLINE / SQL254_GATE_PASSED",
-  "sqlRevision": "SQL255 PENDING：赌场运行退役 + 天墟自由交易；执行成功后 SQL256 NEXT",
+  "sqlRevision": "SQL255 R4 PENDING：赌场运行退役 + 天墟自由交易；执行成功后 SQL256 NEXT",
   "migrationSql": [
-    "database-upgrades/SQL255_TIANXU/01_SQL255_V2.2.0_CACHE124_赌场退役_天墟自由交易_执行即门禁.sql"
+    "database-upgrades/SQL255_TIANXU/01_SQL255_R4_V2.2.0_CACHE124_赌场退役_天墟自由交易_Cron_API兼容_执行即门禁.sql"
   ],
   "features": [
     "TIANXU_MARKET_V255",
@@ -22,11 +22,12 @@
     "CASINO_PLAYER_RUNTIME_RETIRED",
     "TECHNIQUE_THREE_FAMILIES_V220"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R34_V2.2.0_CACHE124_SQL255_天墟管理_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R34_V2.2.0_CACHE125_SQL255_天墟管理_手机直用版.html",
   "deploymentAllowed": false,
   "gmPublicDeployment": false,
-  "databaseRelease": "生产已确认 SQL254_GATE_PASSED；SQL255尚未执行。CACHE124依赖SQL255，禁止提前发布。",
+  "databaseRelease": "生产已确认 SQL254_GATE_PASSED；SQL255 R4尚未确认执行。CACHE125依赖SQL255，禁止提前发布。",
   "notes": [
+    "CACHE125：修复 GitHub Pages 构建链，Pages 工作流升级到 Node24 兼容 Actions；Pages 构建不再因 Android/SQL交付文件或额外历史工作流产生误阻断，运行时代码门禁仍保留。",
     "赌场玩家入口与前端牌九/鱼虾/灵骰资源全部移除；历史数据库记录保留归档，SQL255关闭赌场Feature、相关cron及玩家RPC权限。",
     "新增天墟公开一口价玩家市场：所有真实库存物品可交易，灵石/修为/境界等角色状态不作为商品。",
     "天墟商品列表严格只显示品级、名字、价格与详情入口；数量、卖家、装备属性、孔位、交易参考等只在详情查看。",
@@ -34,14 +35,15 @@
     "默认上架费1%、成交税5%、72小时、每角色最多10个有效挂单；可堆叠物品支持部分购买，装备一件一单。",
     "上架资产进入服务端托管；购买、取消、过期均由服务端原子事务转移，request_id防重复请求，交易流水永久保留。",
     "GM ADMIN9 R34新增天墟总开关、费用、挂单时长/数量与成交指标；赌场管理入口移除。",
-    "生产当前仍为SQL254 ONLINE；必须SQL255_GATE_PASSED后才能发布CACHE124，成功后下一SQL为256。"
+    "生产当前仍为SQL254 ONLINE；必须SQL255_GATE_PASSED后才能发布CACHE125，成功后下一SQL为256。"
   ],
   "gmVersion": "ADMIN9 R34",
   "nextSqlNumber": 256,
-  "deploymentMethod": "github_actions_pages_default_artifact_r3_LOCKED_VERIFIED",
+  "deploymentMethod": "github_actions_pages_default_artifact_r4_NODE24",
   "releaseStage": "sql255_pending_tianxu",
   "runtimeDatabaseGate": "SQL255_GATE_PASSED",
   "releaseNotes": [
+    "CACHE125：修复 GitHub Pages 构建链，Pages 工作流升级到 Node24 兼容 Actions；Pages 构建不再因 Android/SQL交付文件或额外历史工作流产生误阻断，运行时代码门禁仍保留。",
     "赌场玩家入口与前端牌九/鱼虾/灵骰资源全部移除；历史数据库记录保留归档，SQL255关闭赌场Feature、相关cron及玩家RPC权限。",
     "新增天墟公开一口价玩家市场：所有真实库存物品可交易，灵石/修为/境界等角色状态不作为商品。",
     "天墟商品列表严格只显示品级、名字、价格与详情入口；数量、卖家、装备属性、孔位、交易参考等只在详情查看。",
@@ -49,11 +51,11 @@
     "默认上架费1%、成交税5%、72小时、每角色最多10个有效挂单；可堆叠物品支持部分购买，装备一件一单。",
     "上架资产进入服务端托管；购买、取消、过期均由服务端原子事务转移，request_id防重复请求，交易流水永久保留。",
     "GM ADMIN9 R34新增天墟总开关、费用、挂单时长/数量与成交指标；赌场管理入口移除。",
-    "生产当前仍为SQL254 ONLINE；必须SQL255_GATE_PASSED后才能发布CACHE124，成功后下一SQL为256。"
+    "生产当前仍为SQL254 ONLINE；必须SQL255_GATE_PASSED后才能发布CACHE125，成功后下一SQL为256。"
   ],
   "featureFlags": [
     "TIANXU_MARKET_V255",
     "CASINO_RUNTIME_RETIRED",
-    "CLIENT_VERSION_220_CACHE124"
+    "CLIENT_VERSION_220_CACHE125"
   ]
 }
