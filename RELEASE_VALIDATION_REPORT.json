@@ -1,44 +1,27 @@
 {
-  "version": "V2.2.0 CACHE125",
-  "buildId": "v2-2-0-cache125-tianxu-admin34-sql255",
+  "version": "V2.2.0 CACHE126",
+  "buildId": "v2-2-0-cache126-tianxu-admin34-sql255",
+  "database": "SQL255 R4 ONLINE / SQL255_GATE_PASSED",
+  "nextSql": 256,
+  "gm": "ADMIN9 R34",
   "android": {
-    "versionCode": 2001504,
-    "versionName": "2.2.0-cache125",
-    "staticValidation": "PASS",
-    "errors": 0,
-    "warnings": 0
+    "versionCode": 2001505,
+    "versionName": "2.2.0-cache126"
   },
-  "pages": {
-    "localArtifactBuild": "PASS",
-    "artifactFiles": 29,
-    "workflow": "default GitHub Pages artifact",
-    "workflowRevision": "R4_NODE24"
+  "pagesDeployment": {
+    "strategy": "prebuilt pages/ directory; GitHub Actions only uploads and deploys artifact",
+    "workflow": "checkout@v4 -> configure-pages@v5 -> upload-pages-artifact@v4 -> deploy-pages@v5",
+    "customBuildOnGithub": false
   },
-  "workflowChecks": {
-    "checkoutV5": true,
-    "setupPythonV6": true,
-    "setupNodeV5": true,
-    "node24": true,
-    "runnerPinnedUbuntu2404": true,
-    "pagesBuildIndependentOfAndroid": true,
-    "pagesBuildIndependentOfSqlFilename": true
+  "checks": {
+    "cache126_local_pages_builder": "PASS",
+    "prebuilt_pages_matches_fresh_build": "PASS",
+    "pages_js_syntax": "PASS",
+    "web_android_sync": "PASS",
+    "android_static_validation": "PASS 0 errors / 0 warnings",
+    "local_http_smoke": "PASS",
+    "casino_assets_absent_from_pages": "PASS",
+    "sql_required_for_cache126": false
   },
-  "database": {
-    "confirmedOnline": "SQL254 R5",
-    "pending": "SQL255 R4",
-    "requiredGate": "SQL255_GATE_PASSED",
-    "nextSql": 256,
-    "sql255R4Packaged": true,
-    "sql255R4Sha256": "db5448ea04776b7b54c1bd459fb71fa9029752f88df0d4818f122bad230ba2ee"
-  },
-  "gm": {
-    "version": "ADMIN9 R34",
-    "changed": false
-  },
-  "casinoRuntimeRemoved": true,
-  "tianxuRuntimePresent": true,
-  "notes": [
-    "CACHE125只修部署链/缓存版本，不改变天墟业务规则。",
-    "SQL255 R4未收到SQL255_GATE_PASSED前仍不得记为ONLINE。"
-  ]
+  "note": "CACHE126 removes Python/Node/custom build commands from GitHub Pages workflow. SQL255 is already online; SQL256 remains unused."
 }

@@ -1,4 +1,4 @@
-name: Deploy NineCloudDao V2.2.0 CACHE125 to GitHub Pages
+name: Deploy NineCloudDao V2.2.0 CACHE126 to GitHub Pages
 
 on:
   push:
@@ -12,121 +12,27 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: "24"
-          package-manager-cache: false
-
-      - name: Report workflow files without blocking Pages build
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Root workflows:"
-          find .github/workflows -maxdepth 1 -type f -printf '  %f\n' | sort || true
-          echo "CACHE125 no longer fails Pages build merely because an inherited workflow file exists."
-
-      - name: Verify Pages source files
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f index.html
-          test -f .nojekyll
-          test -f tools/build_pages_v2_2_0_cache125.py
-          test -f VERSION.txt
-          grep -F "V2.2.0 CACHE125" VERSION.txt
-          grep -F "PAGES_DEPLOY default-github-pages-artifact-r4" VERSION.txt
-
-      - name: Check JavaScript syntax
-        shell: bash
-        run: |
-          set -euo pipefail
-          for f in app.js config.js update-guard.js sw.js b-equipment01.js b-equipment-v210.js b-secret-realm01.js b-world-boss01.js b-technique-v220.js b-sect-v2.js; do
-            test -f "$f"
-            node --check "$f"
-          done
-
-      - name: Build lean Pages artifact
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf .pages-site
-          python3 tools/build_pages_v2_2_0_cache125.py . .pages-site
-          test -f .pages-site/index.html
-          test -f .pages-site/.nojekyll
-          test -f .pages-site/VERSION.txt
-          test -f .pages-site/b-world-boss01.js
-          test -f .pages-site/b-equipment-v210.js
-          test -f .pages-site/b-technique-v220.js
-          test -f .pages-site/b-tianxu-v220.css
-          echo "PAGES_BUILD_PASS V2.2.0 CACHE125"
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: .pages-site
-          include-hidden-files: true
-
   deploy:
-    needs: build
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload prebuilt Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./pages
+          include-hidden-files: true
+
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Verify live Pages is V2.2.0 CACHE125
-        shell: bash
-        env:
-          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
-          RUN_ID: ${{ github.run_id }}
-          RUN_ATTEMPT: ${{ github.run_attempt }}
-        run: |
-          set -euo pipefail
-          base="${PAGE_URL%/}"
-          test -n "$base"
-          ok=0
-          for i in $(seq 1 18); do
-            stamp="${RUN_ID}-${RUN_ATTEMPT}-${i}-$(date +%s)"
-            version="$(curl -fsSL --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' "$base/VERSION.txt?pages_verify=$stamp" 2>/dev/null || true)"
-            index="$(curl -fsSL --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' "$base/index.html?pages_verify=$stamp" 2>/dev/null || true)"
-            if grep -Fq 'V2.2.0 CACHE125' <<<"$version" \
-              && grep -Fq 'PAGES_DEPLOY default-github-pages-artifact-r4' <<<"$version" \
-              && grep -Fq '<!-- version: V2.2.0 CACHE125 -->' <<<"$index"; then
-              echo "LIVE PAGES PASS: V2.2.0 CACHE125"
-              ok=1
-              break
-            fi
-            echo "Attempt $i: Pages CDN尚未返回CACHE125，10秒后重试。"
-            sleep 10
-          done
-          if [ "$ok" -ne 1 ]; then
-            echo "::error::部署完成后线上仍未读到V2.2.0 CACHE125。请确认 Settings → Pages → Source = GitHub Actions。"
-            exit 1
-          fi
+        uses: actions/deploy-pages@v5

@@ -1,10 +1,10 @@
-# 九霄问道 V2.2.0 CACHE125
+# 九霄问道 V2.2.0 CACHE126
 
-当前开发交付基线：**V2.2.0 CACHE125**；Android：**versionCode 2001504 / versionName 2.2.0-cache125**；GM：**ADMIN9 R34**。
+当前开发交付基线：**V2.2.0 CACHE126**；Android：**versionCode 2001505 / versionName 2.2.0-cache126**；GM：**ADMIN9 R34**。
 
-生产数据库已经由用户截图确认 **SQL254 R5 ONLINE / SQL254_GATE_PASSED**。本版需要执行 **SQL255**，在确认 `SQL255_GATE_PASSED` 之前不得发布 CACHE125；成功后下一SQL编号为 **SQL256**。
+生产数据库已确认 **SQL255 R4 ONLINE / SQL255_GATE_PASSED**。CACHE126 是纯部署链修复版，不需要新增 SQL；下一条数据库编号 **SQL256**。
 
-## V2.2.0 CACHE125 · 天墟
+## V2.2.0 CACHE126 · 天墟
 
 - 市坊旧博弈玩家运行时退役，新增玩家自由市场 **天墟**。
 - 所有真实库存物品均可交易；灵石作为唯一结算货币，角色成长状态不作为商品。
