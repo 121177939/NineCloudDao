@@ -1,10 +1,13 @@
-# 九霄问道 V2.2.0 CACHE126
+# 九霄问道 V2.2.0 CACHE127
 
-当前开发交付基线：**V2.2.0 CACHE126**；Android：**versionCode 2001505 / versionName 2.2.0-cache126**；GM：**ADMIN9 R34**。
+当前开发交付基线：**V2.2.0 CACHE127**；Android：**versionCode 2001506 / versionName 2.2.0-cache127**；GM：**ADMIN9 R34**。
 
-生产数据库已确认 **SQL255 R4 ONLINE / SQL255_GATE_PASSED**。CACHE126 是纯部署链修复版，不需要新增 SQL；下一条数据库编号 **SQL256**。
+生产数据库当前按 **SQL258 ONLINE** 管理；CACHE127 是天墟装备详情前端修复版，不需要新增 SQL；下一条数据库编号 **SQL259**。
 
-## V2.2.0 CACHE126 · 天墟
+## V2.2.0 CACHE127 · 天墟装备详情
+- 商品列表继续只显示品级、名字、价格。
+- 装备“详情”改为中文玩家属性：境界/部位/武器类型、强化、主属性、开放孔位、孔位属性与LV。
+- 不再显示 location / is_locked / grade_code / acquired_at / source_type 等数据库字段。
 
 - 市坊旧博弈玩家运行时退役，新增玩家自由市场 **天墟**。
 - 所有真实库存物品均可交易；灵石作为唯一结算货币，角色成长状态不作为商品。

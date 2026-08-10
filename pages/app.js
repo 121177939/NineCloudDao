@@ -5364,22 +5364,67 @@
     if (safeView === 'home' && Date.now() - Number(state.worldEventsFetchedAt || 0) > 15000) refreshWorldEvents(true);
   }
 
-  function tianxuSnapshotLinesV255(snapshot = {}) {
-    const skip = new Set(['id','character_id','user_id','created_at','updated_at','template_id']);
-    const labels = {
-      enhancement_level:'强化', grade_code:'品级代码', slot_code:'部位', weapon_kind:'武器类型', main_stat_value:'主属性', base_main_stat_value:'基础主属性', opened_sockets:'开放孔位',
-      code:'物品代码', category:'类别', rarity:'品质', stack_limit:'堆叠上限', description:'说明', book_kind:'道卷类型', technique_code:'功法代码', technique_name:'功法名称', family:'功法系别'
-    };
-    const source = snapshot?.item || snapshot?.definition || snapshot;
-    let html = Object.entries(source || {}).filter(([k,v])=>!skip.has(k) && v!==null && v!=='' && typeof v!=='object').slice(0,18).map(([k,v])=>`<div><span>${escapeHtml(labels[k] || k)}</span><strong>${escapeHtml(String(v))}</strong></div>`).join('');
+  function tianxuEquipmentSnapshotHtmlV255(snapshot = {}) {
+    const item = snapshot?.item && typeof snapshot.item === 'object' ? snapshot.item : {};
+    const template = snapshot?.template && typeof snapshot.template === 'object' ? snapshot.template : {};
+    const merged = { ...template, ...item };
+    const slotCode = String(merged.slot_code || '');
+    const slotLabels = { weapon:'武器', clothing:'衣服', pants:'裤子', shoes:'鞋子', ring:'戒指' };
+    const mainLabels = { weapon:'道攻', clothing:'道御', pants:'生机', shoes:'身法', ring:'五行最终伤害' };
+    const weaponLabels = { sword:'剑', blade:'刀', spear:'枪', staff:'棍', fan:'扇', wand:'杖', qin:'琴', ring_blade:'环' };
+    const attrLabels = { attack_flat:'道攻', attack_pct:'道攻', defense_flat:'道御', defense_pct:'道御', vitality_flat:'生机', vitality_pct:'生机', agility_flat:'身法', agility_pct:'身法', element_damage:'五行伤害', element_resist:'五行抗性', element_resistance:'五行抗性' };
+    const rows = [];
+    const realm = String(merged.realm_name || merged.required_realm_name || merged.realm_stage_name || '').trim();
+    const slot = slotLabels[slotCode] || String(merged.slot_name || '').trim();
+    const weaponKind = weaponLabels[String(merged.weapon_kind || '')] || String(merged.weapon_kind_label || '').trim();
+    if (realm) rows.push(`<div><span>装备境界</span><strong>${escapeHtml(realm)}</strong></div>`);
+    if (slot || weaponKind) rows.push(`<div><span>装备类型</span><strong>${escapeHtml([slot,weaponKind].filter(Boolean).join(' · '))}</strong></div>`);
+    const enhancement = Math.max(0, Number(merged.enhancement_level || 0));
+    rows.push(`<div><span>强化等级</span><strong>+${formatNumber(enhancement)}</strong></div>`);
+    const mainRaw = Number(merged.main_stat_value ?? merged.base_main_stat_value ?? 0);
+    const mainLabel = mainLabels[slotCode] || String(merged.main_stat_label || '主属性');
+    const mainText = slotCode === 'ring' ? `${mainLabel} +${formatNumber(mainRaw,4)}%` : `${mainLabel} +${formatNumber(Math.round(mainRaw))}`;
+    rows.push(`<div><span>主属性</span><strong>${escapeHtml(mainText)}</strong></div>`);
+
+    const opened = Math.min(8, Math.max(0, Number(merged.opened_sockets ?? merged.total_socket_capacity ?? merged.socket_capacity ?? template.socket_capacity ?? 0)));
     const sockets = Array.isArray(snapshot?.sockets) ? snapshot.sockets : [];
-    if (sockets.length) html += sockets.map((row,index)=>{
-      const label=String(row?.label || row?.attribute_name || row?.attribute_code || `孔位${index+1}`).replace('+数值','').replace('+%','');
-      const raw = row?.value_percent ?? row?.value ?? '';
-      const value = raw==='' ? '' : (row?.value_percent!==undefined ? ` +${formatNumber(Number(raw),2)}%` : ` +${escapeHtml(String(raw))}`);
-      return `<div><span>孔位 ${index+1} · LV.${formatNumber(row?.level || 1)}</span><strong>${escapeHtml(label)}${value}</strong></div>`;
+    const socketMap = new Map(sockets.map((row,index)=>[Number(row?.socket_index || index + 1),row]));
+    rows.push(`<div><span>孔位</span><strong>开放 ${formatNumber(opened)} 孔${sockets.length ? ` · 已有属性 ${formatNumber(sockets.length)} 孔` : ''}</strong></div>`);
+    const symbols = ['①','②','③','④','⑤','⑥','⑦','⑧'];
+    const baseMain = Number(merged.base_main_stat_value ?? merged.main_stat_value ?? 0);
+    for (let i=1;i<=opened;i++) {
+      const socket = socketMap.get(i);
+      if (!socket) { rows.push(`<div class="tianxu-socket-row-v255 is-empty"><span>${symbols[i-1] || i}</span><strong>空</strong></div>`); continue; }
+      let label = String(socket.label || socket.attribute_name || attrLabels[String(socket.attribute_code || '')] || socket.attribute_code || '孔位属性').replace('+数值','').replace('+%','').trim();
+      const code = String(socket.attribute_code || '');
+      const directText = String(socket.display_text || socket.value_text || '').trim();
+      let effect = directText;
+      if (!effect) {
+        if (['attack_flat','defense_flat','vitality_flat','agility_flat'].includes(code)) {
+          const ratio = Number(socket.value ?? 0);
+          effect = `${label} +${formatNumber(Math.round(baseMain * ratio))}`;
+        } else {
+          const pct = socket.value_percent !== undefined && socket.value_percent !== null ? Number(socket.value_percent) : Number(socket.value ?? 0) * 100;
+          effect = `${label} +${formatNumber(pct,2)}%`;
+        }
+      }
+      rows.push(`<div class="tianxu-socket-row-v255${Number(socket.level || 1) >= 10 ? ' is-max' : ''}"><span>${symbols[i-1] || i} · LV.${formatNumber(socket.level || 1)}</span><strong>${escapeHtml(effect)}</strong></div>`);
+    }
+    return rows.join('');
+  }
+
+  function tianxuSnapshotLinesV255(snapshot = {}) {
+    if (snapshot?.item && (snapshot?.template || snapshot?.item?.slot_code || snapshot?.item?.main_stat_value !== undefined)) {
+      return tianxuEquipmentSnapshotHtmlV255(snapshot);
+    }
+    const source = snapshot?.definition || snapshot;
+    const labels = { description:'说明', category:'类别', rarity:'品质', book_kind:'道卷类型', technique_name:'功法名称', family:'功法系别', quantity:'数量' };
+    const familyLabels = { cultivation:'修炼', attack:'攻伐', defense:'护体' };
+    const hidden = new Set(['id','character_id','user_id','created_at','updated_at','template_id','code','item_definition_id','is_bound','stack_limit','technique_code','book_id']);
+    return Object.entries(source || {}).filter(([k,v])=>!hidden.has(k) && v!==null && v!=='' && typeof v!=='object').slice(0,12).map(([k,v])=>{
+      const value = k === 'family' ? (familyLabels[String(v)] || v) : v;
+      return `<div><span>${escapeHtml(labels[k] || '物品信息')}</span><strong>${escapeHtml(String(value))}</strong></div>`;
     }).join('');
-    return html;
   }
 
   async function openTianxuDetailV255(listingId) {

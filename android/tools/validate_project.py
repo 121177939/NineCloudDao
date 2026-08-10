@@ -113,15 +113,15 @@ def main() -> None:
     check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
     check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
     baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001505" in gradle_props, "Android版本号不是CACHE126基线")
-    check('APP_VERSION_NAME=2.2.0-cache126' in gradle_props, "Android版本名不是CACHE126基线")
-    expected_build = "v2-2-0-cache126-tianxu-admin34-sql255"
+    check("APP_VERSION_CODE=2001506" in gradle_props, "Android版本号不是CACHE127基线")
+    check('APP_VERSION_NAME=2.2.0-cache127' in gradle_props, "Android版本名不是CACHE127基线")
+    expected_build = "v2-2-0-cache127-tianxu-detail-admin34-sql258"
     check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
     check(expected_build in config_js, "config.js游戏构建号不一致")
     check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
-    check(baseline.get("runtimeDatabaseGate") == "SQL255_GATE_PASSED",
+    check(baseline.get("runtimeDatabaseGate") == "SQL258_GATE_PASSED",
           "数据库运行门禁不是SQL255")
-    check(baseline.get("nextSqlNumber") == 256, "下一SQL编号不是256")
+    check(baseline.get("nextSqlNumber") == 259, "下一SQL编号不是259")
 
     game_files = [p for p in game_root.rglob("*") if p.is_file()]
     check(len(game_files) >= 20, f"游戏资源数量异常：{len(game_files)}")
@@ -140,10 +140,10 @@ def main() -> None:
         "gameBytes": sum(p.stat().st_size for p in game_files),
         "xmlFileCount": len(xml_files),
         "project": ROOT.name,
-        "gameBaseline": "V2.2.0 CACHE126",
+        "gameBaseline": "V2.2.0 CACHE127",
         "gameBuildId": expected_build,
-        "databaseBaseline": "SQL255 R4 ONLINE / SQL255_GATE_PASSED; SQL256 NEXT",
-        "androidVersionCode": 2001505,
+        "databaseBaseline": "SQL258 ONLINE / SQL258_GATE_PASSED; SQL259 NEXT",
+        "androidVersionCode": 2001506,
     }
     output = ROOT / "VALIDATION_REPORT.json"
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

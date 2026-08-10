@@ -1,21 +1,21 @@
 {
   "game": "九霄问道",
   "version": "V2.2.0",
-  "releaseLabel": "V2.2.0 CACHE126",
-  "clientRelease": "V2.2.0_CACHE126",
-  "cacheEpoch": 126,
-  "clientBuild": "v2-2-0-cache126-tianxu-admin34-sql255",
-  "buildId": "v2-2-0-cache126-tianxu-admin34-sql255",
-  "developmentBaseline": "V2.2.0_CACHE126_ADMIN9_R34_SQL255_R4_ONLINE_TIANXU",
+  "releaseLabel": "V2.2.0 CACHE127",
+  "clientRelease": "V2.2.0_CACHE127",
+  "cacheEpoch": 127,
+  "clientBuild": "v2-2-0-cache127-tianxu-detail-admin34-sql258",
+  "buildId": "v2-2-0-cache127-tianxu-detail-admin34-sql258",
+  "developmentBaseline": "V2.2.0_CACHE127_ADMIN9_R34_SQL258_ONLINE_TIANXU_DETAIL",
   "gmVersion": "ADMIN9 R34",
   "gmEntry": "九霄问道_ADMIN9_R34_V2.2.0_CACHE124_SQL255_天墟管理_手机直用版.html",
   "gmDeliveryMode": "local_only",
   "gmPublicDeployment": false,
-  "sqlRevision": "SQL255 R4 ONLINE / SQL255_GATE_PASSED；SQL256 NEXT",
-  "databaseRelease": "生产已确认 SQL255 R4 成功上线；CACHE126 不需要新增 SQL，下一条数据库升级为 SQL256。",
-  "nextSqlNumber": 256,
-  "runtimeDatabaseGate": "SQL255_GATE_PASSED",
-  "lastObservedProductionDatabase": "用户已确认 SQL255 R4 成功执行；生产数据库基线 SQL255 ONLINE，下一条 SQL256。",
+  "sqlRevision": "SQL258 ONLINE；本版无数据库变更；SQL259 NEXT",
+  "databaseRelease": "生产已生效至 SQL258；CACHE127 为天墟装备详情前端修复，不需要新增 SQL，下一条数据库升级为 SQL259。",
+  "nextSqlNumber": 259,
+  "runtimeDatabaseGate": "SQL258_GATE_PASSED",
+  "lastObservedProductionDatabase": "天墟详情境界字段修复已生效，当前按 SQL258 ONLINE 管理；下一条 SQL259。",
   "deploymentMethod": "github_actions_pages_prebuilt_directory_official_artifact_r1",
   "deploymentVerification": "V2.0.11已由用户确认Pages部署成功、APK生成成功、APP在线更新成功；后续继续锁定成功发布链，不改变包名、签名与Pages方式。",
   "features": [
@@ -31,13 +31,13 @@
     "TIANXU_COMPACT_LIST_GRADE_NAME_PRICE",
     "CASINO_PLAYER_RUNTIME_RETIRED",
     "TECHNIQUE_THREE_FAMILIES_V220",
-    "CLIENT_VERSION_220_CACHE126"
+    "CLIENT_VERSION_220_CACHE127",
+    "TIANXU_EQUIPMENT_DETAIL_CHINESE_V127"
   ],
   "notes": [
-    "CACHE126：GitHub Pages 改为提交已验收的 pages/ 静态成品；GitHub Actions 不再运行 Python/Node/自定义 build，只用官方 Pages actions 上传并部署，消除 runner build exit code 1 链。",
-    "生产数据库 SQL255 R4 已成功上线；本版不需要执行 SQL，下一 SQL 编号 256。",
-    "赌场玩家入口与运行时已退役；天墟继续使用 SQL255 服务端自由交易与托管规则。",
-    "天墟商品列表继续只显示品级、名字、价格与详情入口。",
-    "GM 沿用 ADMIN9 R34。"
+    "CACHE127：天墟装备详情不再展示 location、is_locked、grade_code、acquired_at、source_type 等数据库技术字段。",
+    "装备详情改为当前装备体系的中文展示：装备境界/类型、强化等级、主属性、开放孔位以及每个孔位的中文属性、数值和LV；空孔也明确显示。",
+    "生产数据库按 SQL258 ONLINE 管理；本版纯客户端修复，不占用 SQL259。",
+    "GM 沿用 ADMIN9 R34；Pages 继续使用已验证成功的预构建 pages/ 官方 artifact 部署链。"
   ]
 }

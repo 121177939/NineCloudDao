@@ -1,8 +1,8 @@
 {
-  "version": "V2.2.0 CACHE126",
-  "versionCode": 2001505,
-  "versionName": "2.2.0-cache126",
-  "gameBuildId": "v2-2-0-cache126-tianxu-admin34-sql255",
+  "version": "V2.2.0 CACHE127",
+  "versionCode": 2001506,
+  "versionName": "2.2.0-cache127",
+  "gameBuildId": "v2-2-0-cache127-tianxu-detail-admin34-sql258",
   "databaseBaseline": "SQL254 R5 ONLINE; SQL255 REQUIRED / SQL255_GATE_PASSED; next SQL256 after success",
   "files": [
     {

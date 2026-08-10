@@ -1,27 +1,20 @@
 {
-  "version": "V2.2.0 CACHE126",
-  "buildId": "v2-2-0-cache126-tianxu-admin34-sql255",
-  "database": "SQL255 R4 ONLINE / SQL255_GATE_PASSED",
-  "nextSql": 256,
-  "gm": "ADMIN9 R34",
+  "version": "V2.2.0 CACHE127",
+  "buildId": "v2-2-0-cache127-tianxu-detail-admin34-sql258",
+  "gmVersion": "ADMIN9 R34",
+  "database": "SQL258 ONLINE / SQL259 NEXT",
   "android": {
-    "versionCode": 2001505,
-    "versionName": "2.2.0-cache126"
-  },
-  "pagesDeployment": {
-    "strategy": "prebuilt pages/ directory; GitHub Actions only uploads and deploys artifact",
-    "workflow": "checkout@v4 -> configure-pages@v5 -> upload-pages-artifact@v4 -> deploy-pages@v5",
-    "customBuildOnGithub": false
+    "versionCode": 2001506,
+    "versionName": "2.2.0-cache127"
   },
   "checks": {
-    "cache126_local_pages_builder": "PASS",
-    "prebuilt_pages_matches_fresh_build": "PASS",
-    "pages_js_syntax": "PASS",
-    "web_android_sync": "PASS",
-    "android_static_validation": "PASS 0 errors / 0 warnings",
-    "local_http_smoke": "PASS",
-    "casino_assets_absent_from_pages": "PASS",
-    "sql_required_for_cache126": false
+    "pages_builder": "PASS",
+    "pages_prebuilt_matches_builder": "PASS",
+    "javascript_syntax": "PASS",
+    "tianxu_equipment_detail_chinese": "PASS",
+    "tianxu_raw_db_fields_hidden": "PASS",
+    "android_static_validation": "PASS",
+    "sql_required_for_cache127": false
   },
-  "note": "CACHE126 removes Python/Node/custom build commands from GitHub Pages workflow. SQL255 is already online; SQL256 remains unused."
+  "note": "CACHE127 only changes Tianxu equipment detail presentation. It shows current equipment attributes and socket rows; no SQL259 is used."
 }
