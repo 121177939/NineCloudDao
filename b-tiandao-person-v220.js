@@ -1,12 +1,12 @@
 /* 九霄问道 · B模块：天道人物 / 仙缘 / 道侣
- * 正式合并基线：V2.2.0 CACHE129
+ * 正式合并基线：V2.2.0 CACHE130
  * 目标：替换现有 data-mobile-screen="social" 的“红尘录”表现层。
  * 正式生产接入由 SQL259 提供；旧红尘系统彻底废弃，新版只依赖天道人物 RPC。
  */
 (() => {
   'use strict';
 
-  const BUILD = 'B-TIANDAO-PERSON-V05-CACHE129-CLOUDFLARE-AI';
+  const BUILD = 'B-TIANDAO-PERSON-V06-CACHE130-INTERACTION-UX';
   const cfg = window.GAME_CONFIG || {};
   const BASE = String(cfg.supabaseUrl || '').replace(/\/+$/, '');
   const KEY = String(cfg.supabasePublishableKey || '');
@@ -21,8 +21,13 @@
     loading: false,
     mounted: false,
     lastLoad: 0,
-    peopleFilter: 'all'
+    peopleFilter: 'all',
+    actionBusy: false
   };
+
+  const detailCache = new Map();
+  let detailRequestSeq = 0;
+  let mountQueued = false;
 
   const esc = v => String(v ?? '')
     .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
@@ -287,15 +292,24 @@
     <section class="tp-block"><div class="tp-block-head"><div><span>当前状态</span><strong>${esc(p.current_status || '正在自己的修行道路上')}</strong></div></div><p class="tp-body-copy">${esc(p.latest_rumor || publicMood(p))}</p></section>`;
   }
 
-  async function openPerson(id) {
-    if(!id) return;
-    const detail = await tryRpc('get_tiandao_person_detail_v1',{p_npc_id:id});
-    if(detail?.__error || !detail) return toast('人物资料读取失败。',true);
-    state.selected=detail;
-    const root=document.getElementById('modalRoot');
-    if(!root) return;
-    root.innerHTML=`<div class="modal-backdrop tp-modal-backdrop"><section class="modal tp-person-modal" role="dialog" aria-modal="true">
-      <button class="modal-close-button" data-tp-close-modal type="button">×</button>
+  function closePersonModal() {
+    detailRequestSeq += 1;
+    const root = document.getElementById('modalRoot');
+    if (root) root.innerHTML = '';
+  }
+
+  function personLoadingHtml(id) {
+    return `<div class="modal-backdrop tp-modal-backdrop" data-tp-modal-backdrop data-tp-modal-id="${esc(id)}">
+      <section class="modal tp-person-modal tp-person-modal-loading" role="dialog" aria-modal="true" aria-busy="true">
+        <button class="modal-close-button" data-tp-close-modal type="button" aria-label="关闭">×</button>
+        <div class="tp-ai-wait"><span class="tp-ai-spinner" aria-hidden="true"></span><strong>正在读取人物因果……</strong><small>你可以随时关闭，不会卡住页面。</small></div>
+      </section>
+    </div>`;
+  }
+
+  function personDetailHtml(detail, id) {
+    return `<div class="modal-backdrop tp-modal-backdrop" data-tp-modal-backdrop data-tp-modal-id="${esc(id)}"><section class="modal tp-person-modal" role="dialog" aria-modal="true">
+      <button class="modal-close-button" data-tp-close-modal type="button" aria-label="关闭">×</button>
       <div class="tp-person-detail-head"><div class="tp-person-avatar big">${esc((detail.name||'人').slice(-1))}</div><div><span>${esc(detail.identity||'九霄修士')}</span><h3>${esc(detail.name)}</h3><p>${esc(detail.realm_label||'')}</p></div><em>${esc(attitudeText(detail))}</em></div>
       <section><small>TA对你的态度</small><p>${esc(publicMood(detail))}</p></section>
       <section><small>最近消息</small><p>${esc(detail.latest_rumor||detail.current_status||'暂无线索。')}</p></section>
@@ -306,39 +320,103 @@
         <button data-tp-interact="meeting" data-tp-id="${esc(id)}">相约</button>
         ${detail.can_confess ? `<button class="primary" data-tp-confess="${esc(id)}">表明心意</button>`:''}
       </div>
+      <div class="tp-action-status" data-tp-action-status hidden></div>
     </section></div>`;
   }
 
+  async function openPerson(id) {
+    if(!id || state.actionBusy) return;
+    const root=document.getElementById('modalRoot');
+    if(!root) return;
+    const cached = detailCache.get(id);
+    if (cached && Date.now() - cached.at < 45000) {
+      state.selected = cached.data;
+      root.innerHTML = personDetailHtml(cached.data, id);
+      return;
+    }
+    const seq = ++detailRequestSeq;
+    root.innerHTML = personLoadingHtml(id);
+    const detail = await tryRpc('get_tiandao_person_detail_v1',{p_npc_id:id});
+    if (seq !== detailRequestSeq) return;
+    if(detail?.__error || !detail) {
+      closePersonModal();
+      return toast('人物资料读取失败。',true);
+    }
+    detailCache.set(id, { at: Date.now(), data: detail });
+    state.selected=detail;
+    root.innerHTML=personDetailHtml(detail,id);
+  }
+
+  function setActionBusy(busy, label='') {
+    state.actionBusy = busy;
+    const modal = document.querySelector('.tp-person-modal');
+    if (modal) {
+      modal.classList.toggle('is-busy', busy);
+      modal.querySelectorAll('button').forEach(btn => {
+        if (!btn.matches('[data-tp-close-modal]')) btn.disabled = busy;
+      });
+      const status = modal.querySelector('[data-tp-action-status]');
+      if (status) {
+        status.hidden = !busy;
+        status.innerHTML = busy ? `<span class="tp-ai-spinner" aria-hidden="true"></span><div><strong>${esc(label || 'NPC正在思量……')}</strong><small>Cloudflare 响应较慢时会自动切换本地人格，不会丢失本次操作。</small></div>` : '';
+      }
+    }
+    document.querySelectorAll('#bTiandaoPersonRoot [data-tp-encounter], #bTiandaoPersonRoot [data-tp-companion-action], #bTiandaoPersonRoot [data-tp-confess]').forEach(btn => { btn.disabled = busy; });
+  }
+
+  async function runAiAction(label, task, options={}) {
+    if (state.actionBusy) {
+      toast('上一段人物因果仍在推演，请稍候。');
+      return null;
+    }
+    setActionBusy(true, label);
+    if (!options.silentToast) toast(label || 'NPC正在思量……');
+    try {
+      const r = await task();
+      if(r?.__error) {
+        toast(humanError(r.__error),true);
+        return null;
+      }
+      return r;
+    } finally {
+      setActionBusy(false);
+    }
+  }
+
   async function interact(id, action) {
-    const r=await tryEdgeAi({mode:'interaction',npc_id:id,action});
-    if(r?.__error) return toast(humanError(r.__error),true);
+    const labels={talk:'正在与TA交谈……',gift:'TA正在回应你的赠礼……',meeting:'TA正在考虑这次相约……'};
+    const r=await runAiAction(labels[action]||'NPC正在思量……',()=>tryEdgeAi({mode:'interaction',npc_id:id,action}),{silentToast:true});
+    if(!r) return;
     toast(r?.content||'这段因缘有了新的变化。');
-    document.getElementById('modalRoot').innerHTML='';
+    detailCache.delete(id);
+    closePersonModal();
     await loadBundle(true);
   }
 
   async function confess(id) {
+    if (state.actionBusy) return;
     const line=prompt('你想对TA说什么？','愿往后大道漫漫，与你同行。');
     if(line===null) return;
-    const r=await tryEdgeAi({mode:'romance',npc_id:id,action:'confess',message:line});
-    if(r?.__error) return toast(humanError(r.__error),true);
+    const r=await runAiAction('TA正在斟酌你的心意……',()=>tryEdgeAi({mode:'romance',npc_id:id,action:'confess',message:line}),{silentToast:true});
+    if(!r) return;
     const content=r?.content||r?.reason||'心意已经传达。';
     toast(content, r?.decision==='reject');
-    document.getElementById('modalRoot').innerHTML='';
+    detailCache.delete(id);
+    closePersonModal();
     await loadBundle(true);
   }
 
   async function encounterAction(id, action) {
     if(!id) return;
-    const r=await tryEdgeAi({mode:'encounter',encounter_id:id,action});
-    if(r?.__error) return toast(humanError(r.__error),true);
+    const r=await runAiAction('这段缘遇正在推演……',()=>tryEdgeAi({mode:'encounter',encounter_id:id,action}));
+    if(!r) return;
     toast(r?.content||'缘遇已有结果。');
     await loadBundle(true);
   }
 
   async function companionAction(action) {
-    const r=await tryEdgeAi({mode:'companion',action});
-    if(r?.__error) return toast(humanError(r.__error),true);
+    const r=await runAiAction('道侣正在回应……',()=>tryEdgeAi({mode:'companion',action}));
+    if(!r) return;
     toast(r?.content||'你与道侣之间有了新的经历。');
     await loadBundle(true);
   }
@@ -351,18 +429,6 @@
       const heading=document.getElementById('worldEventsHeading');
       if(heading) heading.scrollIntoView({behavior:'smooth',block:'start'});
     },180);
-  }
-
-  function bind(root) {
-    root.querySelectorAll('[data-tp-view]').forEach(b=>b.onclick=()=>{state.view=b.dataset.tpView;render();});
-    root.querySelectorAll('[data-tp-filter]').forEach(b=>b.onclick=()=>{state.peopleFilter=b.dataset.tpFilter||'all';render();});
-    root.querySelectorAll('[data-tp-person]').forEach(b=>b.onclick=e=>{e.stopPropagation();openPerson(b.dataset.tpPerson);});
-    root.querySelectorAll('[data-tp-confess]').forEach(b=>b.onclick=e=>{e.stopPropagation();confess(b.dataset.tpConfess);});
-    root.querySelectorAll('[data-tp-encounter]').forEach(b=>b.onclick=()=>encounterAction(b.dataset.tpEncounter,b.dataset.tpEncounterAction));
-    root.querySelectorAll('[data-tp-companion-action]').forEach(b=>b.onclick=()=>companionAction(b.dataset.tpCompanionAction));
-    root.querySelectorAll('[data-tp-open-world-news]').forEach(b=>b.onclick=openExistingWorldNews);
-    document.querySelectorAll('[data-tp-close-modal]').forEach(b=>b.onclick=()=>document.getElementById('modalRoot').innerHTML='');
-    document.querySelectorAll('[data-tp-interact]').forEach(b=>b.onclick=()=>interact(b.dataset.tpId,b.dataset.tpInteract));
   }
 
   function render() {
@@ -381,10 +447,6 @@
 
     host.innerHTML=`<div class="panel-title tp-host-title"><h3>九霄人物</h3><span class="badge">缘遇 · 人物志 · 仙缘 · 道侣</span></div>
       <div id="bTiandaoPersonRoot" class="tp-root">${navTabs()}<div class="tp-content">${body}</div></div>`;
-    const root=document.getElementById('bTiandaoPersonRoot');
-    bind(root);
-    root.querySelectorAll('[data-tp-retry]').forEach(b=>b.onclick=()=>loadBundle(true));
-    // 底部导航沿用“人”图标，正式名称统一为“人物”。
     const nav=document.querySelector('[data-mobile-tab="social"] span');
     if(nav) nav.textContent='人物';
     state.mounted=true;
@@ -398,17 +460,78 @@
     return true;
   }
 
-  // app.js 每次整体重绘 dashboard 后，自动重新挂载。
-  const obs=new MutationObserver(()=>mount());
-  const appHost=document.getElementById('app');
-  if(appHost) obs.observe(appHost,{childList:true,subtree:true});
+  function scheduleMount() {
+    if (mountQueued) return;
+    mountQueued = true;
+    const run = () => {
+      mountQueued = false;
+      const host = document.getElementById('npcSocialSection');
+      if (host && host.dataset.bTiandaoPerson !== BUILD) mount();
+    };
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(run);
+    else setTimeout(run, 0);
+  }
 
+  // 只在主程序真正替换/新建 social 容器时重新挂载；不再监听自己产生的每一次子节点变化。
+  const appHost=document.getElementById('app');
+  if(appHost) {
+    const obs=new MutationObserver(records=>{
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          if (node?.nodeType === 1 && (node.id === 'npcSocialSection' || node.querySelector?.('#npcSocialSection'))) {
+            scheduleMount();
+            return;
+          }
+        }
+      }
+    });
+    obs.observe(appHost,{childList:true,subtree:true});
+  }
+
+  // 动态人物详情也统一走事件委托，避免“弹窗插入后按钮没有绑定”的问题。
   document.addEventListener('click',e=>{
-    const btn=e.target.closest?.('[data-mobile-tab="social"]');
-    if(btn) setTimeout(()=>{mount();loadBundle(false);},0);
+    const close=e.target.closest?.('[data-tp-close-modal]');
+    if(close){ e.preventDefault(); closePersonModal(); return; }
+
+    const backdrop=e.target.closest?.('[data-tp-modal-backdrop]');
+    if(backdrop && e.target===backdrop){ closePersonModal(); return; }
+
+    const interactBtn=e.target.closest?.('[data-tp-interact]');
+    if(interactBtn){ e.preventDefault(); e.stopPropagation(); interact(interactBtn.dataset.tpId,interactBtn.dataset.tpInteract); return; }
+
+    const confessBtn=e.target.closest?.('[data-tp-confess]');
+    if(confessBtn){ e.preventDefault(); e.stopPropagation(); confess(confessBtn.dataset.tpConfess); return; }
+
+    const encounterBtn=e.target.closest?.('[data-tp-encounter]');
+    if(encounterBtn){ e.preventDefault(); encounterAction(encounterBtn.dataset.tpEncounter,encounterBtn.dataset.tpEncounterAction); return; }
+
+    const companionBtn=e.target.closest?.('[data-tp-companion-action]');
+    if(companionBtn){ e.preventDefault(); companionAction(companionBtn.dataset.tpCompanionAction); return; }
+
+    const filterBtn=e.target.closest?.('[data-tp-filter]');
+    if(filterBtn){ state.peopleFilter=filterBtn.dataset.tpFilter||'all'; render(); return; }
+
+    const viewBtn=e.target.closest?.('[data-tp-view]');
+    if(viewBtn){ state.view=viewBtn.dataset.tpView; render(); return; }
+
+    const personBtn=e.target.closest?.('[data-tp-person]');
+    if(personBtn){ e.preventDefault(); e.stopPropagation(); openPerson(personBtn.dataset.tpPerson); return; }
+
+    const worldBtn=e.target.closest?.('[data-tp-open-world-news]');
+    if(worldBtn){ openExistingWorldNews(); return; }
+
+    const retryBtn=e.target.closest?.('[data-tp-retry]');
+    if(retryBtn){ loadBundle(true); return; }
+
+    const mobileBtn=e.target.closest?.('[data-mobile-tab="social"]');
+    if(mobileBtn) setTimeout(()=>{mount();loadBundle(false);},0);
   });
 
-  window.B_TIANDAO_PERSON_V04 = Object.freeze({
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape' && document.querySelector('[data-tp-modal-backdrop]')) closePersonModal();
+  });
+
+  window.B_TIANDAO_PERSON_V06 = Object.freeze({
     build:BUILD,
     mount,
     refresh:()=>loadBundle(true),

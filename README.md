@@ -1,14 +1,22 @@
-# 九霄问道 · V2.2.0 CACHE129
+# 九霄问道 · V2.2.0 CACHE130
+
+## CACHE130 本次修复
+
+- 人物详情改为动态事件委托：关闭按钮、点击遮罩、Esc、交谈/赠礼/相约/表白均可在弹窗插入后立即响应。
+- 人物模块不再对 `#app` 每个子节点变化都重新 `mount()`；只在主程序真正替换人物容器时合并重新挂载，减少移动端卡顿。
+- 人物详情先显示加载态，并提供45秒短缓存；Cloudflare人物交互立即显示“NPC正在思量”，锁定重复点击并等待服务端自动 fallback。
+- 数据库保持 **SQL259 ONLINE / NEXT SQL260**，本次无需 SQL；`tiandao-ai` 与 `server_personality_v1` 架构不变。
+
 
 当前正式交付：**天道人物 Cloudflare Workers AI + 服务端规则审核 + 本地人格Fallback**。
 
 - 生产数据库当前确认：**SQL258 ONLINE**。
-- 发布前执行：**SQL259 R2**，最后必须看到 `SQL259_GATE_PASSED`；成功后 NEXT SQL260。
-- GM：**ADMIN9 R36**。
+- 发布前执行：**SQL259**，最后必须看到 `SQL259_GATE_PASSED`；成功后 NEXT SQL260。
+- GM：**ADMIN9 R37**。
 - Edge Function：**tiandao-ai**。
 - AI模型：**@cf/qwen/qwen3-30b-a3b-fp8**。
 - Pages：继续使用已验证的预构建 `pages/` + GitHub 官方 artifact/deploy 链。
-- Android：**versionCode 2001508 / 2.2.0-cache129**。
+- Android：**versionCode 2001509 / 2.2.0-cache130**。
 
 玩家人物写操作不再直接调用数据库写RPC，而是先进入 Edge Function；Cloudflare 只提供人物提案，数据库服务端重新校验后才允许状态变化。外部AI失败或超时时自动走 `server_personality_v1`。
 

@@ -1,4 +1,4 @@
-/* 九霄问道 · B-TIANDAO-PERSON V0.5 · CACHE129 Cloudflare AI正式接入 */
+/* 九霄问道 · B-TIANDAO-PERSON V0.6 · CACHE130 人物交互响应优化 */
 #npcSocialSection[data-b-tiandao-person] .tp-host-title{margin-bottom:10px}
 .tp-root{display:grid;gap:12px}
 .tp-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:5px;border:1px solid rgba(206,182,126,.18);background:rgba(13,12,10,.32);border-radius:10px}
@@ -43,4 +43,23 @@
  .tp-world-link{align-items:flex-start;flex-direction:column}
  .tp-companion-actions{grid-template-columns:repeat(2,1fr)}
  .tp-detail-actions{grid-template-columns:repeat(2,1fr)}
+}
+
+/* CACHE130 · 人物详情/交互响应与移动端性能修复 */
+.tp-modal-backdrop{z-index:80;overflow-y:auto;overscroll-behavior:contain;backdrop-filter:none;background:rgba(0,0,0,.78)}
+.tp-person-modal{position:relative;width:min(480px,100%);max-height:min(88dvh,760px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:grid;gap:11px;text-align:left}
+.tp-person-modal>.modal-close-button{position:sticky;top:0;right:auto;justify-self:end;margin:0 0 -34px 0;z-index:5;flex:0 0 auto}
+.tp-person-modal-loading{min-height:190px;align-content:center}
+.tp-ai-wait{min-height:140px;display:grid;place-items:center;align-content:center;gap:10px;text-align:center;color:var(--paper-muted)}
+.tp-ai-wait strong{color:var(--gold-bright);font-weight:500}.tp-ai-wait small{font-size:10px;line-height:1.55}
+.tp-ai-spinner{width:20px;height:20px;border:2px solid rgba(206,182,126,.2);border-top-color:var(--gold-bright);border-radius:50%;animation:tpSpinV06 .8s linear infinite;display:inline-block;flex:0 0 auto}
+.tp-action-status{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid rgba(206,182,126,.16);background:rgba(201,167,95,.05);border-radius:8px;color:var(--paper-muted)}
+.tp-action-status[hidden]{display:none}.tp-action-status>div{display:grid;gap:2px}.tp-action-status strong{font-size:11px;color:var(--gold-bright);font-weight:500}.tp-action-status small{font-size:9px;line-height:1.5}
+.tp-person-modal.is-busy .tp-detail-actions button:not([data-tp-close-modal]),#bTiandaoPersonRoot button:disabled{opacity:.48;pointer-events:none}
+@keyframes tpSpinV06{to{transform:rotate(360deg)}}
+@media(max-width:600px){
+ .tp-modal-backdrop{padding:8px;align-items:end}
+ .tp-person-modal{width:100%;max-height:92dvh;padding:18px 14px calc(16px + env(safe-area-inset-bottom));border-radius:16px 16px 0 0}
+ .tp-person-modal>.modal-close-button{top:2px}
+ .tp-person-detail-head{grid-template-columns:50px 1fr auto}.tp-person-avatar.big{width:50px;height:50px}
 }

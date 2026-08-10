@@ -1,13 +1,11 @@
 {
   "version": "V2.2.0",
-  "releaseLabel": "V2.2.0 CACHE129",
-  "buildId": "v2-2-0-cache129-tiandao-cloudflare-ai-admin36-sql259r2",
-  "cacheEpoch": 129,
+  "releaseLabel": "V2.2.0 CACHE130",
+  "buildId": "v2-2-0-cache130-tiandao-interaction-ux-admin37-sql259-online",
+  "cacheEpoch": 130,
   "minimumDatabaseBaseline": "SQL259 ONLINE / SQL259_GATE_PASSED",
-  "sqlRevision": "SQL259 R2 REQUIRED；成功后 SQL260 NEXT",
-  "migrationSql": [
-    "database-upgrades/SQL259_TIANDAO_PEOPLE_CLOUDFLARE_AI/01_SQL259_R2_V2.2.0_CACHE129_天道人物_CloudflareWorkersAI_执行即门禁.sql"
-  ],
+  "sqlRevision": "SQL259 ONLINE；本次无需 SQL",
+  "migrationSql": [],
   "features": [
     "TIANDAO_PEOPLE_V259",
     "TIANDAO_50_NPCS",
@@ -19,37 +17,49 @@
     "TIANDAO_SERVER_RULE_AUDIT",
     "TIANDAO_LOCAL_FALLBACK_V1",
     "EDGE_FUNCTION_TIANDAO_AI",
-    "CLIENT_VERSION_220_CACHE129"
+    "TIANDAO_MODAL_DYNAMIC_EVENT_DELEGATION",
+    "TIANDAO_MUTATION_OBSERVER_THROTTLE",
+    "TIANDAO_INTERACTION_BUSY_FEEDBACK",
+    "CLIENT_VERSION_220_CACHE130"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R36_V2.2.0_CACHE129_SQL259_R2_CloudflareAI_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R37_V2.2.0_CACHE130_SQL259_ONLINE_CloudflareAI状态即时刷新_手机直用版.html",
   "deploymentAllowed": true,
   "gmPublicDeployment": false,
-  "databaseRelease": "生产当前 SQL258 ONLINE；发布本版前执行 SQL259 R2 并确认 SQL259_GATE_PASSED。",
+  "databaseRelease": "生产已确认 SQL259 ONLINE；CACHE130 仅客户端性能与交互修复，无数据库变更。",
   "notes": [
-    "CACHE129：玩家人物写操作统一经 Supabase Edge Function tiandao-ai 调用 Cloudflare Workers AI，再由服务端规则复核。",
-    "Cloudflare模型固定 @cf/qwen/qwen3-30b-a3b-fp8；AI不能修改灵石、装备、境界、NPC境界、战斗胜负、道侣关系或任意数据库字段。",
-    "Cloudflare失败/超时/未配置时自动 server_personality_v1 fallback；SQL259 R2保留确定性本地人格引擎。",
-    "ADMIN9 R36新增AI状态、测试AI连接、最近AI决策、AI耗时、失败原因和当前模型。",
-    "Cloudflare API凭据只放Supabase服务端 Secrets；客户端与公开GitHub交付不包含凭据。"
+    "CACHE130：修复人物详情弹窗动态插入后关闭/交互按钮未绑定的问题。",
+    "CACHE130：收窄人物模块 DOM 观察范围并用 requestAnimationFrame 合并重新挂载，降低移动端页面卡顿。",
+    "CACHE130：详情读取即时显示加载态并短缓存；AI交互即时显示等待状态并防止重复提交。",
+    "SQL259 ONLINE；无需执行新SQL，也无需重新部署 tiandao-ai Edge Function。",
+    "Cloudflare 仍为增强层，server_personality_v1 保持独立 fallback。"
   ],
-  "gmVersion": "ADMIN9 R36",
+  "gmVersion": "ADMIN9 R37",
   "nextSqlNumber": 260,
   "deploymentMethod": "github_actions_pages_prebuilt_directory_official_artifact_r1",
-  "releaseStage": "ready_sql259_r2_required_cache129",
+  "releaseStage": "ready_cache130_sql259_online",
   "runtimeDatabaseGate": "SQL259_GATE_PASSED",
   "releaseNotes": [
-    "CACHE129：玩家人物写操作统一经 Supabase Edge Function tiandao-ai 调用 Cloudflare Workers AI，再由服务端规则复核。",
-    "Cloudflare模型固定 @cf/qwen/qwen3-30b-a3b-fp8；AI不能修改灵石、装备、境界、NPC境界、战斗胜负、道侣关系或任意数据库字段。",
-    "Cloudflare失败/超时/未配置时自动 server_personality_v1 fallback；SQL259 R2保留确定性本地人格引擎。",
-    "ADMIN9 R36新增AI状态、测试AI连接、最近AI决策、AI耗时、失败原因和当前模型。",
-    "Cloudflare API凭据只放Supabase服务端 Secrets；客户端与公开GitHub交付不包含凭据。"
+    "CACHE130：修复人物详情弹窗动态插入后关闭/交互按钮未绑定的问题。",
+    "CACHE130：收窄人物模块 DOM 观察范围并用 requestAnimationFrame 合并重新挂载，降低移动端页面卡顿。",
+    "CACHE130：详情读取即时显示加载态并短缓存；AI交互即时显示等待状态并防止重复提交。",
+    "SQL259 ONLINE；无需执行新SQL，也无需重新部署 tiandao-ai Edge Function。",
+    "Cloudflare 仍为增强层，server_personality_v1 保持独立 fallback。"
   ],
   "featureFlags": [
     "TIANDAO_PEOPLE_V259",
+    "TIANDAO_50_NPCS",
+    "TIANDAO_ROMANCE_COMPANION",
     "LEGACY_HONGCHEN_CLIENT_REMOVED",
+    "TIANXU_MARKET_V255",
+    "TECHNIQUE_THREE_FAMILIES_V220",
     "TIANDAO_CLOUDFLARE_WORKERS_AI",
+    "TIANDAO_SERVER_RULE_AUDIT",
     "TIANDAO_LOCAL_FALLBACK_V1",
-    "CLIENT_VERSION_220_CACHE129"
+    "EDGE_FUNCTION_TIANDAO_AI",
+    "TIANDAO_MODAL_DYNAMIC_EVENT_DELEGATION",
+    "TIANDAO_MUTATION_OBSERVER_THROTTLE",
+    "TIANDAO_INTERACTION_BUSY_FEEDBACK",
+    "CLIENT_VERSION_220_CACHE130"
   ],
   "minimumDatabaseSql": 259
 }
