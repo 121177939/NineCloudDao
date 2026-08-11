@@ -1,9 +1,9 @@
 {
-  "version": "V2.2.0 CACHE134",
-  "versionCode": 2001513,
-  "versionName": "2.2.0-cache134",
-  "gameBuildId": "v2-2-0-cache134-jiuxiao-exploration-300-natural-ai-admin38-sql262-gated",
-  "databaseBaseline": "SQL262 REQUIRED / NEXT SQL263",
-  "gm": "ADMIN9 R38",
-  "edgeFunction": "tiandao-ai CACHE134 R3 REQUIRED"
+  "version": "V2.2.0 CACHE135",
+  "versionCode": 2001514,
+  "versionName": "2.2.0-cache135",
+  "gameBuildId": "v2-2-0-cache135-b-ai-router-glm-admin39-sql263-gated",
+  "databaseBaseline": "SQL263 REQUIRED / NEXT SQL264",
+  "gm": "ADMIN9 R39",
+  "edgeFunction": "tiandao-ai CACHE135 R5 B ROUTER REQUIRED"
 }

@@ -1,9 +1,9 @@
-V2.2.0 CACHE134
-v2-2-0-cache134-jiuxiao-exploration-300-natural-ai-admin38-sql262-gated
-SQL262 REQUIRED / GATE SQL262_GATE_PASSED / NEXT SQL263
-ADMIN9 R38
+V2.2.0 CACHE135
+v2-2-0-cache135-b-ai-router-glm-admin39-sql263-gated
+SQL263 REQUIRED / GATE SQL263_GATE_PASSED / NEXT SQL264
+ADMIN9 R39
 PAGES github-actions prebuilt pages directory R1
 PAGES_DEPLOY prebuilt-pages-directory-official-artifact-r1
-ANDROID 2001513 2.2.0-cache134
-EDGE tiandao-ai CACHE134 R3 REQUIRED / Cloudflare Workers AI + server_personality_v1 fallback
-FEATURE 九霄游历300故事 / 9境界差异 / 妖兽战斗风险 / 跨境界因果 / 游历志 / 天道人物自然AI
+ANDROID 2001514 2.2.0-cache135
+EDGE tiandao-ai CACHE135 R5 REQUIRED / GLM-4.7-Flash -> Cloudflare Workers AI -> server_personality_v1
+FEATURE 九霄游历300故事 / 天道人物自然AI / B模块多模型调度器 / AI来源准确显示

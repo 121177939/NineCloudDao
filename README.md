@@ -1,25 +1,27 @@
-# 九霄问道 · V2.2.0 CACHE133
+# 九霄问道 · V2.2.0 CACHE135
 
-当前交付：**CACHE133 / ADMIN9 R38 / SQL261 READY（生产当前 SQL260 ONLINE）**。CACHE133 同时修复 Android APK 发布校验器与天道人物自由交谈的真实 AI 回应。
+当前正式交付：**CACHE135 / ADMIN9 R39 / SQL263 READY（生产当前 SQL262 ONLINE）/ tiandao-ai CACHE135 R5 REQUIRED**。
 
-## CACHE133 · 真实AI自由交谈 + APK发布修复
+## CACHE135 · B模块天道AI多模型调度器正式接入
 
-- 人物自由交谈不再调用浏览器原生 `prompt()`；改为游戏内输入框，并保留玩家原话展示。
-- Cloudflare Workers AI 必须针对玩家原话、NPC人格、关系、当日心情/活动/事件给出具体回应；空回应判定失败并自动进入 `server_personality_v1`。
-- 结果页明确显示本次是 **Cloudflare AI** 还是 **本地人格兜底**。
-- SQL261 将 AI 的 accept/defer/reject/neutral 只映射为服务端固定范围关系反馈；明显侮辱不会再错误增加信任/好感。
-- 修复 GitHub Actions APK 失败：`android/tools/validate_project.py` 改为从当前基线动态读取 versionCode/versionName/buildId，不再硬编码 CACHE129。
-- 根仓库与 Android 独立仓库两套 `release-apk.yml` 路径均已校正。
-- CACHE132 PC 底部导航鼠标横拖/滚轮分页继续保留。
+- 天道AI云端路由：**GLM-4.7-Flash 主力 → Cloudflare Workers AI 备用 → server_personality_v1 永久本地兜底**。
+- CACHE134 R4 已验证的 Cloudflare 响应兼容、人物自然对白门禁、鉴权、prepare/apply 服务端审计全部保留。
+- 玩家人物结果卡准确显示 **GLM AI / Cloudflare AI / 本地人格兜底**，不会把 GLM 成功误标为本地Fallback。
+- SQL263 只新增 ADMIN9 多供应商只读统计 RPC，不修改人物、九霄游历300故事、经济、关系或战斗规则。
+- ADMIN9 R39 可分别测试 GLM、Cloudflare、本地Fallback，并查看24小时真实决策来源。
+- CACHE134 九霄游历 V1：300条正式故事（240境界专属 + 60跨境界）、8区域、游历/调查/追踪/回访完整继承。
+- CACHE132 PC底部导航鼠标横拖/滚轮分页、CACHE133 Android动态发布校验继续保留。
 
 ## 本版部署顺序
 
-1. 执行 SQL261，必须看到 `SQL261_GATE_PASSED`。
-2. 重部署 `tiandao-ai` CACHE133 R2（本版必须重部署，Secrets 名称不变）。
-3. 部署 CACHE133 Pages/游戏仓库。
-4. 重新运行 `release-apk.yml` 生成 Android APK。
+1. Supabase Edge Functions Secrets 配置B模块主力 GLM 凭据；原 Cloudflare Secrets 保留。
+2. 执行 SQL263，必须看到 `SQL263_GATE_PASSED`。
+3. 覆盖部署 `tiandao-ai CACHE135 R5`，函数名继续为 `tiandao-ai`，JWT验证保持开启。
+4. 部署 CACHE135 Pages/游戏仓库。
+5. 使用 ADMIN9 R39 分别测试 GLM / Cloudflare / 本地Fallback。
+6. Android 如需同步本次来源显示，生成 CACHE135 APK。
 
-Android：**versionCode 2001512 / versionName 2.2.0-cache133**。GM：**ADMIN9 R38，不改**。下一 SQL：**SQL262**。
+Android：**versionCode 2001514 / versionName 2.2.0-cache135**。下一 SQL：**SQL264**。
 
 ---
 

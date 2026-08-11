@@ -1,7 +1,7 @@
 /* 九霄问道 · B模块：完整天道人物 / 仙缘 / 道侣
  * 正式合并基线：V2.2.0 CACHE134 / SQL262
  * 目标：让NPC拥有每日生活、主动联系、人生事件线、情境互动、承诺与真正可读的共同记忆。
- * Cloudflare Workers AI 只负责人格与语言提案；数值、经济、关系和事件推进继续由服务端审核。
+ * GLM / Cloudflare 只负责人格与语言提案；数值、经济、关系和事件推进继续由服务端审核。
  */
 (() => {
   'use strict';
@@ -394,7 +394,7 @@
       return `<div class="tp-action-menu tp-talk-composer"><div class="tp-action-menu-head"><strong>你想亲自对${esc(detail.name||'TA')}说什么？</strong><button data-tp-action-menu-close>收起</button></div>
         <label class="tp-talk-input-wrap"><span>你的原话会交给TA本人理解</span><textarea class="tp-free-talk-input" maxlength="300" rows="4" placeholder="直接说你真正想说的话。TA会按自己的性格、心情、关系和经历具体回应，不一定顺着你。"></textarea><small>最多300字 · Ctrl/⌘ + Enter 送出</small></label>
         <div class="tp-talk-send-row"><button class="primary" data-tp-free-send type="button">送出这句话</button></div>
-        <p class="tp-action-hint">Cloudflare AI 会优先生成具体回应；如果本次失败，结果页会明确标记“本地人格兜底”，不会伪装成 AI 成功。</p></div>`;
+        <p class="tp-action-hint">人物回应优先由 GLM AI 生成；GLM 不可用或回复无效时自动切换 Cloudflare，云端均不可用才进入“本地人格兜底”。结果页会显示本次真实来源。</p></div>`;
     }
     if (kind==='talk') {
       const rows = [
@@ -459,23 +459,29 @@
     const playerMessage = String(options?.playerMessage || '').trim();
     const engine = String(result?.engine || '');
     const aiStatus = String(result?.ai_status || '');
-    const cloudflare = engine==='cloudflare_workers_ai' || aiStatus==='Cloudflare';
+    const provider = String(result?.provider || '').toLowerCase();
+    const glm = engine==='zhipu_glm' || provider==='zhipu' || provider==='glm' || /^GLM$/i.test(aiStatus);
+    const cloudflare = engine==='cloudflare_workers_ai' || provider==='cloudflare' || aiStatus==='Cloudflare';
+    const cloudAi = glm || cloudflare;
     const model = String(result?.model || '').trim();
     const latency = Number(result?.ai_latency_ms || 0);
     let extra='';
     if (applied.gift_accepted===false) extra='TA没有收下礼物。这并不等于关系被清零。';
     else if (applied.preference_match===true) extra='这次选择刚好合TA心意。';
     if (applied.story_resolved===true) extra='这件事已经走到了一个真正的结果。';
-    const engineNote = cloudflare
-      ? `本次由 Cloudflare AI 生成人物回应${latency>0?` · ${fmt(latency)}ms`:''}${model?` · ${esc(model)}`:''}`
-      : `本次 Cloudflare 未生成有效回复，已自动使用本地人格兜底${model?` · 目标模型 ${esc(model)}`:''}`;
+    const engineLabel = glm ? 'GLM AI' : cloudflare ? 'Cloudflare AI' : '本地人格兜底';
+    const engineNote = glm
+      ? `本次由 GLM AI 生成人物回应${latency>0?` · ${fmt(latency)}ms`:''}${model?` · ${esc(model)}`:''}`
+      : cloudflare
+        ? `GLM 本次未命中或不可用，已自动切换 Cloudflare AI${latency>0?` · ${fmt(latency)}ms`:''}${model?` · ${esc(model)}`:''}`
+        : `GLM 与 Cloudflare 本次均未生成有效回复，已自动使用本地人格兜底${model?` · 目标模型 ${esc(model)}`:''}`;
     return `<div class="modal-backdrop tp-modal-backdrop" data-tp-modal-backdrop><section class="modal tp-result-modal" role="dialog" aria-modal="true">
       <button class="modal-close-button" data-tp-close-modal type="button" aria-label="关闭">×</button>
       <div class="tp-result-mark">${kind==='story'?'事':kind==='gift'?'礼':kind==='meeting'?'游':'言'}</div>
       ${playerMessage?`<div class="tp-chat-player"><small>你说</small><p>${esc(playerMessage)}</p></div>`:''}
       <span class="tp-result-kicker">TA的回应</span>
       <p class="tp-result-dialogue">${esc(content)}</p>
-      <div class="tp-ai-engine ${cloudflare?'is-cloudflare':'is-fallback'}"><strong>${cloudflare?'Cloudflare AI':'本地人格兜底'}</strong><span>${engineNote}</span></div>
+      <div class="tp-ai-engine ${cloudAi?'is-cloudflare':'is-fallback'}"><strong>${engineLabel}</strong><span>${engineNote}</span></div>
       ${extra?`<small>${esc(extra)}</small>`:''}
       <div class="tp-result-actions"><button class="primary" data-tp-result-person="${esc(npcId)}">继续看看TA</button><button data-tp-close-modal>先到这里</button></div>
     </section></div>`;
