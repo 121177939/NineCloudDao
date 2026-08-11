@@ -1,9 +1,9 @@
 {
-  "version": "V2.2.0 CACHE132",
-  "versionCode": 2001511,
-  "versionName": "2.2.0-cache132",
-  "gameBuildId": "v2-2-0-cache132-pc-bottom-nav-drag-admin38-sql260-online",
-  "databaseBaseline": "SQL260 ONLINE / NEXT SQL261",
+  "version": "V2.2.0 CACHE133",
+  "versionCode": 2001512,
+  "versionName": "2.2.0-cache133",
+  "gameBuildId": "v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated",
+  "databaseBaseline": "SQL261 REQUIRED / NEXT SQL262",
   "gm": "ADMIN9 R38",
-  "edgeFunction": "tiandao-ai ONLINE / NO REDEPLOY"
+  "edgeFunction": "tiandao-ai CACHE133 R2 REQUIRED"
 }

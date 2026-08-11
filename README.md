@@ -1,24 +1,25 @@
-# 九霄问道 · V2.2.0 CACHE132
+# 九霄问道 · V2.2.0 CACHE133
 
-当前游戏交付基线：**CACHE132 / ADMIN9 R38 / SQL260 ONLINE**。CACHE132 只修复 PC 端底部导航横向操作，不新增 SQL，不改 GM，不改 Edge。
+当前交付：**CACHE133 / ADMIN9 R38 / SQL261 READY（生产当前 SQL260 ONLINE）**。CACHE133 同时修复 Android APK 发布校验器与天道人物自由交谈的真实 AI 回应。
 
-## CACHE132 · PC 底部导航横滑修复
+## CACHE133 · 真实AI自由交谈 + APK发布修复
 
-- PC 浏览器支持鼠标按住底部导航左右拖动，修复原生 `overflow-x` 只能触摸滑动、鼠标拖不动的问题。
-- 底栏区域支持鼠标滚轮/触控板分页：向下/向右进入下一页，向上/向左返回上一页。
-- 拖动松手自动吸附最近页，并抑制拖动结束误触导航按钮。
-- 手机端原有触摸横滑保持不变。
-- CACHE131 的完整天道人物全部继承。
+- 人物自由交谈不再调用浏览器原生 `prompt()`；改为游戏内输入框，并保留玩家原话展示。
+- Cloudflare Workers AI 必须针对玩家原话、NPC人格、关系、当日心情/活动/事件给出具体回应；空回应判定失败并自动进入 `server_personality_v1`。
+- 结果页明确显示本次是 **Cloudflare AI** 还是 **本地人格兜底**。
+- SQL261 将 AI 的 accept/defer/reject/neutral 只映射为服务端固定范围关系反馈；明显侮辱不会再错误增加信任/好感。
+- 修复 GitHub Actions APK 失败：`android/tools/validate_project.py` 改为从当前基线动态读取 versionCode/versionName/buildId，不再硬编码 CACHE129。
+- 根仓库与 Android 独立仓库两套 `release-apk.yml` 路径均已校正。
+- CACHE132 PC 底部导航鼠标横拖/滚轮分页继续保留。
 
-## 发布基线
+## 本版部署顺序
 
-- 数据库：**SQL260 ONLINE / NEXT SQL261**，CACHE132 无新增 SQL。
-- GM：**ADMIN9 R38**，无改动。
-- Android：**versionCode 2001511 / versionName 2.2.0-cache132**。
-- Edge Function：继续复用线上 `tiandao-ai`，无需重部署。
-- Pages：继续预构建 `pages/` + GitHub 官方 artifact/deploy 链。
+1. 执行 SQL261，必须看到 `SQL261_GATE_PASSED`。
+2. 重部署 `tiandao-ai` CACHE133 R2（本版必须重部署，Secrets 名称不变）。
+3. 部署 CACHE133 Pages/游戏仓库。
+4. 重新运行 `release-apk.yml` 生成 Android APK。
 
-详见 `V2.2.0_CACHE132_PC端底部导航横滑修复说明.md`。
+Android：**versionCode 2001512 / versionName 2.2.0-cache133**。GM：**ADMIN9 R38，不改**。下一 SQL：**SQL262**。
 
 ---
 

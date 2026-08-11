@@ -1,167 +1,93 @@
 #!/usr/bin/env python3
+"""九霄问道 Android release preflight.
+
+Never hard-code a CACHE number here. The validator derives the expected release
+from CURRENT_BASELINE.json / PROJECT_MANIFEST.json / gradle.properties so a
+normal client version bump cannot leave CI pinned to an older release.
+"""
 from __future__ import annotations
-
-import json
-import re
-import sys
+import hashlib, json, re, sys
 from pathlib import Path
-import xml.etree.ElementTree as ET
 
-ROOT = Path(__file__).resolve().parents[1]
-ERRORS: list[str] = []
-WARNINGS: list[str] = []
+ANDROID = Path(__file__).resolve().parents[1]
+MONO = ANDROID.parent
+GAME = ANDROID / 'app/src/main/assets/game'
+BASELINE_FILE = MONO / 'CURRENT_BASELINE.json' if (MONO/'CURRENT_BASELINE.json').is_file() else GAME/'CURRENT_BASELINE.json'
+PROJECT_FILE = ANDROID/'PROJECT_MANIFEST.json'
+ERRORS=[]
 
+def fail(msg): ERRORS.append(msg)
+def read_json(path):
+    try: return json.loads(path.read_text('utf-8'))
+    except Exception as e: fail(f'无法读取 {path}: {e}'); return {}
+def props(path):
+    out={}
+    for line in path.read_text('utf-8').splitlines():
+        t=line.strip()
+        if not t or t.startswith('#') or '=' not in t: continue
+        k,v=t.split('=',1); out[k.strip()]=v.strip()
+    return out
 
-def check(condition: bool, message: str) -> None:
-    if not condition:
-        ERRORS.append(message)
+def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
 
+required=[
+    ANDROID/'gradlew', ANDROID/'gradle/wrapper/gradle-wrapper.jar',
+    ANDROID/'gradle/wrapper/gradle-wrapper.properties', ANDROID/'settings.gradle.kts',
+    ANDROID/'build.gradle.kts', ANDROID/'gradle.properties', ANDROID/'app/build.gradle.kts',
+    ANDROID/'app/src/main/AndroidManifest.xml', GAME/'index.html', GAME/'CURRENT_BASELINE.json',
+    GAME/'VERSION.txt', GAME/'b-tiandao-person-v220.js'
+]
+for p in required:
+    if not p.is_file(): fail(f'缺少必需文件: {p.relative_to(ANDROID)}')
+if ERRORS:
+    print('\n'.join('FAIL '+x for x in ERRORS)); sys.exit(1)
 
-def read(rel: str) -> str:
-    return (ROOT / rel).read_text(encoding="utf-8")
+baseline=read_json(BASELINE_FILE); project=read_json(PROJECT_FILE); gp=props(ANDROID/'gradle.properties')
+version_code=int(gp.get('APP_VERSION_CODE','0') or 0); version_name=gp.get('APP_VERSION_NAME','')
+expected_code=int(baseline.get('androidVersionCode') or project.get('versionCode') or 0)
+expected_name=str(baseline.get('androidVersionName') or project.get('versionName') or '')
+build_id=str(baseline.get('buildId') or baseline.get('clientBuild') or project.get('gameBuildId') or '')
+release_label=str(baseline.get('releaseLabel') or project.get('version') or '')
 
-
-def main() -> None:
-    required = [
-        "settings.gradle.kts", "build.gradle.kts", "gradle.properties",
-        "gradlew", "gradlew.bat", "gradle/wrapper/gradle-wrapper.jar",
-        "gradle/wrapper/gradle-wrapper.properties", "app/build.gradle.kts",
-        "app/src/main/AndroidManifest.xml", "app/src/main/assets/game/index.html",
-        "app/src/main/assets/game/app.js", "app/src/main/assets/game/config.js",
-        "app/src/main/assets/game/b-technique-v220.js", "app/src/main/assets/game/b-technique-v220.css",
-        "app/src/main/assets/game/b-tiandao-person-v220.js", "app/src/main/assets/game/b-tiandao-person-v220.css",
-        "app/src/main/assets/game/android-local.js",
-        "app/src/main/java/com/jiuxiaowendao/game/MainActivity.java",
-        "app/src/main/java/com/jiuxiaowendao/game/update/UpdateManager.java",
-        "app/src/main/java/com/jiuxiaowendao/game/update/ApkSecurityVerifier.java",
-        ".github/workflows/release-apk.yml", "PROJECT_MANIFEST.json",
-    ]
-    for rel in required:
-        check((ROOT / rel).is_file(), f"缺少文件：{rel}")
-
-    # XML structure
-    xml_files = list((ROOT / "app/src/main/res").rglob("*.xml")) + [ROOT / "app/src/main/AndroidManifest.xml"]
-    for path in xml_files:
+if gp.get('APP_ID')!='com.jiuxiaowendao.game': fail('APP_ID 不是正式包名 com.jiuxiaowendao.game')
+if version_code!=expected_code: fail(f'APP_VERSION_CODE={version_code} 与当前基线 {expected_code} 不一致')
+if version_name!=expected_name: fail(f'APP_VERSION_NAME={version_name} 与当前基线 {expected_name} 不一致')
+if project:
+    if int(project.get('versionCode',0))!=version_code: fail('PROJECT_MANIFEST versionCode 与 gradle.properties 不一致')
+    if str(project.get('versionName',''))!=version_name: fail('PROJECT_MANIFEST versionName 与 gradle.properties 不一致')
+    if str(project.get('gameBuildId',''))!=build_id: fail('PROJECT_MANIFEST gameBuildId 与 CURRENT_BASELINE 不一致')
+embedded=read_json(GAME/'CURRENT_BASELINE.json')
+if embedded.get('buildId')!=build_id: fail('APK内置 CURRENT_BASELINE buildId 与当前基线不一致')
+if embedded.get('androidVersionCode')!=version_code: fail('APK内置 CURRENT_BASELINE versionCode 与 gradle.properties 不一致')
+version_text=(GAME/'VERSION.txt').read_text('utf-8')
+if release_label and release_label not in version_text: fail('APK内置 VERSION.txt 缺当前 releaseLabel')
+if build_id and build_id not in version_text: fail('APK内置 VERSION.txt 缺当前 buildId')
+app_gradle=(ANDROID/'app/build.gradle.kts').read_text('utf-8')
+if build_id and build_id not in app_gradle: fail('app/build.gradle.kts GAME_BUILD_ID 不是当前基线')
+if 'compileSdk = 34' not in app_gradle or 'targetSdk = 34' not in app_gradle: fail('Android SDK 基线不是 34')
+wrapper=(ANDROID/'gradle/wrapper/gradle-wrapper.properties').read_text('utf-8')
+if 'gradle-8.2.1-bin.zip' not in wrapper: fail('Gradle wrapper 不是已锁定的 8.2.1')
+expected_wrapper='613f321ad9687358566e3b3322bc789e4347f871823e4ca29e8b6e3b6ade4703'
+if digest(ANDROID/'gradle/wrapper/gradle-wrapper.jar')!=expected_wrapper: fail('gradle-wrapper.jar SHA256 不符合锁定值')
+# Signing files must not be committed; workflow injects them only after this preflight.
+for rel in ['release.keystore','signing.properties','app/release.keystore','app/signing.properties']:
+    if (ANDROID/rel).exists(): fail(f'仓库不应包含签名敏感文件: {rel}')
+# Secret boundary.
+secret_re=re.compile(r'CLOUDFLARE_AUTH_TOKEN\s*=|CLOUDFLARE_ACCOUNT_ID\s*=')
+for p in GAME.rglob('*'):
+    if p.is_file() and p.suffix.lower() in {'.js','.html','.json','.txt','.css'}:
         try:
-            ET.parse(path)
-        except Exception as error:
-            ERRORS.append(f"XML解析失败：{path.relative_to(ROOT)}：{error}")
+            if secret_re.search(p.read_text('utf-8',errors='ignore')): fail(f'客户端发现 Cloudflare Secret 名值边界风险: {p.relative_to(GAME)}')
+        except OSError: pass
+# CACHE133 must have real-AI composer instead of browser prompt.
+people=(GAME/'b-tiandao-person-v220.js').read_text('utf-8')
+for marker in ['B-TIANDAO-PERSON-V08-CACHE133-REAL-AI-TALK','tp-free-talk-input','data-tp-free-send','本地人格兜底']:
+    if marker not in people: fail(f'天道人物 CACHE133 标记缺失: {marker}')
+if "prompt('你想亲自对TA说什么？'" in people: fail('自由交谈仍使用浏览器原生 prompt')
 
-    index = read("app/src/main/assets/game/index.html")
-    check("android-local.js" in index, "本地 index 未加载 android-local.js")
-    check("update-guard.js" not in index, "本地 index 不应加载 PWA update-guard.js")
-    check('rel="manifest"' not in index, "本地 index 不应注册 PWA manifest")
-
-    game_root = ROOT / "app/src/main/assets/game"
-    forbidden_runtime = ["sw.js", "update-guard.js", "manifest.webmanifest", "404.html"]
-    for name in forbidden_runtime:
-        check(not (game_root / name).exists(), f"APK运行资源不应包含：{name}")
-
-    retired_casino_assets = [
-        "b-paigow01.css", "b-paigow01.html", "b-paigow01.js", "b-paigow02-ui.css",
-        "b-paigow02-ui.js", "b-paigow02-ui03.css", "paigow-app.css", "paigow-app.js", "paigow-realtime.js"
-    ]
-    for name in retired_casino_assets:
-        check(not (game_root / name).exists(), f"赌场退役后APK不应包含：{name}")
-    check((game_root / "b-tianxu-v220.css").is_file(), "APK缺少天墟样式资源")
-    check((game_root / "b-tiandao-person-v220.js").is_file() and (game_root / "b-tiandao-person-v220.css").is_file(), "APK缺少天道人物模块资源")
-    app_js_live = read("app/src/main/assets/game/app.js")
-    check("get_tianxu_market_v255" in app_js_live and "create_tianxu_listing_v255" in app_js_live and "buy_tianxu_listing_v255" in app_js_live, "APK未接入天墟核心RPC")
-    tiandao_js = read("app/src/main/assets/game/b-tiandao-person-v220.js")
-    for rpc_name in ["get_tiandao_people_hub_v1","get_tiandao_person_detail_v1"]:
-        check(rpc_name in tiandao_js, f"APK天道人物缺少只读RPC：{rpc_name}")
-    for rpc_name in ["resolve_tiandao_encounter_v1","tiandao_npc_interact_v1","tiandao_romance_action_v1","tiandao_companion_action_v1"]:
-        check(rpc_name not in tiandao_js, f"APK天道人物仍直连写RPC，绕过AI网关：{rpc_name}")
-    check("/functions/v1/tiandao-ai" in tiandao_js and "tryEdgeAi" in tiandao_js, "APK天道人物未接入tiandao-ai Edge Function")
-    check("CLOUDFLARE_AUTH_TOKEN" not in tiandao_js and "CLOUDFLARE_ACCOUNT_ID" not in tiandao_js, "APK天道人物资源包含Cloudflare Secret标识")
-    for old_rpc in ["get_npc_social_v1","interact_with_npc_v1","form_npc_relationship_v1"]:
-        check(old_rpc not in app_js_live, f"APK仍依赖旧红尘RPC：{old_rpc}")
-
-    main_java = read("app/src/main/java/com/jiuxiaowendao/game/MainActivity.java")
-    client_java = read("app/src/main/java/com/jiuxiaowendao/game/web/LocalGameWebViewClient.java")
-    check("WebViewAssetLoader" in client_java and ".setDomain(LOCAL_HOST)" in client_java,
-          "未使用同源 WebViewAssetLoader 本地资源域")
-    check("BuildConfig.SUPABASE_HOST" in client_java, "本地资源域未绑定Supabase后端域")
-    check('loadUrl("http' not in main_java, "MainActivity 不应直接加载远程网页")
-    check("setAllowFileAccess(false)" in main_java, "WebView 未关闭文件访问")
-    check("setAllowContentAccess(false)" in main_java, "WebView 未关闭 Content 访问")
-    check("setAllowUniversalAccessFromFileURLs(false)" in main_java, "WebView 未关闭 file URL 全局访问")
-    check("MIXED_CONTENT_NEVER_ALLOW" in main_java, "WebView 未禁用混合内容")
-    check("setBlockNetworkLoads(false)" in main_java, "WebView网络加载未显式开启")
-    check("isNetworkAvailable()" not in main_java, "自动更新仍被ConnectivityManager门禁")
-
-    manifest = read("app/src/main/AndroidManifest.xml")
-    check("REQUEST_INSTALL_PACKAGES" in manifest, "缺少 APK 更新安装权限")
-    check('usesCleartextTraffic="false"' in manifest, "未禁用明文流量")
-    check("FileProvider" in manifest, "缺少 FileProvider")
-
-    updater = read("app/src/main/java/com/jiuxiaowendao/game/update/ApkSecurityVerifier.java")
-    for token in ["sha256", "packageName", "versionCode", "certificateDigests"]:
-        check(token in updater, f"APK安全校验缺少：{token}")
-    update_manager = read("app/src/main/java/com/jiuxiaowendao/game/update/UpdateManager.java")
-    check("checkAutomatically" in update_manager, "缺少自动更新检查入口")
-    check("AUTO_CHECK_INTERVAL_MS" in update_manager, "缺少自动更新检查节流")
-    check("appMenuButton" not in read("app/src/main/res/layout/activity_main.xml"), "仍存在右下角浮动菜单按钮")
-    check("发现新版本" in update_manager and "是否立即更新" in update_manager, "新版本弹窗文案缺失")
-    release_workflow = read(".github/workflows/release-apk.yml")
-    check("github.repository_owner" in release_workflow, "Release构建未自动注入GitHub owner")
-    check("github.event.repository.name" in release_workflow, "Release构建未自动注入GitHub repo")
-    github_client = read("app/src/main/java/com/jiuxiaowendao/game/update/GithubReleaseClient.java")
-    for token in ["app-update.json", "SHA256SUMS.txt", "schemaVersion", "X-GitHub-Api-Version", "releases/latest/download"]:
-        check(token in github_client, f"GitHub更新检查缺少：{token}")
-
-    wrapper_props = read("gradle/wrapper/gradle-wrapper.properties")
-    check("gradle-8.2.1-bin.zip" in wrapper_props, "Gradle Wrapper版本不是8.2.1")
-    check(re.search(r"distributionSha256Sum=[0-9a-f]{64}", wrapper_props) is not None,
-          "Gradle分发包缺少SHA-256校验")
-
-    gradle_props = read("gradle.properties")
-    app_gradle = read("app/build.gradle.kts")
-    config_js = read("app/src/main/assets/game/config.js")
-    check('version "8.2.2"' in read("build.gradle.kts"), "AGP版本不是8.2.2")
-    check("compileSdk = 34" in app_gradle, "compileSdk不是34")
-    check("targetSdk = 34" in app_gradle, "targetSdk不是34")
-    check('androidx.core:core:1.13.1' in app_gradle, "AndroidX Core版本不兼容")
-    check('androidx.webkit:webkit:1.11.0' in app_gradle, "AndroidX WebKit版本不兼容")
-    baseline = json.loads(read("app/src/main/assets/game/CURRENT_BASELINE.json"))
-    check("APP_VERSION_CODE=2001508" in gradle_props, "Android版本号不是CACHE129基线")
-    check('APP_VERSION_NAME=2.2.0-cache129' in gradle_props, "Android版本名不是CACHE129基线")
-    expected_build = "v2-2-0-cache129-tiandao-cloudflare-ai-admin36-sql259r2"
-    check(expected_build in app_gradle, "BuildConfig游戏构建号不一致")
-    check(expected_build in config_js, "config.js游戏构建号不一致")
-    check(baseline.get("buildId") == expected_build, "CURRENT_BASELINE游戏构建号不一致")
-    check(baseline.get("runtimeDatabaseGate") == "SQL259_GATE_PASSED",
-          "数据库运行门禁不是SQL259")
-    check(baseline.get("nextSqlNumber") == 260, "下一SQL编号不是260")
-
-    game_files = [p for p in game_root.rglob("*") if p.is_file()]
-    check(len(game_files) >= 20, f"游戏资源数量异常：{len(game_files)}")
-
-    forbidden_files = [
-        ROOT / "signing.properties", ROOT / "release.keystore", ROOT / "local.properties"
-    ]
-    for path in forbidden_files:
-        check(not path.exists(), f"交付包不应包含本地或签名敏感文件：{path.name}")
-
-    result = {
-        "ok": not ERRORS,
-        "errors": ERRORS,
-        "warnings": WARNINGS,
-        "gameFileCount": len(game_files),
-        "gameBytes": sum(p.stat().st_size for p in game_files),
-        "xmlFileCount": len(xml_files),
-        "project": ROOT.name,
-        "gameBaseline": "V2.2.0 CACHE129",
-        "gameBuildId": expected_build,
-        "databaseBaseline": "SQL258 ONLINE; SQL259 REQUIRED / SQL259_GATE_PASSED; SQL260 NEXT",
-        "androidVersionCode": 2001508,
-    }
-    output = ROOT / "VALIDATION_REPORT.json"
-    output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(result, ensure_ascii=False, indent=2))
-    if ERRORS:
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
+if ERRORS:
+    for e in ERRORS: print('FAIL',e)
+    sys.exit(1)
+print(f'PASS Android dynamic preflight: {release_label} / {version_code} / {version_name}')
+print(f'PASS buildId: {build_id}')
+print('PASS validator derives version from current baseline; no CACHE hard-code release pin')

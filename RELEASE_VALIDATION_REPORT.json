@@ -1,31 +1,33 @@
 {
   "ok": true,
-  "release": "V2.2.0 CACHE132",
-  "buildId": "v2-2-0-cache132-pc-bottom-nav-drag-admin38-sql260-online",
+  "release": "V2.2.0 CACHE133",
+  "buildId": "v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated",
   "gm": "ADMIN9 R38",
-  "database": "SQL260 ONLINE / NO NEW SQL",
+  "database": "SQL261 READY / CURRENT PRODUCTION SQL260 ONLINE",
   "currentProductionDatabase": "SQL260 ONLINE",
-  "nextSql": 261,
-  "androidVersionCode": 2001511,
-  "androidVersionName": "2.2.0-cache132",
-  "edgeFunction": "tiandao-ai ONLINE / NO REDEPLOY",
+  "nextSql": 262,
+  "androidVersionCode": 2001512,
+  "androidVersionName": "2.2.0-cache133",
+  "edgeFunction": "tiandao-ai CACHE133 R2 REQUIRED",
   "checks": {
     "js-all-runtime-syntax": true,
-    "pages-build-cache132": true,
+    "pages-build-cache133": true,
     "web-android-sync": true,
-    "pc-bottom-nav-mouse-drag": true,
-    "pc-bottom-nav-wheel-paging": true,
-    "pc-bottom-nav-drag-click-suppression": true,
-    "mobile-touch-swipe-preserved": true,
-    "pages-prebuilt-deploy": true,
-    "cloudflare-secret-absent-client": true,
-    "sql260-no-change": true,
-    "gm-r38-no-change": true,
-    "edge-function-no-change-required": true
+    "android-dynamic-validator": true,
+    "apk-workflow-validator-path": true,
+    "free-talk-in-game-composer": true,
+    "free-talk-native-prompt-removed": true,
+    "ai-engine-visible": true,
+    "sql261-bounded-ai-decision": true,
+    "sql261-hostile-boundary": true,
+    "edge-r2-contextual-prompt": true,
+    "edge-empty-dialogue-fallback": true,
+    "pc-bottom-nav-cache132-preserved": true,
+    "cloudflare-secret-absent-client": true
   },
   "errors": [],
   "warnings": [
-    "本次无数据库结构变更，不要重复执行或新建SQL261。",
-    "本环境未执行真实浏览器人工拖拽与Android正式签名assembleRelease；已完成源码逻辑、JS语法、Pages构建与Web/Android资源同步静态验收。"
+    "未在本地持有生产签名 Secrets，因此没有伪造正式 signed APK；GitHub Actions 将在注入既有 Secrets 后执行真实 assembleRelease。",
+    "SQL261 尚需由生产库执行并看到 SQL261_GATE_PASSED；tiandao-ai CACHE133 R2 也需要本次重新部署。"
   ]
 }

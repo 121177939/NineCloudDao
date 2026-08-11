@@ -1,12 +1,12 @@
 /* 九霄问道 · B模块：完整天道人物 / 仙缘 / 道侣
- * 正式合并基线：V2.2.0 CACHE131 / SQL260
+ * 正式合并基线：V2.2.0 CACHE133 / SQL261
  * 目标：让NPC拥有每日生活、主动联系、人生事件线、情境互动、承诺与真正可读的共同记忆。
  * Cloudflare Workers AI 只负责人格与语言提案；数值、经济、关系和事件推进继续由服务端审核。
  */
 (() => {
   'use strict';
 
-  const BUILD = 'B-TIANDAO-PERSON-V07-CACHE131-LIVING-PEOPLE';
+  const BUILD = 'B-TIANDAO-PERSON-V08-CACHE133-REAL-AI-TALK';
   const cfg = window.GAME_CONFIG || {};
   const BASE = String(cfg.supabaseUrl || '').replace(/\/+$/, '');
   const KEY = String(cfg.supabasePublishableKey || '');
@@ -390,6 +390,12 @@
   function actionMenuHtml(detail, kind) {
     if (!kind) return '';
     const costs = detail.interaction_costs || {};
+    if (kind==='freeTalk') {
+      return `<div class="tp-action-menu tp-talk-composer"><div class="tp-action-menu-head"><strong>你想亲自对${esc(detail.name||'TA')}说什么？</strong><button data-tp-action-menu-close>收起</button></div>
+        <label class="tp-talk-input-wrap"><span>你的原话会交给TA本人理解</span><textarea class="tp-free-talk-input" maxlength="300" rows="4" placeholder="直接说你真正想说的话。TA会按自己的性格、心情、关系和经历具体回应，不一定顺着你。"></textarea><small>最多300字 · Ctrl/⌘ + Enter 送出</small></label>
+        <div class="tp-talk-send-row"><button class="primary" data-tp-free-send type="button">送出这句话</button></div>
+        <p class="tp-action-hint">Cloudflare AI 会优先生成具体回应；如果本次失败，结果页会明确标记“本地人格兜底”，不会伪装成 AI 成功。</p></div>`;
+    }
     if (kind==='talk') {
       const rows = [
         ['talk:ask_current','问问近况','看看TA今天究竟怎么了'],
@@ -447,18 +453,29 @@
     </section></div>`;
   }
 
-  function resultHtml(result, npcId, kind='interaction') {
+  function resultHtml(result, npcId, kind='interaction', options={}) {
     const content = result?.content || '这段因缘有了新的变化。';
     const applied = result?.applied || {};
+    const playerMessage = String(options?.playerMessage || '').trim();
+    const engine = String(result?.engine || '');
+    const aiStatus = String(result?.ai_status || '');
+    const cloudflare = engine==='cloudflare_workers_ai' || aiStatus==='Cloudflare';
+    const model = String(result?.model || '').trim();
+    const latency = Number(result?.ai_latency_ms || 0);
     let extra='';
     if (applied.gift_accepted===false) extra='TA没有收下礼物。这并不等于关系被清零。';
     else if (applied.preference_match===true) extra='这次选择刚好合TA心意。';
     if (applied.story_resolved===true) extra='这件事已经走到了一个真正的结果。';
+    const engineNote = cloudflare
+      ? `本次由 Cloudflare AI 生成人物回应${latency>0?` · ${fmt(latency)}ms`:''}${model?` · ${esc(model)}`:''}`
+      : `本次 Cloudflare 未生成有效回复，已自动使用本地人格兜底${model?` · 目标模型 ${esc(model)}`:''}`;
     return `<div class="modal-backdrop tp-modal-backdrop" data-tp-modal-backdrop><section class="modal tp-result-modal" role="dialog" aria-modal="true">
       <button class="modal-close-button" data-tp-close-modal type="button" aria-label="关闭">×</button>
       <div class="tp-result-mark">${kind==='story'?'事':kind==='gift'?'礼':kind==='meeting'?'游':'言'}</div>
+      ${playerMessage?`<div class="tp-chat-player"><small>你说</small><p>${esc(playerMessage)}</p></div>`:''}
       <span class="tp-result-kicker">TA的回应</span>
       <p class="tp-result-dialogue">${esc(content)}</p>
+      <div class="tp-ai-engine ${cloudflare?'is-cloudflare':'is-fallback'}"><strong>${cloudflare?'Cloudflare AI':'本地人格兜底'}</strong><span>${engineNote}</span></div>
       ${extra?`<small>${esc(extra)}</small>`:''}
       <div class="tp-result-actions"><button class="primary" data-tp-result-person="${esc(npcId)}">继续看看TA</button><button data-tp-close-modal>先到这里</button></div>
     </section></div>`;
@@ -535,10 +552,9 @@
     if(!id || !action) return;
     let message = ref || '';
     if(action==='talk:free') {
-      const line=prompt('你想亲自对TA说什么？','最近过得怎么样？');
-      if(line===null) return;
-      message=String(line).trim();
+      message=String(ref||'').trim();
       if(!message) return toast('你还没有说出想说的话。');
+      if(message.length>300) return toast('这次最多说300字。',true);
     }
     const family=String(action).split(':')[0];
     const label = family==='gift'?'TA正在看你准备的东西……':family==='meeting'?'TA正在考虑这次相约……':family==='story'?'这件事正在继续发生……':family==='inbox'?'TA正在看你的回应……':'TA正在听你说话……';
@@ -549,7 +565,18 @@
     state.actionMenu='';
     await loadBundle(true);
     const root=document.getElementById('modalRoot');
-    if(root) root.innerHTML=resultHtml(r,id,family);
+    if(root) root.innerHTML=resultHtml(r,id,family,{playerMessage:action==='talk:free'?message:''});
+  }
+
+  async function sendFreeTalk() {
+    if (state.actionBusy) return;
+    const id=state.selected?.npc_id;
+    const input=document.querySelector('.tp-free-talk-input');
+    const message=String(input?.value||'').trim();
+    if(!id) return toast('人物资料已经变化，请重新打开。',true);
+    if(!message) { input?.focus(); return toast('你还没有说出想说的话。'); }
+    if(message.length>300) return toast('这次最多说300字。',true);
+    await performInteraction(id,'talk:free',message);
   }
 
   async function confess(id) {
@@ -707,10 +734,17 @@
     const menuClose=e.target.closest?.('[data-tp-action-menu-close]');
     if(menuClose){ e.preventDefault();state.actionMenu='';refreshPersonModal();return; }
 
+    const freeSend=e.target.closest?.('[data-tp-free-send]');
+    if(freeSend){ e.preventDefault();e.stopPropagation();sendFreeTalk();return; }
+
     const choice=e.target.closest?.('[data-tp-choice-action]');
     if(choice){
       e.preventDefault();e.stopPropagation();
       const id=state.selected?.npc_id || choice.closest?.('[data-tp-modal-id]')?.dataset.tpModalId;
+      if(choice.dataset.tpChoiceAction==='talk:free'){
+        state.actionMenu='freeTalk';refreshPersonModal();
+        setTimeout(()=>document.querySelector('.tp-free-talk-input')?.focus(),0);return;
+      }
       performInteraction(id,choice.dataset.tpChoiceAction,choice.dataset.tpChoiceRef||'');return;
     }
 
@@ -752,10 +786,13 @@
   });
 
   document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey) && e.key==='Enter' && e.target?.matches?.('.tp-free-talk-input')){
+      e.preventDefault();sendFreeTalk();return;
+    }
     if(e.key==='Escape' && document.querySelector('[data-tp-modal-backdrop]')) closePersonModal();
   });
 
-  window.B_TIANDAO_PERSON_V07 = Object.freeze({
+  window.B_TIANDAO_PERSON_V08 = Object.freeze({
     build:BUILD,
     mount,
     refresh:()=>loadBundle(true),

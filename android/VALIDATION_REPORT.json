@@ -2,18 +2,16 @@
   "ok": true,
   "errors": [],
   "warnings": [
-    "当前容器未执行真实Android SDK assembleRelease；正式签名链保持原方案。"
+    "本地未注入生产签名 Secrets；正式 signed APK 由 GitHub Actions 生成。"
   ],
   "project": "android",
-  "gameBaseline": "V2.2.0 CACHE132",
-  "gameBuildId": "v2-2-0-cache132-pc-bottom-nav-drag-admin38-sql260-online",
-  "databaseBaseline": "SQL260 ONLINE / NEXT SQL261",
+  "gameBaseline": "V2.2.0 CACHE133",
+  "gameBuildId": "v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated",
+  "databaseBaseline": "SQL261 REQUIRED / NEXT SQL262",
   "currentProductionDatabase": "SQL260 ONLINE",
-  "androidVersionCode": 2001511,
-  "androidVersionName": "2.2.0-cache132",
+  "androidVersionCode": 2001512,
+  "androidVersionName": "2.2.0-cache133",
   "gm": "ADMIN9 R38",
-  "edgeFunction": "tiandao-ai ONLINE / NO REDEPLOY",
-  "gameFileCount": 27,
-  "gameBytes": 1090506,
-  "xmlFileCount": 10
+  "edgeFunction": "tiandao-ai CACHE133 R2 REQUIRED",
+  "validator": "dynamic baseline-derived; no CACHE version hard-code"
 }

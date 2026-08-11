@@ -1,9 +1,9 @@
-V2.2.0 CACHE132
-v2-2-0-cache132-pc-bottom-nav-drag-admin38-sql260-online
-SQL260 ONLINE / NO NEW SQL / NEXT SQL261
+V2.2.0 CACHE133
+v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated
+SQL261 REQUIRED / GATE SQL261_GATE_PASSED / NEXT SQL262
 ADMIN9 R38
 PAGES github-actions prebuilt pages directory R1
 PAGES_DEPLOY prebuilt-pages-directory-official-artifact-r1
-ANDROID 2001511 2.2.0-cache132
-EDGE tiandao-ai ONLINE / NO REDEPLOY / Cloudflare Workers AI + server_personality_v1 fallback
-FEATURE PC底部导航：鼠标横向拖拽 / 滚轮翻页 / 自动吸附；完整天道人物保持不变
+ANDROID 2001512 2.2.0-cache133
+EDGE tiandao-ai CACHE133 R2 REQUIRED / Cloudflare Workers AI + server_personality_v1 fallback
+FEATURE 真实AI自由交谈 / AI引擎可见 / 冒犯边界 / APK动态版本校验；CACHE132 PC横滑保持

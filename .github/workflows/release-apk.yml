@@ -104,11 +104,11 @@ jobs:
           python3 tools/verify_web_android_sync.py
 
       - name: Validate Android project before injecting signing secrets
-        working-directory: android
         shell: bash
         run: |
           set -euo pipefail
-          python3 tools/validate_project.py
+          test -f android/tools/validate_project.py
+          python3 android/tools/validate_project.py
 
       - name: Decode and verify permanent release keystore
         shell: bash

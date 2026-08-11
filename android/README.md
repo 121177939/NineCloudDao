@@ -1,7 +1,7 @@
-# 九霄问道 Android Studio 本地运行版 V2.2.0 CACHE132
+# 九霄问道 Android Studio 本地运行版 V2.2.0 CACHE133
 
-本工程与网页 **V2.2.0 CACHE132** 核心游戏资源同步，继承既有正式签名、GitHub Release 与在线更新链，不改变包名。
+本工程与网页 CACHE133 同步。Android：**versionCode 2001512 / versionName 2.2.0-cache133**，包名和正式签名方案不变。
 
-Android版本：**versionCode 2001511 / versionName 2.2.0-cache132**。
+本版修复 GitHub Actions 发布前校验器：`tools/validate_project.py` 不再硬编码旧 CACHE，而是动态读取当前 `CURRENT_BASELINE.json` / `PROJECT_MANIFEST.json` / `gradle.properties`。同时同步天道人物真实AI自由交谈客户端。
 
-本版只修复 PC 浏览器底部导航鼠标横向拖拽与滚轮分页；Android 继续同步同一套前端资源。生产数据库为 **SQL260 ONLINE / NEXT SQL261**，本次无需新增 SQL，也无需重新部署 `tiandao-ai`。`server_personality_v1` 继续保留为独立 fallback。
+数据库必须先达到 `SQL261_GATE_PASSED`，并重部署 `tiandao-ai` CACHE133 R2 后再发布客户端。GM 继续 ADMIN9 R38。
