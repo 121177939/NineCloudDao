@@ -1,0 +1,24 @@
+{
+  "sql": "SQL260",
+  "revision": "R2_FUNCTION_ABI_COMPAT",
+  "release": "V2.2.0 CACHE131",
+  "sourceBaseline": "SQL259 ONLINE",
+  "requiredGate": "SQL260_GATE_PASSED",
+  "staticValidation": "PASS",
+  "lineCount": 952,
+  "sizeBytes": 116604,
+  "sha256": "1bc09668490b45f86dd3ca12db302eedc19c3d3fbf16b05abc744004c61ba8d3",
+  "checks": [
+    "dollar-quote-balanced",
+    "required v260 tables/functions present",
+    "SQL259 existing function signatures and return types compared against SQL260 replacements",
+    "tiandao_add_memory_v259 keeps p_type and RETURNS void",
+    "no DROP FUNCTION used for tiandao_add_memory_v259",
+    "player/direct-write privilege gate present",
+    "service-role AI internal RPC gate present",
+    "final gate verifies memory-function ABI remains void"
+  ],
+  "r1FailureFixed": "42P13 cannot change return type of existing function",
+  "notExecutedAgainstProduction": true,
+  "note": "R1若已报42P13且未看到SQL260_GATE_PASSED，直接从头执行本R2；如编辑器提示事务aborted，先rollback。生产必须看到SQL260_GATE_PASSED后才能部署CACHE131。"
+}

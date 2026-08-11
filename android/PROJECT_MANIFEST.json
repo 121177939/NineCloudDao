@@ -1,9 +1,9 @@
 {
-  "version": "V2.2.0 CACHE130",
-  "versionCode": 2001509,
-  "versionName": "2.2.0-cache130",
-  "gameBuildId": "v2-2-0-cache130-tiandao-interaction-ux-admin37-sql259-online",
-  "databaseBaseline": "SQL259 ONLINE / NEXT SQL260",
-  "gm": "ADMIN9 R37",
-  "edgeFunction": "tiandao-ai ONLINE"
+  "version": "V2.2.0 CACHE131",
+  "versionCode": 2001510,
+  "versionName": "2.2.0-cache131",
+  "gameBuildId": "v2-2-0-cache131-complete-tiandao-people-admin38-sql260-ready",
+  "databaseBaseline": "SQL260 REQUIRED / NEXT SQL261",
+  "gm": "ADMIN9 R38",
+  "edgeFunction": "tiandao-ai ONLINE / NO REDEPLOY"
 }
