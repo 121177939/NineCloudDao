@@ -4,16 +4,16 @@
   "warnings": [
     "当前容器未执行真实Android SDK assembleRelease；正式签名链保持原方案。"
   ],
-  "gameFileCount": 27,
-  "gameBytes": 1086711,
-  "xmlFileCount": 10,
   "project": "android",
-  "gameBaseline": "V2.2.0 CACHE131",
-  "gameBuildId": "v2-2-0-cache131-complete-tiandao-people-admin38-sql260-ready",
-  "databaseBaseline": "SQL260 REQUIRED / NEXT SQL261",
-  "currentProductionDatabase": "SQL259 ONLINE",
-  "androidVersionCode": 2001510,
-  "androidVersionName": "2.2.0-cache131",
+  "gameBaseline": "V2.2.0 CACHE132",
+  "gameBuildId": "v2-2-0-cache132-pc-bottom-nav-drag-admin38-sql260-online",
+  "databaseBaseline": "SQL260 ONLINE / NEXT SQL261",
+  "currentProductionDatabase": "SQL260 ONLINE",
+  "androidVersionCode": 2001511,
+  "androidVersionName": "2.2.0-cache132",
   "gm": "ADMIN9 R38",
-  "edgeFunction": "tiandao-ai ONLINE / NO REDEPLOY"
+  "edgeFunction": "tiandao-ai ONLINE / NO REDEPLOY",
+  "gameFileCount": 27,
+  "gameBytes": 1090506,
+  "xmlFileCount": 10
 }

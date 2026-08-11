@@ -1936,6 +1936,23 @@ button, .badge, .hero-chip { max-width: 100%; }
 .mobile-bottom-nav-pager i.active { width: 11px; border-radius: 999px; background: var(--gold); }
 @media (max-width: 760px), (min-width: 1024px) { .mobile-bottom-nav { padding-top: 9px; } }
 
+/* CACHE132 · PC 底部导航支持鼠标按住横拖与滚轮分页 */
+@media (min-width: 1024px) {
+  .mobile-bottom-nav-viewport {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .mobile-bottom-nav-viewport.is-mouse-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
+  .mobile-bottom-nav-viewport.is-mouse-dragging .mobile-tab-button {
+    pointer-events: none;
+  }
+}
+
 
 .market-lore{padding:14px 16px;margin:14px 0;border-left:3px solid var(--gold,#b69052);background:rgba(166,125,65,.08)}.market-form{display:grid;gap:10px}.market-form label{display:grid;gap:5px;font-size:.9rem}.market-form input,.market-form select{width:100%;padding:10px 12px;border:1px solid rgba(120,100,70,.28);border-radius:10px;background:var(--panel-bg,#fff);color:inherit}.market-summary{margin-bottom:12px}
 

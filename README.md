@@ -1,28 +1,24 @@
-# 九霄问道 · V2.2.0 CACHE131
+# 九霄问道 · V2.2.0 CACHE132
 
-当前交付候选：**CACHE131 / ADMIN9 R38 / SQL260 READY**。当前线上仍按你确认的 **CACHE130 / SQL259 ONLINE** 运行；必须先执行 SQL260 并看到 `SQL260_GATE_PASSED`，之后才部署 CACHE131。
+当前游戏交付基线：**CACHE132 / ADMIN9 R38 / SQL260 ONLINE**。CACHE132 只修复 PC 端底部导航横向操作，不新增 SQL，不改 GM，不改 Edge。
 
-## CACHE131 · 完整天道人物
+## CACHE132 · PC 底部导航横滑修复
 
-- 人物拥有每日心情、活动、地点、需求与话题，不再是静态资料卡。
-- NPC可以主动传音，并能围绕当前生活/人生事件邀请玩家回应。
-- 加入多阶段人生事件、承诺/守诺/失约后果、事件自行过期解决。
-- 交谈扩展为近况、倾听、分享、打趣、请教、自由文本；赠礼加入偏好/拒收；相约加入不同情境。
-- 关系增加“敬重、守诺、失约”等长期维度；玩家界面使用定性关系画像。
-- 重要记忆与小片段分层，并清理/抑制完全重复的低价值流水账。
-- 仙缘、表白、道侣继续存在，并扩展道侣自由传音、赠礼、相约、共同修炼、护道。
-- Cloudflare Workers AI 继续只做NPC人格/语言提案，所有权威状态由服务端审核；`server_personality_v1` 永久fallback。
+- PC 浏览器支持鼠标按住底部导航左右拖动，修复原生 `overflow-x` 只能触摸滑动、鼠标拖不动的问题。
+- 底栏区域支持鼠标滚轮/触控板分页：向下/向右进入下一页，向上/向左返回上一页。
+- 拖动松手自动吸附最近页，并抑制拖动结束误触导航按钮。
+- 手机端原有触摸横滑保持不变。
+- CACHE131 的完整天道人物全部继承。
 
 ## 发布基线
 
-- 数据库升级：**SQL260**（先执行，必须 `SQL260_GATE_PASSED`；成功后 NEXT SQL261）。
-- GM：**ADMIN9 R38**。
-- Android：**versionCode 2001510 / versionName 2.2.0-cache131**。
-- Edge Function：**继续复用当前线上 `tiandao-ai`，无需重部署**。
-- Pages：继续使用已经验证成功的预构建 `pages/` + GitHub官方artifact/deploy链。
-- Android：继续APK内置 assets，不改包名、不改正式签名链，不改远程网页壳。
+- 数据库：**SQL260 ONLINE / NEXT SQL261**，CACHE132 无新增 SQL。
+- GM：**ADMIN9 R38**，无改动。
+- Android：**versionCode 2001511 / versionName 2.2.0-cache132**。
+- Edge Function：继续复用线上 `tiandao-ai`，无需重部署。
+- Pages：继续预构建 `pages/` + GitHub 官方 artifact/deploy 链。
 
-详见 `V2.2.0_CACHE131_完整天道人物升级说明.md`。
+详见 `V2.2.0_CACHE132_PC端底部导航横滑修复说明.md`。
 
 ---
 

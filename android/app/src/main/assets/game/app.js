@@ -6036,6 +6036,15 @@
     if (viewport && viewport.dataset.bound !== '1') {
       viewport.dataset.bound = '1';
       let frame = 0;
+      let dragState = null;
+      let suppressClickUntil = 0;
+      let lastWheelPageAt = 0;
+      const desktopPagedNavEnabled = () => window.matchMedia('(min-width: 1024px)').matches && pages.length > 1;
+      const snapToNearestPage = (behavior = 'smooth') => {
+        const width = viewport.clientWidth || 1;
+        showPage(Math.round(viewport.scrollLeft / width), behavior);
+      };
+
       viewport.addEventListener('scroll', () => {
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => {
@@ -6043,6 +6052,64 @@
           updatePager(Math.round(viewport.scrollLeft / width));
         });
       }, { passive: true });
+
+      // CACHE132：桌面浏览器原生 overflow-x 不支持鼠标按住拖动，补上 PC 横向拖拽分页。
+      viewport.addEventListener('pointerdown', event => {
+        if (!desktopPagedNavEnabled() || event.pointerType !== 'mouse' || event.button !== 0) return;
+        dragState = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startScrollLeft: viewport.scrollLeft,
+          moved: false
+        };
+      });
+      viewport.addEventListener('pointermove', event => {
+        if (!dragState || dragState.pointerId !== event.pointerId) return;
+        const deltaX = event.clientX - dragState.startX;
+        if (!dragState.moved && Math.abs(deltaX) >= 5) {
+          dragState.moved = true;
+          viewport.classList.add('is-mouse-dragging');
+          try { viewport.setPointerCapture(event.pointerId); } catch (_) {}
+        }
+        if (!dragState.moved) return;
+        event.preventDefault();
+        viewport.scrollLeft = dragState.startScrollLeft - deltaX;
+      });
+      const finishDesktopDrag = event => {
+        if (!dragState || (event?.pointerId != null && dragState.pointerId !== event.pointerId)) return;
+        const moved = dragState.moved;
+        const pointerId = dragState.pointerId;
+        dragState = null;
+        viewport.classList.remove('is-mouse-dragging');
+        try { if (viewport.hasPointerCapture?.(pointerId)) viewport.releasePointerCapture(pointerId); } catch (_) {}
+        if (moved) {
+          suppressClickUntil = performance.now() + 260;
+          snapToNearestPage('smooth');
+        }
+      };
+      viewport.addEventListener('pointerup', finishDesktopDrag);
+      viewport.addEventListener('pointercancel', finishDesktopDrag);
+      viewport.addEventListener('lostpointercapture', finishDesktopDrag);
+      viewport.addEventListener('click', event => {
+        if (performance.now() < suppressClickUntil) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      }, true);
+
+      // PC 鼠标滚轮/触控板停在底栏时也可翻页；向下/向右到下一页，向上/向左回上一页。
+      viewport.addEventListener('wheel', event => {
+        if (!desktopPagedNavEnabled()) return;
+        const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+        if (Math.abs(delta) < 8) return;
+        event.preventDefault();
+        const now = performance.now();
+        if (now - lastWheelPageAt < 260) return;
+        lastWheelPageAt = now;
+        const width = viewport.clientWidth || 1;
+        const currentPage = Math.round(viewport.scrollLeft / width);
+        showPage(currentPage + (delta > 0 ? 1 : -1), 'smooth');
+      }, { passive: false });
     }
 
     apply(state.activeMobileTab || 'cultivation');

@@ -1,9 +1,9 @@
-V2.2.0 CACHE131
-v2-2-0-cache131-complete-tiandao-people-admin38-sql260-ready
-SQL260 READY / REQUIRED BEFORE CACHE131 / NEXT SQL261
+V2.2.0 CACHE132
+v2-2-0-cache132-pc-bottom-nav-drag-admin38-sql260-online
+SQL260 ONLINE / NO NEW SQL / NEXT SQL261
 ADMIN9 R38
 PAGES github-actions prebuilt pages directory R1
 PAGES_DEPLOY prebuilt-pages-directory-official-artifact-r1
-ANDROID 2001510 2.2.0-cache131
+ANDROID 2001511 2.2.0-cache132
 EDGE tiandao-ai ONLINE / NO REDEPLOY / Cloudflare Workers AI + server_personality_v1 fallback
-FEATURE 完整天道人物：每日生活 / 主动来信 / 人生事件 / 承诺 / 情境互动 / 自由交谈 / 仙缘 / 道侣
+FEATURE PC底部导航：鼠标横向拖拽 / 滚轮翻页 / 自动吸附；完整天道人物保持不变
