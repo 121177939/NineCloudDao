@@ -1,13 +1,13 @@
 {
   "version": "V2.2.0",
-  "releaseLabel": "V2.2.0 CACHE133",
-  "buildId": "v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated",
-  "cacheEpoch": 133,
-  "minimumDatabaseBaseline": "SQL261 / SQL261_GATE_PASSED",
-  "minimumDatabaseSql": 261,
-  "sqlRevision": "SQL261 REQUIRED；天道人物真实AI回应服务端审核修复",
+  "releaseLabel": "V2.2.0 CACHE134",
+  "buildId": "v2-2-0-cache134-jiuxiao-exploration-300-natural-ai-admin38-sql262-gated",
+  "cacheEpoch": 134,
+  "minimumDatabaseBaseline": "SQL262 / SQL262_GATE_PASSED",
+  "minimumDatabaseSql": 262,
+  "sqlRevision": "SQL262 REQUIRED；九霄游历300故事与自然天道人物兜底",
   "migrationSql": [
-    "database-upgrades/SQL261_TIANDAO_REAL_AI_RESPONSE/01_SQL261_V2.2.0_CACHE133_天道人物真实AI回应_执行即门禁.sql"
+    "database-upgrades/SQL262_JIUXIAO_EXPLORATION/01_SQL262_V2.2.0_CACHE134_九霄游历300故事_天道人物自然对话_执行即门禁.sql"
   ],
   "features": [
     "TIANXU_MARKET_V255",
@@ -33,8 +33,17 @@
     "TIANDAO_AI_DECISION_BOUNDED_RELATION_V261",
     "TIANDAO_CONTEXT_AWARE_FALLBACK_V261",
     "ANDROID_DYNAMIC_RELEASE_VALIDATOR_V133",
-    "EDGE_FUNCTION_TIANDAO_AI_CACHE133_R2",
-    "CLIENT_VERSION_220_CACHE133"
+    "JIUXIAO_EXPLORATION_V262",
+    "JIUXIAO_EXPLORATION_300_STORIES",
+    "JIUXIAO_EXPLORATION_240_REALM_SPECIFIC",
+    "JIUXIAO_EXPLORATION_60_CROSS_REALM",
+    "JIUXIAO_EXPLORATION_8_REGIONS",
+    "JIUXIAO_EXPLORATION_COMBAT_RISK",
+    "JIUXIAO_EXPLORATION_DISCOVERIES_JOURNAL",
+    "JIUXIAO_EXPLORATION_TIANDAO_NPC_LINK",
+    "TIANDAO_NATURAL_DIALOGUE_R3",
+    "EDGE_FUNCTION_TIANDAO_AI_CACHE134_R3",
+    "CLIENT_VERSION_220_CACHE134"
   ],
   "featureFlags": [
     "TIANXU_MARKET_V255",
@@ -60,31 +69,38 @@
     "TIANDAO_AI_DECISION_BOUNDED_RELATION_V261",
     "TIANDAO_CONTEXT_AWARE_FALLBACK_V261",
     "ANDROID_DYNAMIC_RELEASE_VALIDATOR_V133",
-    "EDGE_FUNCTION_TIANDAO_AI_CACHE133_R2",
-    "CLIENT_VERSION_220_CACHE133"
+    "JIUXIAO_EXPLORATION_V262",
+    "JIUXIAO_EXPLORATION_300_STORIES",
+    "JIUXIAO_EXPLORATION_240_REALM_SPECIFIC",
+    "JIUXIAO_EXPLORATION_60_CROSS_REALM",
+    "JIUXIAO_EXPLORATION_8_REGIONS",
+    "JIUXIAO_EXPLORATION_COMBAT_RISK",
+    "JIUXIAO_EXPLORATION_DISCOVERIES_JOURNAL",
+    "JIUXIAO_EXPLORATION_TIANDAO_NPC_LINK",
+    "TIANDAO_NATURAL_DIALOGUE_R3",
+    "EDGE_FUNCTION_TIANDAO_AI_CACHE134_R3",
+    "CLIENT_VERSION_220_CACHE134"
   ],
   "gmEntry": "九霄问道_ADMIN9_R38_V2.2.0_CACHE131_SQL260_完整天道人物_手机直用版.html",
   "gmVersion": "ADMIN9 R38",
   "gmPublicDeployment": false,
   "deploymentAllowed": true,
-  "deploymentCondition": "必须先执行 SQL261 并看到 SQL261_GATE_PASSED，再部署 tiandao-ai CACHE133 R2 与 CACHE133 客户端。",
-  "databaseRelease": "SQL261 READY / CURRENT PRODUCTION SQL260 ONLINE",
-  "nextSqlNumber": 262,
+  "deploymentCondition": "必须先执行 SQL262 并看到 SQL262_GATE_PASSED，再部署 tiandao-ai CACHE134 R3 与 CACHE134 客户端。",
+  "databaseRelease": "SQL262 READY / CURRENT PRODUCTION SQL261 ONLINE",
+  "nextSqlNumber": 263,
   "deploymentMethod": "github_actions_pages_prebuilt_directory_official_artifact_r1",
-  "releaseStage": "release_ready_sql261_required",
-  "runtimeDatabaseGate": "SQL261_GATE_PASSED",
+  "releaseStage": "release_ready_sql262_required",
+  "runtimeDatabaseGate": "SQL262_GATE_PASSED",
   "edgeDeploymentRequired": true,
   "edgeFunction": "tiandao-ai",
   "releaseNotes": [
-    "CACHE133：修复 APK GitHub Actions 被旧 CACHE129 硬编码 validator 拦截的问题，validator 改为动态读取当前基线。",
-    "CACHE133：自由交谈使用游戏内输入框并显示实际 AI 引擎；Cloudflare 必须针对玩家原话具体回应。",
-    "SQL261：侮辱/拒绝/接受等只经服务端有界规则影响关系；本地 fallback 改为情境化回应。",
-    "tiandao-ai CACHE133 R2：本次必须重部署。"
+    "CACHE134：完整九霄游历 V1，300正式故事 / 9境界差异 / 8区域 / 游历调查追踪回访。",
+    "SQL262：服务端权威处理探索战斗风险、旅囊结算、伤势、发现、跨境界进度和NPC共同记忆。",
+    "tiandao-ai CACHE134 R3：人物必须直接针对原话回答，禁止系统/客服式万能回复；本次必须重部署。"
   ],
   "notes": [
-    "CACHE133：修复 APK GitHub Actions 被旧 CACHE129 硬编码 validator 拦截的问题，validator 改为动态读取当前基线。",
-    "CACHE133：自由交谈使用游戏内输入框并显示实际 AI 引擎；Cloudflare 必须针对玩家原话具体回应。",
-    "SQL261：侮辱/拒绝/接受等只经服务端有界规则影响关系；本地 fallback 改为情境化回应。",
-    "tiandao-ai CACHE133 R2：本次必须重部署。"
+    "CACHE134：完整九霄游历 V1，300正式故事 / 9境界差异 / 8区域 / 游历调查追踪回访。",
+    "SQL262：服务端权威处理探索战斗风险、旅囊结算、伤势、发现、跨境界进度和NPC共同记忆。",
+    "tiandao-ai CACHE134 R3：人物必须直接针对原话回答，禁止系统/客服式万能回复；本次必须重部署。"
   ]
 }

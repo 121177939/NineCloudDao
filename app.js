@@ -5455,7 +5455,7 @@
   }
 
 
-  // Release verifier navigation contracts: data-mobile-tab="market" data-mobile-tab="social" data-mobile-tab="sect"
+  // Release verifier navigation contracts: data-mobile-tab="market" data-mobile-tab="explore" data-mobile-tab="social" data-mobile-tab="sect"
   function mobileBottomNavHtml(activeTab = 'cultivation') {
     const items = [
       ['cultivation', '修', '修炼'],
@@ -5465,6 +5465,7 @@
       ['secret_realm', '秘', '秘境'],
       ['world_boss', '世', '世界'],
       ['market', '市', '市坊'],
+      ['explore', '游', '游历'],
       ['social', '人', '人物'],
       ['sect', '宗', '宗门'],
       ['history', '书', '命书']
@@ -5862,6 +5863,11 @@
           <div id="bazaarPanelHost">${bazaarPanelHtml(state.marketView || 'home', destinyRanking, worldEvents, state.treasureShop || {})}</div>
         </section>
 
+        <section id="explorationSection" class="panel" data-mobile-screen="explore">
+          <div class="panel-title"><h3>九霄游历</h3><span class="badge">300故事 · 游历 · 调查 · 追踪 · 回访</span></div>
+          <div id="bExplorationRoot"><div class="empty-state">正在展开九霄山河……</div></div>
+        </section>
+
         <section id="npcSocialSection" class="panel" data-mobile-screen="social">
           <div class="panel-title"><h3>九霄人物</h3><span class="badge">缘遇 · 人物志 · 仙缘 · 道侣</span></div>
           <div class="empty-state">正在推演九霄人物因果……</div>
@@ -5903,6 +5909,7 @@
     bindBazaarActions();
     bindMobileDashboardNav();
     window.dispatchEvent(new CustomEvent('jiuxiao:secret-realm-rendered'));
+    window.dispatchEvent(new CustomEvent('jiuxiao:exploration-rendered'));
     window.dispatchEvent(new CustomEvent('jiuxiao:sect-v2-rendered'));
     if (!window.__secretRealmClaimSyncBoundV179) {
       window.__secretRealmClaimSyncBoundV179 = true;
@@ -5954,6 +5961,9 @@
         if (force || staleForE80(state.tianxuFetchedAt)) tasks.push(refreshTianxuMarket(true));
         if (force || staleForE80(state.worldEventsFetchedAt)) tasks.push(refreshWorldEvents(true));
         if (force || staleForE80(state.destinyRankingFetchedAt, PERF_E80.rankingStaleMs)) tasks.push(refreshDestinyRanking(false, true));
+        break;
+      case 'explore':
+        if (window.B_EXPLORATION_V262?.refresh) tasks.push(window.B_EXPLORATION_V262.refresh());
         break;
       case 'social':
         if (window.B_TIANDAO_PERSON_V04?.refresh) tasks.push(window.B_TIANDAO_PERSON_V04.refresh());

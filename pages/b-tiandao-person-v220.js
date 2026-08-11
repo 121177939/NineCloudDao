@@ -1,12 +1,12 @@
 /* 九霄问道 · B模块：完整天道人物 / 仙缘 / 道侣
- * 正式合并基线：V2.2.0 CACHE133 / SQL261
+ * 正式合并基线：V2.2.0 CACHE134 / SQL262
  * 目标：让NPC拥有每日生活、主动联系、人生事件线、情境互动、承诺与真正可读的共同记忆。
  * Cloudflare Workers AI 只负责人格与语言提案；数值、经济、关系和事件推进继续由服务端审核。
  */
 (() => {
   'use strict';
 
-  const BUILD = 'B-TIANDAO-PERSON-V08-CACHE133-REAL-AI-TALK';
+  const BUILD = 'B-TIANDAO-PERSON-V09-CACHE134-NATURAL-AI-DIALOGUE';
   const cfg = window.GAME_CONFIG || {};
   const BASE = String(cfg.supabaseUrl || '').replace(/\/+$/, '');
   const KEY = String(cfg.supabasePublishableKey || '');

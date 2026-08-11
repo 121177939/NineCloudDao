@@ -1,7 +1,7 @@
 {
-  "version": "V2.2.0 CACHE133",
-  "clientBuild": "v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated",
-  "requiredDatabaseGate": "SQL261_GATE_PASSED",
+  "version": "V2.2.0 CACHE134",
+  "clientBuild": "v2-2-0-cache134-jiuxiao-exploration-300-natural-ai-admin38-sql262-gated",
+  "requiredDatabaseGate": "SQL262_GATE_PASSED",
   "files": [
     {
       "path": ".nojekyll",
@@ -10,23 +10,23 @@
     },
     {
       "path": "404.html",
-      "size": 4095,
-      "sha256": "c8b13fd6ce58305114cc57d77479e3bc590bf448f9539f8d7d44128fb92d4527"
+      "size": 4589,
+      "sha256": "1c324473bce3a12c3c6e2a97089194c619fa5ea8ed773f1c0218a2f93f5420d3"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 4350,
-      "sha256": "dd3e52014fb4d2929ba100c5ca982c3b6ee0ff2d41530406c49b1584b80e169a"
+      "size": 4169,
+      "sha256": "e92f835b6de141686d6391e5d67e1e940bfe65fd19ec4e246b96c2cef1f7328f"
     },
     {
       "path": "VERSION.txt",
-      "size": 491,
-      "sha256": "f7acb680351886c657838828fc6dde191b1ca869b84b36a0bf5ce305bf6c4986"
+      "size": 508,
+      "sha256": "a5a6702ae9f5a82c587ddccdb760b007618afb4c520058746f70f3f378df1810"
     },
     {
       "path": "app.js",
-      "size": 378836,
-      "sha256": "f550e1f6e143cac8167c41c7a07d8c15c072b2a487fd3064413579bda2c5fda5"
+      "size": 379456,
+      "sha256": "b37198900064b74adc28b6c1efa3d3f6c21dd5973a68ac35f8570b3aa934e4b9"
     },
     {
       "path": "assets/icon-192.png",
@@ -62,6 +62,16 @@
       "path": "b-equipment01.js",
       "size": 51285,
       "sha256": "624d550548ab4d525cb88b7e62faa7255372e545bafd3729eb89d6c0c76cda3b"
+    },
+    {
+      "path": "b-exploration-v220.css",
+      "size": 7251,
+      "sha256": "1469c19e39278a9a1315f0ac05ad11e38ad0e67250927f9604df855d7348d926"
+    },
+    {
+      "path": "b-exploration-v220.js",
+      "size": 16456,
+      "sha256": "f7fd23cfc5d5ffb2234f571ef1dcd79d8de706c8eec4a50bb14aee4df23f765d"
     },
     {
       "path": "b-secret-realm01.css",
@@ -100,8 +110,8 @@
     },
     {
       "path": "b-tiandao-person-v220.js",
-      "size": 44431,
-      "sha256": "5ba35847a3c9b80220016ea849fc33fc436307e70766156ba263448fdd3554d4"
+      "size": 44438,
+      "sha256": "ff3bd2b885783c106f1d21f1436cbb5bf13b9f2a4a619564836144c6ef35a966"
     },
     {
       "path": "b-tianxu-v220.css",
@@ -120,23 +130,23 @@
     },
     {
       "path": "config.js",
-      "size": 581,
-      "sha256": "d4fe7323c12e416d9f87b4dd07733da8036642b68abb5734fdf2cf9974580558"
+      "size": 589,
+      "sha256": "6f1e4ab65713858016e35fe0c7023def0bcfefa283d55c83c8c1a9730196e39d"
     },
     {
       "path": "index.html",
-      "size": 4161,
-      "sha256": "b3e69947a086390488156c7a71146ee06ebe6ccef13bd84e035412440a1b4bb5"
+      "size": 4589,
+      "sha256": "1c324473bce3a12c3c6e2a97089194c619fa5ea8ed773f1c0218a2f93f5420d3"
     },
     {
       "path": "manifest.webmanifest",
-      "size": 587,
-      "sha256": "bdfb8532bd4f8c94291a34ec3de4482955f41d0adf95dfd470b1fcad8b74372b"
+      "size": 595,
+      "sha256": "b8c82e9d5dfc90ec9f709459e3fa1549cb9bffa8d2e07cf93d895e35571be1fd"
     },
     {
       "path": "release_config.json",
-      "size": 4031,
-      "sha256": "544171f1e3665708fe4a724f6a3ec68715687d1dd656e4ec68e4cf56fda524e8"
+      "size": 4619,
+      "sha256": "be3a4981ee983f9c18aa9ce59e923862557c64611a3bd5f1f9e90563f42aefac"
     },
     {
       "path": "styles.css",
@@ -145,8 +155,8 @@
     },
     {
       "path": "sw.js",
-      "size": 4646,
-      "sha256": "55f6e708e3ec7abce7fdb6e5d05ca80599d6eb17ed0164932303029975f2a903"
+      "size": 5029,
+      "sha256": "646060d24d6d0fd08c474939acfc80cf4a391e24e158e56c529164b6d658a1bb"
     },
     {
       "path": "update-guard.js",

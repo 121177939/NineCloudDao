@@ -32,7 +32,7 @@ android {
         buildConfigField("String", "GITHUB_OWNER", quoted(githubOwner))
         buildConfigField("String", "GITHUB_REPO", quoted(githubRepo))
         buildConfigField("String", "SUPABASE_HOST", quoted("fyykkqkovccgmamsdeoq.supabase.co"))
-        buildConfigField("String", "GAME_BUILD_ID", quoted("v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated"))
+        buildConfigField("String", "GAME_BUILD_ID", quoted("v2-2-0-cache134-jiuxiao-exploration-300-natural-ai-admin38-sql262-gated"))
     }
 
     signingConfigs {

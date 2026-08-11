@@ -35,7 +35,7 @@ required=[
     ANDROID/'gradle/wrapper/gradle-wrapper.properties', ANDROID/'settings.gradle.kts',
     ANDROID/'build.gradle.kts', ANDROID/'gradle.properties', ANDROID/'app/build.gradle.kts',
     ANDROID/'app/src/main/AndroidManifest.xml', GAME/'index.html', GAME/'CURRENT_BASELINE.json',
-    GAME/'VERSION.txt', GAME/'b-tiandao-person-v220.js'
+    GAME/'VERSION.txt', GAME/'b-tiandao-person-v220.js', GAME/'b-exploration-v220.js'
 ]
 for p in required:
     if not p.is_file(): fail(f'缺少必需文件: {p.relative_to(ANDROID)}')
@@ -79,11 +79,14 @@ for p in GAME.rglob('*'):
         try:
             if secret_re.search(p.read_text('utf-8',errors='ignore')): fail(f'客户端发现 Cloudflare Secret 名值边界风险: {p.relative_to(GAME)}')
         except OSError: pass
-# CACHE133 must have real-AI composer instead of browser prompt.
+# Feature contracts are semantic, never tied to one CACHE number.
 people=(GAME/'b-tiandao-person-v220.js').read_text('utf-8')
-for marker in ['B-TIANDAO-PERSON-V08-CACHE133-REAL-AI-TALK','tp-free-talk-input','data-tp-free-send','本地人格兜底']:
-    if marker not in people: fail(f'天道人物 CACHE133 标记缺失: {marker}')
+for marker in ['tp-free-talk-input','data-tp-free-send','本地人格兜底']:
+    if marker not in people: fail(f'天道人物交谈能力标记缺失: {marker}')
 if "prompt('你想亲自对TA说什么？'" in people: fail('自由交谈仍使用浏览器原生 prompt')
+explore=(GAME/'b-exploration-v220.js').read_text('utf-8')
+for marker in ['B-EXPLORATION-V01','get_exploration_hub_v262','exploration_start_v262','exploration_choose_v262']:
+    if marker not in explore: fail(f'九霄游历能力标记缺失: {marker}')
 
 if ERRORS:
     for e in ERRORS: print('FAIL',e)

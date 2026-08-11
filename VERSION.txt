@@ -1,9 +1,9 @@
-V2.2.0 CACHE133
-v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated
-SQL261 REQUIRED / GATE SQL261_GATE_PASSED / NEXT SQL262
+V2.2.0 CACHE134
+v2-2-0-cache134-jiuxiao-exploration-300-natural-ai-admin38-sql262-gated
+SQL262 REQUIRED / GATE SQL262_GATE_PASSED / NEXT SQL263
 ADMIN9 R38
 PAGES github-actions prebuilt pages directory R1
 PAGES_DEPLOY prebuilt-pages-directory-official-artifact-r1
-ANDROID 2001512 2.2.0-cache133
-EDGE tiandao-ai CACHE133 R2 REQUIRED / Cloudflare Workers AI + server_personality_v1 fallback
-FEATURE 真实AI自由交谈 / AI引擎可见 / 冒犯边界 / APK动态版本校验；CACHE132 PC横滑保持
+ANDROID 2001513 2.2.0-cache134
+EDGE tiandao-ai CACHE134 R3 REQUIRED / Cloudflare Workers AI + server_personality_v1 fallback
+FEATURE 九霄游历300故事 / 9境界差异 / 妖兽战斗风险 / 跨境界因果 / 游历志 / 天道人物自然AI

@@ -1,9 +1,9 @@
 {
-  "version": "V2.2.0 CACHE133",
-  "versionCode": 2001512,
-  "versionName": "2.2.0-cache133",
-  "gameBuildId": "v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated",
-  "databaseBaseline": "SQL261 REQUIRED / NEXT SQL262",
+  "version": "V2.2.0 CACHE134",
+  "versionCode": 2001513,
+  "versionName": "2.2.0-cache134",
+  "gameBuildId": "v2-2-0-cache134-jiuxiao-exploration-300-natural-ai-admin38-sql262-gated",
+  "databaseBaseline": "SQL262 REQUIRED / NEXT SQL263",
   "gm": "ADMIN9 R38",
-  "edgeFunction": "tiandao-ai CACHE133 R2 REQUIRED"
+  "edgeFunction": "tiandao-ai CACHE134 R3 REQUIRED"
 }
