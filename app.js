@@ -1177,7 +1177,7 @@
   }
 
   async function rpcGetDestinyRankingV1(limit = 50, offset = 0) {
-    const result = await restFetch('rpc/get_destiny_ranking_v1', {
+    const result = await restFetch('rpc/get_destiny_ranking_v265', {
       method: 'POST',
       body: {
         p_limit: Math.max(1, Math.min(100, Number(limit || 50))),
@@ -4353,7 +4353,9 @@
                   <div><strong>${escapeHtml(row.name || '无名修士')}</strong>${row.is_self ? '<span class="self-mark">本尊</span>' : ''}${safeBoard === 'battle' ? `<span class="battle-element-mark-bcombat01 element-${escapeHtml(row.element || 'none')}">${escapeHtml(row.element_name || '未定')}行</span>${mutationBadgeHtmlV12(row)}` : ''}</div>
                   <p>${safeBoard === 'battle'
                     ? `等级 ${escapeHtml(row.realm || '未知境界')}`
-                    : `${escapeHtml(row.realm || '未知境界')} · 命格「${escapeHtml(row.fate || '未定命格')}」`}</p>
+                    : safeBoard === 'cultivation'
+                      ? `${escapeHtml(row.realm || '未知境界')} · 灵根「${escapeHtml(row.spirit_root_name || '未测灵根')}」 · 命格「${escapeHtml(row.fate || '未定命格')}」`
+                      : `${escapeHtml(row.realm || '未知境界')} · 命格「${escapeHtml(row.fate || '未定命格')}」`}</p>
                 </div>
                 <div class="destiny-rank-side">
                   ${safeBoard === 'battle' ? '' : `<span>第 ${formatNumber(row.generation || 1)} 世</span>`}

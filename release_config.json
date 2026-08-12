@@ -1,15 +1,16 @@
 {
   "version": "V2.2.0",
-  "releaseLabel": "V2.2.0 CACHE136",
-  "buildId": "v2-2-0-cache136-r2-heaven-control-companion15-admin40-sql264-gated",
-  "cacheEpoch": 136,
-  "minimumDatabaseBaseline": "SQL264 / SQL264_GATE_PASSED",
-  "minimumDatabaseSql": 264,
-  "sqlRevision": "SQL264 R2 READY；天道状态固定 + NPC道侣修炼×1.5",
+  "releaseLabel": "V2.2.0 CACHE137",
+  "buildId": "v2-2-0-cache137-destiny-cultivation-root-admin40-sql265-gated",
+  "cacheEpoch": 137,
+  "minimumDatabaseBaseline": "SQL265 / SQL265_GATE_PASSED",
+  "minimumDatabaseSql": 265,
+  "sqlRevision": "SQL265 READY；天命榜修为榜显示玩家当前主灵根",
   "migrationSql": [
     "database-upgrades/SQL262_JIUXIAO_EXPLORATION/01_SQL262_V2.2.0_CACHE134_九霄游历300故事_天道人物自然对话_执行即门禁.sql",
     "database-upgrades/SQL263_TIANDAO_AI_MULTI_MODEL_ROUTER/01_SQL263_V2.2.0_CACHE135_B模块天道AI多模型调度器_ADMIN9_R39_执行即门禁.sql",
-    "database-upgrades/SQL264_HEAVEN_CONTROL_TIANDAO_COMPANION_CULTIVATION/01_SQL264_V2.2.0_CACHE136_天道状态固定_NPC道侣修炼1点5倍_ADMIN9_R40_执行即门禁.sql"
+    "database-upgrades/SQL264_HEAVEN_CONTROL_TIANDAO_COMPANION_CULTIVATION/01_SQL264_R3_V2.2.0_CACHE136_天道固定_权威修炼链_NPC道侣最终1点5倍_修复source_type约束_ADMIN9_R40_执行即门禁.sql",
+    "database-upgrades/SQL265_DESTINY_CULTIVATION_SPIRIT_ROOT/01_SQL265_V2.2.0_CACHE137_天命榜修为榜显示玩家当前灵根_执行即门禁.sql"
   ],
   "features": [
     "TIANXU_MARKET_V255",
@@ -61,7 +62,10 @@
     "TIANDAO_HEAVEN_BALANCE_FIXED_MODE_V264",
     "TIANDAO_NPC_COMPANION_CULTIVATION_150_V264",
     "CLIENT_CULTIVATION_COMPANION_BREAKDOWN_V136",
-    "CLIENT_VERSION_220_CACHE136"
+    "CLIENT_VERSION_220_CACHE136",
+    "DESTINY_CULTIVATION_RANKING_SPIRIT_ROOT_V265",
+    "CLIENT_DESTINY_RANKING_SPIRIT_ROOT_V137",
+    "CLIENT_VERSION_220_CACHE137"
   ],
   "featureFlags": [
     "TIANXU_MARKET_V255",
@@ -113,21 +117,27 @@
     "TIANDAO_HEAVEN_BALANCE_FIXED_MODE_V264",
     "TIANDAO_NPC_COMPANION_CULTIVATION_150_V264",
     "CLIENT_CULTIVATION_COMPANION_BREAKDOWN_V136",
-    "CLIENT_VERSION_220_CACHE136"
+    "CLIENT_VERSION_220_CACHE136",
+    "DESTINY_CULTIVATION_RANKING_SPIRIT_ROOT_V265",
+    "CLIENT_DESTINY_RANKING_SPIRIT_ROOT_V137",
+    "CLIENT_VERSION_220_CACHE137"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R40_V2.2.0_CACHE136_SQL264_天道状态固定_NPC道侣修炼1点5倍_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R40_V2.2.0_CACHE136_SQL264_R2_天道固定_权威修炼_道侣最终1点5倍_手机直用版.html",
   "gmVersion": "ADMIN9 R40",
   "gmPublicDeployment": false,
   "deploymentAllowed": true,
-  "deploymentCondition": "先执行 SQL264 并看到 SQL264_GATE_PASSED，再发布 CACHE136；Edge R6 无需重部署。",
-  "databaseRelease": "SQL264 R2 READY；当前生产 SQL263 ONLINE",
-  "nextSqlNumber": 265,
+  "deploymentCondition": "如 SQL264 R3 尚未通过先执行 SQL264 R3；再执行 SQL265 并看到 SQL265_GATE_PASSED，最后发布 CACHE137；GM/Edge无需更新。",
+  "databaseRelease": "SQL265 READY；SQL264 R3 为前置基线",
+  "nextSqlNumber": 266,
   "deploymentMethod": "github_actions_pages_prebuilt_directory_official_artifact_r1",
-  "releaseStage": "cache136_heaven_control_companion15_sql264_ready",
-  "runtimeDatabaseGate": "SQL264_GATE_PASSED",
+  "releaseStage": "cache137_destiny_cultivation_spirit_root_sql265_ready",
+  "runtimeDatabaseGate": "SQL265_GATE_PASSED",
   "edgeDeploymentRequired": false,
   "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged",
   "releaseNotes": [
+    "SQL265：复用原 get_destiny_ranking_v1 排名权威结果，为修为榜 entries 补充当前主灵根。",
+    "CACHE137：天命榜修为榜显示“境界 · 灵根 · 命格”；财富榜和战力榜显示规则不变。",
+    "GM ADMIN9 R40 与 Edge tiandao-ai CACHE135 R6 本次不变。",
     "SQL264：ADMIN9 R40 支持天道自动/固定大道均衡/固定福泽/固定阻滞。",
     "SQL264：天道人物NPC正式道侣 active 期间修炼倍率+50%（基础1/秒→1.5/秒），关系结束自动失效。",
     "CACHE136：修炼页与修炼速度构成详情明确显示 NPC道侣同修 ×1.50。",
@@ -149,6 +159,9 @@
     "tiandao-ai CACHE134 R3：人物必须直接针对原话回答，禁止系统/客服式万能回复；本次必须重部署。"
   ],
   "notes": [
+    "SQL265：复用原 get_destiny_ranking_v1 排名权威结果，为修为榜 entries 补充当前主灵根。",
+    "CACHE137：天命榜修为榜显示“境界 · 灵根 · 命格”；财富榜和战力榜显示规则不变。",
+    "GM ADMIN9 R40 与 Edge tiandao-ai CACHE135 R6 本次不变。",
     "SQL264：ADMIN9 R40 支持天道自动/固定大道均衡/固定福泽/固定阻滞。",
     "SQL264：天道人物NPC正式道侣 active 期间修炼倍率+50%（基础1/秒→1.5/秒），关系结束自动失效。",
     "CACHE136：修炼页与修炼速度构成详情明确显示 NPC道侣同修 ×1.50。",
