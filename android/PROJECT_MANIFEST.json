@@ -1,9 +1,9 @@
 {
-  "version": "V2.2.0 CACHE135",
-  "versionCode": 2001514,
-  "versionName": "2.2.0-cache135",
-  "gameBuildId": "v2-2-0-cache135-b-ai-router-glm-admin39-sql263-gated",
-  "databaseBaseline": "SQL263 REQUIRED / NEXT SQL264",
-  "gm": "ADMIN9 R39",
-  "edgeFunction": "tiandao-ai CACHE135 R5 B ROUTER REQUIRED"
+  "version": "V2.2.0 CACHE136",
+  "versionCode": 2001515,
+  "versionName": "2.2.0-cache136",
+  "gameBuildId": "v2-2-0-cache136-r2-heaven-control-companion15-admin40-sql264-gated",
+  "databaseBaseline": "SQL264 R2 READY / REQUIRED SQL264_GATE_PASSED / NEXT SQL265",
+  "gm": "ADMIN9 R40",
+  "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged"
 }

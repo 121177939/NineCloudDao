@@ -2,16 +2,17 @@
   "ok": true,
   "errors": [],
   "warnings": [
-    "本地未注入生产签名 Secrets；正式 signed APK 由 GitHub Actions 生成。"
+    "本地未注入生产签名 Secrets；正式 signed APK 由 GitHub Actions 生成。",
+    "生产 SQL263 / Edge R6 在线状态依据用户本对话部署测试回报收口。"
   ],
   "project": "android",
-  "gameBaseline": "V2.2.0 CACHE133",
-  "gameBuildId": "v2-2-0-cache133-real-ai-talk-apk-validator-admin38-sql261-gated",
-  "databaseBaseline": "SQL261 REQUIRED / NEXT SQL262",
-  "currentProductionDatabase": "SQL260 ONLINE",
-  "androidVersionCode": 2001512,
-  "androidVersionName": "2.2.0-cache133",
-  "gm": "ADMIN9 R38",
-  "edgeFunction": "tiandao-ai CACHE133 R2 REQUIRED",
+  "gameBaseline": "V2.2.0 CACHE136",
+  "gameBuildId": "v2-2-0-cache136-r2-heaven-control-companion15-admin40-sql264-gated",
+  "databaseBaseline": "SQL264 R2 READY / NEXT SQL265",
+  "currentProductionDatabase": "SQL263 ONLINE (before SQL264 execution)",
+  "androidVersionCode": 2001515,
+  "androidVersionName": "2.2.0-cache136",
+  "gm": "ADMIN9 R40",
+  "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged",
   "validator": "dynamic baseline-derived; no CACHE version hard-code"
 }

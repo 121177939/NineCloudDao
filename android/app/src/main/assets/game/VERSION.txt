@@ -1,9 +1,9 @@
-V2.2.0 CACHE135
-v2-2-0-cache135-b-ai-router-glm-admin39-sql263-gated
-SQL263 REQUIRED / GATE SQL263_GATE_PASSED / NEXT SQL264
-ADMIN9 R39
+V2.2.0 CACHE136
+v2-2-0-cache136-r2-heaven-control-companion15-admin40-sql264-gated
+SQL264 R2 READY / REQUIRED SQL264_GATE_PASSED / NEXT SQL265
+ADMIN9 R40
 PAGES github-actions prebuilt pages directory R1
 PAGES_DEPLOY prebuilt-pages-directory-official-artifact-r1
-ANDROID 2001514 2.2.0-cache135
-EDGE tiandao-ai CACHE135 R5 REQUIRED / GLM-4.7-Flash -> Cloudflare Workers AI -> server_personality_v1
-FEATURE 九霄游历300故事 / 天道人物自然AI / B模块多模型调度器 / AI来源准确显示
+ANDROID 2001515 2.2.0-cache136
+EDGE tiandao-ai CACHE135 R6 ONLINE / unchanged
+FEATURE 天道固定状态 / NPC道侣修炼×1.5 / 修炼详情显示

@@ -900,6 +900,7 @@
         character_id: `eq.${state.character.id}`, is_active: 'eq.true', order: 'created_at.asc'
       }});
       state.details.cultivationEffects = Array.isArray(rows) ? rows : [];
+      updateTiandaoCompanionCultivationSummaryV264();
       return state.details.cultivationEffects;
     } catch (error) {
       console.error(error);
@@ -2193,10 +2194,11 @@
     const qiBase = Number(balance.world_qi_base || 1);
     const effectiveMultiplier = Number(balance.qi_gain_per_second ?? qiBase * coefficient);
     const code = escapeHtml(balance.status_code || 'dao_balance');
+    const fixedModeV264 = String(balance.reason_label || '').startsWith('GM固定：');
     return `
       <div class="heaven-balance-dialog state-${code}">
         <div class="heaven-balance-seal">道</div>
-        <span class="eyebrow">九霄天道 · 动态均衡</span>
+        <span class="eyebrow">九霄天道 · ${fixedModeV264 ? 'GM固定状态' : '动态均衡'}</span>
         <h2 id="heavenBalanceModalTitle">${escapeHtml(copy.title)}</h2>
         <strong class="heaven-balance-reason">${escapeHtml(balance.reason_label || '')}</strong>
         <div class="heaven-balance-lore">
@@ -2213,18 +2215,27 @@
           <div><span>境界差</span><strong>${Number(balance.realm_gap || 0) > 0 ? '+' : ''}${formatNumber(balance.realm_gap || 0, 0)}</strong></div>
           <div><span>统计修士</span><strong>${formatNumber(balance.active_population || 0, 0)} 人</strong></div>
         </div>
-        <div class="heaven-balance-rule-table" aria-label="天道动态均衡系数规则">
-          <div><span>低于主流5境及以上</span><strong>×5.0</strong></div>
-          <div><span>低4境</span><strong>×4.0</strong></div>
-          <div><span>低3境</span><strong>×3.0</strong></div>
-          <div><span>低2境</span><strong>×2.0</strong></div>
-          <div><span>低1境</span><strong>×1.2</strong></div>
-          <div><span>贴近主流</span><strong>×1.0</strong></div>
-          <div><span>高1境</span><strong>×0.8</strong></div>
-          <div><span>高2境</span><strong>×0.6</strong></div>
-          <div><span>高3境及以上</span><strong>×0.5</strong></div>
-        </div>
-        <p class="heaven-balance-note">天道福泽、均衡或阻滞会作用于当前全部自动修炼收益。×0.5表示最终速度约为原速度的一半，×5表示最终速度约为原速度的五倍。</p>
+        ${fixedModeV264 ? `
+          <div class="heaven-balance-rule-table" aria-label="GM固定天道状态">
+            <div><span>当前控制方式</span><strong>GM固定</strong></div>
+            <div><span>固定状态</span><strong>${escapeHtml(balance.status_name || '大道均衡')}</strong></div>
+            <div><span>固定天道系数</span><strong>×${formatHeavenCoefficient(coefficient)}</strong></div>
+          </div>
+          <p class="heaven-balance-note">当前由 ADMIN9 固定天道状态，不再随全服主流境界差自动切换；恢复“自动”后才重新启用下方动态均衡逻辑。</p>
+        ` : `
+          <div class="heaven-balance-rule-table" aria-label="天道动态均衡系数规则">
+            <div><span>低于主流5境及以上</span><strong>×5.0</strong></div>
+            <div><span>低4境</span><strong>×4.0</strong></div>
+            <div><span>低3境</span><strong>×3.0</strong></div>
+            <div><span>低2境</span><strong>×2.0</strong></div>
+            <div><span>低1境</span><strong>×1.2</strong></div>
+            <div><span>贴近主流</span><strong>×1.0</strong></div>
+            <div><span>高1境</span><strong>×0.8</strong></div>
+            <div><span>高2境</span><strong>×0.6</strong></div>
+            <div><span>高3境及以上</span><strong>×0.5</strong></div>
+          </div>
+          <p class="heaven-balance-note">天道福泽、均衡或阻滞会作用于当前全部自动修炼收益。×0.5表示最终速度约为原速度的一半，×5表示最终速度约为原速度的五倍。</p>
+        `}
       </div>
     `;
   }
@@ -3086,9 +3097,10 @@
     const additive = Math.max(0, 1 + Number(cultivation.fate_bonus || 0) + contribution.multiplier + Number(cultivation.effect_multiplier_bonus || 0));
     const insightMultiplier = 1 + Math.max(0, Number(state.breakthroughStatus?.heavenly_insight_count || 0)) * 0.10;
     const cap = Number(state.breakthroughStatus?.cultivation_cap || state.breakthroughStatus?.cultivation_required || 0);
+    const companionMultiplierV264 = tiandaoCompanionCultivationMultiplierV264();
     cultivation.current_rate_per_second = cap > 0 && currentCultivation >= cap
       ? 0
-      : Math.max(0, fixed * Number(cultivation.root_multiplier || 1) * additive * Number(cultivation.qi_multiplier || 1) * insightMultiplier);
+      : Math.max(0, fixed * Number(cultivation.root_multiplier || 1) * additive * Number(cultivation.qi_multiplier || 1) * insightMultiplier * companionMultiplierV264);
     const rateText = formatRate(cultivation.current_rate_per_second);
     const live = document.getElementById('liveRateValue');
     const hud = document.getElementById('cultivationRateText');
@@ -5509,12 +5521,37 @@
   }
 
 
+  function tiandaoCompanionCultivationEffectV264() {
+    const now = Date.now();
+    return (state.details?.cultivationEffects || []).find(row =>
+      row?.source_key === 'tiandao_companion_v264' && row?.is_active !== false && (!row.expires_at || new Date(row.expires_at).getTime() > now)
+    ) || null;
+  }
+
+  function tiandaoCompanionCultivationMultiplierV264() {
+    const row = tiandaoCompanionCultivationEffectV264();
+    if (!row) return 1;
+    const metadataMultiplier = Number(row?.metadata?.cultivation_multiplier);
+    if (Number.isFinite(metadataMultiplier) && metadataMultiplier >= 1) return metadataMultiplier;
+    return Math.max(1, 1 + Number(row.multiplier_bonus || 0.5));
+  }
+
+  function updateTiandaoCompanionCultivationSummaryV264() {
+    const node = document.getElementById('companionCultivationSummaryV264');
+    if (!node) return;
+    const multiplier = tiandaoCompanionCultivationMultiplierV264();
+    node.hidden = multiplier <= 1;
+    const strong = node.querySelector('strong');
+    if (strong) strong.textContent = `×${formatNumber(multiplier, 2)}`;
+  }
+
   function cultivationEffectGroupsV0154() {
     const now = Date.now();
     const rows = (state.details?.cultivationEffects || []).filter(row => row?.is_active !== false && (!row.expires_at || new Date(row.expires_at).getTime() > now));
     const groups = { opportunity: [], item: [], other: [] };
     rows.forEach(row => {
       const key = String(row.source_key || '');
+      if (key === 'tiandao_companion_v264') return;
       if (key.startsWith('opptech:') || key.startsWith('exclusive:')) return;
       const source = String(row.source_type || '').toLowerCase();
       if (source.includes('opportunity') || key.startsWith('opp:') || key.startsWith('opportunity:')) groups.opportunity.push(row);
@@ -5543,8 +5580,11 @@
     const base = Number(c.base_rate_per_second || 0);
     const effectFlat = Number(c.effect_flat_rate || 0);
     const effectMultiplier = Number(c.effect_multiplier_bonus || 0);
+    const companionMultiplierV264 = tiandaoCompanionCultivationMultiplierV264();
+    const companionBonusV264 = Math.max(0, companionMultiplierV264 - 1);
+    const nonCompanionEffectMultiplierV264 = effectMultiplier;
     const fixedSubtotal = base + technique.flat + effectFlat;
-    const additive = Math.max(0, 1 + Number(c.fate_bonus || 0) + technique.multiplier + effectMultiplier);
+    const additive = Math.max(0, 1 + Number(c.fate_bonus || 0) + technique.multiplier + nonCompanionEffectMultiplierV264);
     const insightCount = Math.max(0, Number(state.breakthroughStatus?.heavenly_insight_count || 0));
     const insightMultiplier = 1 + insightCount * 0.10;
     const finalRate = Number(c.current_rate_per_second || 0);
@@ -5580,11 +5620,12 @@
             <div class="rate-detail-row"><span>灵根修炼</span><strong>×${formatNumber(c.root_multiplier || 1, 3)}</strong></div>
             <div class="rate-detail-row"><span>命格修正</span><strong>${Number(c.fate_bonus || 0) >= 0 ? '+' : ''}${formatNumber(Number(c.fate_bonus || 0) * 100, 2)}%</strong></div>
             <div class="rate-detail-row"><span>功法倍率</span><strong>+${formatNumber(technique.multiplier * 100, 2)}%</strong></div>
-            <div class="rate-detail-row"><span>机缘、道具与其他倍率</span><strong>${effectMultiplier >= 0 ? '+' : ''}${formatNumber(effectMultiplier * 100, 2)}%</strong></div>
+            <div class="rate-detail-row"><span>机缘、道具与其他倍率（不含NPC道侣）</span><strong>${nonCompanionEffectMultiplierV264 >= 0 ? '+' : ''}${formatNumber(nonCompanionEffectMultiplierV264 * 100, 2)}%</strong></div>
+            <div class="rate-detail-row ${companionMultiplierV264 > 1 ? 'gain' : ''}"><span>NPC道侣同修<small>${companionMultiplierV264 > 1 ? '正式道侣关系存续期间持续生效' : '当前没有正式NPC道侣'}</small></span><strong>${companionMultiplierV264 > 1 ? `×${formatNumber(companionMultiplierV264, 2)}（+${formatNumber(companionBonusV264 * 100, 0)}%）` : '×1.00'}</strong></div>
             <div class="rate-detail-row"><span>灵气环境</span><strong>×${formatNumber(c.qi_multiplier || 1, 3)}</strong></div>
             <div class="rate-detail-row"><span>天劫感悟 ${formatNumber(insightCount)} 丝</span><strong>×${formatNumber(insightMultiplier, 2)}</strong></div>
           </section>
-          <div class="rate-detail-formula">(${formatNumber(fixedSubtotal, 3)} × ${formatNumber(c.root_multiplier || 1, 3)} × ${formatNumber(additive, 3)}) × ${formatNumber(c.qi_multiplier || 1, 3)} × ${formatNumber(insightMultiplier, 2)} = <strong>${formatRate(finalRate)}</strong></div>
+          <div class="rate-detail-formula">(${formatNumber(fixedSubtotal, 3)} × ${formatNumber(c.root_multiplier || 1, 3)} × ${formatNumber(additive, 3)}) × ${formatNumber(c.qi_multiplier || 1, 3)} × ${formatNumber(insightMultiplier, 2)} × ${formatNumber(companionMultiplierV264, 2)} = <strong>${formatRate(finalRate)}</strong>${companionMultiplierV264 > 1 ? '<br><small>NPC道侣同修在权威修炼结算最后独立乘 ×1.50；关系结束后自动恢复 ×1.00。</small>' : ''}</div>
         </section>
       </div>`;
   }
@@ -5680,6 +5721,8 @@
       return isCurrent && !isCombination;
     });
     const stackedActiveEffects = stackCultivationEffects(activeEffects);
+    const companionCultivationEffectV264 = activeEffects.find(row => row?.source_key === 'tiandao_companion_v264') || null;
+    const companionCultivationMultiplierV264 = companionCultivationEffectV264 ? Math.max(1, 1 + Number(companionCultivationEffectV264.multiplier_bonus || 0.5)) : 1;
     const offlineGain = Number(cultivation.gained || 0);
     const elapsed = Number(cultivation.elapsed_seconds || 0);
     const requiredForNext = Number(breakthrough?.cultivation_required || 0);
@@ -5776,6 +5819,7 @@
                 <div><span>功法固定</span><strong id="techniqueFlatRateSummary">+${formatNumber(cultivation.technique_flat_rate, 3)}/秒</strong></div>
                 <div><span>功法倍率</span><strong id="techniqueMultiplierSummary">+${formatNumber(Number(cultivation.technique_multiplier_bonus || 0) * 100, 2)}%</strong></div>
                 <div><span>灵根修炼</span><strong>×${formatNumber(cultivation.root_multiplier || 1, 2)}</strong></div>
+                <div id="companionCultivationSummaryV264" ${companionCultivationMultiplierV264 > 1 ? '' : 'hidden'}><span>NPC道侣同修</span><strong>×${formatNumber(companionCultivationMultiplierV264, 2)}</strong></div>
                 <button id="heavenBalanceBtn" class="heaven-balance-entry" type="button" aria-label="查看${escapeHtml(heavenBalance.status_name || '大道均衡')}规则"><span class="heaven-balance-entry-text">灵气环境（${escapeHtml(heavenBalance.status_name || '大道均衡')}）x${formatHeavenCoefficient(heavenBalance.coefficient || 1)}</span></button>
                 <div><span>命格修正</span><strong>${Number(cultivation.fate_bonus || 0) >= 0 ? '+' : ''}${formatNumber(Number(cultivation.fate_bonus || 0) * 100, 2)}%</strong></div>
                 <div><span>机缘/道具固定</span><strong>+${formatNumber(cultivation.effect_flat_rate, 3)}/秒</strong></div>
@@ -6443,6 +6487,17 @@
     window.dispatchEvent(new CustomEvent('jiuxiao:battle-snapshot-updated', { detail: latest || null }));
     return latest;
   };
+
+  window.addEventListener('jiuxiao:tiandao-companion-changed', async () => {
+    if (!state.character) return;
+    try {
+      await refreshCultivationEffectsV0154();
+      await syncCultivation(true);
+      recalculateCultivationRateLocalV0154();
+      updateTiandaoCompanionCultivationSummaryV264();
+      showToast(tiandaoCompanionCultivationMultiplierV264() > 1 ? 'NPC道侣同修已生效：修炼倍率 ×1.5。' : 'NPC道侣关系已结束：×1.5 修炼加成已失效。');
+    } catch (error) { console.error(error); }
+  });
 
   window.addEventListener('jiuxiao:equipment-loadout-changed', event => {
     window.JIUXIAO_REFRESH_BATTLE_SNAPSHOT_V1({ reason: 'equipment', action: event?.detail?.action || '' }).catch(error => {

@@ -1,7 +1,7 @@
 {
-  "version": "V2.2.0 CACHE135",
-  "clientBuild": "v2-2-0-cache135-b-ai-router-glm-admin39-sql263-gated",
-  "requiredDatabaseGate": "SQL263_GATE_PASSED",
+  "version": "V2.2.0 CACHE136",
+  "clientBuild": "v2-2-0-cache136-r2-heaven-control-companion15-admin40-sql264-gated",
+  "requiredDatabaseGate": "SQL264_GATE_PASSED",
   "files": [
     {
       "path": ".nojekyll",
@@ -10,23 +10,23 @@
     },
     {
       "path": "404.html",
-      "size": 4133,
-      "sha256": "80e2bc9164223e145f5296c876d9ab79d6a4116b5c2ba1049ad8466d0805508d"
+      "size": 4469,
+      "sha256": "12b7ff12b73fc97c8f36ecdf39f5561db2793ddaa0977a41ad81982f1d137ee6"
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 5504,
-      "sha256": "e6ce095a69a1fbe84c27397536c33d7a7f919932dc0c0b11cd1919c2fd41c295"
+      "size": 6874,
+      "sha256": "def9f3adecd4801551173da659973b3336bc3aafa25427a15232aac10cab0f73"
     },
     {
       "path": "VERSION.txt",
-      "size": 482,
-      "sha256": "2a1a3c20d8e91c31e7fdfbc00b5435eb784a40bb07fa5c35668acf90f1ccb5c3"
+      "size": 411,
+      "sha256": "e452eb9d99ce646d6e946cc0e9b17e638c06a94dba95ba3e0308b3ddfdfff228"
     },
     {
       "path": "app.js",
-      "size": 379456,
-      "sha256": "b37198900064b74adc28b6c1efa3d3f6c21dd5973a68ac35f8570b3aa934e4b9"
+      "size": 383507,
+      "sha256": "7412ad6ba824c309811b77bf47c2396ac7c7b1a80abc47f9e8114d52fa15fd8b"
     },
     {
       "path": "assets/icon-192.png",
@@ -110,8 +110,8 @@
     },
     {
       "path": "b-tiandao-person-v220.js",
-      "size": 44935,
-      "sha256": "67364867375705a57f8dc9ffb26a8a7f380b847346c72d3c396fe7f995f66788"
+      "size": 45435,
+      "sha256": "26bfa4c5fb4acf31e3c69d6ac18972d9b984c5b82fb5dcbc4916d8b6f33797b4"
     },
     {
       "path": "b-tianxu-v220.css",
@@ -130,23 +130,23 @@
     },
     {
       "path": "config.js",
-      "size": 570,
-      "sha256": "f05c2ffc557e27067fa27d6c44810f26f1b2f0ac01ad99ac013c335751ff8409"
+      "size": 584,
+      "sha256": "69adbced583011324dc604a8c8f50cdd18dad34a4f94509e3319ffcf85e56288"
     },
     {
       "path": "index.html",
-      "size": 4133,
-      "sha256": "80e2bc9164223e145f5296c876d9ab79d6a4116b5c2ba1049ad8466d0805508d"
+      "size": 4469,
+      "sha256": "12b7ff12b73fc97c8f36ecdf39f5561db2793ddaa0977a41ad81982f1d137ee6"
     },
     {
       "path": "manifest.webmanifest",
-      "size": 576,
-      "sha256": "59a693a22e3d6d344241d7d521135114a9b9a0bc2ad3a7317b1c96f70599dedc"
+      "size": 590,
+      "sha256": "76c793ebf74a5a52f33dc32701a50b0bf4fda1b21f5b5dbf58978b568c298a1e"
     },
     {
       "path": "release_config.json",
-      "size": 7329,
-      "sha256": "cee7033a07b85d2a0bfe57c6a8e5a6b3cdf9e29ae67c787fd718a95696d1a971"
+      "size": 11071,
+      "sha256": "26be0acbdb11f0d9e8f728c98e73a7c0f789be2c4e34d1eb993d2882b761690c"
     },
     {
       "path": "styles.css",
@@ -155,8 +155,8 @@
     },
     {
       "path": "sw.js",
-      "size": 4573,
-      "sha256": "9ec955a7510cb48c98c3b55169be223b2489d985507b210023963195515d0d59"
+      "size": 4909,
+      "sha256": "95d0a63ea02b0935d21f456ad69027b54e25a1786a7e07546073092f74cae33f"
     },
     {
       "path": "update-guard.js",

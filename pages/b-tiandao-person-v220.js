@@ -173,12 +173,17 @@
   async function loadBundle(force = false) {
     if (state.loading) return;
     if (!force && state.bundle && Date.now() - state.lastLoad < 30000) return;
+    const hadCompanionV264 = Boolean(state.bundle?.companion?.npc_id);
     state.loading = true;
     render();
     try {
       const b = await rpc('get_tiandao_people_hub_v1', {});
       state.bundle = b || { people:[], encounters:[], inbox:[], stories:[], romance:[], companion:null, counts:{} };
       state.lastLoad = Date.now();
+      const hasCompanionV264 = Boolean(state.bundle?.companion?.npc_id);
+      if (hadCompanionV264 !== hasCompanionV264 || (!hadCompanionV264 && hasCompanionV264)) {
+        window.dispatchEvent(new CustomEvent('jiuxiao:tiandao-companion-changed',{detail:{active:hasCompanionV264,npc_id:state.bundle?.companion?.npc_id||null}}));
+      }
     } catch (e) {
       state.bundle = {
         status:'unavailable',
@@ -337,7 +342,7 @@
       <div class="tp-empty big">当前没有正式道侣。去人物志与仙缘看看你已经认识的人。</div>`;
     return `<section class="tp-companion-hero">
       <div class="tp-companion-seal">侣</div>
-      <div><span>我的道侣</span><h3>${esc(p.name)}</h3><p>${esc([p.realm_label,p.identity].filter(Boolean).join(' · '))}</p><small>${esc([p.mood_label,p.current_activity].filter(Boolean).join(' · '))}</small></div>
+      <div><span>我的道侣</span><h3>${esc(p.name)}</h3><p>${esc([p.realm_label,p.identity].filter(Boolean).join(' · '))}</p><small>${esc([p.mood_label,p.current_activity].filter(Boolean).join(' · '))}</small><small>道侣同修：正式关系存续期间，玩家自动修炼倍率 ×1.5。</small></div>
     </section>
     <section class="tp-block tp-companion-life"><div class="tp-block-head"><div><span>TA今天</span><strong>${esc(p.mood_detail || p.current_status || '正在过自己的日子')}</strong></div></div><p class="tp-body-copy">${esc(p.current_place ? `大概在${p.current_place}。` : '')}</p></section>
     <div class="tp-companion-actions">

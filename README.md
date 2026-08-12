@@ -1,27 +1,28 @@
-# 九霄问道 · V2.2.0 CACHE135
+# 九霄问道 · V2.2.0 CACHE136
 
-当前正式交付：**CACHE135 / ADMIN9 R39 / SQL263 READY（生产当前 SQL262 ONLINE）/ tiandao-ai CACHE135 R5 REQUIRED**。
+当前交付基线：**CACHE136 R2 / ADMIN9 R40 / SQL264 R2 READY / tiandao-ai CACHE135 R6 ONLINE（本次不变）**。
+当前生产数据库仍按用户已确认的 **SQL263 ONLINE** 记录；发布 CACHE136 前必须执行 SQL264 并看到 `SQL264_GATE_PASSED`。
 
-## CACHE135 · B模块天道AI多模型调度器正式接入
+## CACHE136 · 天道固定状态 + NPC道侣修炼 ×1.5
 
-- 天道AI云端路由：**GLM-4.7-Flash 主力 → Cloudflare Workers AI 备用 → server_personality_v1 永久本地兜底**。
-- CACHE134 R4 已验证的 Cloudflare 响应兼容、人物自然对白门禁、鉴权、prepare/apply 服务端审计全部保留。
-- 玩家人物结果卡准确显示 **GLM AI / Cloudflare AI / 本地人格兜底**，不会把 GLM 成功误标为本地Fallback。
-- SQL263 只新增 ADMIN9 多供应商只读统计 RPC，不修改人物、九霄游历300故事、经济、关系或战斗规则。
-- ADMIN9 R39 可分别测试 GLM、Cloudflare、本地Fallback，并查看24小时真实决策来源。
-- CACHE134 九霄游历 V1：300条正式故事（240境界专属 + 60跨境界）、8区域、游历/调查/追踪/回访完整继承。
-- CACHE132 PC底部导航鼠标横拖/滚轮分页、CACHE133 Android动态发布校验继续保留。
+- ADMIN9 R40：天道人物页新增“天道修炼均衡状态”，支持 **自动 / 固定大道均衡 / 固定天道福泽 / 固定天道阻滞**；福泽、阻滞固定倍率可配置并写审计。
+- SQL264：保留原 `get_heaven_balance_v1()` 动态算法为备份，并在原权威入口上增加 GM 固定模式覆盖；不是客户端假显示。
+- SQL264：玩家与天道人物 NPC 形成正式 `active` 道侣期间，权威最终修炼速度独立乘 **×1.50（+50%）**；关系 `ended` 或记录删除后自动失效；安装 SQL264 时会补齐已有 active 道侣。
+- CACHE136：修炼详情明确显示 `NPC道侣同修 ×1.50（+50%）`；关系变化后刷新修炼效果与当前速率。
+- 既有宗门弟子道侣协同系统保持原逻辑，不与本次玩家/NPC正式道侣加成混用。
+- 天道人物 AI、世界BOSS、天墟、秘境、装备、功法、宗门等既有系统保持原权威边界。
+- Edge 继续使用已在线的 **tiandao-ai CACHE135 R6**，本次无需重发 Edge。
 
-## 本版部署顺序
+## 发布顺序
 
-1. Supabase Edge Functions Secrets 配置B模块主力 GLM 凭据；原 Cloudflare Secrets 保留。
-2. 执行 SQL263，必须看到 `SQL263_GATE_PASSED`。
-3. 覆盖部署 `tiandao-ai CACHE135 R5`，函数名继续为 `tiandao-ai`，JWT验证保持开启。
-4. 部署 CACHE135 Pages/游戏仓库。
-5. 使用 ADMIN9 R39 分别测试 GLM / Cloudflare / 本地Fallback。
-6. Android 如需同步本次来源显示，生成 CACHE135 APK。
+1. 当前生产库必须已经是 SQL263 ONLINE。
+2. 执行 `database-upgrades/SQL264_HEAVEN_CONTROL_TIANDAO_COMPANION_CULTIVATION/` 内 SQL264 R2；只在看到 `SQL264_GATE_PASSED` 后继续。
+3. 打开 ADMIN9 R40，在天道人物页执行“检查SQL264接入”，再测试自动/固定三态。
+4. 发布 `pages/`。
+5. Android 如需重构建：**versionCode 2001515 / versionName 2.2.0-cache136**。
+6. Edge `tiandao-ai CACHE135 R6 ONLINE` 保持不变。
 
-Android：**versionCode 2001514 / versionName 2.2.0-cache135**。下一 SQL：**SQL264**。
+> SQL264 在本交付包中状态为 READY；本地没有生产数据库连接，因此不伪造 ONLINE。
 
 ---
 
