@@ -3763,10 +3763,12 @@
             <button class="active" type="button" data-cave-open-panel="buildings">建筑</button>
             <button type="button" data-cave-open-panel="alchemy">炼丹</button>
             <button type="button" data-cave-open-panel="library">藏经</button>
+            <button type="button" data-cave-open-panel="beasts">灵兽</button>
           </nav>
           <div data-cave-workbench-panel="buildings">${caveBuildingWorkbenchHtmlB01(system, buildings)}</div>
           <div data-cave-workbench-panel="alchemy" hidden>${caveAlchemyWorkbenchHtmlB01(system, recipes, batch, maxBatch, batchReady)}</div>
           <div data-cave-workbench-panel="library" hidden>${techniqueLibraryHtml(techniqueLibrary)}</div>
+          <div data-cave-workbench-panel="beasts" hidden><div id="spiritBeastRootV267"><div class="empty-state">正在唤醒灵兽苑……</div></div></div>
         </section>
       </div>
     `;
@@ -4005,6 +4007,7 @@
         const workbench = document.getElementById('caveWorkbenchB01');
         if (!workbench) return;
         showCaveWorkbenchB01(panelName, button.dataset.caveBuildingCode || '');
+        if (panelName === 'beasts') window.dispatchEvent(new CustomEvent('jiuxiao:spirit-beast-rendered'));
         workbench.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });
     });
@@ -5884,7 +5887,7 @@
         </section>
 
         <section id="inventorySection" class="panel info-section" data-mobile-screen="cave">
-          <div class="panel-title"><h3>洞府</h3><span class="badge">建筑 · 藏经 · 炼丹</span></div>
+          <div class="panel-title"><h3>洞府</h3><span class="badge">建筑 · 炼丹 · 藏经 · 灵兽</span></div>
           ${cavePanelHtml(caveSystem, inventory, techniqueLibrary)}
         </section>
 
@@ -5956,6 +5959,7 @@
     bindMobileDashboardNav();
     window.dispatchEvent(new CustomEvent('jiuxiao:secret-realm-rendered'));
     window.dispatchEvent(new CustomEvent('jiuxiao:exploration-rendered'));
+    window.dispatchEvent(new CustomEvent('jiuxiao:spirit-beast-rendered'));
     window.dispatchEvent(new CustomEvent('jiuxiao:sect-v2-rendered'));
     if (!window.__secretRealmClaimSyncBoundV179) {
       window.__secretRealmClaimSyncBoundV179 = true;

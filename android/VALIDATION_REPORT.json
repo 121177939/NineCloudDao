@@ -2,20 +2,21 @@
   "ok": true,
   "errors": [],
   "warnings": [
-    "本地未注入生产签名 Secrets；正式 signed APK 由 GitHub Actions 生成。",
-    "生产 SQL263 / Edge R6 在线状态依据用户本对话部署测试回报收口。"
+    "本地未注入生产签名 Secrets；正式 signed APK 由既有 GitHub Actions 生成。",
+    "本地环境无法访问 Gradle 下载源，未冒充完成 assembleDebug；动态项目校验与资源同步已通过。",
+    "SQL267 无生产 Supabase 连接，交付状态为 READY；上线必须以 SQL267_GATE_PASSED 为准。"
   ],
   "project": "android",
-  "gameBaseline": "V2.2.0 CACHE137",
-  "gameBuildId": "v2-2-0-cache137-destiny-cultivation-root-admin40-sql265-gated",
-  "databaseBaseline": "SQL265 READY / REQUIRED SQL265_GATE_PASSED / NEXT SQL266",
-  "currentProductionDatabase": "SQL263 ONLINE (before SQL264 execution)",
-  "androidVersionCode": 2001516,
-  "androidVersionName": "2.2.0-cache137",
-  "gm": "ADMIN9 R40",
+  "gameBaseline": "V2.5.0 CACHE138",
+  "gameBuildId": "v2-5-0-cache138-spirit-beast-complete-admin41-sql267-gated",
+  "databaseBaseline": "SQL267 READY / REQUIRED SQL267_GATE_PASSED / NEXT SQL268",
+  "currentProductionDatabase": "用户已部署 SQL266 洗灵热修；SQL267 待生产执行并确认 Gate。",
+  "androidVersionCode": 2001517,
+  "androidVersionName": "2.5.0-cache138",
+  "gm": "ADMIN9 R41",
   "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged",
   "validator": "dynamic baseline-derived; no CACHE version hard-code",
-  "version": "V2.2.0 CACHE137",
-  "versionCode": 2001516,
-  "versionName": "2.2.0-cache137"
+  "version": "V2.5.0 CACHE138",
+  "versionCode": 2001517,
+  "versionName": "2.5.0-cache138"
 }

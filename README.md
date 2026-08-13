@@ -1,28 +1,25 @@
-# 九霄问道 · V2.2.0 CACHE136
+# 九霄问道 · V2.5.0 CACHE138
 
-当前交付基线：**CACHE136 R2 / ADMIN9 R40 / SQL264 R2 READY / tiandao-ai CACHE135 R6 ONLINE（本次不变）**。
-当前生产数据库仍按用户已确认的 **SQL263 ONLINE** 记录；发布 CACHE136 前必须执行 SQL264 并看到 `SQL264_GATE_PASSED`。
+当前开发交付基线：**V2.5.0 CACHE138 / ADMIN9 R41 / SQL267 READY / tiandao-ai CACHE135 R6 unchanged**。
 
-## CACHE136 · 天道固定状态 + NPC道侣修炼 ×1.5
+## V2.5.0 · 灵兽完整闭环
 
-- ADMIN9 R40：天道人物页新增“天道修炼均衡状态”，支持 **自动 / 固定大道均衡 / 固定天道福泽 / 固定天道阻滞**；福泽、阻滞固定倍率可配置并写审计。
-- SQL264：保留原 `get_heaven_balance_v1()` 动态算法为备份，并在原权威入口上增加 GM 固定模式覆盖；不是客户端假显示。
-- SQL264：玩家与天道人物 NPC 形成正式 `active` 道侣期间，权威最终修炼速度独立乘 **×1.50（+50%）**；关系 `ended` 或记录删除后自动失效；安装 SQL264 时会补齐已有 active 道侣。
-- CACHE136：修炼详情明确显示 `NPC道侣同修 ×1.50（+50%）`；关系变化后刷新修炼效果与当前速率。
-- 既有宗门弟子道侣协同系统保持原逻辑，不与本次玩家/NPC正式道侣加成混用。
-- 天道人物 AI、世界BOSS、天墟、秘境、装备、功法、宗门等既有系统保持原权威边界。
-- Edge 继续使用已在线的 **tiandao-ai CACHE135 R6**，本次无需重发 Edge。
+- 60种图鉴：18基础族系×3阶段进化 + 6神兽；图鉴10/20/30/45/60里程碑奖励一次性闭环。
+- 36技能、8性格、24种兽卵；捕捉、孵化、喂养、互动、突破、进化、辅助技能、血脉传承、放归回收、图鉴与灵兽榜完整闭环。
+- 灵兽来源接入现有九霄游历、秘境与世界BOSS；天命PVP/秘境战斗/共享战斗快照统一接入灵兽四维修正。
+- 兽卵、御兽符、口粮、精魄、悟法卷等复用天墟库存与自由交易；认主灵兽不交易。
+- 数据库轻量设计：不新增永久喂养日志、不复制普通战斗大JSON、不保存排行榜历史；请求账本/遭遇/来源账本自动TTL。
+- ADMIN9 R41 可控制全局开关、概率、捕捉保底、兽苑容量、培养节奏、TTL、战斗上限和60物种参数，并可发放/管理玩家灵兽、执行SQL267接入检查。
 
 ## 发布顺序
 
-1. 当前生产库必须已经是 SQL263 ONLINE。
-2. 执行 `database-upgrades/SQL264_HEAVEN_CONTROL_TIANDAO_COMPANION_CULTIVATION/` 内 SQL264 R2；只在看到 `SQL264_GATE_PASSED` 后继续。
-3. 打开 ADMIN9 R40，在天道人物页执行“检查SQL264接入”，再测试自动/固定三态。
-4. 发布 `pages/`。
-5. Android 如需重构建：**versionCode 2001515 / versionName 2.2.0-cache136**。
-6. Edge `tiandao-ai CACHE135 R6 ONLINE` 保持不变。
+1. 已部署用户当前 SQL266 洗灵热修可保留。
+2. 执行 `database-upgrades/SQL267_SPIRIT_BEAST_COMPLETE/01_SQL267_V2.5.0_CACHE138_灵兽完整闭环_ADMIN9_R41_执行即门禁.sql`，只在看到 **`SQL267_GATE_PASSED`** 后继续。
+3. 发布预构建 `pages/`；Android 如需发包使用 **versionCode 2001517 / versionName 2.5.0-cache138**。
+4. 使用 `九霄问道_ADMIN9_R41_V2.5.0_CACHE138_SQL267_灵兽完整管理_手机直用版.html` 管理灵兽。
+5. Edge `tiandao-ai CACHE135 R6` 本版不变。
 
-> SQL264 在本交付包中状态为 READY；本地没有生产数据库连接，因此不伪造 ONLINE。
+> 本地无法连接你的生产 Supabase，因此 SQL267 在交付包中标记为 READY，不伪造 ONLINE。
 
 ---
 

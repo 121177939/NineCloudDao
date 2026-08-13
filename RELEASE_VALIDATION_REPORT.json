@@ -1,36 +1,22 @@
 {
   "ok": true,
-  "release": "V2.2.0 CACHE136",
-  "buildId": "v2-2-0-cache136-r2-heaven-control-companion15-admin40-sql264-gated",
-  "gm": "ADMIN9 R40",
-  "database": "SQL264 R2 READY / REQUIRED SQL264_GATE_PASSED",
-  "currentProductionDatabase": "SQL263 ONLINE (last user-confirmed baseline)",
-  "nextSql": 265,
-  "androidVersionCode": 2001515,
-  "androidVersionName": "2.2.0-cache136",
+  "release": "V2.5.0 CACHE138",
+  "buildId": "v2-5-0-cache138-spirit-beast-complete-admin41-sql267-gated",
+  "gm": "ADMIN9 R41",
+  "database": "SQL267 READY / REQUIRED SQL267_GATE_PASSED",
+  "nextSql": 268,
+  "androidVersionCode": 2001517,
+  "androidVersionName": "2.5.0-cache138",
   "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged",
   "checks": {
-    "js-runtime-syntax": true,
-    "gm-inline-js-syntax": true,
-    "pages-build-cache136": true,
-    "web-android-sync": true,
-    "android-dynamic-validator": true,
-    "sql264-leading-file-clean": true,
-    "sql264-schema-prechecks": true,
-    "sql264-heaven-original-backup-and-wrapper": true,
-    "sql264-admin-fixed-mode-rpcs": true,
-    "sql264-companion-trigger-backfill": true,
-    "client-companion-cultivation-breakdown": true,
-    "gm-admin40-heaven-mode-controls": true,
-    "edge-r6-unchanged": true,
-    "sql264-r2-brittle-source-precheck-removed": true,
-    "sql264-r2-authoritative-claim-wrapper": true,
-    "sql264-r2-existing-capped-grant-reused": true
+    "client-spirit-beast-module": true,
+    "sql267-static-contract": true,
+    "gm-r41-inline-js-syntax": true,
+    "lightweight-db-design": true
   },
   "errors": [],
   "warnings": [
-    "SQL264 R2 未在生产数据库执行；交付状态仅为 READY。必须在 Supabase SQL Editor 执行并看到 SQL264_GATE_PASSED 后才可视为上线。",
-    "SQL264 R1 的 SQL264_PRECHECK_HEAVEN_BALANCE_NOT_IN_SETTLEMENT_CHAIN 已确认属于错误预检；R1 失败在事务内自动回滚。R2 已移除该门禁。",
-    "未持有 Android 生产签名 Secrets；正式 APK 继续由既有 GitHub Actions/Secrets 构建。"
+    "SQL267 未在生产数据库执行；必须看到 SQL267_GATE_PASSED 后才可视为上线。",
+    "本地无生产签名 Secrets；正式 APK 继续由既有 GitHub Actions/Secrets 构建。"
   ]
 }

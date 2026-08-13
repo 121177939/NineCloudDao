@@ -308,6 +308,7 @@
     el.querySelector('[data-wboss-start]')?.addEventListener('click', async () => {
       if (!confirm('确认开始世界BOSS挑战？开战后本场角色快照锁定，服务端会一次完成权威结算。')) return;
       const result = await action('start_world_boss_run_bwboss01', {}, '世界BOSS战已经结算。');
+      window.dispatchEvent(new CustomEvent('jiuxiao:world-boss-finished', { detail: result || {} }));
       const run = result?.run || result;
       if (result?.combat_technique_shard_v220?.technique_code) { toast('世界BOSS额外掉落功法残卷。'); window.dispatchEvent(new CustomEvent('jiuxiao:combat-technique-refresh')); }
       if (run?.id) showPlayback(run);

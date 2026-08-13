@@ -35,7 +35,7 @@ required=[
     ANDROID/'gradle/wrapper/gradle-wrapper.properties', ANDROID/'settings.gradle.kts',
     ANDROID/'build.gradle.kts', ANDROID/'gradle.properties', ANDROID/'app/build.gradle.kts',
     ANDROID/'app/src/main/AndroidManifest.xml', GAME/'index.html', GAME/'CURRENT_BASELINE.json',
-    GAME/'VERSION.txt', GAME/'b-tiandao-person-v220.js', GAME/'b-exploration-v220.js'
+    GAME/'VERSION.txt', GAME/'b-tiandao-person-v220.js', GAME/'b-exploration-v220.js', GAME/'b-spirit-beast-v250.js', GAME/'b-spirit-beast-v250.css'
 ]
 for p in required:
     if not p.is_file(): fail(f'缺少必需文件: {p.relative_to(ANDROID)}')
@@ -87,6 +87,9 @@ if "prompt('你想亲自对TA说什么？'" in people: fail('自由交谈仍使�
 explore=(GAME/'b-exploration-v220.js').read_text('utf-8')
 for marker in ['B-EXPLORATION-V01','get_exploration_hub_v262','exploration_start_v262','exploration_choose_v262']:
     if marker not in explore: fail(f'九霄游历能力标记缺失: {marker}')
+beast=(GAME/'b-spirit-beast-v250.js').read_text('utf-8')
+for marker in ['get_spirit_beast_hub_v267','spirit_beast_capture_v267','spirit_beast_evolve_v267','get_spirit_beast_ranking_v267']:
+    if marker not in beast: fail(f'灵兽系统能力标记缺失: {marker}')
 
 if ERRORS:
     for e in ERRORS: print('FAIL',e)

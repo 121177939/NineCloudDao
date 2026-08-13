@@ -1,9 +1,9 @@
-V2.2.0 CACHE137
-v2-2-0-cache137-destiny-cultivation-root-admin40-sql265-gated
-SQL265 READY / REQUIRED SQL265_GATE_PASSED / NEXT SQL266
-ADMIN9 R40 unchanged
+V2.5.0 CACHE138
+v2-5-0-cache138-spirit-beast-complete-admin41-sql267-gated
+SQL267 READY / REQUIRED SQL267_GATE_PASSED / NEXT SQL268
+ADMIN9 R41 SPIRIT BEAST COMPLETE
 PAGES github-actions prebuilt pages directory R1
 PAGES_DEPLOY prebuilt-pages-directory-official-artifact-r1
-ANDROID 2001516 2.2.0-cache137
+ANDROID 2001517 2.5.0-cache138
 EDGE tiandao-ai CACHE135 R6 ONLINE / unchanged
-FEATURE 天命榜修为榜显示玩家当前灵根
+FEATURE 灵兽完整闭环：60图鉴、捕捉、兽卵、养成、突破、三段进化、血脉传承、放归、技能、兽苑、游历/秘境/BOSS/PVP、天墟、排行、GM
