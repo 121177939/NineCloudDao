@@ -1,11 +1,11 @@
 {
   "version": "V2.5.0",
-  "releaseLabel": "V2.5.0 CACHE138",
-  "buildId": "v2-5-0-cache138-spirit-beast-complete-admin41-sql267-gated",
-  "cacheEpoch": 138,
+  "releaseLabel": "V2.5.0 CACHE139",
+  "buildId": "v2-5-0-cache139-cave-modal-hub-admin41-sql267-gated",
+  "cacheEpoch": 139,
   "minimumDatabaseBaseline": "SQL267 / SQL267_GATE_PASSED",
   "minimumDatabaseSql": 267,
-  "sqlRevision": "SQL267 READY；灵兽完整闭环正式上线",
+  "sqlRevision": "SQL267 ONLINE；灵兽完整闭环已部署，CACHE139仅重构洞府交互。",
   "migrationSql": [
     "database-upgrades/SQL262_JIUXIAO_EXPLORATION/01_SQL262_V2.2.0_CACHE134_九霄游历300故事_天道人物自然对话_执行即门禁.sql",
     "database-upgrades/SQL263_TIANDAO_AI_MULTI_MODEL_ROUTER/01_SQL263_V2.2.0_CACHE135_B模块天道AI多模型调度器_ADMIN9_R39_执行即门禁.sql",
@@ -77,8 +77,9 @@
     "SPIRIT_BEAST_EXPLORATION_SECRET_BOSS_PVP",
     "SPIRIT_BEAST_TIANXU_MATERIAL_TRADING",
     "SPIRIT_BEAST_TTL_LIGHTWEIGHT_DB",
-    "CLIENT_VERSION_250_CACHE138",
-    "SPIRIT_BEAST_CODEX_MILESTONE_REWARDS"
+    "SPIRIT_BEAST_CODEX_MILESTONE_REWARDS",
+    "CLIENT_VERSION_250_CACHE139",
+    "CAVE_SCENE_MODAL_HUB_V139"
   ],
   "featureFlags": [
     "TIANXU_MARKET_V255",
@@ -142,14 +143,15 @@
     "SPIRIT_BEAST_EXPLORATION_SECRET_BOSS_PVP",
     "SPIRIT_BEAST_TIANXU_MATERIAL_TRADING",
     "SPIRIT_BEAST_TTL_LIGHTWEIGHT_DB",
-    "CLIENT_VERSION_250_CACHE138"
+    "CLIENT_VERSION_250_CACHE139",
+    "CAVE_SCENE_MODAL_HUB_V139"
   ],
-  "gmEntry": "九霄问道_ADMIN9_R41_V2.5.0_CACHE138_SQL267_灵兽完整管理_手机直用版.html",
+  "gmEntry": "九霄问道_ADMIN9_R41_V2.5.0_CACHE139_SQL267_灵兽完整管理_手机直用版.html",
   "gmVersion": "ADMIN9 R41",
   "gmPublicDeployment": false,
   "deploymentAllowed": true,
-  "deploymentCondition": "先执行SQL267并看到SQL267_GATE_PASSED，再发布CACHE138客户端与R41 GM。",
-  "databaseRelease": "SQL267 READY；要求 SQL267_GATE_PASSED。",
+  "deploymentCondition": "数据库需已通过 SQL267_GATE_PASSED；随后发布 CACHE139 客户端。GM R41 与 Edge R6 无需逻辑升级。",
+  "databaseRelease": "SQL267 ONLINE；已通过 SQL267_GATE_PASSED。",
   "nextSqlNumber": 268,
   "deploymentMethod": "github_actions_pages_prebuilt_directory_official_artifact_r1",
   "releaseStage": "production-ready",
@@ -157,10 +159,10 @@
   "edgeDeploymentRequired": false,
   "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE；V2.5.0无需重部署 Edge。",
   "releaseNotes": [
-    "V2.5.0 CACHE138：灵兽正式版完整闭环，一次包含60图鉴、18族三段进化、6神兽、36技能、8性格。",
-    "游历/秘境/BOSS/PVP接入灵兽成长与收益；兽卵及培养材料可进入现有天墟交易。",
-    "数据库采用紧凑状态+短TTL账本，不新增永久战斗大JSON。",
-    "ADMIN9 R41提供灵兽总开关、数值、物种、补发与异常管理。"
+    "V2.5.0 CACHE139：洞府六个主景框改为直接功能入口，取消底部重复工作台。",
+    "灵脉框→炼丹、灵田框→藏经、库房框→建筑、第六框→灵兽；矿室→待开辟、丹炉→未开辟。",
+    "炼丹/藏经/建筑/灵兽使用独立滚动弹窗，保留原有业务能力与SQL267结算逻辑。",
+    "SQL267、ADMIN9 R41、tiandao-ai CACHE135 R6 均不需要重新部署。"
   ],
   "notes": [
     "SQL265：复用原 get_destiny_ranking_v1 排名权威结果，为修为榜 entries 补充当前主灵根。",

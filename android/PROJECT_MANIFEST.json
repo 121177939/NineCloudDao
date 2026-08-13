@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.0 CACHE138",
-  "versionCode": 2001517,
-  "versionName": "2.5.0-cache138",
-  "gameBuildId": "v2-5-0-cache138-spirit-beast-complete-admin41-sql267-gated",
-  "databaseBaseline": "SQL267 READY / REQUIRED SQL267_GATE_PASSED / NEXT SQL268",
+  "version": "V2.5.0 CACHE139",
+  "versionCode": 2001518,
+  "versionName": "2.5.0-cache139",
+  "gameBuildId": "v2-5-0-cache139-cave-modal-hub-admin41-sql267-gated",
+  "databaseBaseline": "SQL267 ONLINE / SQL267_GATE_PASSED / NEXT SQL268",
   "gm": "ADMIN9 R41",
   "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged",
-  "gameBaseline": "V2.5.0 CACHE138",
-  "androidVersionCode": 2001517,
-  "androidVersionName": "2.5.0-cache138"
+  "gameBaseline": "V2.5.0 CACHE139",
+  "androidVersionCode": 2001518,
+  "androidVersionName": "2.5.0-cache139"
 }

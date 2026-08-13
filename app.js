@@ -3674,29 +3674,63 @@
       </div>`}`;
   }
 
-  // V1.7.9 CACHE59 CAVEUI1：洞府底部功能区默认显示“建筑”页。
+  // V2.5.0 CACHE139：洞府功能不再在页面底部展开，六个主景框直接弹出对应功能面板。
+  function caveFeatureModalMetaB01(panelName = 'buildings') {
+    const map = {
+      buildings: { seal: '筑', eyebrow: '洞府营造', title: '建筑', note: '洞府建筑升级与资源产能' },
+      alchemy: { seal: '丹', eyebrow: '洞府炼丹', title: '炼丹', note: '丹方、炉火与取丹' },
+      library: { seal: '藏', eyebrow: '洞府藏经', title: '藏经', note: '研习、保留与兑换道卷' },
+      beasts: { seal: '兽', eyebrow: '洞府灵兽', title: '灵兽', note: '万灵归苑 · 捕捉、兽卵与养成' }
+    };
+    return map[panelName] || map.buildings;
+  }
+
+  function caveFeatureModalBodyB01(panelName, system = state.caveSystem || {}) {
+    const buildings = Array.isArray(system?.buildings) ? system.buildings : [];
+    const recipes = Array.isArray(system?.recipes) ? system.recipes : [];
+    const batch = system?.active_batch || null;
+    const maxBatch = Math.max(1, Number(system?.rules?.max_batch_count || 10));
+    const batchReady = batch?.status === 'ready' || Number(batch?.seconds_remaining || 0) <= 0;
+    if (panelName === 'alchemy') return caveAlchemyWorkbenchHtmlB01(system, recipes, batch, maxBatch, batchReady);
+    if (panelName === 'library') return techniqueLibraryHtml(state.techniqueLibrary || { books: [] });
+    if (panelName === 'beasts') return '<div id="spiritBeastRootV267"><div class="empty-state">正在唤醒灵兽苑……</div></div>';
+    return caveBuildingWorkbenchHtmlB01(system, buildings);
+  }
+
+  function closeCaveFeatureModalB01() {
+    const backdrop = document.getElementById('caveFeatureBackdropB01');
+    if (backdrop) backdrop.remove();
+  }
+
+  function openCaveFeatureModalB01(panelName = 'buildings', buildingCode = '') {
+    if (!modalRoot) return;
+    const meta = caveFeatureModalMetaB01(panelName);
+    modalRoot.innerHTML = `<div id="caveFeatureBackdropB01" class="modal-backdrop cave-feature-backdrop-b01" data-cave-feature-panel="${escapeHtml(panelName)}">
+      <section id="caveFeatureModalB01" class="modal cave-feature-modal-b01" role="dialog" aria-modal="true" aria-labelledby="caveFeatureTitleB01" data-cave-feature-panel="${escapeHtml(panelName)}">
+        <button class="modal-close-button cave-feature-close-b01" type="button" data-close-cave-feature aria-label="关闭">×</button>
+        <header class="cave-feature-head-b01">
+          <span class="cave-feature-seal-b01">${escapeHtml(meta.seal)}</span>
+          <div><span>${escapeHtml(meta.eyebrow)}</span><h3 id="caveFeatureTitleB01">${escapeHtml(meta.title)}</h3><p>${escapeHtml(meta.note)}</p></div>
+        </header>
+        <div class="cave-feature-body-b01">${caveFeatureModalBodyB01(panelName)}</div>
+      </section>
+    </div>`;
+    const backdrop = document.getElementById('caveFeatureBackdropB01');
+    backdrop?.addEventListener('click', event => { if (event.target === backdrop) closeCaveFeatureModalB01(); });
+    document.querySelectorAll('[data-close-cave-feature]').forEach(button => button.addEventListener('click', closeCaveFeatureModalB01));
+    if (buildingCode) document.querySelector(`[data-cave-building-card="${CSS.escape(buildingCode)}"]`)?.classList.add('focused');
+    bindInventoryTechniqueActions();
+    if (panelName === 'beasts') window.dispatchEvent(new CustomEvent('jiuxiao:spirit-beast-rendered'));
+    if (panelName === 'alchemy') updateCaveCountdown();
+  }
+
+  // 兼容旧调用点：旧“工作台”接口改为弹窗，不再向页面底部插入内容。
   function showCaveWorkbenchB01(panelName = 'buildings', buildingCode = '') {
-    const workbench = document.getElementById('caveWorkbenchB01');
-    if (!workbench) return;
-    workbench.hidden = false;
-    workbench.removeAttribute('hidden');
-    workbench.setAttribute('aria-hidden', 'false');
-    workbench.querySelectorAll('[data-cave-workbench-panel]').forEach(panel => {
-      const isActive = panel.dataset.caveWorkbenchPanel === panelName;
-      panel.hidden = !isActive;
-      if (isActive) panel.removeAttribute('hidden');
-      else panel.setAttribute('hidden', '');
-    });
-    workbench.querySelectorAll('[data-cave-open-panel]').forEach(tab => tab.classList.toggle('active', tab.dataset.caveOpenPanel === panelName));
-    workbench.querySelectorAll('[data-cave-building-card]').forEach(card => card.classList.toggle('focused', Boolean(buildingCode) && card.dataset.caveBuildingCard === buildingCode));
+    openCaveFeatureModalB01(panelName, buildingCode);
   }
 
   function closeCaveWorkbenchB01() {
-    const workbench = document.getElementById('caveWorkbenchB01');
-    if (!workbench) return;
-    workbench.hidden = true;
-    workbench.setAttribute('hidden', '');
-    workbench.setAttribute('aria-hidden', 'true');
+    closeCaveFeatureModalB01();
   }
 
   function cavePanelHtml(system, inventory, techniqueLibrary = state.techniqueLibrary || { books: [] }) {
@@ -3706,8 +3740,15 @@
     const batch = system?.active_batch || null;
     const maxBatch = Math.max(1, Number(system?.rules?.max_batch_count || 10));
     const batchReady = batch?.status === 'ready' || Number(batch?.seconds_remaining || 0) <= 0;
-    const sceneBuildings = buildings.slice(0, 6);
-    const sceneSlots = [...sceneBuildings, ...Array.from({ length: Math.max(0, 6 - sceneBuildings.length) }, () => null)];
+    // CACHE139：主景六框改为固定功能入口，不再直接映射数据库建筑顺序。
+    const sceneSlots = [
+      { pos: 1, glyph: '丹', name: '炼丹', detail: '丹方 · 炉火', panel: 'alchemy', enabled: true },
+      { pos: 2, glyph: '藏', name: '藏经', detail: '道卷 · 研习', panel: 'library', enabled: true },
+      { pos: 3, glyph: '封', name: '待开辟', detail: '洞天未启', enabled: false },
+      { pos: 4, glyph: '封', name: '未开辟', detail: '洞天未启', enabled: false },
+      { pos: 5, glyph: '筑', name: '建筑', detail: '升级 · 经营', panel: 'buildings', enabled: true },
+      { pos: 6, glyph: '兽', name: '灵兽', detail: '万灵归苑', panel: 'beasts', enabled: true }
+    ];
     // V1.7.4：洞府资源条只显示洞府专属资源；统一灵石仍保留在洞府储物格与全局余额中，不在此处重复展示。
     const resourceRows = resources.filter(row => row.code !== 'spirit_stone').slice(0, 4);
     return `
@@ -3728,17 +3769,17 @@
           <div class="cave-lantern-b01 left" aria-hidden="true"><i></i></div>
           <div class="cave-lantern-b01 right" aria-hidden="true"><i></i></div>
           <div class="cave-building-orbit-b01">
-            ${sceneSlots.map((row, index) => row ? `<button class="cave-scene-building-b01 pos-${index + 1}" type="button" data-cave-open-panel="${escapeHtml(caveBuildingPanelKindB01(row))}" data-cave-building-code="${escapeHtml(row.code || '')}">
-              <span class="cave-building-glyph-b01">${escapeHtml(caveBuildingGlyphB01(row, index))}</span>
-              <span class="cave-building-copy-b01"><strong>${escapeHtml(row.name || '洞府建筑')}</strong><small>Lv.${formatNumber(row.level || 1)} · ${Number(row.level || 1) >= Number(row.max_level || 10) ? '已圆满' : '可扩建'}</small></span>
-            </button>` : `<div class="cave-scene-building-b01 pos-${index + 1} locked" aria-hidden="true"><span class="cave-building-glyph-b01">封</span><span class="cave-building-copy-b01"><strong>待开辟</strong><small>洞天未启</small></span></div>`).join('')}
+            ${sceneSlots.map(row => row.enabled ? `<button class="cave-scene-building-b01 pos-${row.pos} cave-scene-feature-entry-b01" type="button" data-cave-open-panel="${escapeHtml(row.panel)}" aria-label="打开${escapeHtml(row.name)}">
+              <span class="cave-building-glyph-b01">${escapeHtml(row.glyph)}</span>
+              <span class="cave-building-copy-b01"><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(row.detail)}</small></span>
+            </button>` : `<div class="cave-scene-building-b01 pos-${row.pos} locked cave-scene-feature-locked-b01" aria-disabled="true"><span class="cave-building-glyph-b01">${escapeHtml(row.glyph)}</span><span class="cave-building-copy-b01"><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(row.detail)}</small></span></div>`).join('')}
           </div>
           <div class="cave-meditation-b01" aria-hidden="true">
             <div class="cave-stone-platform-b01"></div>
             <div class="cave-meditation-ring-b01"></div>
             <div class="cave-meditation-figure-b01"><i></i><b></b><span></span></div>
           </div>
-          <div class="cave-scene-caption-b01"><strong>洞天幽居 · 灵脉自运</strong><span>仙府隐修 · 离线最多结算 ${formatNumber(system?.rules?.offline_cap_hours || 72)} 小时</span></div>
+          <div class="cave-scene-caption-b01"><strong>洞天幽居 · 六门归一</strong><span>点击洞府主框进入对应功能 · 离线最多结算 ${formatNumber(system?.rules?.offline_cap_hours || 72)} 小时</span></div>
         </section>
 
         <section class="cave-resource-strip-b01" aria-label="洞府资源">
@@ -3751,25 +3792,10 @@
 
         ${inventoryGridHtml(inventory, techniqueLibrary)}
 
-        <div class="cave-action-bar-b01">
-          <button class="ghost-btn" type="button" data-cave-open-panel="buildings">洞府扩建</button>
+        <div class="cave-action-bar-b01 cave-action-bar-compact-b01">
           <button id="collectCaveYieldB01" class="primary-btn" type="button">一键收取</button>
           <button id="tidyCaveStorageB01" class="ghost-btn" type="button">${state.caveInventorySortMode === 'tidy' ? '恢复顺序' : '整理储物'}</button>
         </div>
-
-        <section id="caveWorkbenchB01" class="cave-workbench-b01" aria-hidden="false">
-          <button class="cave-workbench-close-b01" type="button" data-close-cave-workbench aria-label="关闭洞府功能面板">×</button>
-          <nav class="cave-workbench-tabs-b01" aria-label="洞府功能切换">
-            <button class="active" type="button" data-cave-open-panel="buildings">建筑</button>
-            <button type="button" data-cave-open-panel="alchemy">炼丹</button>
-            <button type="button" data-cave-open-panel="library">藏经</button>
-            <button type="button" data-cave-open-panel="beasts">灵兽</button>
-          </nav>
-          <div data-cave-workbench-panel="buildings">${caveBuildingWorkbenchHtmlB01(system, buildings)}</div>
-          <div data-cave-workbench-panel="alchemy" hidden>${caveAlchemyWorkbenchHtmlB01(system, recipes, batch, maxBatch, batchReady)}</div>
-          <div data-cave-workbench-panel="library" hidden>${techniqueLibraryHtml(techniqueLibrary)}</div>
-          <div data-cave-workbench-panel="beasts" hidden><div id="spiritBeastRootV267"><div class="empty-state">正在唤醒灵兽苑……</div></div></div>
-        </section>
       </div>
     `;
   }
@@ -4004,11 +4030,7 @@
           document.getElementById('caveStorageB01')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           return;
         }
-        const workbench = document.getElementById('caveWorkbenchB01');
-        if (!workbench) return;
-        showCaveWorkbenchB01(panelName, button.dataset.caveBuildingCode || '');
-        if (panelName === 'beasts') window.dispatchEvent(new CustomEvent('jiuxiao:spirit-beast-rendered'));
-        workbench.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        openCaveFeatureModalB01(panelName, button.dataset.caveBuildingCode || '');
       });
     });
 
@@ -4070,6 +4092,7 @@
             refreshTechniqueSystem(true),
             refreshSpiritStoneBalanceV0141(true)
           ]);
+          if (document.getElementById('caveFeatureModalB01')?.dataset.caveFeaturePanel === 'library') openCaveFeatureModalB01('library');
         } catch (error) { showToast(translateError(error)); }
         finally { button.disabled = false; }
       });
@@ -4088,6 +4111,7 @@
             refreshCaveSystem(true),
             refreshSpiritStoneBalanceV0141(true)
           ]);
+          if (document.getElementById('caveFeatureModalB01')?.dataset.caveFeaturePanel === 'library') openCaveFeatureModalB01('library');
           const learned = result?.action === 'learn';
           showToast(result?.message || (learned ? `《${result?.technique_name || '功法'}》已收入识海。` : `参悟完成，传承点 +${formatNumber(result?.mastery_points_gained || 0)}。`));
           await syncCultivation(true);
@@ -5887,7 +5911,7 @@
         </section>
 
         <section id="inventorySection" class="panel info-section" data-mobile-screen="cave">
-          <div class="panel-title"><h3>洞府</h3><span class="badge">建筑 · 炼丹 · 藏经 · 灵兽</span></div>
+          <div class="panel-title"><h3>洞府</h3><span class="badge">六框直达 · 点击主景</span></div>
           ${cavePanelHtml(caveSystem, inventory, techniqueLibrary)}
         </section>
 
@@ -6073,10 +6097,8 @@
       const desiredPage = pageIndexForTab(tab);
       if (tabbedMode && viewport) requestAnimationFrame(() => showPage(desiredPage, shouldScroll ? 'smooth' : 'auto'));
       if (tabbedMode && shouldScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
-      // 洞府页每次进入都默认展示建筑管理区；不再依赖先点击灵脉或矿室。
-      if (tab === 'cave' && (previousTab !== 'cave' || shouldScroll)) {
-        requestAnimationFrame(() => showCaveWorkbenchB01('buildings'));
-      }
+      // CACHE139：进入洞府只展示主景；炼丹/藏经/建筑/灵兽均由六个主框按需弹出，不再自动展开底部功能区。
+      if (previousTab === 'cave' && tab !== 'cave') closeCaveFeatureModalB01();
     };
 
     buttons.forEach(button => {

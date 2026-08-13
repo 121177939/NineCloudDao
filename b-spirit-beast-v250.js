@@ -1,12 +1,12 @@
 /* 九霄问道 · 灵兽正式版
- * V2.5.0 CACHE138 / SQL267
+ * V2.5.0 CACHE139 / SQL267
  * 捕捉、兽卵、养成、突破、三段进化、血脉、性格、技能、放归、传承、图鉴、排行、洞府兽苑。
  * 所有资源与数值结算由 SQL267 RPC 权威处理；客户端不保存战斗快照或奖励结果。
  */
 (() => {
   'use strict';
 
-  const BUILD = 'SPIRIT-BEAST-V267-CACHE138';
+  const BUILD = 'SPIRIT-BEAST-V267-CACHE139';
   const cfg = window.GAME_CONFIG || {};
   const BASE = String(cfg.supabaseUrl || '').replace(/\/+$/, '');
   const KEY = String(cfg.supabasePublishableKey || '');

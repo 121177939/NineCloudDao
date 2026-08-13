@@ -1,22 +1,24 @@
 {
   "ok": true,
-  "release": "V2.5.0 CACHE138",
-  "buildId": "v2-5-0-cache138-spirit-beast-complete-admin41-sql267-gated",
+  "release": "V2.5.0 CACHE139",
+  "buildId": "v2-5-0-cache139-cave-modal-hub-admin41-sql267-gated",
   "gm": "ADMIN9 R41",
-  "database": "SQL267 READY / REQUIRED SQL267_GATE_PASSED",
+  "database": "SQL267 ONLINE / SQL267_GATE_PASSED",
   "nextSql": 268,
-  "androidVersionCode": 2001517,
-  "androidVersionName": "2.5.0-cache138",
+  "androidVersionCode": 2001518,
+  "androidVersionName": "2.5.0-cache139",
   "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged",
   "checks": {
     "client-spirit-beast-module": true,
     "sql267-static-contract": true,
     "gm-r41-inline-js-syntax": true,
-    "lightweight-db-design": true
+    "lightweight-db-design": true,
+    "cave-six-entry-modal-hub": true,
+    "inline-cave-workbench-removed": true
   },
   "errors": [],
   "warnings": [
-    "SQL267 未在生产数据库执行；必须看到 SQL267_GATE_PASSED 后才可视为上线。",
-    "本地无生产签名 Secrets；正式 APK 继续由既有 GitHub Actions/Secrets 构建。"
+    "SQL267 已部署；CACHE139 为客户端交互重构，不需要新增 SQL。",
+    "正式 APK 继续由既有 GitHub Actions/Secrets 构建。"
   ]
 }
