@@ -1,0 +1,14 @@
+九霄问道 V2.5.0 CACHE140 · 装备批量分解一键选择地品 STATIC VALIDATION
+
+PASS b-equipment01.js syntax
+PASS 一键选择地品按钮存在：data-batch-earth
+PASS 地品选择条件严格为 grade_code === earth
+PASS 候选装备仍限定 itemList(backpack) 且 !is_locked
+PASS 天品/仙品不会被一键地品按钮选中
+PASS 已强化/孔位内容的高危确认逻辑保留
+PASS 服务端仍使用 decompose_equipment_v180 批量事务
+PASS Pages build V2.5.0 CACHE140 deterministic
+PASS Web/Android 共享资源同步
+PASS Android dynamic preflight 2001519 / 2.5.0-cache140
+PASS SQL267/ADMIN9 R41/Edge R6 逻辑无变更
+NO NEW SQL REQUIRED FOR CACHE140

@@ -1,11 +1,11 @@
 {
   "version": "V2.5.0",
-  "releaseLabel": "V2.5.0 CACHE139",
-  "buildId": "v2-5-0-cache139-cave-modal-hub-admin41-sql267-gated",
-  "cacheEpoch": 139,
+  "releaseLabel": "V2.5.0 CACHE140",
+  "buildId": "v2-5-0-cache140-equipment-earth-decompose-admin41-sql268r1",
+  "cacheEpoch": 140,
   "minimumDatabaseBaseline": "SQL267 / SQL267_GATE_PASSED",
   "minimumDatabaseSql": 267,
-  "sqlRevision": "SQL267 ONLINE；灵兽完整闭环已部署，CACHE139仅重构洞府交互。",
+  "sqlRevision": "SQL267 ONLINE；SQL268 R1 HOTFIX 已交付待生产确认；CACHE140仅新增地品一键分解选择。",
   "migrationSql": [
     "database-upgrades/SQL262_JIUXIAO_EXPLORATION/01_SQL262_V2.2.0_CACHE134_九霄游历300故事_天道人物自然对话_执行即门禁.sql",
     "database-upgrades/SQL263_TIANDAO_AI_MULTI_MODEL_ROUTER/01_SQL263_V2.2.0_CACHE135_B模块天道AI多模型调度器_ADMIN9_R39_执行即门禁.sql",
@@ -13,7 +13,8 @@
     "database-upgrades/SQL265_DESTINY_CULTIVATION_SPIRIT_ROOT/01_SQL265_V2.2.0_CACHE137_天命榜修为榜显示玩家当前灵根_执行即门禁.sql",
     "database-upgrades/SQL266_FRACTIONAL_REMAINDER_HOTFIX/01_SQL266_R1_洗灵_fractional_remainder_CHECK紧急热修.sql",
     "database-upgrades/SQL266_FRACTIONAL_REMAINDER_HOTFIX/02_SQL266_R2_fractional_remainder_精度边界根修_调用栈审计.sql",
-    "database-upgrades/SQL267_SPIRIT_BEAST_COMPLETE/01_SQL267_V2.5.0_CACHE138_灵兽完整闭环_ADMIN9_R41_执行即门禁.sql"
+    "database-upgrades/SQL267_SPIRIT_BEAST_COMPLETE/01_SQL267_V2.5.0_CACHE138_灵兽完整闭环_ADMIN9_R41_执行即门禁.sql",
+    "database-upgrades/SQL268_SPIRIT_BEAST_COMBAT_INTEGER_HOTFIX/01_SQL268_R1_V2.5.0_CACHE139_灵兽战斗小数转integer_秘境结算紧急热修.sql"
   ],
   "features": [
     "TIANXU_MARKET_V255",
@@ -79,7 +80,9 @@
     "SPIRIT_BEAST_TTL_LIGHTWEIGHT_DB",
     "SPIRIT_BEAST_CODEX_MILESTONE_REWARDS",
     "CLIENT_VERSION_250_CACHE139",
-    "CAVE_SCENE_MODAL_HUB_V139"
+    "CAVE_SCENE_MODAL_HUB_V139",
+    "CLIENT_VERSION_250_CACHE140",
+    "EQUIPMENT_BATCH_EARTH_ONE_TAP_V140"
   ],
   "featureFlags": [
     "TIANXU_MARKET_V255",
@@ -144,25 +147,27 @@
     "SPIRIT_BEAST_TIANXU_MATERIAL_TRADING",
     "SPIRIT_BEAST_TTL_LIGHTWEIGHT_DB",
     "CLIENT_VERSION_250_CACHE139",
-    "CAVE_SCENE_MODAL_HUB_V139"
+    "CAVE_SCENE_MODAL_HUB_V139",
+    "CLIENT_VERSION_250_CACHE140",
+    "EQUIPMENT_BATCH_EARTH_ONE_TAP_V140"
   ],
   "gmEntry": "九霄问道_ADMIN9_R41_V2.5.0_CACHE139_SQL267_灵兽完整管理_手机直用版.html",
   "gmVersion": "ADMIN9 R41",
   "gmPublicDeployment": false,
   "deploymentAllowed": true,
-  "deploymentCondition": "数据库需已通过 SQL267_GATE_PASSED；随后发布 CACHE139 客户端。GM R41 与 Edge R6 无需逻辑升级。",
-  "databaseRelease": "SQL267 ONLINE；已通过 SQL267_GATE_PASSED。",
-  "nextSqlNumber": 268,
+  "deploymentCondition": "数据库至少已通过 SQL267_GATE_PASSED；CACHE140装备分解改动无需新增SQL。若使用灵兽后的秘境结算，建议先执行已交付的SQL268 R1热修。",
+  "databaseRelease": "SQL267 ONLINE；SQL268 R1 HOTFIX 已交付待生产确认。",
+  "nextSqlNumber": 269,
   "deploymentMethod": "github_actions_pages_prebuilt_directory_official_artifact_r1",
   "releaseStage": "production-ready",
   "runtimeDatabaseGate": "SQL267_GATE_PASSED",
   "edgeDeploymentRequired": false,
   "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE；V2.5.0无需重部署 Edge。",
   "releaseNotes": [
-    "V2.5.0 CACHE139：洞府六个主景框改为直接功能入口，取消底部重复工作台。",
-    "灵脉框→炼丹、灵田框→藏经、库房框→建筑、第六框→灵兽；矿室→待开辟、丹炉→未开辟。",
-    "炼丹/藏经/建筑/灵兽使用独立滚动弹窗，保留原有业务能力与SQL267结算逻辑。",
-    "SQL267、ADMIN9 R41、tiandao-ai CACHE135 R6 均不需要重新部署。"
+    "V2.5.0 CACHE140：装备批量分解新增“一键选择地品”。",
+    "一键选择地品仅勾选背包内未锁定地品，天品/仙品不会被选中。",
+    "已强化或已有孔位内容的地品若被选择，最终分解前继续显示原有永久损失警告。",
+    "不新增数据库结构或RPC，沿用 decompose_equipment_v180；SQL267、ADMIN9 R41、Edge R6不变。"
   ],
   "notes": [
     "SQL265：复用原 get_destiny_ranking_v1 排名权威结果，为修为榜 entries 补充当前主灵根。",

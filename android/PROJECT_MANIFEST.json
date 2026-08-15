@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.0 CACHE139",
-  "versionCode": 2001518,
-  "versionName": "2.5.0-cache139",
-  "gameBuildId": "v2-5-0-cache139-cave-modal-hub-admin41-sql267-gated",
-  "databaseBaseline": "SQL267 ONLINE / SQL267_GATE_PASSED / NEXT SQL268",
+  "version": "V2.5.0 CACHE140",
+  "versionCode": 2001519,
+  "versionName": "2.5.0-cache140",
+  "gameBuildId": "v2-5-0-cache140-equipment-earth-decompose-admin41-sql268r1",
+  "databaseBaseline": "SQL267 ONLINE / SQL268 R1 HOTFIX READY / NEXT SQL269",
   "gm": "ADMIN9 R41",
   "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged",
-  "gameBaseline": "V2.5.0 CACHE139",
-  "androidVersionCode": 2001518,
-  "androidVersionName": "2.5.0-cache139"
+  "gameBaseline": "V2.5.0 CACHE140",
+  "androidVersionCode": 2001519,
+  "androidVersionName": "2.5.0-cache140"
 }

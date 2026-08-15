@@ -581,7 +581,7 @@
       .filter(item => ['yellow', 'mystic'].includes(item.grade_code) && Number(item.enhancement_level || 0) === 0 && Number(item.socket_content_count || 0) === 0)
       .map(item => String(item.id)));
     const rows = candidates.map(item => `<label class="equipment-batch-row-bequipment01" style="--grade:${esc(color(item))}"><input type="checkbox" data-batch-id="${esc(item.id)}" ${defaultSelected.has(String(item.id)) ? 'checked' : ''}><span>${itemIcon(item)}</span><span><strong>${esc(itemEnhancementName(item))}：<em>${esc(item.grade_name)}</em></strong><small>${esc(item.realm_name)} · ${esc(item.main_stat_display)} · ${esc(item.socket_display)}</small></span><b>器源×${Number(item.decompose_essence)}</b></label>`).join('');
-    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01 equipment-batch-modal-bequipment01" role="dialog" aria-modal="true"><button class="modal-close-button" data-eq-close>×</button><header><span class="equipment-icon-bequipment01">解</span><div><span>批量分解 · 默认只勾选未强化、无孔位内容的黄品与玄品</span><h3>装备化源</h3></div></header><div class="equipment-batch-tools-bequipment01"><button type="button" data-batch-low>勾选安全黄玄</button><button type="button" data-batch-clear>清空</button><strong data-batch-summary></strong></div><div class="equipment-batch-list-bequipment01">${rows}</div><p>地品及以上、已强化装备及已有孔位内容的装备不会自动勾选。分解后装备、强化价值和全部孔位内容永久消失。</p><div class="equipment-modal-actions-bequipment01"><button class="danger-btn" data-batch-confirm>确认分解</button></div></section></div>`;
+    modalHost().innerHTML = `<div class="modal-backdrop equipment-modal-backdrop-bequipment01"><section class="modal equipment-modal-bequipment01 equipment-batch-modal-bequipment01" role="dialog" aria-modal="true"><button class="modal-close-button" data-eq-close>×</button><header><span class="equipment-icon-bequipment01">解</span><div><span>批量分解 · 默认只勾选未强化、无孔位内容的黄品与玄品</span><h3>装备化源</h3></div></header><div class="equipment-batch-tools-bequipment01"><button type="button" data-batch-low>勾选安全黄玄</button><button type="button" class="earth-select-bequipment01" data-batch-earth>一键选择地品</button><button type="button" data-batch-clear>清空</button><strong data-batch-summary></strong></div><div class="equipment-batch-list-bequipment01">${rows}</div><p>“一键选择地品”会选择背包内全部未锁定地品装备；若其中存在已强化或已有孔位内容的装备，确认分解时会再次警告。天品及以上不会被该按钮选中。分解后装备、强化价值和全部孔位内容永久消失。</p><div class="equipment-modal-actions-bequipment01"><button class="danger-btn" data-batch-confirm>确认分解</button></div></section></div>`;
     const root = modalHost();
     const boxes = () => [...root.querySelectorAll('[data-batch-id]')];
     const selectedItems = () => boxes().filter(box => box.checked).map(box => candidates.find(item => String(item.id) === box.dataset.batchId)).filter(Boolean);
@@ -597,6 +597,13 @@
       boxes().forEach(box => {
         const item = candidates.find(row => String(row.id) === box.dataset.batchId);
         box.checked = ['yellow', 'mystic'].includes(item?.grade_code) && Number(item?.enhancement_level || 0) === 0 && Number(item?.socket_content_count || 0) === 0;
+      });
+      update();
+    });
+    root.querySelector('[data-batch-earth]').addEventListener('click', () => {
+      boxes().forEach(box => {
+        const item = candidates.find(row => String(row.id) === box.dataset.batchId);
+        box.checked = item?.grade_code === 'earth';
       });
       update();
     });

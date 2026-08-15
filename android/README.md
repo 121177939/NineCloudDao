@@ -1,12 +1,13 @@
-# 九霄问道 Android Studio 本地运行版 V2.5.0 CACHE139
+# 九霄问道 Android Studio 本地运行版 V2.5.0 CACHE140
 
-本工程与网页 **V2.5.0 CACHE139** 同步。Android：**versionCode 2001518 / versionName 2.5.0-cache139**。
+本工程与网页 **V2.5.0 CACHE140** 同步。Android：**versionCode 2001519 / versionName 2.5.0-cache140**。
 
-## CACHE139
+## CACHE140
 
-- 洞府六个主景框直接进入炼丹、藏经、建筑、灵兽弹窗。
-- 矿室显示「待开辟」，旧丹炉框显示「未开辟」。
-- 取消洞府底部重复功能工作台，储物/收取/整理保留。
-- SQL267 已部署，灵兽业务逻辑不变；ADMIN9 R41、tiandao-ai R6 不变。
+- 装备批量分解新增「一键选择地品」。
+- 只勾选背包内未锁定地品；天品/仙品不会被按钮选中。
+- 已强化/有孔位内容的地品继续在最终确认时显示高危警告。
+- 不新增数据库结构或RPC，沿用 `decompose_equipment_v180`。
+- CACHE139 洞府六框直达、SQL267 灵兽系统、ADMIN9 R41、tiandao-ai R6 全部继承。
 
 正式 APK 继续使用既有 GitHub Actions + Secrets 签名。
