@@ -1,9 +1,9 @@
-V2.5.0 CACHE140
-v2-5-0-cache140-equipment-earth-decompose-admin41-sql268r1
+V2.5.0 CACHE141
+v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1
 SQL267 ONLINE / SQL268 R1 HOTFIX READY / NEXT SQL269
 ADMIN9 R41 SPIRIT BEAST COMPLETE / unchanged
 PAGES github-actions prebuilt pages directory R1
 PAGES_DEPLOY prebuilt-pages-directory-official-artifact-r1
-ANDROID 2001519 2.5.0-cache140
+ANDROID 2001520 2.5.0-cache141
 EDGE tiandao-ai CACHE135 R6 ONLINE / unchanged
-FEATURE 装备批量分解新增“一键选择地品”；仅选未锁定地品，强化/孔位装备保留二次警告
+FEATURE 批量分解弹窗手机端滚动修复；确认分解按钮固定在可点击底部操作区

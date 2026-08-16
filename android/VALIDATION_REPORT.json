@@ -7,16 +7,16 @@
     "CACHE140 不新增数据库升级；装备分解交互沿用现有 decompose_equipment_v180。SQL268 R1 为独立秘境热修。"
   ],
   "project": "android",
-  "gameBaseline": "V2.5.0 CACHE140",
-  "gameBuildId": "v2-5-0-cache140-equipment-earth-decompose-admin41-sql268r1",
+  "gameBaseline": "V2.5.0 CACHE141",
+  "gameBuildId": "v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1",
   "databaseBaseline": "SQL267 ONLINE / SQL268 R1 HOTFIX READY / NEXT SQL269",
   "currentProductionDatabase": "SQL267 ONLINE；用户已执行并通过 SQL267 门禁。",
-  "androidVersionCode": 2001519,
-  "androidVersionName": "2.5.0-cache140",
+  "androidVersionCode": 2001520,
+  "androidVersionName": "2.5.0-cache141",
   "gm": "ADMIN9 R41",
   "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged",
   "validator": "dynamic baseline-derived; no CACHE version hard-code",
-  "version": "V2.5.0 CACHE140",
-  "versionCode": 2001519,
-  "versionName": "2.5.0-cache140"
+  "version": "V2.5.0 CACHE141",
+  "versionCode": 2001520,
+  "versionName": "2.5.0-cache141"
 }

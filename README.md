@@ -1,6 +1,13 @@
-# 九霄问道 · V2.5.0 CACHE140
+# 九霄问道 · V2.5.0 CACHE141
 
-当前开发交付基线：**V2.5.0 CACHE140 / ADMIN9 R41 / SQL267 ONLINE / SQL268 R1 HOTFIX READY / tiandao-ai CACHE135 R6 unchanged**。
+当前开发交付基线：**V2.5.0 CACHE141 / ADMIN9 R41 / SQL267 ONLINE / SQL268 R1 HOTFIX READY / tiandao-ai CACHE135 R6 unchanged**。
+
+## CACHE141 · 批量分解弹窗手机端可达性修复
+
+- 装备列表与风险说明在弹窗中部独立滚动。
+- 「确认分解」固定保留在弹窗底部操作区，不再被底部导航/系统安全区挡住。
+- 沿用 CACHE140 的「一键选择地品」与原 `decompose_equipment_v180`，无需新增 SQL。
+
 
 ## CACHE140 · 装备批量分解地品一键选择
 
@@ -20,7 +27,7 @@
 
 1. 已通过 SQL267 的现有生产库，CACHE140 **无需新增 SQL** 即可使用地品一键选择分解。
 2. 如果 SQL268 R1 尚未执行，建议按独立热修说明执行，以修复灵兽加成后秘境结算小数转 integer 报错；这与本次分解功能无直接依赖。
-3. 发布预构建 `pages/`；Android 如需发新版 APK 使用 **versionCode 2001519 / versionName 2.5.0-cache140**。
+3. 发布预构建 `pages/`；Android 如需发新版 APK 使用 **versionCode 2001520 / versionName 2.5.0-cache141**。
 4. GM 继续 ADMIN9 R41，Edge 继续 tiandao-ai CACHE135 R6。
 
 ---

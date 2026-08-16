@@ -1,24 +1,29 @@
 {
   "ok": true,
-  "release": "V2.5.0 CACHE139",
-  "buildId": "v2-5-0-cache139-cave-modal-hub-admin41-sql267-gated",
+  "release": "V2.5.0 CACHE141",
+  "buildId": "v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1",
   "gm": "ADMIN9 R41",
-  "database": "SQL267 ONLINE / SQL267_GATE_PASSED",
-  "nextSql": 268,
-  "androidVersionCode": 2001518,
-  "androidVersionName": "2.5.0-cache139",
-  "edgeFunction": "tiandao-ai CACHE135 R6 ONLINE / unchanged",
+  "database": "SQL267 ONLINE / SQL267_GATE_PASSED; SQL268 R1 HOTFIX READY (production gate not confirmed in conversation)",
+  "nextSql": 269,
+  "androidVersionCode": 2001520,
+  "androidVersionName": "2.5.0-cache141",
+  "edgeFunction": "tiandao-ai CACHE135 R6 / unchanged",
   "checks": {
     "client-spirit-beast-module": true,
-    "sql267-static-contract": true,
-    "gm-r41-inline-js-syntax": true,
-    "lightweight-db-design": true,
+    "sql267-production-gate-evidence": true,
+    "sql268-hotfix-delivered": true,
+    "sql268-production-gate-evidence": false,
     "cave-six-entry-modal-hub": true,
-    "inline-cave-workbench-removed": true
+    "equipment-earth-one-tap-selection": true,
+    "web-android-resource-sync": true
   },
   "errors": [],
   "warnings": [
-    "SQL267 已部署；CACHE139 为客户端交互重构，不需要新增 SQL。",
+    "SQL268 R1 已交付但当前对话没有生产 SQL268_GATE_PASSED 证据，禁止误标 ONLINE。",
+    "CACHE140 仅客户端装备分解交互更新，不新增 SQL。",
     "正式 APK 继续由既有 GitHub Actions/Secrets 构建。"
+  ],
+  "notes": [
+    "CACHE141 仅客户端批量分解弹窗滚动/确认按钮可达性修复，不新增 SQL。"
   ]
 }

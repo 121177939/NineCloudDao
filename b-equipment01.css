@@ -210,3 +210,31 @@
 .equipment-detail-socket-row-bequipment01 em{font-style:normal;color:inherit;opacity:.9}
 .equipment-detail-socket-row-bequipment01.is-empty,.equipment-detail-socket-row-bequipment01.is-empty>b{color:#746b5b}
 .equipment-detail-socket-row-bequipment01.is-max,.equipment-detail-socket-row-bequipment01.is-max>b{color:#ef5f5f;font-weight:800}
+
+/* V2.5.0 CACHE141：批量分解弹窗手机端滚动/确认按钮可达性修复。
+   长装备列表只在中部滚动，确认操作始终保留在弹窗底部可点击区域。 */
+.equipment-modal-backdrop-bequipment01{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.equipment-batch-modal-bequipment01{
+  box-sizing:border-box;display:flex;flex-direction:column;
+  max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:hidden;
+}
+.equipment-batch-modal-bequipment01>header,.equipment-batch-tools-bequipment01,.equipment-batch-actions-bequipment01{flex:0 0 auto}
+.equipment-batch-scroll-bequipment01{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-right:3px}
+.equipment-batch-scroll-bequipment01 .equipment-batch-list-bequipment01{max-height:none;overflow:visible;padding-right:0}
+.equipment-batch-scroll-bequipment01>p{margin:12px 0 2px;color:#b8aa8a;line-height:1.65}
+.equipment-batch-actions-bequipment01{
+  position:relative;z-index:2;margin-top:10px;padding-top:10px;
+  border-top:1px solid rgba(206,182,126,.22);background:#1d1913;
+}
+.equipment-batch-actions-bequipment01 .danger-btn{width:100%;min-height:46px;font-size:.95rem}
+@media(max-width:520px){
+  .equipment-modal-backdrop-bequipment01{place-items:end center;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+  .equipment-batch-modal-bequipment01{
+    width:100%!important;max-width:none!important;padding:18px 14px 10px!important;
+    max-height:calc(100vh - 16px - env(safe-area-inset-bottom,0px));
+    max-height:calc(100dvh - 16px - env(safe-area-inset-bottom,0px));
+  }
+  .equipment-batch-modal-bequipment01>header{padding-right:34px}
+  .equipment-batch-tools-bequipment01{margin:9px 0 8px}
+  .equipment-batch-actions-bequipment01{margin-left:-2px;margin-right:-2px;padding-bottom:max(2px,env(safe-area-inset-bottom,0px))}
+}

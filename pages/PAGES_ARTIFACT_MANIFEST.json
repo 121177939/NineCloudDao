@@ -1,6 +1,6 @@
 {
-  "version": "V2.5.0 CACHE140",
-  "clientBuild": "v2-5-0-cache140-equipment-earth-decompose-admin41-sql268r1",
+  "version": "V2.5.0 CACHE141",
+  "clientBuild": "v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1",
   "requiredDatabaseGate": "SQL267_GATE_PASSED",
   "gm": "ADMIN9 R41",
   "files": [
@@ -16,13 +16,13 @@
     },
     {
       "path": "CURRENT_BASELINE.json",
-      "size": 5448,
-      "sha256": "fecf31e21b09def83f555cc79c2dbe4ada9d4c84a9a9a5a1ecda01b654915c46"
+      "size": 5940,
+      "sha256": "249509a8e0d24a84422bd002c3d3606cc6b46cf909f3835ba7c07eb1c88d2d74"
     },
     {
       "path": "VERSION.txt",
-      "size": 480,
-      "sha256": "19526bde03ef2cc35652f8d1ed30cc4b11020e952e3790ea07540dce88fcce24"
+      "size": 461,
+      "sha256": "57820791bde868561abcca004ef3470464f61ebaa049998a4e5b8ceccc5a5db7"
     },
     {
       "path": "app.js",
@@ -56,13 +56,13 @@
     },
     {
       "path": "b-equipment01.css",
-      "size": 24376,
-      "sha256": "db061c8df22e87c1f7ec762e3c03c5f5c3091271ff20ea0c23334a9759d2c105"
+      "size": 26298,
+      "sha256": "dddd8c5e339baa2f4c1526e790c097182f5d582a95bfeab5b2266a1145a3f586"
     },
     {
       "path": "b-equipment01.js",
-      "size": 51786,
-      "sha256": "5413865dc87e2cd1919e899116cc5e31be98e248572e172402cf3190c05a0a93"
+      "size": 51878,
+      "sha256": "d30993c679fb1704cbd55e410b52de0a0e81f3c978f8941553fd48612b181c29"
     },
     {
       "path": "b-exploration-v220.css",
@@ -137,7 +137,7 @@
     {
       "path": "config.js",
       "size": 550,
-      "sha256": "dadeb06afd8393d02d716ab192980b27c6709ae38757b87c131ba1a180ce8a09"
+      "sha256": "a8b8eb3db14f4e6d607384624a8bf0338930259fc500ea5e6cadc38b61a885a8"
     },
     {
       "path": "exploration-story-catalog-v262.json",
@@ -147,17 +147,17 @@
     {
       "path": "index.html",
       "size": 4505,
-      "sha256": "7cb4de01ef312f42db68be715663e1a4cc774f5a01e05f1061e438fd76165d41"
+      "sha256": "40be7ec6c6076b60c1c2c30be461c9462356b27fddab5f6a55b528d0dc17cd42"
     },
     {
       "path": "manifest.webmanifest",
       "size": 582,
-      "sha256": "224043069a051274bfe2d288059219c2b9f880794d502dc460910e1304c308e0"
+      "sha256": "f6f163148fb87ae087d9d304f25061167a386aaf9a18ce9e925364116e691511"
     },
     {
       "path": "release_config.json",
-      "size": 11880,
-      "sha256": "b1a72abbf1316ed32af5b298c6027f52f05cbd0dde82e5f078d832804e344266"
+      "size": 12041,
+      "sha256": "8cdcba8aa8e9a9ee2e93b86cca857f2bfd711608b3d5eccc2bb7aa9215dbbc65"
     },
     {
       "path": "styles.css",
@@ -167,7 +167,7 @@
     {
       "path": "sw.js",
       "size": 4900,
-      "sha256": "8b3b9a0cfb52bb37e7f36825505224a4eec352522be343f172561944e8e44192"
+      "sha256": "36ccd37394d415b744d49a6198f247f755b35277d6d1695ea9a4f6d43c0d81b7"
     },
     {
       "path": "update-guard.js",
