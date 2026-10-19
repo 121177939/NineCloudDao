@@ -1,0 +1,9 @@
+{
+  "applicationId": "com.example.remoteb",
+  "versionName": "2.0.46",
+  "versionCode": 100,
+  "force": false,
+  "apkUrl": "https://raw.githubusercontent.com/121177939/NineCloudDao/main/update/android/%E6%8E%A7%E5%88%B6B.apk",
+  "description": "v2.0.46 测试版：验证从 v2.0.45 在线升级，以及缺少/为空 SHA-256 的旧清单兼容。测试模板 sha256 为空；正式发布前必须通过发布脚本生成真实 SHA-256。",
+  "sha256": ""
+}
