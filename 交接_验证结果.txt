@@ -1,0 +1,26 @@
+Web A 阶段六 / 2026-10-20 / Android A/B v2.0.51 / versionCode 105 不变
+
+现场依据：用户提供 Android APP 历史列表与任务详情截图。APP 点击历史任务后，在同一详情弹窗内显示任务 ID、时间、状态、执行账号、说明及小票原图；旧 WAP 点击任务只显示文字和若干“查看或分享”按钮，需要再点击一次才能看到图片。
+
+阶段六修改：
+- 主历史页只显示最近 30 条云端任务中的最新 8 条终态记录；卡片标题、状态圆点、简短说明对齐 APP。
+- “查看全部历史 · 微信转发小票”打开分页历史弹窗，每页 30 条；支持勾选并分享/下载最多 6 张图。
+- 点击历史任务后直接下载并内嵌显示真实云端私有截图；截图路径选择对齐 Android `showHistoryDetail()`，兼容旧任务、M1 截图模式及 STOP 核实截图。
+- 读图失败显示明确提示，不会将任务标成不存在，不删除历史。
+- 人工结案、通知 B 自动恢复接单按钮仍始终禁用；建单、STOP、取消及其他云端写入门禁未开放。
+
+测试结果：
+- 离线断言总数：141 项通过。
+- Kotlin/JS parser：45 PASS。
+- preview-model：20 PASS。
+- preview-audit：16 PASS。
+- history-detail：13 PASS。
+- history-ui：9 PASS。
+- safety：26 PASS。
+- transactions mock：12 PASS。
+- JS 语法检查：app.js、history-detail.js、preview-model.js、supabase.js、safety.js、transactions.js 通过。
+- browser_smoke.py 已尝试，Playwright 在打开 `http://127.0.0.1:4173/` 时收到 `net::ERR_BLOCKED_BY_ADMINISTRATOR`；浏览器 UI 自动化未通过/未验证，不代表页面交互通过。
+
+明确未验证：真实移动浏览器页面、GitHub Pages 发布、真实 Supabase Auth/RLS/Storage、真实微信系统分享、B 真机联调、APK 编译/签名、生产写入。
+
+未修改：Android A/B 全部源码、Gradle 版本、versionName/versionCode、applicationId、APK URL、两份在线更新 JSON、SQL、下注协议和安全状态机。生产写入保持 FAIL_CLOSED。

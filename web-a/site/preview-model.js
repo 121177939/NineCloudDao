@@ -20,11 +20,23 @@ export const moneyJiao=value=>{
   return Number.isFinite(j)?`${(j/10).toFixed(1).replace(/\.0$/,'')}元`:'金额未知';
 };
 
-function locateItem(raw,normalized,needle,position) {
-  let at=normalized.indexOf(needle,position);
-  if(at<0)at=normalized.indexOf(needle);
-  if(at<0)return {start:0,end:0,matched:false,source:needle};
-  return {start:at,end:at+needle.length,matched:true,source:raw.slice(at,at+needle.length)};
+// Audit-only locator: never re-use a source interval to "prove" two separate items.
+// Canonical strings are search hints from the authoritative Kotlin result, not
+// a replacement parser or evidence that a source span truly exists.
+function locateUnclaimed(raw,normalized,needle,from,occupied) {
+  const text=String(needle||'');
+  if(!text)return {start:0,end:0,matched:false,source:text};
+  for(let at=normalized.indexOf(text,from);at>=0;at=normalized.indexOf(text,at+1)){
+    const end=at+text.length;
+    if(end>raw.length)continue;
+    if(occupied.slice(at,end).some(Boolean))continue;
+    // Avoid treating the tail of a longer four-digit number as this item.
+    if(/^[0-9X]/.test(text)&&at>0&&/[0-9X]/.test(normalized[at-1]))continue;
+    if(/[0-9X]$/.test(text)&&end<normalized.length&&/[0-9X]/.test(normalized[end]))continue;
+    occupied.fill(1,at,end);
+    return {start:at,end,matched:true,source:raw.slice(at,end)};
+  }
+  return {start:0,end:0,matched:false,source:text};
 }
 
 function ignoredSpans(source) {
@@ -76,44 +88,62 @@ export function createPreviewModel(source, parsed) {
   const scatter=Array.isArray(p.scatter)?p.scatter:[];
   const suites=Array.isArray(p.suites)?p.suites:[];
   const flags=buildFlags(p.command,scatter.length);
-  const ignored=ignoredSpans(raw);
-  let cursor=0;
-  const allScatter=scatter.map((item,i)=>{
-    const matched=locateItem(raw,normalized,String(item.number),cursor);
-    if(matched.matched)cursor=matched.end;
-    const warning=issues.find(x=>x.severity==='WARNING' && matched.start<x.end && matched.end>x.start);
-    return {...matched,number:String(item.number),amountJiao:Number(item.amountJiao),
-      amountText:moneyJiao(item.amountJiao),isTurn:flags[i],executionIndex:i+1,
-      status:!matched.matched||warning?'需确认':'正常',detail:!matched.matched?'原文中无法定位该散码，请返回核对':warning?.message||''};
-  });
-  const ordinary=allScatter.filter(x=>!x.isTurn);
-  const turns=allScatter.filter(x=>x.isTurn);
+  const ignored=ignoredSpans(raw), occupied=new Uint8Array(raw.length);
+  const warningFor=span=>span.matched?issues.find(x=>x.severity==='WARNING' && span.start<x.end && span.end>x.start):null;
+
+  // Locate suite snippets first so that a later ordinary number cannot be
+  // incorrectly highlighted inside a preceding multi-position suite.
+  const nextSuiteOffset=new Map();
   const suiteRows=suites.map((suite,i)=>{
     const canonical=String(suite.canonical||''), guessed=String(suite.source||canonical);
-    const needle=guessed.split('=')[0];
-    let span=locateItem(raw,normalized,needle,0);
-    if(!span.matched && suites.length===1 && allScatter.length===0){
-      // For a single original suite, keep the original user text instead of invented source.
-      span={start:0,end:raw.length,matched:true,source:raw.trim()};
-    }
-    const warning=issues.find(x=>x.severity==='WARNING'&&span.start<x.end&&span.end>x.start);
+    const needle=normalizeForOffsets(guessed.split('=')[0]);
+    const from=nextSuiteOffset.get(needle)||0;
+    const span=locateUnclaimed(raw,normalized,needle,from,occupied);
+    if(span.matched)nextSuiteOffset.set(needle,span.end);
+    // Legacy shorthand can compile into a canonical expression not literally
+    // present in the input. Show the original for audit, but do NOT claim a
+    // verified source offset or silently mark it as Normal.
+    if(!span.matched&&suites.length===1&&scatter.length===0)span.source=raw;
+    const warning=warningFor(span), examples=exampleSuite(canonical);
     return {...span,index:i,canonical,amountJiao:Number(suite.amountJiao),
       amountText:moneyJiao(suite.amountJiao),expectedCount:Number(suite.expectedCount),
-      examples:exampleSuite(canonical),recognition:canonical.split('=')[0],
-      status:warning?'需确认':'正常',detail:warning?.message||''};
+      examples,recognition:canonical.split('=')[0],
+      status:!span.matched||warning?'需确认':'正常',
+      detail:!span.matched?'预览无法定位该套码在原文中的准确位置，请人工核对':warning?.message||''};
   });
+
+  let cursor=0;
+  const allScatter=scatter.map((item,i)=>{
+    const span=locateUnclaimed(raw,normalized,String(item.number),cursor,occupied);
+    if(span.matched)cursor=span.end;
+    const warning=warningFor(span);
+    return {...span,number:String(item.number),amountJiao:Number(item.amountJiao),
+      amountText:moneyJiao(item.amountJiao),isTurn:flags[i],executionIndex:i+1,
+      status:!span.matched||warning?'需确认':'正常',
+      detail:!span.matched?'原文中无法定位该散码，请返回核对':warning?.message||''};
+  });
+  // Android v2.0.21 rule: classification comes from the final number of
+  // expanded combinations, not from a Kotlin parser enum or suite syntax.
+  // This is display-only: the authoritative p.scatter/p.suites stay unchanged.
+  const singlePositionRows=suiteRows.filter(row=>row.expectedCount===1).map(row=>({
+    ...row,number:row.examples[0]||row.recognition,isTurn:false,executionIndex:scatter.length+row.index+1
+  }));
+  const ordinary=[...allScatter.filter(x=>!x.isTurn),...singlePositionRows]
+    .sort((a,b)=>(a.matched?a.start:Number.MAX_SAFE_INTEGER)-(b.matched?b.start:Number.MAX_SAFE_INTEGER));
+  const turns=allScatter.filter(x=>x.isTurn);
+  const multiSuites=suiteRows.filter(x=>x.expectedCount!==1);
   const groups=new Map();
   for(const item of ordinary){
     if(!groups.has(item.amountText))groups.set(item.amountText,[]);
     groups.get(item.amountText).push(item.number);
   }
   const summary=[...groups].map(([amount,codes])=>`${codes.join('、')}各${amount}`).join('；');
-  const all=[...allScatter,...suiteRows];
-  return {scatter:ordinary,turns,suites:suiteRows,ignored,errors:issues.filter(x=>x.severity==='ERROR'),
+  const all=[...ordinary,...turns,...multiSuites];
+  return {scatter:ordinary,turns,suites:multiSuites,ignored,errors:issues.filter(x=>x.severity==='ERROR'),
     warnings:issues.filter(x=>x.severity==='WARNING'),scatterOriginal:ordinary.map(s=>s.source).join('，'),
     scatterRecognition:summary,normalCount:all.filter(x=>x.status==='正常').length,
     reviewCount:all.filter(x=>x.status==='需确认').length,
     failCount:issues.filter(x=>x.severity==='ERROR').length,
     totalCount:all.length+issues.filter(x=>x.severity==='ERROR').length,
-    scatterCount:ordinary.length,turnCount:turns.length,suiteCount:suiteRows.length};
+    scatterCount:ordinary.length,turnCount:turns.length,suiteCount:multiSuites.length};
 }

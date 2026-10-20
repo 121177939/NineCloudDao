@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const app = await readFile(new URL('../site/app.js', import.meta.url), 'utf8');
+const html = await readFile(new URL('../site/index.html', import.meta.url), 'utf8');
+assert.match(app, /completed\.forEach\(t=>\$\('history-list'\)\.appendChild\(historyCard\(t\)\)\)/);
+assert.match(app, /const planned=planHistoryArtifacts\(record,stops\)/);
+assert.match(app, /const blob=await api\.screenshot\(artifact\.path\)/);
+assert.match(app, /image\.className='ticket-image'/);
+assert.match(app, /image\.src=url/);
+assert.match(app, /addAction\('A 端人工核实 · 结案并通知 B 自动恢复接单',\{disabled:true/);
+assert.match(app, /addAction\('两张图片一起发微信',\{disabled:!\(scatter&&suite\)/);
+assert.match(app, /async function showAllHistory\(offset=0\)/);
+assert.match(app, /const completed=rows\.filter\(t=>\['finished','cancelled','failed'\]\.includes\(t\.status\)\)\.slice\(0,8\)/);
+assert.match(html, /\.history-detail-actions\s*\{flex-direction:column;/);
+assert.match(html, /img-src 'self' blob: data:/);
+console.log('PASS: 9 history UI and fail-closed structure assertions');

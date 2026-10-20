@@ -1,50 +1,23 @@
-# TwoPhoneRemote Web A → 121177939/NineCloudDao
+# TwoPhoneRemote Web A → 121177939/NineCloudDao（阶段六）
 
-**目标仓库：** `https://github.com/121177939/NineCloudDao`
+**Android 基线：** A/B `v2.0.51 / versionCode 105`，不升级、不修改。
 
-**当前状态：源代码安全迁移工程 / 不可宣称 Android A 100% 功能等价或可投入真实资金任务。** 此包没有上传到 GitHub；没有连接账户写入权限，没有真实 Supabase/B 端联网验收。发布后，网页仍将以只读/原 Kotlin 解析与预览模式运行，尚不开放真实发送、STOP、取消及人工结案。
+**本阶段：** 历史列表与任务详情截图对齐。主历史页显示最近 30 条任务中最新 8 条终态任务；“查看全部历史”打开分页历史弹窗；点击任务直接展示私有云端小票图片、任务时间/状态/账号/说明与核验摘要。支持勾选最多 6 张历史图片，通过浏览器系统分享或下载原图。
 
-## 代码目录与部署
+## 部署文件
 
-- 提交本包的 `web-a/` 目录和 `.github/workflows/web-a-pages.yml` 到 `121177939/NineCloudDao` 仓库根目录。
-- **不要覆盖** 仓库已有的 `update/android/控制A.apk`、`控制B.apk`、`update_a.json`、`update_b.json` 或其他工作流。
-- 打开仓库 `Settings → Pages → Build and deployment → Source`，选择 **GitHub Actions**。
-- 进入 `Actions → Web A - GitHub Pages (manual) → Run workflow`，从目标分支手工发布。
-- 当 Pages 在该仓库启用且部署成功后，项目站点的默认路径通常为 `https://121177939.github.io/NineCloudDao/`；**这只是预期路径，不是已经发布或验证可访问的地址。**
-- 仓库若已经托管另一份 Pages 网站，启用本工作流可能替换同一仓库的站点，应先检查已有部署计划。
+- 将本目录 `web-a/` 和 `.github/workflows/web-a-pages.yml` 按相对路径合并到 `121177939/NineCloudDao` 仓库根目录。
+- 工作流只发布 `web-a/site/`，手动触发；不会发布 Android 源码、历史归档或测试材料。
+- 不覆盖仓库已有 `update/android/`、A/B APK、`update_a.json`、`update_b.json` 或其他工作流。先人工检查仓库现状，再决定是否部署。
+- 当前包尚未上传 GitHub，也未发布 Pages。`https://121177939.github.io/NineCloudDao/` 只是预期地址，不代表已部署或可访问。
 
-工作流只发布 `web-a/site/`，不发布 Android 源码、私有历史记录、测试材料或任何账号。GitHub Pages 是静态托管，不运行后台 STOP 守护进程。
+## 云端与安全边界
 
-## 基于 Android A v2.0.51 的 Web 能力
+- 历史任务与截图继续使用当前登录用户的 Supabase Auth/RLS/私有 Storage；图片下载仍要求路径以当前 UID 开头、拒绝 `..` 并限制 5 MB。
+- 浏览器分享能力由 `navigator.share/canShare` 决定；不支持时下载原图供用户手动分享。网页不会自动选择微信联系人。
+- 真实建单、双账号发送、STOP、取消、人工结案、通知 B 自动恢复接单继续关闭；详情中的结案按钮始终禁用。
+- 不能把离线测试通过写成真实 Supabase、微信分享、Android 真机或生产任务验收通过。
 
-- **源码实现：** 手机风格的登录、控制中心、原 Kotlin/JS 识别和预览、账号信息展示、在线状态刷新、任务与历史列表、云端私有回图及分享。云端接口使用原版 Supabase URL、公开 publishable key、用户 Auth、RLS 和私有存储鉴权。
-- **本阶段增强：** 整理了普通建单、双账号原子 RPC、STOP/自动释放、取消、人工核查相关 API 的浏览器适配器；加入任务 UUID 持久化、跨标签页互斥、旧任务未知结果保留锁定、B 心跳与 ACK 门禁；登录后可提示本地未决操作。相关代码在 `web-a/site/safety.js`、`transactions.js`。
-- **仍未启用：** 网页按钮的真实发送、STOP、自动释放、取消、人工结案。即使 RPC 调用代码存在也不意味着其已通过生产运行验收。前端改动不能替代数据库 RLS、服务端幂等、防重试、任务一致性和真机检查。
+## 测试
 
-## 达到用户要求的“真正完整版”还需完成
-
-1. 需要 GitHub 仓库的授权连接，才能检查原仓库现有内容、避免覆盖其他配置并实际提交/发布。
-2. 需要允许的 Supabase **测试环境**（独立于真实下注任务），核实 RPC、RLS、CORS、Storage 权限、数据库迁移实际部署情况。**不要把账户密码、管理员/secret key 发在聊天里或提交到 GitHub。**
-3. 对普通/双账号发送做真实服务端幂等与断网/刷新恢复，验证与目标 B 端的每一个状态门禁；如有需在浏览器关闭后继续可靠收尾的操作，应放在服务器端，而不是依赖 GitHub Pages/浏览器定时器。
-4. 完整移植 Android A 设置、发送确认、核对结案、赔率与 STOP 状态机所有分支，并逐屏进行移动浏览器与 Android 真机对照验收。
-5. 验收前不要修改 `site/app.js` 的写入禁用规则，亦不要尝试修改代码绕开服务器权限。
-
-## 验证方法
-
-仓库根目录运行：
-
-```bash
-node --check web-a/site/app.js
-node --check web-a/site/supabase.js
-node --check web-a/site/safety.js
-node --check web-a/site/transactions.js
-node web-a/tests/parser.test.cjs
-node --experimental-default-type=module web-a/tests/safety.test.mjs
-node --experimental-default-type=module web-a/tests/transactions.test.mjs
-```
-
-此次共通过 45 条 Kotlin/JS 解析/协议断言、26 条安全结构/策略断言和 12 个模拟事务场景，**仅限离线 mock**。浏览器真实页面自动化在工作环境被拦截本地 URL 导航，未取得通过结果；没有部署或连真实设备。
-
-## 版本与归档
-
-本次只是 Web A 安全移植的 **阶段三**，没有修改 Android A/B 的原 `2.0.51 / versionCode 105`，也没有更新在线 APK/JSON。新源码与新历史记录必须分别附在原完整双包之上，保留所有历史文件和 SHA-256 清单，不得用此部署包替代历史归档。
+见 `README_WEB_A_阶段六_历史详情对齐.md` 与 `交接_验证结果.txt`。离线测试共 141 项通过。Playwright 浏览器 smoke 因运行环境导航策略拦截 `127.0.0.1` 而未通过/未验证；需要在允许浏览器导航的环境复跑。
