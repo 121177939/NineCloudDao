@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f8fc">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://wqhirteaemujeytsdpit.supabase.co; img-src 'self' blob: data:; font-src 'self'; worker-src 'none'">
+  <meta name="color-scheme" content="light">
+  <title>控制中心 · Web A · v2.0.51</title>
+  <style>
+    /* Palette, dp, card radius, typography and spacing taken from A v2.0.51 VisualUi.kt/MainActivity.kt. */
+    :root { --bg:#f6f8fc; --white:#ffffff; --ink:#1a2a40; --muted:#6b7a90; --blue:#236fe7;
+      --soft-blue:#e9f1ff; --border:#e5e9f1; --green:#1b9769; --red:#bc4046;
+      --shadow:0 0 0 transparent; --font:"Noto Sans CJK SC","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    }
+    * { box-sizing:border-box; }
+    html, body { width:100%; height:100%; margin:0; }
+    body { background:#edf0f6; font-family:var(--font); color:var(--ink); -webkit-font-smoothing:antialiased; }
+    button,input,textarea { font:inherit; color:inherit; }
+    button { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    button:focus-visible,input:focus-visible,textarea:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+    .app { position:relative; margin:0 auto; max-width:500px; height:100%; height:100dvh;
+      background:var(--bg); display:flex; flex-direction:column; overflow:hidden; }
+    .screens { flex:1 1 auto; overflow:hidden; position:relative; min-height:0; }
+    .page { height:100%; overflow-x:hidden; overflow-y:auto; scrollbar-width:none; overscroll-behavior:contain;
+      padding:20px 17px 25px; }
+    .page::-webkit-scrollbar,.preview-scroll::-webkit-scrollbar { display:none; }
+    [hidden] { display:none !important; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .headings { min-width:0; flex:1; }
+    h1,h2,h3,p { margin:0; }
+    .home-title { font-size:26px; font-weight:750; letter-spacing:-.7px; line-height:1.4; }
+    .home-subtitle { color:var(--muted); font-size:12.5px; line-height:1.5; margin-top:3px; }
+    .button { appearance:none; border:0; background:var(--soft-blue); border-radius:13px; color:var(--blue);
+      padding:9px 10px; min-height:48px; font-size:14.5px; font-weight:700; display:inline-flex;
+      justify-content:center; align-items:center; text-align:center; white-space:nowrap; line-height:1.35; }
+    .button.primary { background:var(--blue); color:white; }
+    .button.ghost { background:#fff; border:1px solid var(--border); }
+    .button.danger { background:#fff0f0; color:var(--red); }
+    .button:disabled { opacity:.45; cursor:not-allowed; }
+    .settings-button { width:73px; flex-shrink:0; }
+    .card { padding:16px; border-radius:20px; border:1px solid var(--border); background:var(--white); }
+    .space-4 { height:4px; } .space-7 { height:7px; } .space-8 { height:8px; }
+    .space-9 { height:9px; } .space-10 { height:10px; } .space-12 { height:12px; }
+    .space-14 { height:14px; } .space-15 { height:15px; } .space-16 { height:16px; }
+    .space-20 { height:20px; }
+    .presence-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .presence-label { color:var(--green); font-size:13px; font-weight:750; }
+    .presence-state { color:var(--muted); font-size:13.5px; line-height:1.55; white-space:pre-line;
+      display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; min-height:20px; }
+    .presence-refresh { width:76px; flex-shrink:0; }
+    .field-title { font-size:18px; font-weight:750; line-height:1.45; }
+    .field-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+    .input-text { display:block; width:100%; min-height:114px; max-height:180px; resize:vertical;
+      background:var(--bg); border:1px solid var(--border); border-radius:14px;
+      padding:12px 13px; font-size:16px; line-height:1.5; font-weight:400; outline:none; }
+    .action-row { display:flex; align-items:stretch; gap:10px; }
+    .action-row > * { min-width:0; }
+    .input-clear { flex:1; } .input-preview { flex:2; }
+    .input-status { color:var(--muted); font-size:12px; line-height:1.55; white-space:pre-line;
+      word-break:break-word; min-height:18px; cursor:pointer; }
+    .section-head { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .section-title { font-size:20px; font-weight:750; letter-spacing:-.3px; }
+    .no-task-title { font-size:15px; font-weight:700; margin-bottom:5px; }
+    .no-task-subtitle { font-size:12px; color:var(--muted); line-height:1.5; }
+    .footer-caption { font-size:11.5px; color:var(--muted); line-height:1.6; }
+    .navbar { width:100%; min-height:70px; height:calc(70px + env(safe-area-inset-bottom));
+      padding:8px 9px calc(11px + env(safe-area-inset-bottom)); flex:0 0 auto;
+      background:var(--white); box-shadow:0 -3px 14px rgba(37,52,75,.045);
+      display:flex; align-items:center; justify-content:space-around; }
+    .tab { width:33.333%; height:100%; display:flex; flex-direction:column; align-items:center;
+      justify-content:center; background:none; border:0; gap:2px; color:var(--muted); }
+    .tab.active { color:var(--blue); }
+    .tab-icon { font-size:20px; font-weight:700; height:25px; line-height:25px; }
+    .tab-label { font-size:12px; font-weight:700; }
+    .minor-title { font-size:19px; font-weight:750; line-height:1.5; }
+    .minor-subtitle { font-size:12px; color:var(--muted); line-height:1.6; }
+    .task-grid { display:grid; grid-template-columns:1fr 2fr; gap:10px; }
+    .status-note { color:var(--muted); font-size:12px; line-height:1.6; }
+    .task-list { display:flex; flex-direction:column; gap:10px; }
+    .overlay { position:absolute; inset:0; z-index:70; background:rgba(14,25,42,.36); display:flex;
+      justify-content:center; align-items:center; padding:20px; }
+    .modal { background:var(--white); border-radius:21px; padding:20px; box-shadow:0 24px 54px rgba(11,32,73,.16);
+      width:100%; max-width:360px; max-height:87%; overflow-y:auto; }
+    .modal-title { font-size:19px; font-weight:750; margin-bottom:6px; }
+    .modal-desc { white-space:pre-line; color:var(--muted); font-size:13.5px; line-height:1.7; }
+    .modal-actions { display:flex; gap:10px; margin-top:22px; }
+    .modal-actions .button { flex:1; }
+    .menu-option { width:100%; display:flex; text-align:left; padding:15px 1px; align-items:center;
+      justify-content:space-between; border:0; background:none; font-size:14px; border-bottom:1px solid var(--border); }
+    .menu-option:last-child { border-bottom:0; }
+    .menu-option span { color:var(--muted); }
+    /* v2.0.51's native preview is a full-screen view with single scroll body and fixed controls. */
+    .preview { z-index:5; position:absolute; inset:0; background:#f8fafe; display:flex; flex-direction:column;
+      padding:3px 10px 5px; }
+    .preview-top { display:flex; align-items:center; min-height:40px; gap:2px; }
+    .preview-back { border:0; background:none; color:var(--ink); font-size:28px; width:34px; height:38px; }
+    .preview-title { font-size:19.8px; font-weight:750; flex:1; }
+    .preview-help { border:0; background:none; font-size:13.7px; font-weight:700; color:var(--blue); }
+    .preview-scroll { flex:1; overflow:auto; scrollbar-width:none; overscroll-behavior:contain; }
+    .preview-card { border:1px solid var(--border); border-radius:14px; background:#fff; padding:7px 8px; margin-bottom:6px; }
+    .preview-card-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+    .preview-small-title { font-size:14.9px; font-weight:750; }
+    .preview-text { border-radius:10px; border:1px solid #dbe6f6; background:#f0f7ff;
+      margin-top:5px; padding:7px 8px; white-space:pre-wrap; word-break:break-word; font-size:14.1px; line-height:1.5; }
+    .chip-list { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin:5px 0 6px; }
+    .chip { border:0; padding:7px 1px; background:#fff; border-radius:9px; font-size:11.7px; font-weight:750;
+      color:var(--ink); text-align:center; }
+    .chip.selected { color:#fff; background:var(--blue); }
+    .chip.amber { color:#a37100; background:#fff7da; }
+    .chip.red { color:#bc4046; background:#ffebed; }
+    .preview-row { display:flex; gap:6px; align-items:flex-start; }
+    .round-index { height:22px; width:22px; min-width:22px; border-radius:50%; color:white;
+      background:var(--blue); font-size:11px; display:inline-flex; align-items:center; justify-content:center; font-weight:700; }
+    .preview-row-content { min-width:0; flex:1; font-size:12.9px; line-height:1.45; }
+    .result-top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .result-status { font-weight:700; color:#e09500; font-size:11.8px; white-space:nowrap; }
+    .result-caption { font-size:11.6px; color:var(--muted); margin-top:3px; }
+    .result-count { font-size:16.5px; font-weight:750; line-height:1.5; }
+    .filter-small { display:flex; align-items:center; gap:2px; color:var(--muted); font-size:10px; white-space:nowrap; }
+    .checkbox-row { display:flex; align-items:center; gap:14px; }
+    .checkbox-row label { display:flex; align-items:center; gap:6px; flex:1; font-size:13px; }
+    input[type=checkbox] { accent-color:var(--blue); width:16px; height:16px; }
+    .preview-footer { display:flex; gap:5px; min-height:55px; align-items:center; padding-top:4px; }
+    .preview-footer .button { font-size:12px; min-height:44px; padding:6px; }
+    .preview-footer .button:nth-child(1) { flex:1; }
+    .preview-footer .button:nth-child(2), .preview-footer .button:nth-child(3) { flex:1.25; }
+    .demo-warning { font-size:11px; color:#b36a00; margin:6px 1px; line-height:1.45; }
+    .login-page { flex:1; padding:62px 22px 30px; overflow:auto; background:var(--bg); }
+    .login-title { font-size:30px; font-weight:750; line-height:1.4; }
+    .login-label { display:block; font-size:13px; font-weight:700; margin:12px 0 6px; }
+    .login-input { width:100%; padding:12px; border:1px solid var(--border); background:var(--bg);
+      border-radius:12px; font-size:15px; min-height:46px; }
+    @media (max-width:360px) { .page { padding-left:13px; padding-right:13px; }
+      .section-title { font-size:18px; } .presence-label { font-size:12px; } .button { font-size:13px; }
+    }
+    @media (min-width:501px) { .app { box-shadow:0 9px 48px rgba(21,45,82,.15); } }
+    .login-full { position:fixed; inset:0; background:var(--bg); z-index:40; overflow:auto; padding:62px 22px 30px; max-width:500px; margin:auto; }
+    .login-panel { margin-top:30px; }
+    .list-stack { display:flex; flex-direction:column; gap:10px; }
+    .history-card { cursor:pointer; }
+    .history-card .sub {font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.5;}
+    .ticket-image {display:block;max-width:100%;height:auto;margin:8px auto;}
+    .warn {color:#b36a00;white-space:pre-wrap;font-size:12px;line-height:1.5;}
+    .row-info{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+    .txt-red{color:var(--red)}
+    .txt-green{color:var(--green)}
+    .light-note{font-size:11px;line-height:1.5;color:var(--muted)}
+    .menu-option{cursor:pointer}
+    .state-chip{font-weight:700;color:var(--blue)}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="screens" id="screens">
+    <section class="page" id="page-entry" aria-label="录入">
+      <div class="topbar">
+        <div class="headings"><h1 class="home-title">控制中心</h1><div class="home-subtitle">发送任务 · 查看实时进度</div></div>
+        <button class="button ghost settings-button" id="open-settings">设置</button>
+      </div>
+      <div class="space-16"></div>
+      <div class="card">
+        <div class="presence-head"><div class="presence-label">●&nbsp; 执行端连接</div>
+          <button class="button presence-refresh" id="presence-refresh">刷新</button>
+        </div>
+        <div class="space-7"></div>
+        <div class="presence-state" id="b-status">尚未登录，无法读取 B 状态</div>
+      </div>
+      <div class="space-14"></div>
+      <div class="card">
+        <h2 class="field-title">号码输入</h2><div class="space-4"></div>
+        <div class="field-desc">支持直接粘贴多行号码</div>
+        <div class="space-12"></div>
+        <textarea id="command" class="input-text" spellcheck="false" aria-label="号码输入" placeholder="请输入或粘贴号码"></textarea>
+        <div class="space-12"></div>
+        <div class="action-row">
+          <button id="clear-input" class="button ghost input-clear">清空</button>
+          <button id="preview-input" class="button primary input-preview">识别并预览</button>
+        </div>
+        <div class="space-9"></div>
+        <div class="input-status" id="input-status" role="status">原 Kotlin 同源识别已启用；真实云端写入仍待安全验收。</div>
+      </div>
+      <div class="space-20"></div>
+      <div class="section-head"><h2 class="section-title">当前任务</h2>
+        <button class="button" id="view-all-tasks">查看全部 ›</button></div>
+      <div class="space-10"></div>
+<div id="home-task-list" class="list-stack"><div class="card">正在等待云端状态…</div></div>
+      <div class="space-8"></div>
+      <p class="footer-caption">进度来自执行端已核验记录，不会提前标记完成。</p>
+    </section>
+
+    <section class="page" id="page-tasks" hidden aria-label="任务">
+      <h1 class="minor-title">任务中心</h1><p class="minor-subtitle">只显示云端真实状态，执行中可展开查看详情</p>
+      <div class="space-14"></div>
+      <div class="task-grid">
+        <button class="button" id="tasks-refresh">刷新</button>
+        <button class="button danger" id="tasks-stop">终止所有任务</button>
+      </div>
+      <div class="space-20"></div>
+<div class="task-list" id="task-list"><div class="card">登录后读取任务。</div></div>
+    </section>
+
+    <section class="page" id="page-history" hidden aria-label="历史">
+      <h1 class="minor-title">历史记录</h1>
+      <p class="minor-subtitle">已完成、已取消和失败任务在这里查看与分享</p>
+      <div class="space-14"></div>
+      <button class="button primary" style="width:100%" id="history-all">查看全部历史 · 微信转发小票</button>
+      <div class="space-15"></div>
+<div class="list-stack" id="history-list"><div class="card">登录后读取历史。</div></div><div class="space-12"></div><button class="button" id="history-more" style="width:100%">加载更多</button>
+    </section>
+
+    <section class="preview" id="preview" hidden aria-label="识别预览">
+      <div class="preview-top">
+        <button class="preview-back" id="preview-back" aria-label="返回">‹</button>
+        <span class="preview-title">识别预览</span>
+        <button class="preview-help" id="preview-help">使用说明</button>
+      </div>
+      <div class="preview-scroll">
+        <div class="preview-card">
+          <div class="preview-card-top"><span class="preview-small-title" id="original-title">原始内容</span>
+            <button class="button ghost" style="min-height:30px;padding:4px 7px;font-size:13px" id="reuse-original">复用原文</button></div>
+          <div class="preview-text" id="original-text"></div>
+        </div>
+        <div class="result-top"><span class="result-count" id="result-count">识别结果</span>
+          <label class="filter-small"><input type="checkbox" id="review-only">只看需确认/失败</label></div>
+        <div class="chip-list" id="preview-filters">
+          <button class="chip selected" data-filter="全部">全部(0)</button>
+          <button class="chip" data-filter="正常">正常(0)</button>
+          <button class="chip amber" data-filter="需确认">需确认(0)</button>
+          <button class="chip red" data-filter="失败">失败(0)</button>
+        </div>
+        <div id="preview-rows"></div>
+        <div class="preview-card"><div class="checkbox-row">
+          <label><input type="checkbox" id="suite-screenshot">套码截图</label>
+          <label><input type="checkbox" id="convert-odds">转换倍率</label>
+        </div></div>
+<div class="demo-warning">号码识别使用 v2.0.51 Kotlin 同源逻辑；真实发送未开放。</div>
+      </div>
+      <div class="preview-footer">
+        <button class="button ghost" id="preview-edit">修改号码</button>
+        <button class="button" id="preview-copy">复制原文</button>
+        <button class="button primary" id="preview-send" disabled title="云端发送安全等价验证未完成">确认发送</button>
+      </div>
+    </section>
+  </div>
+
+  <nav class="navbar" id="navbar" aria-label="主导航">
+    <button class="tab active" data-page="entry"><span class="tab-icon">✎</span><span class="tab-label">录入</span></button>
+    <button class="tab" data-page="tasks"><span class="tab-icon">▤</span><span class="tab-label">任务</span></button>
+    <button class="tab" data-page="history"><span class="tab-icon">▣</span><span class="tab-label">历史</span></button>
+  </nav>
+  <div class="overlay" id="overlay" hidden role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+    <h2 class="modal-title" id="modal-heading"></h2><div class="modal-desc" id="modal-body"></div>
+    <div id="modal-options"></div><div class="modal-actions" id="modal-actions"></div>
+  </div></div>
+<section class="login-full" id="login-screen">
+  <h1 class="login-title">控制中心</h1><p class="minor-subtitle" style="margin-top:7px">手机 A · 号码录入与任务管理（Web 版）</p>
+  <div class="card login-panel"><h2 class="field-title">欢迎使用</h2><p class="field-desc">使用与 Android A 相同的 Supabase 账号登录</p>
+    <label class="login-label" for="login-email">登录邮箱</label><input class="login-input" id="login-email" type="email" autocomplete="username" placeholder="请输入邮箱">
+    <label class="login-label" for="login-password">密码</label><input class="login-input" id="login-password" type="password" autocomplete="current-password" placeholder="请输入密码">
+    <div class="space-16"></div><button class="button primary" style="width:100%" id="login-submit">安全登录</button>
+    <div class="space-12"></div><div class="status-note" id="login-status">提示：新 Web A 登录会占用 A 端会话，原 Android A 可能被退出。请勿在旧任务未决时跨设备操作。</div>
+  </div>
+  <p class="warn" style="margin-top:15px">云端登录、状态、历史及回图采用真实 API；任务创建、STOP、取消与人工结案尚未经过生产环境验收，当前不可直接写入。</p>
+</section>
+<script src="parser.js"></script><script type="module" src="app.js"></script>
+</body></html>
