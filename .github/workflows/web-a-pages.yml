@@ -1,0 +1,54 @@
+name: Web A - GitHub Pages (manual)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-a-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Confirm deployment files only
+        run: |
+          test -s web-a/site/index.html
+          test -s web-a/site/parser.js
+          test -s web-a/site/app.js
+          test -s web-a/site/supabase.js
+          test -e web-a/site/.nojekyll
+          test -s web-a/site/safety.js
+          test -s web-a/site/transactions.js
+          test "$(find web-a/site -type f | wc -l)" -ge 7
+          ! grep -Eiq 'service_role|sb_secret_' web-a/site/*.js
+          echo "Deploy only web-a/site/ (do not publish Android source or archives)"
+      - name: Static verification (no mutation of Supabase)
+        run: |
+          node --check web-a/site/app.js
+          node --check web-a/site/supabase.js
+          node --check web-a/site/safety.js
+          node --check web-a/site/transactions.js
+          node web-a/tests/parser.test.cjs
+          node --experimental-default-type=module web-a/tests/safety.test.mjs
+          node --experimental-default-type=module web-a/tests/transactions.test.mjs
+      - name: Set up Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./web-a/site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
