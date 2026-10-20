@@ -1,6 +1,7 @@
 import {WebAClient, CloudError} from './supabase.js';
 import {WebTransactions} from './transactions.js';
 import {requireBReady} from './safety.js';
+import {createPreviewModel, moneyJiao} from './preview-model.js';
 
 // Web A v2.0.51 — GitHub Pages integration candidate. Local mutation state machine is
 // implemented and unit-tested, but production write actions stay fail-closed until
@@ -11,7 +12,7 @@ const webParser=globalThis.parser?.com?.example?.remotea?.WebParser;
 if(!webParser)throw Error('Kotlin/JS 识别引擎未加载，拒绝提供预览或发送');
 const api=new WebAClient();
 const state={tx:null,page:'entry',filter:'全部',parsed:null,parsedText:'',lastFocus:null,auth:false,
-    busy:false,historyOffset:0,historyRows:[],tasks:[],presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0};
+    busy:false,historyOffset:0,historyRows:[],tasks:[],presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set()};
 const FAIL_CLOSED='Web 安全一致性验证尚未完成，当前版本禁止真实建单和修改云端任务。请使用已验收的 Android A 端执行该操作。';
 function setStatus(text){$('input-status').textContent=text;}
 function modal(title,message,actions=[{label:'知道了'}]){
@@ -206,6 +207,7 @@ function openPreview(){
   const input=$('command').value;
   if(!input.trim()){modal('请输入号码','请先输入或粘贴号码，再打开识别预览。');return;}
   state.parsed=useParser(input);state.parsedText=input;state.filter='全部';
+  state.previewModel=createPreviewModel(input,state.parsed);state.expandedSuites.clear();
   $('review-only').checked=false;$('suite-screenshot').checked=false;$('convert-odds').checked=false;
   $('original-title').textContent=`原始内容（共 ${input.length} 字）`;
   $('original-text').textContent=input;
@@ -215,35 +217,132 @@ function openPreview(){
     setStatus('识别失败：'+state.parsed.issues.filter(x=>x.severity==='ERROR').map(x=>x.message).slice(0,3).join('；'));
   }
 }
-function renderPreview(){
-  const p=state.parsed||{scatter:[],suites:[],issues:[]};
-  const scat=p.scatter||[],suite=p.suites||[],issues=p.issues||[];
-  const errors=issues.filter(x=>x.severity==='ERROR'),warnings=issues.filter(x=>x.severity==='WARNING');
-  $('result-count').textContent=`识别结果（散码 ${Math.max(0,scat.length-(p.turnCount||0))} 组 · 全转 ${p.turnCount||0} 组 · 套码 ${suite.length} 条）`;
-  const counts={'全部':scat.length+suite.length+issues.length,'正常':scat.length+suite.length,'需确认':warnings.length,'失败':errors.length};
-  document.querySelectorAll('#preview-filters .chip').forEach(b=>{
-    const k=b.dataset.filter;b.textContent=`${k}(${counts[k]||0})`;b.classList.toggle('selected',k===state.filter);
-  });
-  const container=$('preview-rows');container.replaceChildren();
-  const rows=[];
-  if(state.filter==='全部'||state.filter==='正常'){
-    for(const [i,s] of scat.entries())rows.push({name:`${s.number} · 各 ${money(s.amountJiao)}`,sub:`散码第${i+1}条`,kind:'正常'});
-    for(const [i,s] of suite.entries())rows.push({name:`${s.canonical} · ${s.expectedCount}笔`,sub:`套码第${i+1}条 · ${money(s.amountJiao)}每笔`,kind:'正常'});
+function setPreviewHighlights(spans=[]){
+  const source=state.parsedText, model=state.previewModel;
+  const marks=[];
+  for(const i of model.ignored)marks.push({...i,priority:1,cls:'ignored-mark'});
+  for(const i of spans)if(i?.matched && i.start<i.end)marks.push({...i,priority:2,cls:'selected-mark'});
+  // Draw from source offsets without altering source text, checksum, or recognition result.
+  const tags=Array.from({length:source.length},()=>null);
+  for(const span of marks){
+    for(let pos=Math.max(0,span.start);pos<Math.min(source.length,span.end);pos++){
+      if(!tags[pos]||tags[pos].priority<=span.priority)tags[pos]=span;
+    }
   }
-  if(state.filter==='全部'||state.filter==='失败')errors.forEach(x=>rows.push({name:x.message,sub:`输入位置 ${x.start+1}–${x.end}`,kind:'失败',range:x}));
-  if(state.filter==='全部'||state.filter==='需确认')warnings.forEach(x=>rows.push({name:x.message,sub:`位置 ${x.start+1}–${x.end}`,kind:'需确认',range:x}));
-  if(!rows.length){container.innerHTML='<div class="preview-card result-caption">当前分类下没有项目</div>';}
-  rows.forEach((r,i)=>{
-    const c=document.createElement('div');c.className='preview-card';c.tabIndex=0;
-    const badge=r.kind==='失败'?'<span class="txt-red">● 失败</span>':r.kind==='需确认'?'<span style="color:#b36a00">● 需确认</span>':'<span class="txt-green">● 正常</span>';
-    c.innerHTML=`<div class="preview-row"><span class="round-index">${i+1}</span><div class="preview-row-content"><div class="result-top"><strong>${escapeHTML(r.name)}</strong>${badge}</div><div class="result-caption">${escapeHTML(r.sub)}</div></div></div>`;
-    if(r.range){const highlight=()=>{
-      const from=Math.max(0,Math.min(r.range.start,state.parsedText.length)),to=Math.max(from,Math.min(r.range.end,state.parsedText.length));
-      $('original-text').innerHTML=escapeHTML(state.parsedText.slice(0,from))+'<mark>'+escapeHTML(state.parsedText.slice(from,to))+'</mark>'+escapeHTML(state.parsedText.slice(to));
-    };c.onclick=highlight;c.onkeydown=e=>{if(e.key==='Enter')highlight();};}
-    container.appendChild(c);
+  let result='',pos=0;
+  while(pos<source.length){
+    const tag=tags[pos];let end=pos+1;
+    while(end<source.length && tags[end]?.cls===tag?.cls)end++;
+    const part=escapeHTML(source.slice(pos,end));
+    result+=tag?`<mark class="${tag.cls}">${part}</mark>`:part;
+    pos=end;
+  }
+  $('original-text').innerHTML=result;
+}
+function makePreviewCard(index,title,status='正常'){
+  const card=document.createElement('div');card.className='preview-card';
+  const heading=document.createElement('div');heading.className='preview-row';
+  const badge=document.createElement('span');badge.className='round-index';badge.textContent=index;
+  const content=document.createElement('div');content.className='preview-row-content';
+  const head=document.createElement('div');head.className='result-top';
+  const titleNode=document.createElement('strong');titleNode.textContent=title;
+  const statusNode=document.createElement('span');statusNode.className=`row-status ${status==='正常'?'txt-green':'txt-amber'}`;
+  statusNode.textContent=status==='正常'?'✓ 正常':`● ${status}`;
+  head.append(titleNode,statusNode);content.append(head);heading.append(badge,content);card.append(heading);
+  return {card,content};
+}
+function previewDetail(node,text,style=''){
+  const el=document.createElement('div');el.className='preview-detail '+style;el.textContent=text;node.appendChild(el);return el;
+}
+function renderPreview(){
+  const model=state.previewModel;
+  if(!model)return;
+  $('result-count').textContent=`识别结果（散码 ${model.scatterCount} 组 · 全转 ${model.turnCount} 组 · 套码 ${model.suiteCount} 条）`;
+  const counts={'全部':model.totalCount,'正常':model.normalCount,'需确认':model.reviewCount,'失败':model.failCount};
+  document.querySelectorAll('#preview-filters .chip').forEach(button=>{
+    const key=button.dataset.filter;button.textContent=`${key}(${counts[key]||0})`;
+    button.classList.toggle('selected',key===state.filter);
   });
-  // Disabled in this migration build: native role/STOP/dual-plan transactions not yet accepted.
+  setPreviewHighlights([]);
+  const note=$('preview-ignored');note.replaceChildren();
+  if(model.ignored.length){
+    note.hidden=false;note.textContent='已自动忽略：'+model.ignored.map(x=>x.source).join('、');
+    note.onclick=()=>setPreviewHighlights(model.ignored);
+  }else note.hidden=true;
+  const onlyReview=$('review-only').checked;
+  const isVisible=row=>{
+    if(onlyReview)return row.status!=='正常';
+    if(state.filter==='全部')return true;
+    return row.status===state.filter;
+  };
+  const host=$('preview-rows');host.replaceChildren();
+  const scatter=model.scatter.filter(isVisible);
+  const scatterStatus=scatter.some(x=>x.status==='需确认')?'需确认':'正常';
+  const group=makePreviewCard(1,'散码区',scatterStatus);
+  if(!scatter.length){
+    previewDetail(group.content,onlyReview||state.filter!=='全部'?'当前筛选下没有散码':'本次没有单组散码','result-caption');
+  }else{
+    previewDetail(group.content,'原文：'+scatter.map(x=>x.source).join('，'),'preview-raw');
+    const grouped=new Map();
+    for(const item of scatter){
+      if(!grouped.has(item.amountText))grouped.set(item.amountText,[]);
+      grouped.get(item.amountText).push(item.number);
+    }
+    previewDetail(group.content,'识别：'+[...grouped].map(([amount,codes])=>`${codes.join('、')}各${amount}`).join('；'),'preview-recognized');
+    const problems=[...new Set(scatter.map(x=>x.detail).filter(Boolean))];
+    if(problems.length)previewDetail(group.content,'提示：'+problems.join('；'),'txt-amber');
+    group.card.setAttribute('role','button');group.card.tabIndex=0;
+    const highlight=()=>setPreviewHighlights(scatter);
+    group.card.addEventListener('click',highlight);
+    group.card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();highlight();}});
+  }
+  host.appendChild(group.card);
+  if(model.turnCount){
+    const turn=document.createElement('div');turn.className='preview-card';
+    const label=document.createElement('strong');label.textContent=`全转区（${model.turnCount}条独立执行项）`;
+    turn.appendChild(label);
+    const visibleTurn=model.turns.filter(isVisible);
+    if(!visibleTurn.length)previewDetail(turn,'当前筛选下无全转','result-caption');
+    for(const item of visibleTurn)previewDetail(turn,`第${item.executionIndex}组 · ${item.number} · 全转 · 各${item.amountText}`,'preview-recognized');
+    turn.onclick=()=>setPreviewHighlights(visibleTurn);host.appendChild(turn);
+  }
+  const visibleSuites=model.suites.filter(isVisible);
+  for(const [visualIndex,row] of visibleSuites.entries()){
+    const detail=makePreviewCard(visualIndex+2,'原文：'+row.source,row.status);
+    const main=document.createElement('div');main.className='preview-suite-line';
+    const recognize=document.createElement('span');recognize.className='preview-recognized';
+    recognize.textContent=`识别：${row.recognition}各${row.amountText}`;
+    const expanded=state.expandedSuites.has(row.index);
+    const expand=document.createElement('span');expand.className='result-caption';
+    expand.textContent=expanded?'收起 ⌄':`展开 ${row.expectedCount} 组 ›`;
+    main.append(recognize,expand);detail.content.append(main);
+    if(row.detail)previewDetail(detail.content,'提示：'+row.detail,'txt-amber');
+    if(expanded){
+      const pane=document.createElement('div');pane.className='preview-suite-examples';
+      previewDetail(pane,`展开号码（共 ${row.expectedCount} 组）`,'txt-blue');
+      const examples=row.examples||[];
+      previewDetail(pane,examples.reduce((acc,x,i)=>acc+x+((i+1)%5===0?'\n':'   '),'').trim()+(row.expectedCount>examples.length?'\n……':''));
+      detail.content.append(pane);
+    }
+    detail.card.tabIndex=0;detail.card.setAttribute('role','button');
+    const toggle=()=>{setPreviewHighlights(row.matched?[row]:[]);
+      if(state.expandedSuites.has(row.index))state.expandedSuites.delete(row.index);
+      else state.expandedSuites.add(row.index);
+      renderPreview();setPreviewHighlights(row.matched?[row]:[]);};
+    detail.card.onclick=toggle;detail.card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}};
+    host.appendChild(detail.card);
+  }
+  if(!model.suiteCount&&state.filter==='全部'&&!onlyReview){
+    const empty=document.createElement('div');empty.className='preview-card preview-empty-suite';
+    empty.textContent='本次没有需要展开的套码';host.appendChild(empty);
+  }
+  if(model.errors.length&&(state.filter==='全部'||state.filter==='失败'||onlyReview)){
+    model.errors.forEach(issue=>{
+      const card=document.createElement('div');card.className='preview-card';card.style.color='var(--red)';
+      card.textContent=`失败：${issue.message}（位置 ${issue.start+1}–${issue.end}）`;
+      card.onclick=()=>setPreviewHighlights([{start:issue.start,end:issue.end,matched:true}]);host.appendChild(card);
+    });
+  }
   $('preview-send').disabled=true;
   $('preview-send').title=FAIL_CLOSED;
 }
@@ -253,8 +352,15 @@ $('review-only').addEventListener('change',e=>{state.filter=e.target.checked?'�
 function closePreview(){$('preview').hidden=true;$('navbar').hidden=false;}
 $('preview-back').onclick=closePreview;$('preview-edit').onclick=closePreview;
 $('reuse-original').onclick=()=>{$('command').value=state.parsedText;closePreview();};
-$('preview-help').onclick=()=>modal('识别预览说明','预览调用 v2.0.51 Kotlin 同源识别规则，并输出原 B 端 M1 指令；浏览器兼容改动已单独存档。\n真实发送需通过完整云端双账号与 STOP 安全状态机验收，不能仅凭解析成功解锁。');
-$('preview-copy').onclick=async()=>{try{await navigator.clipboard.writeText(state.parsedText);modal('复制成功','原文已复制');}
+$('preview-help').onclick=()=>modal('识别预览使用说明','原始内容完整展开。最终只生成1组号码的内容统一汇总到编号1“散码区”；散码区同时显示所有散码原文与按金额归组后的识别结果。点击散码区可以高亮相关原文；生成2组及以上的套码逐条展示并可展开。自动忽略的标题文字用黄色标记，不占编号。\n真实发送仍需通过安全验收。');
+$('preview-copy').onclick=async()=>{
+  const model=state.previewModel;
+  const text=['散码区',model?.scatterCount?'原文：'+model.scatterOriginal:'无',
+    ...(model?.scatterCount?['识别：'+model.scatterRecognition]:[]),
+    ...(model?.turnCount?['全转区',...model.turns.map(r=>`第${r.executionIndex}组 ${r.number} 全转 各${r.amountText}`)]:[]),
+    ...(model?.suiteCount?['套码',...model.suites.map(r=>`原文：${r.source} -> ${r.recognition}各${r.amountText}`)]:[]),
+    ...(model?.ignored?.length?['已忽略：'+model.ignored.map(x=>x.source).join('、')]:[])].join('\n');
+  try{await navigator.clipboard.writeText(text);modal('复制成功','识别结果已复制');}
   catch(e){modal('复制受限','请长按原始内容复制，或用 HTTPS 打开网页版。');}};
 $('preview-send').onclick=()=>modal('不能发送',FAIL_CLOSED);
 $('suite-screenshot').addEventListener('change',()=>{if(state.parsed?.valid){const p=JSON.parse(webParser.plan(state.parsedText,$('suite-screenshot').checked,$('convert-odds').checked));

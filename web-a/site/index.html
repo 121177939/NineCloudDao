@@ -101,6 +101,32 @@
     .preview-help { border:0; background:none; font-size:13.7px; font-weight:700; color:var(--blue); }
     .preview-scroll { flex:1; overflow:auto; scrollbar-width:none; overscroll-behavior:contain; }
     .preview-card { border:1px solid var(--border); border-radius:14px; background:#fff; padding:7px 8px; margin-bottom:6px; }
+    .preview-raw {font-size:13px;line-height:1.38;font-weight:700;color:var(--ink);word-break:break-word;margin-top:6px;}
+    .preview-recognized {font-size:13px;line-height:1.4;color:#149b68;word-break:break-word;margin-top:5px;}
+    .preview-detail {min-width:0;white-space:pre-wrap;word-break:break-word;}
+    .preview-suite-line {display:flex;gap:7px;align-items:center;justify-content:space-between;}
+    .preview-suite-line .preview-recognized {flex:1;min-width:0;}
+    .preview-suite-line .result-caption {flex:none;white-space:nowrap;}
+    .preview-suite-examples {margin-top:8px;padding:7px;background:#f0f7ff;border-radius:9px;font-size:12px;white-space:pre-wrap;}
+    .preview-suite-examples .preview-detail {line-height:1.55;}
+    .preview-empty-suite {font-size:12.5px;color:var(--muted);padding:9px 10px;}
+    .preview-ignored {font-size:11.7px;font-weight:700;color:#e09500;padding:1px 5px 4px;cursor:pointer;}
+    .ignored-mark {background:#ffeda4;color:#704f00;}
+    .selected-mark {background:#c2deff;color:#004ead;}
+    .txt-amber {color:#e09500;}
+    .txt-blue {color:var(--blue);}
+    .row-status {font-size:11.9px;white-space:nowrap;font-weight:700;}
+    .preview .preview-row-content {font-size:13.4px;}
+    .preview .result-top strong {font-size:14px;font-weight:750;}
+    .preview .result-count {font-size:16.5px;line-height:1.35;}
+    .preview .preview-scroll {padding-bottom:4px;}
+    .preview .preview-card {margin-bottom:6px;}
+    .preview .checkbox-row {min-height:23px;}
+    .preview .checkbox-row label {font-size:13px;}
+    .preview .preview-footer {min-height:57px;}
+    .preview .preview-footer .button {font-weight:700;}
+    @media(min-width:420px) and (max-width:500px) { .preview .result-count {font-size:16px;} }
+
     .preview-card-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
     .preview-small-title { font-size:14.9px; font-weight:750; }
     .preview-text { border-radius:10px; border:1px solid #dbe6f6; background:#f0f7ff;
@@ -225,6 +251,7 @@
         </div>
         <div class="result-top"><span class="result-count" id="result-count">识别结果</span>
           <label class="filter-small"><input type="checkbox" id="review-only">只看需确认/失败</label></div>
+        <div id="preview-ignored" class="preview-ignored" hidden></div>
         <div class="chip-list" id="preview-filters">
           <button class="chip selected" data-filter="全部">全部(0)</button>
           <button class="chip" data-filter="正常">正常(0)</button>
@@ -239,8 +266,8 @@
 <div class="demo-warning">号码识别使用 v2.0.51 Kotlin 同源逻辑；真实发送未开放。</div>
       </div>
       <div class="preview-footer">
-        <button class="button ghost" id="preview-edit">修改号码</button>
-        <button class="button" id="preview-copy">复制原文</button>
+        <button class="button ghost" id="preview-edit">返回修改</button>
+        <button class="button" id="preview-copy">复制识别结果</button>
         <button class="button primary" id="preview-send" disabled title="云端发送安全等价验证未完成">确认发送</button>
       </div>
     </section>

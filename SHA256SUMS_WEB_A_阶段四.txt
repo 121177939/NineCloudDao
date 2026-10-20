@@ -1,0 +1,6 @@
+39a0b592ebc5f3fb3f1ddfafc7ee4ef1e0d2eecc6a25f25a38463ea852f97ed0  web-a/site/index.html
+2c5ffbf2ab4f6f9bdbf48b4c6ccecb7fcbe3c84c846342fbba6fc06742524e2a  web-a/site/app.js
+66ac109856551e0589fce85fbe8a330aa38307bc6c455f76639c00d6fc4017fd  web-a/site/preview-model.js
+cca0dbddc64f7f0d507443c1ba25d2dd0b63523877e2967da53abae63d58c8bd  web-a/tests/preview-model.test.mjs
+c07aac01d9c5827ac89c1f953c82422f240880ffdd50d962a44e6ef67244807f  .github/workflows/web-a-pages.yml
+07dd9bdd7f6201a5e8f79b07b775f1131c5dfd5a111eff330eb50b19fc2aebc6  README_本次Web预览对齐_上传说明.md
