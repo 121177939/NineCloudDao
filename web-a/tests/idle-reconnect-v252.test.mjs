@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const app=readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
+const a=readFileSync(new URL('../../PhoneA_v2.0.52_Project/app/src/main/java/com/example/remotea/PresencePresentation.kt',import.meta.url),'utf8');
+const b=readFileSync(new URL('../../PhoneB_v2.0.52_Project/app/src/main/java/com/example/remoteb/RemoteAccessibilityService.kt',import.meta.url),'utf8');
+const recovery=readFileSync(new URL('../../PhoneB_v2.0.52_Project/app/src/main/java/com/example/remoteb/GlobalControlPollRecoveryPolicy.kt',import.meta.url),'utf8');
+assert.match(b,/controlVerificationDelayed\([\s\S]*?\) -> "paused"/);
+assert.match(b,/getBoolean\("global_stop_hold", false\) -> "attention"/);
+assert.match(b,/getBoolean\("accessibility_interrupted", false\) -> "attention"/);
+assert.match(b,/GlobalControlPolicy\.mayAcknowledgeStop/);
+assert.match(b,/acknowledgeGlobalControl\(revision, "halted"\)/);
+assert.match(b,/acknowledgeGlobalControl\(revision, "resumed"\)/);
+assert.match(recovery,/nowElapsedMs - lastVerifiedElapsedMs > 7_000L/);
+assert.match(a,/控制连接核验中（暂缓接单）/);
+assert.match(app,/temporaryControlCheck/);
+assert.match(app,/控制连接核验中（暂缓接单）/);
+assert.match(app,/const ready=fresh&&row.state==='idle'/);
+console.log('PASS v2.0.52 A-B-WAP transient reconnect and STOP guards');

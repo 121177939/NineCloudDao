@@ -96,7 +96,8 @@ function presenceState(p){
   const ready=fresh&&row.state==='idle';
   const ageText=Number.isFinite(age)?`${Math.max(0,Math.floor(age/1000))} 秒前`:'未知';
   const map={idle:'在线 · 空闲待命',busy:'在线 · 正在执行',attention:'在线 · 异常待人工核对',paused:'在线 · 暂停接单'};
-  let text=fresh?(map[row.state]||'在线 · 状态未知'):'状态未确认 · 心跳已过期（可能断线或上报失败）';
+  const temporaryControlCheck=row.state==='attention' && /^(全局控制状态暂不可核实|全局 STOP 状态暂不可核实|全局控制正在重连核验|全局控制状态未及时确认)/.test(String(row.stage||''));
+  let text=fresh?(temporaryControlCheck?'在线 · 控制连接核验中（暂缓接单）':(map[row.state]||'在线 · 状态未知')):'状态未确认 · 心跳已过期（可能断线或上报失败）';
   if(fresh&&Number(row.total_items)>0)text+=` · ${Number(row.completed_items)||0}/${Number(row.total_items)}组`;
   text+=' · '+ageText+'更新';
   if(fresh&&row.stage&&row.state!=='idle')text+='\n'+String(row.stage).slice(0,100);
@@ -626,7 +627,7 @@ $('preview-help').onclick=()=>modal('识别预览使用说明','与 Android A �
 $('preview-locator-diagnostic').addEventListener('click',()=>{
   const model=state.previewModel,raw=state.parsedText;
   if(!model)return;
-  const lines=[`WAP 阶段十七 / 终态与历史同步诊断（仅在本机生成）`,`原文 JSON：${JSON.stringify(raw)}`,
+  const lines=[`WAP 2.0.51 / 终态与历史同步诊断（仅在本机生成）`,`原文 JSON：${JSON.stringify(raw)}`,
     ...model.suites.map((r,i)=>`套码${i+1}: ${r.canonical} / 匹配=${r.matched} / 范围=${r.start}-${r.end} / 原文=${JSON.stringify(r.source)} / 状态=${r.status}`),
     ...model.errors.map(r=>`解析错误：${r.message}`)];
   modal('套码定位诊断',lines.join('\n')+'\n请核对是否为你实际输入的完整原文。仅在自愿时复制给开发者。',[

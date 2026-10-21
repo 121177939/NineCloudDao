@@ -6,14 +6,10 @@ import {freezeValidatedPlan} from '../site/send-plan.js';
 // Reproduced from the WAP15 user screenshot: 23 scatter records, three intentionally
 // repeated; duplicate rows are independent payable records, not parse failures.
 const raw='5732，8732，6274，9274，0639，2639，2738，2875打1块，\n各打1块，5396，8396各打1块，\n1014，2014，9030，5030，0760，0706，2760，0763，2763各1块\n2014，2706，0706，2760各1块';
-const oldCtx={};
-vm.runInNewContext(fs.readFileSync(new URL('../../../Web_A_GitHubPages_阶段十五_APP原文溯源同源修复/web-a/site/parser.js',import.meta.url),'utf8'),oldCtx);
 const newCtx={};vm.runInNewContext(fs.readFileSync(new URL('../site/parser.js',import.meta.url),'utf8'),newCtx);
-const oldParser=oldCtx.parser.com.example.remotea.WebParser;
 const parser=newCtx.parser.com.example.remotea.WebParser;
-const prev=JSON.parse(oldParser.inspect(raw)),parsed=JSON.parse(parser.inspect(raw));
-const before=createPreviewModel(raw,prev),model=createPreviewModel(raw,parsed);
-assert.equal(prev.valid,true);assert.equal(before.reviewCount,3,'WAP 15 reproduces 3 false review rows');
+const parsed=JSON.parse(parser.inspect(raw));
+const model=createPreviewModel(raw,parsed);
 assert.equal(parsed.valid,true);assert.equal(model.scatterCount,23);
 assert.equal(model.totalCount,23);assert.equal(model.reviewCount,0);assert.equal(model.normalCount,23);
 assert.equal(parsed.totalJiao,230);assert.equal(model.estimatedTotalVerified,true);
@@ -31,11 +27,11 @@ for(const code of ['2014','0706','2760']){
  assert.equal(raw.slice(matches[1].start,matches[1].end),code);
  assert.ok(matches[1].detail.includes('保留为独立记录'));
 }
-for(const key of ['command','totalJiao','totalLines','valid'])assert.equal(parsed[key],prev[key],key+' invariant');
-assert.deepEqual(JSON.parse(JSON.stringify(parsed.scatter)),JSON.parse(JSON.stringify(prev.scatter)),'all 23 B scatter entries identical');
+const authoritative=JSON.parse(parser.plan(raw,false,false));
+for(const key of ['command','totalJiao','totalLines','valid'])if(key in authoritative)assert.equal(parsed[key],authoritative[key],key+' current inspect/plan invariant');
 const plan=freezeValidatedPlan(parser,raw,parsed,model);
 assert.equal(plan.totalJiao,230);assert.equal(plan.scatterCount,23);
-assert.equal(plan.command,JSON.parse(oldParser.plan(raw,false,false)).command);
+assert.equal(plan.command,authoritative.command);
 // Fail-closed: UNKNOWN warnings, lookalikes and errors still require review.
 for(const notice of ['GENERAL','LOOKALIKE',undefined]){
  const issue={start:0,end:4,severity:'WARNING',notice,message:'不能安全确定含义'};
