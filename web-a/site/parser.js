@@ -22207,7 +22207,7 @@ var parser = function (_) {
           tmp0_mapKeysTo.put_3mhbri_k$(tmp_12, tmp$ret$24);
         }
         var values = tmp0_mapKeysTo;
-        var suite = new SuiteBet(values, amount, entry.canonical_1);
+        var suite = new SuiteBet(values, amount, entry.source_1);
         var tmp$ret$30;
         // Inline function 'kotlin.runCatching' call
         var tmp_13;

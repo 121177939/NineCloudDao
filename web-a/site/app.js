@@ -1,11 +1,11 @@
-import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage14';
-import {WebAClient, CloudError} from './supabase.js?v=web-a-stage14';
-import {WebTransactions} from './transactions.js?v=web-a-stage14';
-import {requireBReady} from './safety.js?v=web-a-stage14';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage14';
-import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage14';
-import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage14';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage14';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage15';
+import {WebAClient, CloudError} from './supabase.js?v=web-a-stage15';
+import {WebTransactions} from './transactions.js?v=web-a-stage15';
+import {requireBReady} from './safety.js?v=web-a-stage15';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage15';
+import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage15';
+import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage15';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage15';
 
 // Web A v2.0.51 — Stage 13 fixes original-source suite offsets and image file share UX.
 // Existing Supabase protocol and Kotlin/JS plan are reused; no new business actions are added.
@@ -596,7 +596,7 @@ $('preview-help').onclick=()=>modal('识别预览使用说明','与 Android A �
 $('preview-locator-diagnostic').addEventListener('click',()=>{
   const model=state.previewModel,raw=state.parsedText;
   if(!model)return;
-  const lines=[`WAP 阶段十四 / 套码定位诊断（仅在本机生成）`,`原文 JSON：${JSON.stringify(raw)}`,
+  const lines=[`WAP 阶段十五 / 同源定位诊断（仅在本机生成）`,`原文 JSON：${JSON.stringify(raw)}`,
     ...model.suites.map((r,i)=>`套码${i+1}: ${r.canonical} / 匹配=${r.matched} / 范围=${r.start}-${r.end} / 原文=${JSON.stringify(r.source)} / 状态=${r.status}`),
     ...model.errors.map(r=>`解析错误：${r.message}`)];
   modal('套码定位诊断',lines.join('\n')+'\n请核对是否为你实际输入的完整原文。仅在自愿时复制给开发者。',[

@@ -23,7 +23,12 @@ const spaced=[
 const raw='2X74、2XX4各20元\n'+spaced.join('\n');
 const parsed=JSON.parse(parser.inspect(raw));
 assert.equal(parsed.valid,true);
-const before=baseline(raw,parsed),after=updated(raw,parsed);
+// Stage 12 must be fed its original, canonical-only bridge output;
+// stage 15 now carries actual ChineseCodeParser.Entry.source through its own bridge.
+const oldCtx={}; vm.runInNewContext(fs.readFileSync(new URL('../../../Web_A_GitHubPages_阶段十二_WAP四项修复/web-a/site/parser.js',import.meta.url),'utf8'),oldCtx);
+const oldParsed=JSON.parse(oldCtx.parser.com.example.remotea.WebParser.inspect(raw));
+const before=baseline(raw,oldParsed),after=updated(raw,parsed);
+assert.equal(parsed.command,oldParsed.command);assert.equal(parsed.totalJiao,oldParsed.totalJiao);
 assert.equal(parsed.suites.length,6);
 assert.ok(before.suites.some(x=>!x.matched),'reproduced original bug');
 assert.ok(after.suites.every(x=>x.matched&&x.status==='正常'),'all spaced tuples proven source-mapped');
@@ -42,8 +47,8 @@ const impossible=updated('12头34尾各1元',{scatter:[],suites:[{canonical:'56�
 assert.equal(impossible.suites[0].matched,false);
 const app=fs.readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
 const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
-assert.match(html,/<title>控制中心 · Web A 阶段十四/);
-assert.match(html,/识别预览 <span[^>]+>WAP 14<\/span>/);
+assert.match(html,/<title>控制中心 · Web A 阶段十五/);
+assert.match(html,/识别预览 <span[^>]+>WAP 15<\/span>/);
 assert.match(app,/function systemShareFiles\(files\)/);
 assert.match(app,/return navigator\.share\(\{files\}\)/);
 assert.doesNotMatch(app,/navigator\.share\(\{files,title:/);
@@ -52,4 +57,4 @@ assert.match(app,/modal\('分享真实小票图片'/);
 assert.match(app,/点“系统分享图片”/);
 assert.match(app,/仅在本机生成/);
 assert.match(app,/图片先预览，再在新点击中选择系统分享/);
-console.log('PASS: six screenshot samples with real spaced source, stage12 fail reproduces, stage14 maps exact raw offsets, forged fail-closed, image file share second gesture & save controls, build marker');
+console.log('PASS: six screenshot samples with real spaced source, stage12 fail reproduces, stage15 maps exact raw offsets, forged fail-closed, image file share second gesture & save controls, build marker');

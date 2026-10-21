@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';import vm from 'node:vm';
+import {createPreviewModel} from '../site/preview-model.js';
+const ctx={};vm.runInNewContext(fs.readFileSync(new URL('../site/parser.js',import.meta.url),'utf8'),ctx);
+const p=ctx.parser.com.example.remotea.WebParser;
+const raw='01245679头01236789百12345689十01235678尾打1角\n147369头百十尾各1角排列';
+const parsed=JSON.parse(p.inspect(raw)), model=createPreviewModel(raw,parsed);
+console.log(JSON.stringify({valid:parsed.valid,issues:parsed.issues,suites:parsed.suites,rows:model.suites.map(x=>({source:x.source,status:x.status,matched:x.matched,start:x.start,end:x.end})),sum:parsed.totalJiao,estimatedTotalVerified:model.estimatedTotalVerified},null,2));
+assert.equal(parsed.valid,true);assert.equal(parsed.suites.length,2);assert.equal(parsed.totalJiao,5392);
+assert.equal(model.reviewCount,0);assert.deepEqual(model.suites.map(x=>x.status),['正常','正常']);
+assert.equal(model.suites[0].source,'01245679头01236789百12345689十01235678尾');
+assert.equal(model.suites[1].source,'147369头百十尾');
+assert.ok(model.suites.every(x=>raw.slice(x.start,x.end)===x.source));
+assert.ok(model.estimatedTotalVerified);
+const planned=JSON.parse(p.plan(raw,false,false));assert.equal(planned.command,parsed.command+'|R=4');assert.equal(planned.totalJiao,parsed.totalJiao);
+const forged=createPreviewModel('文字不相关',{scatter:[],suites:[{canonical:'147369头147369百147369十147369尾=0.1',source:'147369头百十尾',amountJiao:1,expectedCount:1296}],issues:[]});
+assert.equal(forged.suites[0].status,'需确认');
+console.log('PASS stage15 live incident source mapping + command/total + fail closed');
