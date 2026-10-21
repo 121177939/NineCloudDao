@@ -1,3 +1,4 @@
+import {auditFullTurnSource,groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js';
 // Web A v2.0.51 preview presentation model.
 // Only formats the authoritative Kotlin/JS WebParser.inspect() output.
 // No payment, sending, cloud mutation, or independent parsing is performed here.
@@ -112,15 +113,24 @@ export function createPreviewModel(source, parsed) {
       detail:!span.matched?'预览无法定位该套码在原文中的准确位置，请人工核对':warning?.message||''};
   });
 
+  // Full-turn and normal amounts deliberately re-use each segment's code.
+  // First reproduce the AUTHORITATIVE Kotlin execution order strictly for audit;
+  // only if every code, amount, mode and slice agrees may we re-use a source span.
+  const verified=auditFullTurnSource(raw,normalized,scatter,flags);
   let cursor=0;
   const allScatter=scatter.map((item,i)=>{
-    const span=locateUnclaimed(raw,normalized,String(item.number),cursor,occupied);
-    if(span.matched)cursor=span.end;
+    const evidence=verified?.[i];
+    const span=evidence?{
+      start:evidence.start,end:evidence.end,source:evidence.source,matched:true,
+      modeSource:evidence.modeSource,clauseSource:evidence.clauseSource,
+      modeSpan:evidence.modeSpan,verifiedGroupKey:evidence.groupKey
+    }:locateUnclaimed(raw,normalized,String(item.number),cursor,occupied);
+    if(!verified&&span.matched)cursor=span.end;
     const warning=warningFor(span);
     return {...span,number:String(item.number),amountJiao:Number(item.amountJiao),
       amountText:moneyJiao(item.amountJiao),isTurn:flags[i],executionIndex:i+1,
       status:!span.matched||warning?'需确认':'正常',
-      detail:!span.matched?'原文中无法定位该散码，请返回核对':warning?.message||''};
+      detail:!span.matched?'原文中无法定位该执行项的准确来源，请返回核对':warning?.message||''};
   });
   // Android v2.0.21 rule: classification comes from the final number of
   // expanded combinations, not from a Kotlin parser enum or suite syntax.
@@ -130,20 +140,34 @@ export function createPreviewModel(source, parsed) {
   }));
   const ordinary=[...allScatter.filter(x=>!x.isTurn),...singlePositionRows]
     .sort((a,b)=>(a.matched?a.start:Number.MAX_SAFE_INTEGER)-(b.matched?b.start:Number.MAX_SAFE_INTEGER));
-  const turns=allScatter.filter(x=>x.isTurn);
+  const turns=allScatter.filter(x=>x.isTurn).map(row=>({
+    ...row,permutations:turnPermutationCount(row.number),
+    estimatedCostJiao:row.amountJiao*turnPermutationCount(row.number)
+  }));
   const multiSuites=suiteRows.filter(x=>x.expectedCount!==1);
+  const displayGroups=groupVerifiedSlices(ordinary);
   const groups=new Map();
-  for(const item of ordinary){
-    if(!groups.has(item.amountText))groups.set(item.amountText,[]);
-    groups.get(item.amountText).push(item.number);
+  for(const item of displayGroups){
+    const price=moneyJiao(item.amountJiao);
+    if(!groups.has(price))groups.set(price,[]);
+    groups.get(price).push(item.number);
   }
   const summary=[...groups].map(([amount,codes])=>`${codes.join('、')}各${amount}`).join('；');
   const all=[...ordinary,...turns,...multiSuites];
+  const ordinaryJiao=ordinary.reduce((sum,row)=>sum+row.amountJiao,0);
+  const turnJiao=turns.reduce((sum,row)=>sum+row.estimatedCostJiao,0);
+  const suiteJiao=multiSuites.reduce((sum,row)=>sum+row.amountJiao*row.expectedCount,0);
+  // Only display an estimated total if it EXACTLY matches Kotlin's authority.
+  // This is NOT a new parser, nor a new calculator for what will be sent.
+  const estimatedTotalVerified=Number.isSafeInteger(ordinaryJiao+turnJiao+suiteJiao) &&
+    turns.every(row=>Number.isSafeInteger(row.estimatedCostJiao)) &&
+    ordinaryJiao+turnJiao+suiteJiao===Number(p.totalJiao);
   return {scatter:ordinary,turns,suites:multiSuites,ignored,errors:issues.filter(x=>x.severity==='ERROR'),
-    warnings:issues.filter(x=>x.severity==='WARNING'),scatterOriginal:ordinary.map(s=>s.source).join('，'),
+    warnings:issues.filter(x=>x.severity==='WARNING'),scatterOriginal:displayGroups.map(s=>s.rows[0].source).join('，'),
     scatterRecognition:summary,normalCount:all.filter(x=>x.status==='正常').length,
     reviewCount:all.filter(x=>x.status==='需确认').length,
     failCount:issues.filter(x=>x.severity==='ERROR').length,
     totalCount:all.length+issues.filter(x=>x.severity==='ERROR').length,
-    scatterCount:ordinary.length,turnCount:turns.length,suiteCount:multiSuites.length};
+    scatterCount:ordinary.length,turnCount:turns.length,suiteCount:multiSuites.length,
+    estimatedTotalVerified,turnEstimatedJiao:estimatedTotalVerified?turnJiao:null};
 }

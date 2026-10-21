@@ -32,13 +32,13 @@ def exercise():
    route.fulfill(body=json.dumps(data),content_type='application/json',headers={'Date':'Wed, 21 Oct 2026 02:54:00 GMT'})
   page.route('**/*',serve)
   page.goto('https://wap.test/index.html',wait_until='networkidle')
-  assert '阶段七' in page.title()
+  assert '阶段八' in page.title()
   page.locator('#login-email').fill('tester@example.com')
   page.locator('#login-password').fill('test-password')
   page.locator('#login-submit').click()
   page.get_by_role('button',name='确认登录').click()
   page.locator('[data-page="history"]').click()
-  assert '阶段七' in page.locator('#wap-build-id').inner_text()
+  assert '阶段八' in page.locator('#wap-build-id').inner_text()
   card=page.locator('.history-card').first
   card.wait_for()
   assert card.locator('.history-status-dot').count()==1
@@ -57,9 +57,10 @@ def exercise():
   page.locator('[data-page="entry"]').click()
   page.locator('#command').fill('0336各88组，全倒各1组')
   page.locator('#preview-input').click()
-  page.locator('[data-filter="需确认"]').click()
   recognized=page.locator('#preview-rows').inner_text()
-  assert '50元' in recognized and '38元' in recognized,recognized
+  assert '88元' in recognized and '全转' in recognized and '全倒各1组' in recognized,recognized
+  page.locator('[data-filter="需确认"]').click()
+  assert '当前筛选下没有散码' in page.locator('#preview-rows').inner_text()
   assert not errors,errors
   browser.close()
   print('PASS: Chromium offline mock green history, inline screenshot, stacked responsive buttons, filtered 50/38 preview')

@@ -1,9 +1,10 @@
-import {WebAClient, CloudError} from './supabase.js?v=web-a-stage7';
-import {WebTransactions} from './transactions.js?v=web-a-stage7';
-import {requireBReady} from './safety.js?v=web-a-stage7';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage7';
-import {expandLinkedReviewRows, describeSplitExecutions} from './preview-coverage.js?v=web-a-stage7';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage7';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage8';
+import {WebAClient, CloudError} from './supabase.js?v=web-a-stage8';
+import {WebTransactions} from './transactions.js?v=web-a-stage8';
+import {requireBReady} from './safety.js?v=web-a-stage8';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage8';
+import {expandLinkedReviewRows, describeSplitExecutions} from './preview-coverage.js?v=web-a-stage8';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage8';
 
 // Web A v2.0.51 — GitHub Pages integration candidate. Local mutation state machine is
 // implemented and unit-tested, but production write actions stay fail-closed until
@@ -340,7 +341,10 @@ function setPreviewHighlights(spans=[]){
   const source=state.parsedText, model=state.previewModel;
   const marks=[];
   for(const i of model.ignored)marks.push({...i,priority:1,cls:'ignored-mark'});
-  for(const i of spans)if(i?.matched && i.start<i.end)marks.push({...i,priority:2,cls:'selected-mark'});
+  for(const i of spans)if(i?.matched && i.start<i.end){
+    marks.push({...i,priority:2,cls:'selected-mark'});
+    if(i.modeSpan?.start<i.modeSpan?.end)marks.push({...i.modeSpan,priority:2,cls:'selected-mark'});
+  }
   // Draw from source offsets without altering source text, checksum, or recognition result.
   const tags=Array.from({length:source.length},()=>null);
   for(const span of marks){
@@ -403,15 +407,20 @@ function renderPreview(){
   if(!scatter.length){
     previewDetail(group.content,onlyReview||state.filter!=='全部'?'当前筛选下没有散码':'本次没有单组散码','result-caption');
   }else{
-    const rawEvidence=scatter.filter(x=>x.matched).map(x=>x.source);
-    const unlocated=scatter.filter(x=>!x.matched).length;
-    previewDetail(group.content,'原文：'+(rawEvidence.join('，')||'未定位')+(unlocated?`（另有 ${unlocated} 条解析执行项不能独立定位）`:''),'preview-raw');
+    const displayGroups=groupVerifiedSlices(scatter);
+    const rawEvidence=displayGroups.filter(g=>g.rows[0].matched).map(g=>g.rows[0].source);
+    const unlocated=displayGroups.filter(g=>!g.rows[0].matched).length;
+    previewDetail(group.content,'原文：'+(rawEvidence.join('，')||'未定位')+(unlocated?`（另有 ${unlocated} 组执行项来源待核对）`:''),'preview-raw');
     const grouped=new Map();
-    for(const item of scatter){
-      if(!grouped.has(item.amountText))grouped.set(item.amountText,[]);
-      grouped.get(item.amountText).push(item.number);
+    for(const item of displayGroups){
+      const amountText=money(item.amountJiao);
+      if(!grouped.has(amountText))grouped.set(amountText,[]);
+      grouped.get(amountText).push(item.number);
     }
     previewDetail(group.content,'识别：'+[...grouped].map(([amount,codes])=>`${codes.join('、')}各${amount}`).join('；'),'preview-recognized');
+    for(const g of displayGroups.filter(g=>g.parts.length>1)){
+      previewDetail(group.content,`${g.number} 原文金额 ${money(g.amountJiao)}，执行时拆为 ${g.parts.map(money).join('＋')}；非全转，不改变原金额。`,'result-caption');
+    }
     for(const summary of describeSplitExecutions(scatter)){
       previewDetail(group.content,summary,'txt-amber');
     }
@@ -429,7 +438,17 @@ function renderPreview(){
     turn.appendChild(label);
     const visibleTurn=expandLinkedReviewRows(model.turns,isVisible);
     if(!visibleTurn.length)previewDetail(turn,'当前筛选下无全转','result-caption');
-    for(const item of visibleTurn)previewDetail(turn,`第${item.executionIndex}组 · ${item.number} · 全转 · 各${item.amountText}${!item.matched?' · 来源未单独定位':''}`,'preview-recognized');
+    if(model.estimatedTotalVerified){
+      previewDetail(turn,`全转预计金额合计 ${money(model.turnEstimatedJiao)}；全倒/全到/全转为同一执行模式，按各号码不重复排列数计算。`,'result-caption');
+    }else previewDetail(turn,'全转预计金额与权威解析器无法核对，须人工确认','txt-amber');
+    for(const group of groupVerifiedSlices(visibleTurn)){
+      const first=group.rows[0];
+      const modeHint=first.modeSource?` · 原文模式：${first.modeSource.trim()}`:'';
+      const partHint=group.parts.length>1?`（执行拆为 ${group.parts.map(money).join('＋')}）`:'';
+      const multiplier=turnPermutationCount(group.number);
+      const estimate=model.estimatedTotalVerified&&multiplier?` · 预计${multiplier}码／${money(group.amountJiao*multiplier)}`:'';
+      previewDetail(turn,`第${first.executionIndex}组 · ${group.number} · 全转每码各${money(group.amountJiao)}${partHint}${estimate}${modeHint}${!first.matched?' · 来源待核对':''}`,'preview-recognized');
+    }
     turn.onclick=()=>setPreviewHighlights(visibleTurn);host.appendChild(turn);
   }
   const visibleSuites=model.suites.filter(isVisible);
@@ -483,7 +502,7 @@ $('preview-copy').onclick=async()=>{
   const model=state.previewModel;
   const text=['散码区',model?.scatterCount?'原文：'+model.scatterOriginal:'无',
     ...(model?.scatterCount?['识别：'+model.scatterRecognition]:[]),
-    ...(model?.turnCount?['全转区',...model.turns.map(r=>`第${r.executionIndex}组 ${r.number} 全转 各${r.amountText}`)]:[]),
+    ...(model?.turnCount?['全转区',...groupVerifiedSlices(model.turns).map(g=>`第${g.rows[0].executionIndex}组 ${g.number} 全转 各${money(g.amountJiao)}${g.modeSource?'（原文：'+g.modeSource.trim()+'）':''}`)]:[]),
     ...(model?.suiteCount?['套码',...model.suites.map(r=>`原文：${r.source} -> ${r.recognition}各${r.amountText}`)]:[]),
     ...(model?.ignored?.length?['已忽略：'+model.ignored.map(x=>x.source).join('、')]:[])].join('\n');
   try{await navigator.clipboard.writeText(text);modal('复制成功','识别结果已复制');}
