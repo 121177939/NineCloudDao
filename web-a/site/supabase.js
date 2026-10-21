@@ -1,6 +1,6 @@
 import {isWireCommand} from './send-plan.js';
 /** Supabase read/auth client based on v2.0.51 PhoneA SupabaseApi.kt.
- * Do not store JWT/refresh token in browser storage. No service-role key is used.
+ * Refresh token is saved in per-tab sessionStorage to survive reload only; never localStorage. No service-role key is used.
  */
 export const PROJECT_URL = 'https://wqhirteaemujeytsdpit.supabase.co';
 export const PUBLISHABLE_KEY = 'sb_publishable_SWsPO_l7Jbo1SHWSEczPSg_iJhC8_3o';
@@ -9,9 +9,9 @@ export class CloudError extends Error {
   constructor(message, status = 0, code = '') { super(message); this.name='CloudError';this.status=status;this.code=code; }
 }
 export class WebAClient {
-  constructor() { this.url=PROJECT_URL;this.key=PUBLISHABLE_KEY;this.access='';this.refresh='';this.expiry=0;this.uid='';this.roleClaimed=false;this.refreshing=null; }
+  constructor() { this.url=PROJECT_URL;this.key=PUBLISHABLE_KEY;this.access='';this.refresh='';this.expiry=0;this.uid='';this.roleClaimed=false;this.refreshing=null;this.sessionStore=globalThis.sessionStorage||null; }
   get loggedIn() { return !!(this.access && this.refresh && this.uid && this.roleClaimed); }
-  clear() { this.access='';this.refresh='';this.expiry=0;this.uid='';this.roleClaimed=false; }
+  clear() { this.access='';this.refresh='';this.expiry=0;this.uid='';this.roleClaimed=false;try{this.sessionStore?.removeItem('web-a-refresh-v12');}catch{} }
   async wire(method,path,body=undefined,auth=true,raw=false,representation=false) {
     if (auth) await this.ensureSession();
     const headers={ 'apikey':this.key,'Cache-Control':'no-store' };
@@ -43,10 +43,22 @@ export class WebAClient {
     try {
       const claim=(await this.wire('POST','/rest/v1/rpc/remote_claim_role',{p_role:'A'})).data;
       if(claim!==true) throw new CloudError('A 端设备占用登记失败，拒绝登录');
-      this.roleClaimed=true;
+      this.roleClaimed=true;this.saveRefresh();
       const current=await this.isRoleCurrent();
       if(!current)throw new CloudError('新会话未通过服务端角色核验');
     }catch(e){ this.clear();throw e; }
+  }
+  saveRefresh(){try{if(this.refresh)this.sessionStore?.setItem('web-a-refresh-v12',this.refresh);}catch{}}
+  async restoreSession(){
+    let token='';try{token=this.sessionStore?.getItem('web-a-refresh-v12')||'';}catch{}
+    if(!token)return false;
+    try{
+      const response=(await this.wire('POST','/auth/v1/token?grant_type=refresh_token',{refresh_token:token},false)).data;
+      if(!response?.user?.id||!response?.access_token||!response?.refresh_token)throw new CloudError('刷新会话缺少身份');
+      this.acceptSession(response);this.roleClaimed=true;
+      if(await this.isRoleCurrent()!==true)throw new CloudError('原 A 角色租约已失效');
+      this.saveRefresh();return true;
+    }catch(e){this.clear();throw e;}
   }
   acceptSession(data){this.access=data.access_token;this.refresh=data.refresh_token;this.uid=data.user?.id||this.uid;this.expiry=Date.now()+1000*Number(data.expires_in||3600);}
   async ensureSession(){
@@ -55,7 +67,7 @@ export class WebAClient {
     if(!this.refreshing)this.refreshing=(async()=>{
       const token=this.refresh;
       const r=(await this.wire('POST','/auth/v1/token?grant_type=refresh_token',{refresh_token:token},false)).data;
-      this.acceptSession(r);
+      this.acceptSession(r);this.saveRefresh();
     })().finally(()=>{this.refreshing=null;});
     await this.refreshing;
   }

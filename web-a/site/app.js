@@ -1,11 +1,11 @@
-import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage11';
-import {WebAClient, CloudError} from './supabase.js?v=web-a-stage11';
-import {WebTransactions} from './transactions.js?v=web-a-stage11';
-import {requireBReady} from './safety.js?v=web-a-stage11';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage11';
-import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage11';
-import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage11';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage11';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage12';
+import {WebAClient, CloudError} from './supabase.js?v=web-a-stage12';
+import {WebTransactions} from './transactions.js?v=web-a-stage12';
+import {requireBReady} from './safety.js?v=web-a-stage12';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage12';
+import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage12';
+import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage12';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage12';
 
 // Web A v2.0.51 — Stage 11 aligns existing send/one-tap STOP flows with Android A.
 // Existing Supabase protocol and Kotlin/JS plan are reused; no new business actions are added.
@@ -290,16 +290,17 @@ function imageExtension(blob){const type=String(blob?.type||'').toLowerCase();re
 function safeFilePart(value){return String(value||'小票').replace(/[\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,48)||'小票';}
 function appendHistoryNotice(message){$('modal-body').textContent=($('modal-body').textContent+'\n'+message).trim();}
 async function shareHistoryImages(artifacts,id){
+  if(!artifacts.length||artifacts.some(a=>!a.blob?.type?.startsWith('image/')))throw new Error('未获取有效图片，不能转发网页链接冒充图片');
   const files=artifacts.map((artifact,index)=>new File([artifact.blob],`${String(artifact.taskId||id).slice(0,8)}-${safeFilePart(artifact.title)}-${index+1}.${imageExtension(artifact.blob)}`,{type:artifact.blob.type||'image/png'}));
   let canShareFiles=false;
   try{canShareFiles=typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files});}catch{}
   if(canShareFiles){
     try{await navigator.share({files,title:`任务 ${id.slice(0,8)} 小票`});}
-    catch(e){if(e.name!=='AbortError')appendHistoryNotice('系统分享失败：'+e.message);}
+    catch(e){if(e.name==='AbortError')return;appendHistoryNotice('浏览器图片分享失败：'+e.message+'。请保存图片后从微信相册发送。');}
     return;
   }
   for(const file of files){const url=URL.createObjectURL(file);state.activeObjectUrls.push(url);const link=document.createElement('a');link.href=url;link.download=file.name;link.style.display='none';document.body.appendChild(link);link.click();link.remove();}
-  appendHistoryNotice(files.length>1?'当前浏览器不支持一次分享多张图片，已分别下载原图。':'当前浏览器不支持系统分享，已下载原图。可在微信中手动选择。');
+  appendHistoryNotice(files.length>1?'当前浏览器不支持一次分享多张图片，已分别下载原图。':'当前浏览器不支持直接分享图片文件，已尝试保存图片；请从微信聊天的相册入口发送，不要转发当前网页链接。');
 }
 async function showTaskDetail(id,returnToAllHistoryOffset=null){
   modal('任务 '+String(id||'').slice(0,8),'正在读取云端记录…',[{label:returnToAllHistoryOffset===null?'关闭':'返回全部历史',onClick:()=>returnToAllHistoryOffset===null?undefined:showAllHistory(returnToAllHistoryOffset)}]);
@@ -646,8 +647,9 @@ async function submitFrozenTask(selection,frozen){
   try{
     const row=await state.tx.sendFrozenCommand(frozen.command,selection);
     setStatus('云端已接收请求 '+row.requestId.slice(0,8)+'，等待 B 端执行并核实小票；不是下注成功。');
-    closePreview();await refreshTasks();
-    modal('云端已接收任务',`请求编号：${row.requestId}\n账号：${selection==='both'?'排列五＋七星彩':selection==='seven'?'七星彩':'排列五'}\n当前仅表示云端创建请求得到确认。请去「任务」检查 B 进度、小票、截图和最终结果；未知结果不可重发。`);
+    closePreview();
+    let postSendWarning='';try{await refreshTasks();}catch(error){postSendWarning='\n任务列表刷新失败：'+error.message+'。建单确认仍有效，请稍后按原请求编号核查，勿重发。';}
+    modal('云端已接收任务',`请求编号：${row.requestId}\n账号：${selection==='both'?'排列五＋七星彩':selection==='seven'?'七星彩':'排列五'}\n当前仅表示云端创建请求得到确认。请去「任务」检查 B 进度、小票、截图和最终结果；未知结果不可重发。${postSendWarning}`);
   }catch(e){
     let pending=null;try{pending=state.tx?.pending().task;}catch{}
     setStatus('发单失败或结果未知：'+e.message);
@@ -716,4 +718,5 @@ async function tick(){
 }
 setInterval(tick,10000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
-selectPage('entry');showLogin();
+selectPage('entry');showLogin('正在核验原 A 会话…');
+api.restoreSession().then(async restored=>{if(!restored){showLogin('请登录 Web A');return;}state.tx=new WebTransactions(api,localStorage);showDashboard();try{await refreshAll();}catch(e){setStatus('会话已恢复；数据刷新失败：'+e.message);}await showPendingSafetyInfo();}).catch(e=>showLogin('原会话已失效，请重新登录：'+e.message));
