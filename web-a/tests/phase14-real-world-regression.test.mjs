@@ -47,8 +47,8 @@ const impossible=updated('12头34尾各1元',{scatter:[],suites:[{canonical:'56�
 assert.equal(impossible.suites[0].matched,false);
 const app=fs.readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
 const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
-assert.match(html,/<title>控制中心 · Web A 阶段十五/);
-assert.match(html,/识别预览 <span[^>]+>WAP 15<\/span>/);
+assert.match(html,/<title>控制中心 · Web A 阶段十六/);
+assert.match(html,/识别预览 <span[^>]+>WAP 16<\/span>/);
 assert.match(app,/function systemShareFiles\(files\)/);
 assert.match(app,/return navigator\.share\(\{files\}\)/);
 assert.doesNotMatch(app,/navigator\.share\(\{files,title:/);

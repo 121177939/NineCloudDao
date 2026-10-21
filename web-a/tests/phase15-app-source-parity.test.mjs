@@ -27,7 +27,7 @@ for (const raw of cases){
  const previous=JSON.parse(old.inspect(raw)), current=JSON.parse(now.inspect(raw));
  for(const field of ['valid','command','totalJiao','totalLines','turnCount'])assert.equal(current[field],previous[field],`APP-wire invariant ${field} for ${raw}`);
  assert.deepEqual(JSON.parse(JSON.stringify(current.scatter)),JSON.parse(JSON.stringify(previous.scatter)),`scatter unchanged for ${raw}`);
- assert.deepEqual(JSON.parse(JSON.stringify(current.issues)),JSON.parse(JSON.stringify(previous.issues)),`issues unchanged for ${raw}`);
+ assert.deepEqual(JSON.parse(JSON.stringify(current.issues.map(({notice,...core})=>core))),JSON.parse(JSON.stringify(previous.issues)),`issues unchanged for ${raw}`);
  assert.deepEqual(JSON.parse(JSON.stringify(current.suites.map(x=>[x.canonical,x.amountJiao,x.expectedCount]))),JSON.parse(JSON.stringify(previous.suites.map(x=>[x.canonical,x.amountJiao,x.expectedCount]))),`suite business unchanged for ${raw}`);
  if(current.valid&&current.suites.length){
    const preview=createPreviewModel(raw,current);

@@ -167,7 +167,15 @@ export function createPreviewModel(source, parsed) {
   const suites=Array.isArray(p.suites)?p.suites:[];
   const flags=buildFlags(p.command,scatter.length);
   const ignored=ignoredSpans(raw), occupied=new Uint8Array(raw.length);
-  const warningFor=span=>span.matched?issues.find(x=>x.severity==='WARNING' && span.start<x.end && span.end>x.start):null;
+  const warningsFor=span=>span.matched?issues.filter(x=>x.severity==='WARNING' && span.start<x.end && span.end>x.start):[];
+  // The Android parser marks repeated scatter entries as a DUPLICATE
+  // *notice*, not an ERROR. When provenance is verified, these remain valid,
+  // independently payable entries. Scope the exception to scatter only.
+  // Keep the warning text visible, but do not
+  // misclassify this one notice as an unresolved location/recognition failure.
+  // Any missing/unknown notice stays fail-closed as "需确认".
+  const requiresReview=(warnings,allowScatterDuplicate=false)=>warnings.some(issue=>!allowScatterDuplicate || issue.notice!=='DUPLICATE');
+  const warningDescription=warnings=>warnings.map(issue=>issue.message).filter(Boolean).join('；');
 
   // Locate suite snippets first so that a later ordinary number cannot be
   // incorrectly highlighted inside a preceding multi-position suite.
@@ -194,12 +202,12 @@ export function createPreviewModel(source, parsed) {
     // present in the input. Show the original for audit, but do NOT claim a
     // verified source offset or silently mark it as Normal.
     if(!span.matched&&suites.length===1&&scatter.length===0)span.source=raw;
-    const warning=warningFor(span), examples=exampleSuite(canonical);
+    const warnings=warningsFor(span), examples=exampleSuite(canonical);
     return {...span,index:i,canonical,amountJiao:Number(suite.amountJiao),
       amountText:moneyJiao(suite.amountJiao),expectedCount:Number(suite.expectedCount),
       examples,recognition:canonical.split('=')[0],
-      status:!span.matched||warning?'需确认':'正常',
-      detail:!span.matched?'预览无法定位该套码在原文中的准确位置，请人工核对':warning?.message||''};
+      status:!span.matched||requiresReview(warnings)?'需确认':'正常',
+      detail:!span.matched?'预览无法定位该套码在原文中的准确位置，请人工核对':warningDescription(warnings)};
   });
 
   // Full-turn and normal amounts deliberately re-use each segment's code.
@@ -215,11 +223,11 @@ export function createPreviewModel(source, parsed) {
       modeSpan:evidence.modeSpan,verifiedGroupKey:evidence.groupKey
     }:locateUnclaimed(raw,normalized,String(item.number),cursor,occupied);
     if(!verified&&span.matched)cursor=span.end;
-    const warning=warningFor(span);
+    const warnings=warningsFor(span);
     return {...span,number:String(item.number),amountJiao:Number(item.amountJiao),
       amountText:moneyJiao(item.amountJiao),isTurn:flags[i],executionIndex:i+1,
-      status:!span.matched||warning?'需确认':'正常',
-      detail:!span.matched?'原文中无法定位该执行项的准确来源，请返回核对':warning?.message||''};
+      status:!span.matched||requiresReview(warnings,true)?'需确认':'正常',
+      detail:!span.matched?'原文中无法定位该执行项的准确来源，请返回核对':warningDescription(warnings)};
   });
   // Android v2.0.21 rule: classification comes from the final number of
   // expanded combinations, not from a Kotlin parser enum or suite syntax.

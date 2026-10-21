@@ -10,7 +10,7 @@ object WebParser {
         val report = MixedParser.inspect(input)
         val batch = report.batch
         val issueJson = report.issues.joinToString(",") { it ->
-            """{"start":${it.start},"end":${it.endExclusive},"severity":"${it.severity.name}","message":"${esc(it.message)}"}"""
+            """{"start":${it.start},"end":${it.endExclusive},"severity":"${it.severity.name}","notice":"${it.notice.name}","message":"${esc(it.message)}"}"""
         }
         val scat = batch?.scatter?.items?.joinToString(",") {
             """{"number":"${esc(it.number)}","amountJiao":${it.amountJiao},"groupId":${it.groupId}}"""

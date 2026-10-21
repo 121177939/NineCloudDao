@@ -25,6 +25,6 @@ assert.equal(parsed.command,'M1|S=2X74-20;2XX4-20|T=2,0123456789,_,_,16,2;2,678,
 const forged=createPreviewModel('原文无关文字',{scatter:[],suites:[{canonical:'56头78尾=1',source:'56头78尾=1',amountJiao:10,expectedCount:8}],issues:[]});
 assert.equal(forged.suites[0].matched,false,'unrelated source still fails closed');
 const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
-assert.match(html,/<title>控制中心 · Web A 阶段十五/);
-assert.match(html,/识别预览 <span[^>]+>WAP 15<\/span>/);
+assert.match(html,/<title>控制中心 · Web A 阶段十六/);
+assert.match(html,/识别预览 <span[^>]+>WAP 16<\/span>/);
 console.log('PASS: exact screenshot aliases all map to their original UTF-16 spans; parser command/amounts unchanged; unrelated source remains unverified');

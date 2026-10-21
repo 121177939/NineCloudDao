@@ -23671,7 +23671,7 @@ var parser = function (_) {
     return tmp0_apply.toString();
   }
   function WebParser$inspect$lambda(it) {
-    return '{"start":' + it.start_1 + ',"end":' + it.endExclusive_1 + ',"severity":"' + it.severity_1.name_1 + '","message":"' + esc(WebParser_getInstance(), it.message_1) + '"}';
+    return '{"start":' + it.start_1 + ',"end":' + it.endExclusive_1 + ',"severity":"' + it.severity_1.name_1 + '","notice":"' + it.notice_1.name_1 + '","message":"' + esc(WebParser_getInstance(), it.message_1) + '"}';
   }
   function WebParser$inspect$lambda_0(it) {
     return '{"number":"' + esc(WebParser_getInstance(), it.number_1) + '","amountJiao":' + it.amountJiao_1 + ',"groupId":' + it.groupId_1 + '}';
