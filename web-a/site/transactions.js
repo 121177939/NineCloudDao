@@ -1,4 +1,5 @@
 import {isWireCommand} from './send-plan.js';
+import {confirmedSuccessfulCompletion} from './auto-finalize.js';
 import {SafetyJournal,SafetyLockError,requireBReady,shouldPermitNewTask,oneTapStopNext,withExclusiveLock,FINAL_STATES} from './safety.js';
 
 /** Fail-closed Web transactional migration candidate. Not activated for production until DB acceptance.
@@ -72,6 +73,28 @@ export class WebTransactions {
       return {state:'plan',row,first,second,plan};
     }
     return {state:FINAL_STATES.includes(first.status)?'terminal':'active',row,first};
+  }
+  /** Mirrors APP normal successful completion: release ONLY the browser's opaque UUID lock
+   * after finished + private receipt + B idle + role/STOP/active-task checks.
+   * This NEVER changes cloud tasks, retries wagers, or clears STOP audit.
+   */
+  async autoReleaseSuccessfulTask(){
+    if(this.inFlight || this.stop.load() || !this.tasks.load())return {action:'none'};
+    return withExclusiveLock('cloud-writes',async()=>{
+      const row=this.tasks.load();
+      if(!row || this.inFlight || this.stop.load())return {action:'none'};
+      const snapshot=await this.reconcileTask();
+      if(snapshot.state!=='terminal' && snapshot.state!=='plan')return {action:'waiting'};
+      // Unlike normal preflight, our OWN journal is expected here.
+      const gate=await this.preflight();
+      const recent=await this.reconcileTask();
+      if(this.inFlight || this.stop.load() || this.tasks.load()?.requestId!==row.requestId ||
+        this.tasks.load()?.secondId!==row.secondId)return {action:'waiting'};
+      const verified=confirmedSuccessfulCompletion(recent,gate,this.api.uid,row.requestId,row.secondId||null);
+      if(!verified.safe)return {action:'waiting',reason:verified.reason};
+      this.tasks.close(true);
+      return {action:'released',requestId:row.requestId,reason:verified.reason};
+    },this.nav);
   }
   /** Deliberately no auto-clear: first show all receipts and require external manual verification. */
   async acknowledgeTerminalTask(externalReviewed){

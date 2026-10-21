@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 const app = await readFile(new URL('../site/app.js', import.meta.url), 'utf8');
 const html = await readFile(new URL('../site/index.html', import.meta.url), 'utf8');
-assert.match(app, /completed\.forEach\(t=>\$\('history-list'\)\.appendChild\(historyCard\(t\)\)\)/);
+assert.match(app, /completed\.forEach\(t=>host\.appendChild\(historyCard\(t\)\)\)/);
 assert.match(app, /const planned=planHistoryArtifacts\(record,stops\)/);
 assert.match(app, /const blob=await api\.screenshot\(artifact\.path\)/);
 assert.match(app, /image\.className='ticket-image'/);

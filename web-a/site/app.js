@@ -1,22 +1,22 @@
-import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage16';
-import {WebAClient, CloudError} from './supabase.js?v=web-a-stage16';
-import {WebTransactions} from './transactions.js?v=web-a-stage16';
-import {requireBReady} from './safety.js?v=web-a-stage16';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage16';
-import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage16';
-import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage16';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage16';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage17';
+import {WebAClient, CloudError} from './supabase.js?v=web-a-stage17';
+import {WebTransactions} from './transactions.js?v=web-a-stage17';
+import {requireBReady} from './safety.js?v=web-a-stage17';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage17';
+import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage17';
+import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage17';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage17';
 
-// Web A v2.0.51 — Stage 13 fixes original-source suite offsets and image file share UX.
-// Existing Supabase protocol and Kotlin/JS plan are reused; no new business actions are added.
-// Production acceptance still requires live Supabase / B / browser validation.
+// Web A v2.0.51 — Stage 17: automatic release of proven successful local request locks
+// after B returns idle, plus task/history polling from the same source. STOP, receipt,
+// task protocol and database stay unchanged. Online B/cloud validation remains required.
 const $=id=>document.getElementById(id);
 const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const webParser=globalThis.parser?.com?.example?.remotea?.WebParser;
 if(!webParser)throw Error('Kotlin/JS 识别引擎未加载，拒绝提供预览或发送');
 const api=new WebAClient();
 const state={tx:null,page:'entry',filter:'全部',parsed:null,parsedText:'',lastFocus:null,auth:false,
-    busy:false,stopProgressBusy:false,stopProgressText:'',historyOffset:0,historyRows:[],tasks:[],presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[]};
+    busy:false,stopProgressBusy:false,stopProgressText:'',historyOffset:0,historyRows:[],historyFingerprint:null,tasks:[],refreshBusy:false,autoReleaseBusy:false,presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[]};
 const FAIL_CLOSED='此操作尚未完成真实云端与 B 端验收，网页端暂不开放；请在 Android A 端处理。';
 function setStatus(text){$('input-status').textContent=text;}
 function modal(title,message,actions=[{label:'知道了'}]){
@@ -40,6 +40,7 @@ function showLogin(message=''){
   $('home-task-list').innerHTML='<div class="card">登录后读取任务状态</div>';
   $('task-list').innerHTML='<div class="card">登录后读取任务</div>';
   $('history-list').innerHTML='<div class="card">登录后读取历史记录</div>';
+  state.historyRows=[];state.historyFingerprint=null;state.tasks=[];
 }
 function showDashboard(){state.auth=true;$('login-screen').hidden=true;selectPage('entry');}
 async function login(){
@@ -82,7 +83,7 @@ function selectPage(page){
   for(const key of ['entry','tasks','history'])$('page-'+key).hidden=key!==page;
   document.querySelectorAll('.tab').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);b.setAttribute('aria-current',b.dataset.page===page?'page':'false');});
   $('navbar').hidden=false;$('preview').hidden=true;
-  if(state.auth&&page==='history'&&!state.historyRows.length)loadHistory(true).catch(e=>modal('历史读取失败',e.message));
+  if(state.auth&&page==='history'&&!state.historyRows.length)loadHistory(true).catch(e=>setStatus('历史读取失败：'+e.message));
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>selectPage(b.dataset.page)));
 $('view-all-tasks').addEventListener('click',()=>selectPage('tasks'));
@@ -126,11 +127,27 @@ function historyCard(row){
   card.setAttribute('aria-label',`${acct}，${presentation.label}，点击查看任务详情与小票`);
   card.addEventListener('click',()=>showTaskDetail(row.id));return card;
 }
+function renderHistoryRows(rows){
+  // The same cloud response updates tasks AND the recent terminal history, no manual reload.
+  const completed=rows.filter(t=>['finished','cancelled','failed'].includes(t.status)).slice(0,8);
+  const fingerprint=completed.map(t=>[t.id,t.status,t.updated_at,t.result_path,t.scatter_path,t.suite_path].join(':')).join('|');
+  state.historyRows=rows;
+  if(fingerprint===state.historyFingerprint)return;
+  state.historyFingerprint=fingerprint;
+  const host=$('history-list');host.replaceChildren();
+  if(!completed.length)host.innerHTML='<div class="card">暂时没有历史任务</div>';
+  else completed.forEach(t=>host.appendChild(historyCard(t)));
+}
 async function refreshTasks(){
-  const placeholder='<div class="card"><span class="status-note">正在读取云端任务…</span></div>';
-  $('home-task-list').innerHTML=placeholder;$('task-list').innerHTML=placeholder;
+  // A slow earlier response must not overwrite a newer history/terminal snapshot.
+  if(state.refreshBusy)return;
+  state.refreshBusy=true;
   try{
     const [tasks,stops]=await Promise.all([api.tasks(0,30),api.stops().catch(()=>[])]);
+    if(!Array.isArray(tasks))throw new CloudError('任务列表格式不正确');
+    const previous=new Map(state.tasks.map(row=>[row.id,row.status]));
+    const freshFinish=state.tasks.length>0 && tasks.some(row=>row.status==='finished' &&
+      previous.has(row.id) && previous.get(row.id)!=='finished');
     state.tasks=tasks;state.stopRows=stops;
     const active=tasks.filter(t=>!['finished','cancelled','failed'].includes(t.status));
     $('home-task-list').replaceChildren();$('task-list').replaceChildren();
@@ -141,17 +158,37 @@ async function refreshTasks(){
       active.slice(0,12).forEach(t=>$('task-list').appendChild(taskCard(t)));
       if(active.length>2){const small=document.createElement('p');small.className='light-note';small.textContent=`还有 ${active.length-2} 份待处理任务，点击“查看全部”。`;$('home-task-list').appendChild(small);}
     }
-  }catch(e){const msg=`读取失败，不能推断云端无任务：${e.message}`;
-    $('home-task-list').innerHTML='<div class="card"></div>';$('home-task-list').firstChild.textContent=msg;
-    $('task-list').innerHTML='<div class="card"></div>';$('task-list').firstChild.textContent=msg;
+    renderHistoryRows(tasks);
+    if(freshFinish)setStatus('检测到新完成任务：已自动更新历史记录。正在核验执行端是否安全待命及本机锁。');
+  }catch(e){
+    const msg=`读取失败，不能推断云端无任务：${e.message}`;
+    $('home-task-list').replaceChildren();$('task-list').replaceChildren();
+    const a=document.createElement('div');a.className='card';a.textContent=msg;
+    $('home-task-list').appendChild(a);
+    const b=document.createElement('div');b.className='card';b.textContent=msg;
+    $('task-list').appendChild(b);
+    // Keep previously verified history; never replace it with an empty result on network errors.
     throw e;
-  }
+  }finally{state.refreshBusy=false;}
+}
+async function autoReconcileAfterRefresh(){
+  if(state.autoReleaseBusy || !state.tx || state.tx.inFlight)return;
+  state.autoReleaseBusy=true;
+  try{
+    const outcome=await state.tx.autoReleaseSuccessfulTask();
+    if(outcome.action==='released')setStatus(`任务 ${outcome.requestId.slice(0,8)} 已获云端成功终态、原图和 B 安全待命确认；本机发送锁自动解除，历史保留。`);
+  }catch(e){
+    // Web Locks unsupported, snapshot unavailable, or server uncertainty: remain locked.
+    // Do not turn a refresh failure into a permission to retry.
+    if(state.tx.pending().task)setStatus('任务核对暂不可用，继续保持本机锁：'+e.message);
+  }finally{state.autoReleaseBusy=false;}
 }
 async function refreshAll(){
   if(!state.auth)return;
   const results=await Promise.allSettled([refreshPresence(),refreshTasks()]);
   const errors=results.filter(r=>r.status==='rejected');
   if(errors.length)setStatus('刷新有失败项：'+errors.map(x=>x.reason.message).join('；'));
+  else await autoReconcileAfterRefresh();
 }
 $('presence-refresh').addEventListener('click',()=>refreshAll());
 $('tasks-refresh').addEventListener('click',()=>refreshAll());
@@ -210,15 +247,8 @@ async function issueGlobalStop(){
 }
 async function loadHistory(reset=false){
   if(!api.loggedIn)return;
-  if(reset){state.historyRows=[];$('history-list').textContent='正在加载…';}
-  try{
-    const rows=await api.tasks(0,30);
-    state.historyRows=rows;
-    const completed=rows.filter(t=>['finished','cancelled','failed'].includes(t.status)).slice(0,8);
-    $('history-list').replaceChildren();
-    if(!completed.length){$('history-list').innerHTML='<div class="card">暂时没有历史任务</div>';}
-    else completed.forEach(t=>$('history-list').appendChild(historyCard(t)));
-  }catch(e){$('history-list').textContent='读取失败，不代表历史为空：'+e.message;throw e;}
+  // Keep history visible during refresh; an unknown cloud response cannot erase history.
+  try{await refreshTasks();}catch(e){if(!state.historyRows.length)$('history-list').textContent='读取失败，不代表历史为空：'+e.message;throw e;}
 }
 async function showAllHistory(offset=0){
   modal('历史任务','正在读取全部历史…',[{label:'关闭'}]);
@@ -596,7 +626,7 @@ $('preview-help').onclick=()=>modal('识别预览使用说明','与 Android A �
 $('preview-locator-diagnostic').addEventListener('click',()=>{
   const model=state.previewModel,raw=state.parsedText;
   if(!model)return;
-  const lines=[`WAP 阶段十六 / 重复提示分级诊断（仅在本机生成）`,`原文 JSON：${JSON.stringify(raw)}`,
+  const lines=[`WAP 阶段十七 / 终态与历史同步诊断（仅在本机生成）`,`原文 JSON：${JSON.stringify(raw)}`,
     ...model.suites.map((r,i)=>`套码${i+1}: ${r.canonical} / 匹配=${r.matched} / 范围=${r.start}-${r.end} / 原文=${JSON.stringify(r.source)} / 状态=${r.status}`),
     ...model.errors.map(r=>`解析错误：${r.message}`)];
   modal('套码定位诊断',lines.join('\n')+'\n请核对是否为你实际输入的完整原文。仅在自愿时复制给开发者。',[
@@ -766,7 +796,8 @@ async function tick(){
       const current=await api.isRoleCurrent();if(!current){api.clear();showLogin('同账号已在另一台 A 端登录，当前 Web A 已退出；请到新设备核查任务。');return;}
     }
     await refreshPresence();
-    if(state.page==='tasks'||state.page==='entry')await refreshTasks();
+    await refreshTasks(); // history remains live while its tab is open, too.
+    await autoReconcileAfterRefresh();
   }catch(e){setStatus('后台刷新失败（不代表任务已结束）：'+e.message);}
 }
 setInterval(tick,10000);

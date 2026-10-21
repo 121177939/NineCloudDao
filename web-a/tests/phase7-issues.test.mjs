@@ -31,8 +31,8 @@ for(const [state,tone] of [['finished','success'],['cancelled','danger'],['faile
 }
 const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
 const app=fs.readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
-check(html.includes('WAP 16'),'browser deploy version marker');
-check(html.includes('app.js?v=web-a-stage16'),'new module cache identity');
+check(html.includes('WAP 17'),'browser deploy version marker');
+check(html.includes('app.js?v=web-a-stage17'),'new module cache identity');
 check(html.includes('modal-scroll')&&html.includes('overflow-x:hidden'),'modal avoids horizontal overflow');
 check(/\.history-detail-actions[^{]*\{[^}]*flex-direction:column;/.test(html),'history buttons stacked on mobile');
 check(/\.history-detail-actions \.button[^{]*\{[^}]*width:100%;/.test(html),'history buttons fit viewport width');
