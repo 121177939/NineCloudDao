@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://wqhirteaemujeytsdpit.supabase.co; img-src 'self' blob: data:; font-src 'self'; worker-src 'none'">
   <meta name="color-scheme" content="light">
-  <title>控制中心 · Web A 阶段九 · Android v2.0.51</title>
+  <title>控制中心 · Web A 阶段十一 · Android v2.0.51</title>
   <style>
     /* Palette, dp, card radius, typography and spacing taken from A v2.0.51 VisualUi.kt/MainActivity.kt. */
     :root { --bg:#f6f8fc; --white:#ffffff; --ink:#1a2a40; --muted:#6b7a90; --blue:#236fe7;
@@ -182,6 +182,21 @@
     .history-card .history-status.tone-warning, .history-all-row .tone-warning {color:#b36a00;}
     .history-card .history-status-dot {background-color:currentColor;}
     .tone-success {color:var(--green)} .tone-danger {color:var(--red)} .tone-warning {color:#b36a00} .tone-neutral {color:var(--muted)}
+    .account-choice-list {display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+    .account-choice {width:100%;min-height:52px;display:flex;align-items:center;gap:12px;text-align:left;
+      padding:12px 15px;border:1px solid var(--border);border-radius:13px;background:#fff;color:var(--ink);font-size:15px;font-weight:600;}
+    .account-choice.selected {border-color:var(--blue);background:var(--soft-blue);color:var(--blue);}
+    .account-choice-radio {font-size:20px;line-height:1;min-width:20px;text-align:center;color:var(--blue);}
+    .account-choice-label {flex:1;}
+    .send-summary-card {border:1px solid var(--border);border-radius:15px;background:#fff;padding:13px 14px;margin-top:10px;}
+    .send-summary-row {display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+    .send-summary-row:first-child {padding-top:0;}
+    .send-summary-row:last-child {border-bottom:0;padding-bottom:0;}
+    .send-summary-name {flex:0 0 76px;color:var(--muted);font-size:13px;line-height:1.5;}
+    .send-summary-value {flex:1;min-width:0;text-align:right;font-size:14px;line-height:1.5;font-weight:650;overflow-wrap:anywhere;}
+    .send-summary-value.emphasis {font-size:16px;color:var(--blue);font-weight:800;}
+    .stop-progress {margin:10px 0 0;padding:11px 12px;border:1px solid #dbe6f6;border-radius:12px;background:var(--soft-blue);
+      color:var(--blue);font-size:12px;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere;}
     .send-choice-actions {flex-direction:column;align-items:stretch;flex-wrap:nowrap;}
     .send-choice-actions .button {width:100%;min-height:44px;flex:none;}
     .history-detail-actions {display:flex; flex-direction:column; flex-wrap:nowrap; gap:8px; max-height:min(41dvh,300px); overflow-y:auto; overscroll-behavior:contain;}
@@ -256,6 +271,7 @@
         <button class="button" id="tasks-refresh">刷新</button>
         <button class="button danger" id="tasks-stop">终止所有任务</button>
       </div>
+      <p class="stop-progress" id="stop-progress" role="status" aria-live="polite" hidden></p>
       <div class="space-20"></div>
 <div class="task-list" id="task-list"><div class="card">登录后读取任务。</div></div>
     </section>
@@ -265,7 +281,7 @@
       <p class="minor-subtitle">已完成、已取消和失败任务在这里查看与分享</p>
       <div class="space-14"></div>
       <button class="button primary" style="width:100%" id="history-all">查看全部历史 · 微信转发小票</button>
-      <div class="light-note" id="wap-build-id" aria-label="网页版本">WAP 阶段九 · 简洁预览 / 安全发单候选</div>
+      <div class="light-note" id="wap-build-id" aria-label="网页版本">WAP 阶段十一 · APP 既有流程对齐</div>
       <div class="space-15"></div>
 <div class="list-stack" id="history-list"><div class="card">登录后读取历史。</div></div>
     </section>
@@ -323,7 +339,7 @@
     <div class="space-16"></div><button class="button primary" style="width:100%" id="login-submit">安全登录</button>
     <div class="space-12"></div><div class="status-note" id="login-status">提示：新 Web A 登录会占用 A 端会话，原 Android A 可能被退出。请勿在旧任务未决时跨设备操作。</div>
   </div>
-  <p class="warn" style="margin-top:15px">云端登录、状态、历史及回图采用真实 API；任务创建、STOP、取消与人工结案尚未经过生产环境验收，当前不可直接写入。</p>
+  <p class="warn" style="margin-top:15px">Web A 已连接既有云端发单与一键 STOP 流程；生产环境权限、B 真机回执和小票链路仍需按验收清单核验。发送结果未知时禁止重复提交。</p>
 </section>
-<script src="parser.js?v=web-a-stage9"></script><script type="module" src="app.js?v=web-a-stage9"></script>
+<script src="parser.js?v=web-a-stage11"></script><script type="module" src="app.js?v=web-a-stage11"></script>
 </body></html>

@@ -41,6 +41,9 @@ export class WebTransactions {
         }
         // Last authoritative role check just before creating a task.
         if(await this.api.isRoleCurrent()!==true)throw new SafetyLockError('A 角色租约已失效');
+        // A STOP may be registered concurrently (the native APP gives STOP priority).
+        // The DB trigger serializes the final race; this local recheck avoids needless POSTs.
+        if(this.stop.load())throw new SafetyLockError('一键终止已登记，拒绝创建新任务');
         this.tasks.advance('posting');posted=true;
         if(selection==='both')await this.api.createDualChain(command,firstId,secondId);
         else{
@@ -84,7 +87,7 @@ export class WebTransactions {
     }else throw new SafetyLockError('旧任务、双账号计划或 STOP 仍未权威结案，不能解除');
   }
   async requestOneTapStop(){
-    return withExclusiveLock('cloud-writes',async()=>{
+    return withExclusiveLock('stop-control',async()=>{
       if(this.stop.load())return this.stop.load(); // same idempotency request id; never new one.
       if(!await this.api.isRoleCurrent())throw new SafetyLockError('A 角色租约失效，禁止登记 STOP');
       // STOP has higher priority than an uncertain task submission; different journal.
@@ -92,10 +95,10 @@ export class WebTransactions {
     },this.nav);
   }
   async advanceStop(){
-    return withExclusiveLock('cloud-writes',async()=>{
+    return withExclusiveLock('stop-control',async()=>{
       const row=this.stop.load();if(!row)return {action:'none'};
       if(!await this.api.isRoleCurrent())throw new SafetyLockError('A 角色租约失效，STOP 仍保留');
-      const inflight=this.inFlight || this.tasks.load()?.phase==='posting'||this.tasks.load()?.phase==='unknown';
+      const inflight=this.inFlight;
       const control=row.revision?await this.api.globalControl():null;
       const next=oneTapStopNext(row,control,inflight);
       if(next.action==='issue'){
@@ -105,15 +108,20 @@ export class WebTransactions {
       }else if(next.action==='superseded'){
         this.stop.advance('waiting_b_halt',{revision:next.revision});
       }else if(next.action==='release'){
-        // A release POST timeout must not silently retry another resume operation.
-        if(row.phase==='release_unknown')throw new SafetyLockError('STOP 自动释放回复未知；请先核对云端 revision，不允许重复调用释放');
-        this.stop.advance('release_unknown');
+        // The SQL RPC is idempotent by the exact p_stop_revision. If its response was lost,
+        // retrying this SAME revision is the native APP behavior; never mint another STOP/release revision.
+        if(row.phase!=='release_unknown')this.stop.advance('release_unknown');
         const r=await this.api.releaseStop(next.revision);
-        if(!(Number(r?.revision)>next.revision))throw new SafetyLockError('云端未确认自动释放版本');
+        if(!(Number(r?.revision)>next.revision))throw new SafetyLockError('云端未确认自动恢复版本');
         this.stop.advance('waiting_b_resume',{resumeRevision:Number(r.revision)});
       }else if(next.action==='complete'){
-        // Clear only STOP journal. Existing task stays locked if unknown/ambiguous.
+        // Mirror Android A finalization: only the exact auto-release link plus B's resumed ACK
+        // can release local task/STOP placeholders. Cloud tasks were terminalized by the RPC;
+        // history, screenshots and audit rows are not deleted or rewritten.
+        if(this.inFlight)throw new SafetyLockError('A 端网络请求仍在收口，暂不释放本地占位');
+        if(this.tasks.load())this.tasks.close(true);
         this.stop.close(true);
+        return {...next,message:'一键终止完成：A/B 本地接单占位已释放，云端未结束任务已终止。旧任务、截图和停止审计全部保留；结果不明的旧任务不会重发。'};
       }
       return next;
     },this.nav);

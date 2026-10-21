@@ -110,7 +110,9 @@ export class WebAClient {
     return this.rpc('remote_v235_issue_stop_release',{p_stop_revision:revision});
   }
   async unresolvedStops(){
-    return (await this.wire('GET','/rest/v1/remote_stop_requests?select=task_id,phase,screenshot_path,exit_state,requested_at&phase=in.(requested,stopped,review)&order=requested_at.asc&limit=200')).data||[];
+    // Android A excludes one-tap auto-released STOP evidence from the open review queue.
+    // The evidence row remains in cloud history; only auto_release_at IS NULL blocks new tasks.
+    return (await this.wire('GET','/rest/v1/remote_stop_requests?select=task_id,phase,screenshot_path,exit_state,requested_at,auto_release_at&phase=in.(requested,stopped,review)&auto_release_at=is.null&order=requested_at.asc&limit=200')).data||[];
   }
   async cancelPendingTask(id,expectedStatus){
     if(!/^[0-9a-f-]{36}$/i.test(id)||!['pending','awaiting_confirm'].includes(expectedStatus))

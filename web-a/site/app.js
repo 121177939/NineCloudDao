@@ -1,35 +1,35 @@
-import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage9';
-import {WebAClient, CloudError} from './supabase.js?v=web-a-stage9';
-import {WebTransactions} from './transactions.js?v=web-a-stage9';
-import {requireBReady} from './safety.js?v=web-a-stage9';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage9';
-import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage9';
-import {freezeValidatedPlan, assertSameFrozenPlan, planSendSummary} from './send-plan.js?v=web-a-stage9';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage9';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage11';
+import {WebAClient, CloudError} from './supabase.js?v=web-a-stage11';
+import {WebTransactions} from './transactions.js?v=web-a-stage11';
+import {requireBReady} from './safety.js?v=web-a-stage11';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage11';
+import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage11';
+import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage11';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage11';
 
-// Web A v2.0.51 — Stage 9 gated sender integration candidate. Local mutation state machine is
-// Gated write actions are wired to the v2.0.51 Supabase protocol.
-// No claim of production acceptance without live Supabase / B / browser validation.
+// Web A v2.0.51 — Stage 11 aligns existing send/one-tap STOP flows with Android A.
+// Existing Supabase protocol and Kotlin/JS plan are reused; no new business actions are added.
+// Production acceptance still requires live Supabase / B / browser validation.
 const $=id=>document.getElementById(id);
 const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const webParser=globalThis.parser?.com?.example?.remotea?.WebParser;
 if(!webParser)throw Error('Kotlin/JS 识别引擎未加载，拒绝提供预览或发送');
 const api=new WebAClient();
 const state={tx:null,page:'entry',filter:'全部',parsed:null,parsedText:'',lastFocus:null,auth:false,
-    busy:false,historyOffset:0,historyRows:[],tasks:[],presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[]};
+    busy:false,stopProgressBusy:false,stopProgressText:'',historyOffset:0,historyRows:[],tasks:[],presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[]};
 const FAIL_CLOSED='此操作尚未完成真实云端与 B 端验收，网页端暂不开放；请在 Android A 端处理。';
-const SEND_CAUTION='真实提交将创建云端任务并由 B 执行；网络超时或结果未知不能再次点击重发。首次启用前须先核实线上 RLS、B 心跳、账号预检及 STOP 门禁。';
 function setStatus(text){$('input-status').textContent=text;}
 function modal(title,message,actions=[{label:'知道了'}]){
   state.modalRevision+=1;clearObjects();state.currentHistoryArtifacts=[];
   $('modal-actions').classList.remove('history-detail-actions','send-choice-actions');
+  $('modal-options').classList.remove('account-choice-list');
   $('modal-heading').textContent=title;$('modal-body').textContent=message;
   $('modal-options').replaceChildren();$('modal-actions').replaceChildren();
   for(const a of actions){const b=document.createElement('button');b.className='button'+(a.primary?' primary':' ghost');b.textContent=a.label;
     b.addEventListener('click',async()=>{closeModal();try{await a.onClick?.();}catch(e){modal('操作失败',e.message);}});$('modal-actions').appendChild(b);}
   state.lastFocus=document.activeElement;$('overlay').hidden=false;$('modal-actions').querySelector('button')?.focus();
 }
-function closeModal(){state.modalRevision+=1;clearObjects();state.currentHistoryArtifacts=[];$('modal-actions').classList.remove('history-detail-actions','send-choice-actions');$('overlay').hidden=true;state.lastFocus?.focus?.();}
+function closeModal(){state.modalRevision+=1;clearObjects();state.currentHistoryArtifacts=[];$('modal-actions').classList.remove('history-detail-actions','send-choice-actions');$('modal-options').classList.remove('account-choice-list');$('overlay').hidden=true;state.lastFocus?.focus?.();}
 $('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('overlay').hidden)closeModal();else if(!$('preview').hidden)closePreview();}});
 function showLogin(message=''){
@@ -64,10 +64,9 @@ async function showPendingSafetyInfo(){
   try{
     const pending=state.tx.pending();
     if(pending.stop){
-      modal('STOP 未决记录仍在',`保留请求 ${pending.stop.requestId}，阶段：${pending.stop.phase}。不可假定 B 已恢复。查询与释放必须依据同一 revision 的 B ACK。`,[
-        {label:'暂不处理'},
-        {label:'继续核查 STOP',primary:true,onClick:continueGlobalStop}
-      ]);
+      const message=`一键终止已登记，正在自动推进同一请求。\n请求 ID：${pending.stop.requestId}\n阶段：${pending.stop.phase}\n云端 revision：${pending.stop.revision||'等待云端确认'}\nB 对准确版本的恢复 ACK 到达前，发送继续锁定。请保持此网页打开并处于前台；浏览器关闭或挂起时，流程会在重新打开后继续核对。`;
+      renderStopProgress(message,true);
+      modal('一键终止正在处理',message);
     }else if(pending.task){
       const result=await state.tx.reconcileTask();
       const txt=result.state==='unknown'?'云端查询暂未返回原任务，不能认定创建失败':
@@ -158,31 +157,56 @@ $('presence-refresh').addEventListener('click',()=>refreshAll());
 $('tasks-refresh').addEventListener('click',()=>refreshAll());
 $('tasks-stop').addEventListener('click',()=>{
   if(!state.tx){modal('不能 STOP','请先登录有效 A 角色会话');return;}
-  modal('确认终止所有任务','这是会影响 B 执行的真实云端 STOP，可能出现结果未知。必须等待 B 对准确 STOP revision ACK，并在安全条件满足后释放；不删除或重发任何旧任务。',[
+  modal('终止所有任务','一次操作将阻止新任务、终止云端未结束任务，等待 B 停止并完成清理，然后自动释放 A/B 本地占位并恢复待命。已发生的下注无法撤销；结果不明的旧任务会保留原记录与证据，不会重新下注。若 B 断网，系统保持停止并在网页重新活动后继续核对。',[
     {label:'返回'},
-    {label:'发起全局 STOP',primary:true,onClick:issueGlobalStop}
+    {label:'终止并自动释放',primary:true,onClick:issueGlobalStop}
   ]);
 });
-async function issueGlobalStop(){
-  if(state.busy){modal('当前忙碌','网络任务尚未收口，请先核对当前提交状态');return;}
-  try{
-    const request=await state.tx.requestOneTapStop();
-    const step=await state.tx.advanceStop();
-    showStopStep(request,step);
-  }catch(e){modal('STOP 状态未确认 · 保持锁定','当前 STOP 操作未获最终确认：'+e.message+'\n请保留同一原始 STOP 请求编号，检查 B 本机与云端审计。');}
+function renderStopProgress(message,pending=true){
+  state.stopProgressText=String(message||'');
+  const node=$('stop-progress');
+  if(node){node.textContent=state.stopProgressText;node.hidden=!pending;}
+  if(state.stopProgressText)setStatus(state.stopProgressText);
+}
+function stopProgressMessage(row,step){
+  if(!row&&step?.action==='complete')return step.message||'一键终止完成：A/B 本地接单占位已释放。旧任务、截图和审计证据保留；结果不明的旧任务不会重发。';
+  if(!row)return '一键终止状态待核对；保持发送锁。';
+  const stage={requesting:'正在登记全局 STOP',waiting_b_halt:'等待 B 对准确 STOP 版本确认停止',release_unknown:'恢复请求结果未知，正在按同一 STOP 版本幂等核对',waiting_b_resume:'等待 B 对自动恢复版本确认接单'}[row.phase]||'一键终止正在自动处理';
+  return `${stage}。\n请求 ID：${row.requestId}\nSTOP revision：${row.revision||'等待云端确认'}\nA/B 本地接单占位继续锁定；旧任务和证据保留，不会重发。`;
 }
 function showStopStep(request,step){
   const row=state.tx?.pending().stop;
-  const text=`STOP 原始请求：${request?.requestId||row?.requestId||'未知'}\n当前阶段：${row?.phase||'已完成（须核对 B）'}\n本轮动作：${step?.action||'无'}\n云端 revision：${row?.revision||step?.revision||'未知'}\n不得把云端响应当成真实物理 STOP 或已核实下注。`;
-  modal('全局 STOP 进度',text,[
-    {label:'关闭提示'},
-    ...(row?[{label:'继续查询 B ACK / 安全释放',primary:true,onClick:continueGlobalStop}]:[])
-  ]);
+  renderStopProgress(stopProgressMessage(row,step),Boolean(row));
+  if(!row&&step?.action==='complete'){
+    refreshTasks().catch(()=>{});refreshPresence().catch(()=>{});
+  }
 }
-async function continueGlobalStop(){
-  try{const old=state.tx?.pending().stop;if(!old){modal('STOP 未决记录','本地没有 STOP 记录，需先从云端核实状态');return;}
-    const step=await state.tx.advanceStop();showStopStep(old,step);
-  }catch(e){modal('STOP 待人工核实','没有完成释放：'+e.message+'\n保持锁定，请按原 STOP ID 核查云端与 B 端，不能重新创建另一批。');}
+async function progressPendingStop(){
+  if(!state.tx||state.stopProgressBusy)return;
+  const row=state.tx.pending().stop;
+  if(!row){if(state.stopProgressText)$('stop-progress').hidden=true;return;}
+  state.stopProgressBusy=true;
+  try{
+    const step=await state.tx.advanceStop();
+    showStopStep(row,step);
+  }catch(e){
+    const current=state.tx.pending().stop;
+    renderStopProgress(`一键终止仍在自动处理：${e.message}。\n保持发送锁；网页会继续使用同一 STOP 请求和版本核对，不会新建第二个 STOP，也不会重发旧任务。`,Boolean(current));
+  }finally{state.stopProgressBusy=false;}
+}
+async function issueGlobalStop(){
+  if(!state.tx){renderStopProgress('无法启动 STOP：请先登录有效 A 角色会话。',false);return;}
+  if(state.stopProgressBusy){renderStopProgress(state.stopProgressText||'一键终止正在自动处理；不需要再次点击。',true);return;}
+  state.stopProgressBusy=true;
+  try{
+    const request=await state.tx.requestOneTapStop();
+    renderStopProgress(`一键终止已启动，正在登记全局 STOP。\n请求 ID：${request.requestId}\n发送已锁定，等待 B 确认。`,true);
+    const step=await state.tx.advanceStop();
+    showStopStep(request,step);
+  }catch(e){
+    let row=null;try{row=state.tx.pending().stop;}catch{}
+    renderStopProgress(`一键终止仍未收口：${e.message}。\n保留原请求，不新建第二个 STOP；发送保持锁定。`,Boolean(row));
+  }finally{state.stopProgressBusy=false;}
 }
 async function loadHistory(reset=false){
   if(!api.loggedIn)return;
@@ -545,22 +569,73 @@ function preparedPlan(){
 function chooseSendAccount(){
   let planned;
   try{planned=preparedPlan();}catch(e){modal('无法发送',e.message);return;}
-  modal('发送任务 · 选择账号',SEND_CAUTION,[
-    {label:'返回'},
-    {label:'排列五',onClick:()=>confirmSend('arrange',planned)},
-    {label:'七星彩',onClick:()=>confirmSend('seven',planned)},
-    {label:'排列五＋七星彩',onClick:()=>confirmSend('both',planned)}
+  let picked='arrange';
+  modal('发送任务','请选择要发送的账号',[
+    {label:'取消'},
+    {label:'下一步',primary:true,onClick:()=>confirmSend(picked,planned)}
   ]);
-  $('modal-actions').classList.add('send-choice-actions');
+  const options=$('modal-options');
+  options.classList.add('account-choice-list');
+  const choices=[['arrange','排列'],['seven','七星'],['both','两个一起']];
+  const buttons=[];
+  const render=()=>buttons.forEach(([value,button])=>{
+    const active=value===picked;
+    button.classList.toggle('selected',active);
+    button.setAttribute('aria-checked',String(active));
+    button.querySelector('.account-choice-radio').textContent=active?'◉':'○';
+  });
+  for(const [value,label] of choices){
+    const button=document.createElement('button');
+    button.type='button';button.className='account-choice';button.setAttribute('role','radio');
+    button.setAttribute('aria-checked',String(value===picked));
+    const radio=document.createElement('span');radio.className='account-choice-radio';radio.setAttribute('aria-hidden','true');radio.textContent=value===picked?'◉':'○';
+    const text=document.createElement('span');text.className='account-choice-label';text.textContent=label;
+    button.append(radio,text);
+    button.addEventListener('click',()=>{picked=value;render();});
+    options.appendChild(button);buttons.push([value,button]);
+  }
+  render();
+}
+function sendTaskTypeLabel(plan){
+  const normal=Math.max(0,plan.scatterCount-plan.turnCount);
+  if(plan.turnCount>0&&plan.suiteCount>0)return `普通 ${normal} · 全转 ${plan.turnCount} · 套码 ${plan.suiteCount}`;
+  if(plan.turnCount>0)return `普通 ${normal} 条 · 全转 ${plan.turnCount} 条`;
+  if(plan.suiteCount===0)return `散码 ${plan.scatterCount} 条`;
+  if(plan.scatterCount===0)return `套码 ${plan.suiteCount} 条`;
+  return `散码 ${plan.scatterCount} 条 · 套码 ${plan.suiteCount} 条`;
+}
+function sendSummaryRows(plan,selection){
+  const account=selection==='both'?'排列 + 七星':selection==='seven'?'七星':'排列';
+  const per=moneyJiao(plan.totalJiao);
+  const amount=selection==='both'?`${per} × 2 = ${moneyJiao(plan.totalJiao*2)}`:per;
+  const screenshot=plan.suiteCount===0?'不适用':plan.suiteScreenshot?'有（日志页）':'无（完成后主页统一回图）';
+  return [
+    ['发送账号',account],
+    ['任务类型',sendTaskTypeLabel(plan)],
+    ['预计金额',amount],
+    ['套码截图',screenshot],
+    ['转换倍率',plan.convertOdds?'开启；结束恢复原状态':'关闭']
+  ];
+}
+function renderSendSummary(plan,selection){
+  const card=document.createElement('div');card.className='send-summary-card';
+  for(const [label,value] of sendSummaryRows(plan,selection)){
+    const row=document.createElement('div');row.className='send-summary-row';
+    const name=document.createElement('span');name.className='send-summary-name';name.textContent=label;
+    const val=document.createElement('span');val.className='send-summary-value';val.textContent=value;
+    if(label==='预计金额')val.classList.add('emphasis');
+    row.append(name,val);card.appendChild(row);
+  }
+  $('modal-options').appendChild(card);
 }
 function confirmSend(selection,frozen){
   try{assertSameFrozenPlan(frozen,preparedPlan());}
   catch(e){modal('发送已取消',e.message);return;}
-  const summary=planSendSummary(frozen,selection);
-  modal('最终确认发送',summary+'\n\n'+SEND_CAUTION,[
-    {label:'返回修改'},
-    {label:'确认创建云端任务',primary:true,onClick:()=>submitFrozenTask(selection,frozen)}
+  modal('确认发送','请核对本次任务的关键信息',[
+    {label:'返回修改',onClick:chooseSendAccount},
+    {label:'确认发送',primary:true,onClick:()=>submitFrozenTask(selection,frozen)}
   ]);
+  renderSendSummary(frozen,selection);
 }
 async function submitFrozenTask(selection,frozen){
   if(state.busy)return;
@@ -631,6 +706,7 @@ $('open-settings').onclick=menu;
 async function tick(){
   if(!api.loggedIn || !state.auth ||document.hidden)return;
   try{
+    if(state.tx?.pending().stop)await progressPendingStop();
     if(Date.now()-state.lastRoleCheck>15000){state.lastRoleCheck=Date.now();
       const current=await api.isRoleCurrent();if(!current){api.clear();showLogin('同账号已在另一台 A 端登录，当前 Web A 已退出；请到新设备核查任务。');return;}
     }

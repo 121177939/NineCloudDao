@@ -53,7 +53,7 @@ yes(auditFullTurnSource(original,normalizeForOffsets(original),parsed.scatter,fl
 yes(auditFullTurnSource(original.replace('全倒各1组','未定义各1组'),normalizeForOffsets(original.replace('全倒各1组','未定义各1组')),parsed.scatter,flags)===null,'unexpected source text cannot receive a verified source mapping');
 const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
 const app=fs.readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
-yes(html.includes('WAP 阶段九 · 简洁预览 / 安全发单候选')&&html.includes('app.js?v=web-a-stage9'),'stage-eight mobile-visible deploy marker & updated JS URL');
+yes(html.includes('WAP 阶段十一 · APP 既有流程对齐')&&html.includes('app.js?v=web-a-stage11'),'stage-eight mobile-visible deploy marker & updated JS URL');
 yes(app.includes('groupVerifiedSlices(visibleTurn)')&&!app.includes('modeHint'),'UI renders grouped full-turns with source wording');
 yes(app.includes('for(const item of scatter)') && app.includes('expandLinkedReviewRows(model.scatter,isVisible)'),'UI displays APP-style 50+38 slices without losing complete provenance');
 yes(app.includes("$('preview-send').disabled=!canPrepare")&&app.includes('submitFrozenTask'),'real sending remains prohibited');
