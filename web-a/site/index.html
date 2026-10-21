@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://wqhirteaemujeytsdpit.supabase.co; img-src 'self' blob: data:; font-src 'self'; worker-src 'none'">
   <meta name="color-scheme" content="light">
-  <title>控制中心 · Web A 阶段十一 · Android v2.0.51</title>
+  <title>控制中心 · Web A 阶段十三 · Android v2.0.51</title>
   <style>
     /* Palette, dp, card radius, typography and spacing taken from A v2.0.51 VisualUi.kt/MainActivity.kt. */
     :root { --bg:#f6f8fc; --white:#ffffff; --ink:#1a2a40; --muted:#6b7a90; --blue:#236fe7;
@@ -281,7 +281,7 @@
       <p class="minor-subtitle">已完成、已取消和失败任务在这里查看与分享</p>
       <div class="space-14"></div>
       <button class="button primary" style="width:100%" id="history-all">查看全部历史 · 微信转发小票</button>
-      <div class="light-note" id="wap-build-id" aria-label="网页版本">WAP 阶段十二 · 会话与图片修复</div>
+      <div class="light-note" id="wap-build-id" aria-label="网页版本">WAP 阶段十三 · 套码定位与原图分享</div>
       <div class="space-15"></div>
 <div class="list-stack" id="history-list"><div class="card">登录后读取历史。</div></div>
     </section>
@@ -289,7 +289,7 @@
     <section class="preview" id="preview" hidden aria-label="识别预览">
       <div class="preview-top">
         <button class="preview-back" id="preview-back" aria-label="返回">‹</button>
-        <span class="preview-title">识别预览</span>
+        <span class="preview-title">识别预览 <span style="font-size:10px;font-weight:500;color:#738197;white-space:nowrap">WAP 13</span></span>
         <button class="preview-help" id="preview-help">使用说明</button>
       </div>
       <div class="preview-scroll">
@@ -298,7 +298,7 @@
             <button class="button ghost" style="min-height:30px;padding:4px 7px;font-size:13px" id="reuse-original">复用原文</button></div>
           <div class="preview-text" id="original-text"></div>
         </div>
-        <div class="result-top"><span class="result-count" id="result-count">识别结果</span>
+        <div class="result-top"><span class="result-count" id="result-count">识别结果</span><button class="button ghost" style="min-height:27px;padding:2px 7px;font-size:11px" id="preview-locator-diagnostic">定位诊断</button>
           <label class="filter-small"><input type="checkbox" id="review-only">只看需确认/失败</label></div>
         <div id="preview-ignored" class="preview-ignored" hidden></div>
         <div class="chip-list" id="preview-filters">
@@ -341,5 +341,5 @@
   </div>
   <p class="warn" style="margin-top:15px">Web A 已连接既有云端发单与一键 STOP 流程；生产环境权限、B 真机回执和小票链路仍需按验收清单核验。发送结果未知时禁止重复提交。</p>
 </section>
-<script src="parser.js?v=web-a-stage12"></script><script type="module" src="app.js?v=web-a-stage12"></script>
+<script src="parser.js?v=web-a-stage13"></script><script type="module" src="app.js?v=web-a-stage13"></script>
 </body></html>

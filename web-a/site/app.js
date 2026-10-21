@@ -1,13 +1,13 @@
-import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage12';
-import {WebAClient, CloudError} from './supabase.js?v=web-a-stage12';
-import {WebTransactions} from './transactions.js?v=web-a-stage12';
-import {requireBReady} from './safety.js?v=web-a-stage12';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage12';
-import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage12';
-import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage12';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage12';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage13';
+import {WebAClient, CloudError} from './supabase.js?v=web-a-stage13';
+import {WebTransactions} from './transactions.js?v=web-a-stage13';
+import {requireBReady} from './safety.js?v=web-a-stage13';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage13';
+import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage13';
+import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage13';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage13';
 
-// Web A v2.0.51 — Stage 11 aligns existing send/one-tap STOP flows with Android A.
+// Web A v2.0.51 — Stage 13 fixes original-source suite offsets and image file share UX.
 // Existing Supabase protocol and Kotlin/JS plan are reused; no new business actions are added.
 // Production acceptance still requires live Supabase / B / browser validation.
 const $=id=>document.getElementById(id);
@@ -240,7 +240,7 @@ async function showAllHistory(offset=0){
     control('刷新',false,()=>showAllHistory(offset));
     $('modal-options').appendChild(controls);
     const selected=new Set();let shareButton=null;
-    const updateShare=()=>{if(shareButton){shareButton.disabled=selected.size===0;shareButton.textContent=`转发勾选小票到微信（${selected.size}个任务，最多6张）`;}};
+    const updateShare=()=>{if(shareButton){shareButton.disabled=selected.size===0;shareButton.textContent=`准备勾选小票原图（${selected.size}个任务，最多6张）`;}};
     if(!rows.length){const empty=document.createElement('p');empty.className='history-artifact-note';empty.textContent='这一页没有历史任务。';$('modal-options').appendChild(empty);}
     for(const row of rows){
       const stopRows=stopsByTask.get(row.id)||[];
@@ -257,7 +257,7 @@ async function showAllHistory(offset=0){
       wrap.append(checkbox,entry);$('modal-options').appendChild(wrap);
     }
     $('modal-actions').replaceChildren();$('modal-actions').classList.remove('history-detail-actions','send-choice-actions');
-    shareButton=document.createElement('button');shareButton.className='button primary';shareButton.disabled=true;shareButton.textContent='转发勾选小票到微信（0个任务，最多6张）';
+    shareButton=document.createElement('button');shareButton.className='button primary';shareButton.disabled=true;shareButton.textContent='准备勾选小票原图（0个任务，最多6张）';
     shareButton.addEventListener('click',async()=>{
       const chosen=rows.filter(row=>selected.has(row.id));if(!chosen.length)return;
       shareButton.disabled=true;shareButton.textContent='正在准备图片…';
@@ -289,19 +289,61 @@ function suiteStateLabel(value){return ({verified_success:'成功',unsubmitted_f
 function imageExtension(blob){const type=String(blob?.type||'').toLowerCase();return type.includes('jpeg')||type.includes('jpg')?'jpg':type.includes('webp')?'webp':type.includes('gif')?'gif':'png';}
 function safeFilePart(value){return String(value||'小票').replace(/[\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,48)||'小票';}
 function appendHistoryNotice(message){$('modal-body').textContent=($('modal-body').textContent+'\n'+message).trim();}
-async function shareHistoryImages(artifacts,id){
-  if(!artifacts.length||artifacts.some(a=>!a.blob?.type?.startsWith('image/')))throw new Error('未获取有效图片，不能转发网页链接冒充图片');
-  const files=artifacts.map((artifact,index)=>new File([artifact.blob],`${String(artifact.taskId||id).slice(0,8)}-${safeFilePart(artifact.title)}-${index+1}.${imageExtension(artifact.blob)}`,{type:artifact.blob.type||'image/png'}));
-  let canShareFiles=false;
-  try{canShareFiles=typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files});}catch{}
-  if(canShareFiles){
-    try{await navigator.share({files,title:`任务 ${id.slice(0,8)} 小票`});}
-    catch(e){if(e.name==='AbortError')return;appendHistoryNotice('浏览器图片分享失败：'+e.message+'。请保存图片后从微信相册发送。');}
-    return;
-  }
-  for(const file of files){const url=URL.createObjectURL(file);state.activeObjectUrls.push(url);const link=document.createElement('a');link.href=url;link.download=file.name;link.style.display='none';document.body.appendChild(link);link.click();link.remove();}
-  appendHistoryNotice(files.length>1?'当前浏览器不支持一次分享多张图片，已分别下载原图。':'当前浏览器不支持直接分享图片文件，已尝试保存图片；请从微信聊天的相册入口发送，不要转发当前网页链接。');
+function makeImageFiles(artifacts,id){
+  if(!artifacts.length||artifacts.some(a=>!a.blob?.type?.startsWith('image/')))
+    throw new Error('云端没有返回可用的原始图片；不能把网页链接当作图片分享');
+  return artifacts.map((artifact,index)=>new File([artifact.blob],
+    `${String(artifact.taskId||id).slice(0,8)}-${safeFilePart(artifact.title)}-${index+1}.${imageExtension(artifact.blob)}`,
+    {type:artifact.blob.type}));
 }
+function canShareImageFiles(files){
+  try{return typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files});}
+  catch{return false;}
+}
+function systemShareFiles(files){
+  // Called DIRECTLY by the second real user gesture, without any network await.
+  // Don't include a title/text/url: those can trigger link-card sharing.
+  if(!canShareImageFiles(files))return Promise.reject(new Error('此浏览器不支持图片文件分享'));
+  return navigator.share({files});
+}
+function imageShareDialog(files,id){
+  const supported=canShareImageFiles(files);
+  modal('分享真实小票图片',
+    `已准备 ${files.length} 张原始图片（非网页链接）。\n`+
+    (supported?'点“系统分享图片”，在弹出的分享面板选择微信并核对确实是图片。':'当前浏览器不支持直接分享图片文件；请先长按下方图片保存，再从微信聊天的相册入口发送。')+
+    '\n不要使用浏览器菜单“分享网页”，那只会发送链接。',[
+      ...(supported?[{label:'系统分享图片',primary:true,onClick:()=>{
+        systemShareFiles(files).catch(e=>{
+          if(e.name!=='AbortError')imageShareDialogWithNotice(files,id,'系统分享未成功：'+e.message);
+        });
+      }}]:[]),
+      {label:'如何保存',onClick:()=>imageShareDialogWithNotice(files,id,'请在每张预览图下点击“保存此图”；不支持下载时请长按图片，选择“保存图片”。')},
+      {label:'取消'}
+    ]);
+  const options=$('modal-options');
+  for(const [index,file] of files.entries()){
+    const section=document.createElement('section');section.className='history-artifact';
+    const label=document.createElement('p');label.className='history-artifact-note';
+    label.textContent=`原图 ${index+1}/${files.length} · ${file.type} · 长按图片可保存到相册`;
+    const img=document.createElement('img');img.className='ticket-image';img.alt=`可长按保存的原始小票 ${index+1}`;
+    img.style.cssText='max-height:46vh;object-fit:contain;touch-action:auto;-webkit-touch-callout:default;';
+    const url=URL.createObjectURL(file);state.activeObjectUrls.push(url);img.src=url;
+    const save=document.createElement('a');save.href=url;save.download=file.name;
+    save.className='button ghost';save.style.cssText='display:block;text-align:center;margin-top:7px';
+    save.textContent=`保存第 ${index+1} 张原图`;
+    section.append(label,img,save);options.appendChild(section);
+  }
+}
+function imageShareDialogWithNotice(files,id,notice){
+  imageShareDialog(files,id);$('modal-body').textContent+='\n'+notice;
+}
+async function shareHistoryImages(artifacts,id){
+  // For a single history image, the image Blob has already been fetched;
+  // for bulk, ALL asynchronous requests finish before showing this dialog.
+  // User must tap "系统分享图片" to restore transient user activation.
+  imageShareDialog(makeImageFiles(artifacts,id),id);
+}
+
 async function showTaskDetail(id,returnToAllHistoryOffset=null){
   modal('任务 '+String(id||'').slice(0,8),'正在读取云端记录…',[{label:returnToAllHistoryOffset===null?'关闭':'返回全部历史',onClick:()=>returnToAllHistoryOffset===null?undefined:showAllHistory(returnToAllHistoryOffset)}]);
   const revision=state.modalRevision;
@@ -360,11 +402,11 @@ async function showTaskDetail(id,returnToAllHistoryOffset=null){
     const suite=state.currentHistoryArtifacts.find(a=>a.kind==='suite');
     const stop=state.currentHistoryArtifacts.find(a=>a.kind==='stop');
     const single=scatter||suite||stop;
-    const singleLabel=!single?'转发小票到微信':single.kind==='stop'?'转发人工核实截图':single.kind==='suite'?(single.title==='套码下注页截图'?'转发套码下注页截图':'转发日志截图'):'转发小票到微信';
+    const singleLabel=!single?'查看并分享原图':single.kind==='stop'?'查看并分享人工核实原图':single.kind==='suite'?(single.title==='套码下注页截图'?'查看并分享套码原图':'查看并分享日志原图'):'查看并分享小票原图';
     addAction(singleLabel,{primary:true,disabled:!single,onClick:()=>single&&shareHistoryImages([single],id)});
-    addAction('两张图片一起发微信',{disabled:!(scatter&&suite),title:scatter&&suite?'':'需要同时存在可读取的散码小票和套码图片',onClick:()=>scatter&&suite&&shareHistoryImages([scatter,suite],id)});
+    addAction('两张原图一起分享',{disabled:!(scatter&&suite),title:scatter&&suite?'':'需要同时存在可读取的散码小票和套码图片',onClick:()=>scatter&&suite&&shareHistoryImages([scatter,suite],id)});
     addAction('A 端人工核实 · 结案并通知 B 自动恢复接单',{disabled:true,title:FAIL_CLOSED});
-    const safetyNote=document.createElement('p');safetyNote.className='history-safety-note';safetyNote.textContent='分享由系统确认；若浏览器不支持则保存原图。网页端结案和恢复接单仍关闭。';$('modal-actions').appendChild(safetyNote);
+    const safetyNote=document.createElement('p');safetyNote.className='history-safety-note';safetyNote.textContent='图片先预览，再在新点击中选择系统分享；不支持时长按保存原图，从微信相册发送。网页端结案和恢复接单仍关闭。';$('modal-actions').appendChild(safetyNote);
     if(returnToAllHistoryOffset===null)addAction('关闭',{onClick:()=>closeModal()});
     else addAction('返回全部历史',{onClick:()=>showAllHistory(returnToAllHistoryOffset)});
   }catch(e){if(revision===state.modalRevision&&!$('overlay').hidden)modal('详情读取失败',e.message);}
@@ -551,6 +593,17 @@ function closePreview(){$('preview').hidden=true;$('navbar').hidden=false;}
 $('preview-back').onclick=closePreview;$('preview-edit').onclick=closePreview;
 $('reuse-original').onclick=()=>{$('command').value=state.parsedText;closePreview();};
 $('preview-help').onclick=()=>modal('识别预览使用说明','与 Android A 一致：散码区按实际执行金额归组；全转区只标示号码、每码金额和预计码数。识别数据由同源 Kotlin/JS 生成。不能确认来源、金额不一致或解析失败的内容禁止发送。\n真实任务发出前会再次检查角色、B 心跳、旧任务和 STOP；云端接收不等于 B 已执行成功。');
+$('preview-locator-diagnostic').addEventListener('click',()=>{
+  const model=state.previewModel,raw=state.parsedText;
+  if(!model)return;
+  const lines=[`WAP 阶段十三 / 套码定位诊断（仅在本机生成）`,`原文 JSON：${JSON.stringify(raw)}`,
+    ...model.suites.map((r,i)=>`套码${i+1}: ${r.canonical} / 匹配=${r.matched} / 范围=${r.start}-${r.end} / 原文=${JSON.stringify(r.source)} / 状态=${r.status}`),
+    ...model.errors.map(r=>`解析错误：${r.message}`)];
+  modal('套码定位诊断',lines.join('\n')+'\n请核对是否为你实际输入的完整原文。仅在自愿时复制给开发者。',[
+    {label:'关闭'},
+    {label:'复制诊断',onClick:()=>navigator.clipboard?.writeText(lines.join('\n')).then(()=>setStatus('定位诊断已复制')).catch(e=>setStatus('复制失败：'+e.message))}
+  ]);
+});
 $('preview-copy').onclick=async()=>{
   const model=state.previewModel;
   const text=['散码区',model?.scatterCount?'原文：'+model.scatterOriginal:'无',

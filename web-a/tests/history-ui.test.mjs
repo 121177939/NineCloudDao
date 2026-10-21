@@ -8,7 +8,7 @@ assert.match(app, /const blob=await api\.screenshot\(artifact\.path\)/);
 assert.match(app, /image\.className='ticket-image'/);
 assert.match(app, /image\.src=url/);
 assert.match(app, /addAction\('A 端人工核实 · 结案并通知 B 自动恢复接单',\{disabled:true/);
-assert.match(app, /addAction\('两张图片一起发微信',\{disabled:!\(scatter&&suite\)/);
+assert.match(app, /addAction\('两张原图一起分享',\{disabled:!\(scatter&&suite\)/);
 assert.match(app, /async function showAllHistory\(offset=0\)/);
 assert.match(app, /const completed=rows\.filter\(t=>\['finished','cancelled','failed'\]\.includes\(t\.status\)\)\.slice\(0,8\)/);
 assert.match(html, /\.history-detail-actions\s*\{display:flex;\s*flex-direction:column;/);

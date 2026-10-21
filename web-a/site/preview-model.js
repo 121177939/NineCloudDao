@@ -40,6 +40,34 @@ function locateUnclaimed(raw,normalized,needle,from,occupied) {
   return {start:0,end:0,matched:false,source:text};
 }
 
+// When Kotlin has accepted whitespace-separated suite position fields, its
+// canonical form contains no spaces (e.g. "678头387尾=2"). Audit may match
+// only the SAME ordered digit/position tokens, allowing whitespace at the
+// token boundaries; never infer digits, punctuation or extra positions.
+// Offsets are deliberately indexes into the UNMODIFIED raw input.
+function locateSuiteWithWhitespace(raw,normalized,canonical,occupied){
+  const needle=String(canonical||'').split('=')[0];
+  const tokens=[...needle.matchAll(/([0-9X]+|全)([头百十尾])/g)];
+  if(tokens.length<2||tokens.length>4||tokens.map(x=>x[0]).join('')!==needle)
+    return {start:0,end:0,matched:false,source:needle};
+  const spacer='[ \t\r\n\u00a0]*';
+  const pattern=tokens.map(x=>x[1]+spacer+x[2]).join(spacer);
+  const regex=new RegExp(pattern,'g');let found;
+  while((found=regex.exec(normalized))!==null){
+    const at=found.index,end=regex.lastIndex;
+    if(end>raw.length||occupied.slice(at,end).some(Boolean))continue;
+    if(at>0&&/[0-9X]/.test(normalized[at-1]))continue;
+    if(end<normalized.length&&/[0-9X]/.test(normalized[end]))continue;
+    const source=raw.slice(at,end);
+    // Reject any match whose sole difference is NOT spacing; original text
+    // and exact indices are preserved, never reconstructed from canonical.
+    if(normalized.slice(at,end).replace(/[ \t\r\n\u00a0]/g,'')!==needle)continue;
+    occupied.fill(1,at,end);
+    return {start:at,end,matched:true,source};
+  }
+  return {start:0,end:0,matched:false,source:needle};
+}
+
 function ignoredSpans(source) {
   const used=new Uint8Array(source.length),output=[];
   for(const label of IGNORED_LABELS){
@@ -99,7 +127,13 @@ export function createPreviewModel(source, parsed) {
     const canonical=String(suite.canonical||''), guessed=String(suite.source||canonical);
     const needle=normalizeForOffsets(guessed.split('=')[0]);
     const from=nextSuiteOffset.get(needle)||0;
-    const span=locateUnclaimed(raw,normalized,needle,from,occupied);
+    let span=locateUnclaimed(raw,normalized,needle,from,occupied);
+    if(!span.matched && needle.replace(/[ \t\r\n\u00a0]/g,'')===
+      normalizeForOffsets(canonical.split('=')[0]).replace(/[ \t\r\n\u00a0]/g,'')){
+      // Preserve fail-closed behavior: only compare the precise authoritative
+      // digit/position sequence; this is NOT a new wager recognizer.
+      span=locateSuiteWithWhitespace(raw,normalized,canonical,occupied);
+    }
     if(span.matched)nextSuiteOffset.set(needle,span.end);
     // Legacy shorthand can compile into a canonical expression not literally
     // present in the input. Show the original for audit, but do NOT claim a
