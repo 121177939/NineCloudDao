@@ -1,8 +1,9 @@
-import {WebAClient, CloudError} from './supabase.js';
-import {WebTransactions} from './transactions.js';
-import {requireBReady} from './safety.js';
-import {createPreviewModel, moneyJiao} from './preview-model.js';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js';
+import {WebAClient, CloudError} from './supabase.js?v=web-a-stage7';
+import {WebTransactions} from './transactions.js?v=web-a-stage7';
+import {requireBReady} from './safety.js?v=web-a-stage7';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage7';
+import {expandLinkedReviewRows, describeSplitExecutions} from './preview-coverage.js?v=web-a-stage7';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage7';
 
 // Web A v2.0.51 — GitHub Pages integration candidate. Local mutation state machine is
 // implemented and unit-tested, but production write actions stay fail-closed until
@@ -305,7 +306,7 @@ async function showTaskDetail(id,returnToAllHistoryOffset=null){
     addAction(singleLabel,{primary:true,disabled:!single,onClick:()=>single&&shareHistoryImages([single],id)});
     addAction('两张图片一起发微信',{disabled:!(scatter&&suite),title:scatter&&suite?'':'需要同时存在可读取的散码小票和套码图片',onClick:()=>scatter&&suite&&shareHistoryImages([scatter,suite],id)});
     addAction('A 端人工核实 · 结案并通知 B 自动恢复接单',{disabled:true,title:FAIL_CLOSED});
-    const safetyNote=document.createElement('p');safetyNote.className='history-safety-note';safetyNote.textContent='网页端结案与自动恢复接单仍关闭；请使用已验收的 Android A 端处理。';$('modal-actions').appendChild(safetyNote);
+    const safetyNote=document.createElement('p');safetyNote.className='history-safety-note';safetyNote.textContent='分享由系统确认；若浏览器不支持则保存原图。网页端结案和恢复接单仍关闭。';$('modal-actions').appendChild(safetyNote);
     if(returnToAllHistoryOffset===null)addAction('关闭',{onClick:()=>closeModal()});
     else addAction('返回全部历史',{onClick:()=>showAllHistory(returnToAllHistoryOffset)});
   }catch(e){if(revision===state.modalRevision&&!$('overlay').hidden)modal('详情读取失败',e.message);}
@@ -394,19 +395,26 @@ function renderPreview(){
     return row.status===state.filter;
   };
   const host=$('preview-rows');host.replaceChildren();
-  const scatter=model.scatter.filter(isVisible);
+  // Keep all linked execution slices visible together: '0336各88组' is
+  // split by the Android parser into 50+38; review-only must not show 38 alone.
+  const scatter=expandLinkedReviewRows(model.scatter,isVisible);
   const scatterStatus=scatter.some(x=>x.status==='需确认')?'需确认':'正常';
   const group=makePreviewCard(1,'散码区',scatterStatus);
   if(!scatter.length){
     previewDetail(group.content,onlyReview||state.filter!=='全部'?'当前筛选下没有散码':'本次没有单组散码','result-caption');
   }else{
-    previewDetail(group.content,'原文：'+scatter.map(x=>x.source).join('，'),'preview-raw');
+    const rawEvidence=scatter.filter(x=>x.matched).map(x=>x.source);
+    const unlocated=scatter.filter(x=>!x.matched).length;
+    previewDetail(group.content,'原文：'+(rawEvidence.join('，')||'未定位')+(unlocated?`（另有 ${unlocated} 条解析执行项不能独立定位）`:''),'preview-raw');
     const grouped=new Map();
     for(const item of scatter){
       if(!grouped.has(item.amountText))grouped.set(item.amountText,[]);
       grouped.get(item.amountText).push(item.number);
     }
     previewDetail(group.content,'识别：'+[...grouped].map(([amount,codes])=>`${codes.join('、')}各${amount}`).join('；'),'preview-recognized');
+    for(const summary of describeSplitExecutions(scatter)){
+      previewDetail(group.content,summary,'txt-amber');
+    }
     const problems=[...new Set(scatter.map(x=>x.detail).filter(Boolean))];
     if(problems.length)previewDetail(group.content,'提示：'+problems.join('；'),'txt-amber');
     group.card.setAttribute('role','button');group.card.tabIndex=0;
@@ -419,9 +427,9 @@ function renderPreview(){
     const turn=document.createElement('div');turn.className='preview-card';
     const label=document.createElement('strong');label.textContent=`全转区（${model.turnCount}条独立执行项）`;
     turn.appendChild(label);
-    const visibleTurn=model.turns.filter(isVisible);
+    const visibleTurn=expandLinkedReviewRows(model.turns,isVisible);
     if(!visibleTurn.length)previewDetail(turn,'当前筛选下无全转','result-caption');
-    for(const item of visibleTurn)previewDetail(turn,`第${item.executionIndex}组 · ${item.number} · 全转 · 各${item.amountText}`,'preview-recognized');
+    for(const item of visibleTurn)previewDetail(turn,`第${item.executionIndex}组 · ${item.number} · 全转 · 各${item.amountText}${!item.matched?' · 来源未单独定位':''}`,'preview-recognized');
     turn.onclick=()=>setPreviewHighlights(visibleTurn);host.appendChild(turn);
   }
   const visibleSuites=model.suites.filter(isVisible);

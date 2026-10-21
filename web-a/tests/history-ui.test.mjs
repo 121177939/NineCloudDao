@@ -11,6 +11,6 @@ assert.match(app, /addAction\('A 端人工核实 · 结案并通知 B 自动恢�
 assert.match(app, /addAction\('两张图片一起发微信',\{disabled:!\(scatter&&suite\)/);
 assert.match(app, /async function showAllHistory\(offset=0\)/);
 assert.match(app, /const completed=rows\.filter\(t=>\['finished','cancelled','failed'\]\.includes\(t\.status\)\)\.slice\(0,8\)/);
-assert.match(html, /\.history-detail-actions\s*\{flex-direction:column;/);
+assert.match(html, /\.history-detail-actions\s*\{display:flex;\s*flex-direction:column;/);
 assert.match(html, /img-src 'self' blob: data:/);
 console.log('PASS: 9 history UI and fail-closed structure assertions');

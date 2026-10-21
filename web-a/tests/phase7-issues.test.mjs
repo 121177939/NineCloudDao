@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {createPreviewModel} from '../site/preview-model.js';
+import {expandLinkedReviewRows,describeSplitExecutions} from '../site/preview-coverage.js';
+import {historyCardPresentation} from '../site/history-detail.js';
+
+let checks=0;
+const check=(ok,msg)=>{assert.ok(ok,msg);checks++;};
+const ctx={};vm.runInNewContext(fs.readFileSync(new URL('../site/parser.js',import.meta.url),'utf8'),ctx);
+const engine=ctx.parser.com.example.remotea.WebParser;
+const example='0336各88组，全倒各1组，\n8052、5082、0396、2096、4096、8036各18组,全倒0.5组\n8X3X,20组，全倒10组， X036,803X各10组，全倒各1组';
+const parsed=JSON.parse(engine.inspect(example));
+check(parsed.valid,'authoritative Kotlin/JS parser stays valid');
+check(parsed.scatter.length===21,'all 21 independent parser items retained');
+check(parsed.totalJiao===4880,'original amount unchanged');
+check(parsed.scatter[0].amountJiao===500 && parsed.scatter[1].amountJiao===380,'88 is represented as 50+38 by authoritative engine');
+const model=createPreviewModel(example,parsed);
+check(model.turnCount===10,'ten real turn items');
+check(model.suiteCount===0,'no suite items invented');
+check(model.scatterCount===11,'eleven scatter execution items retained');
+const review=expandLinkedReviewRows(model.scatter,r=>r.status==='需确认');
+const all0336=review.filter(r=>r.number==='0336');
+check(all0336.length===2,'filtered preview displays both 50 and 38 together');
+check(all0336.some(r=>r.amountJiao===500)&&all0336.some(r=>r.amountJiao===380),'not the misleading 38-only summary');
+check(describeSplitExecutions(review).some(s=>s.includes('0336') && s.includes('50元') && s.includes('38元')),'explains Android split without synthesizing numbers');
+check(model.scatter.filter(x=>x.number==='0336'&&!x.matched).length>=1,'unlocatable source remains review-worthy');
+check(expandLinkedReviewRows(model.scatter,()=>true).length===model.scatter.length,'all filter leaves all original execution items');
+for(const [state,tone] of [['finished','success'],['cancelled','danger'],['failed','danger'],['needs_review','warning']]){
+ check(historyCardPresentation(state).tone===tone,`history state ${state}`);
+}
+const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
+const app=fs.readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
+check(html.includes('WAP 阶段七 · 三项修复'),'browser deploy version marker');
+check(html.includes('app.js?v=web-a-stage7'),'new module cache identity');
+check(html.includes('modal-scroll')&&html.includes('overflow-x:hidden'),'modal avoids horizontal overflow');
+check(/\.history-detail-actions[^{]*\{[^}]*flex-direction:column;/.test(html),'history buttons stacked on mobile');
+check(/\.history-detail-actions \.button[^{]*\{[^}]*width:100%;/.test(html),'history buttons fit viewport width');
+check(html.includes('history-status-dot')&&html.includes('.tone-success'),'history status dot and tones remain');
+check(app.includes('expandLinkedReviewRows(model.scatter,isVisible)'),'app actually uses completeness filter');
+check(/addAction\('A 端人工核实 · 结案并通知 B 自动恢复接单',\{disabled:true/.test(app),'production close remains disabled');
+console.log(`PASS: ${checks} phase-seven parsing, history state, responsive layout and read-only invariants`);
