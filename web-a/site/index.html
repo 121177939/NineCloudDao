@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://wqhirteaemujeytsdpit.supabase.co; img-src 'self' blob: data:; font-src 'self'; worker-src 'none'">
   <meta name="color-scheme" content="light">
-  <title>控制中心 · Web A 阶段八 · Android v2.0.51</title>
+  <title>控制中心 · Web A 阶段九 · Android v2.0.51</title>
   <style>
     /* Palette, dp, card radius, typography and spacing taken from A v2.0.51 VisualUi.kt/MainActivity.kt. */
     :root { --bg:#f6f8fc; --white:#ffffff; --ink:#1a2a40; --muted:#6b7a90; --blue:#236fe7;
@@ -182,6 +182,8 @@
     .history-card .history-status.tone-warning, .history-all-row .tone-warning {color:#b36a00;}
     .history-card .history-status-dot {background-color:currentColor;}
     .tone-success {color:var(--green)} .tone-danger {color:var(--red)} .tone-warning {color:#b36a00} .tone-neutral {color:var(--muted)}
+    .send-choice-actions {flex-direction:column;align-items:stretch;flex-wrap:nowrap;}
+    .send-choice-actions .button {width:100%;min-height:44px;flex:none;}
     .history-detail-actions {display:flex; flex-direction:column; flex-wrap:nowrap; gap:8px; max-height:min(41dvh,300px); overflow-y:auto; overscroll-behavior:contain;}
     .history-detail-actions .button {display:flex;width:100%;max-width:100%;min-height:42px;flex:0 0 auto;white-space:normal;overflow-wrap:anywhere;padding:8px 10px;line-height:1.4;}
     .history-all-controls {display:flex;gap:6px;margin:5px 0 10px;}
@@ -263,7 +265,7 @@
       <p class="minor-subtitle">已完成、已取消和失败任务在这里查看与分享</p>
       <div class="space-14"></div>
       <button class="button primary" style="width:100%" id="history-all">查看全部历史 · 微信转发小票</button>
-      <div class="light-note" id="wap-build-id" aria-label="网页版本">WAP 阶段八 · 全转原文对齐（核对部署版本）</div>
+      <div class="light-note" id="wap-build-id" aria-label="网页版本">WAP 阶段九 · 简洁预览 / 安全发单候选</div>
       <div class="space-15"></div>
 <div class="list-stack" id="history-list"><div class="card">登录后读取历史。</div></div>
     </section>
@@ -294,12 +296,12 @@
           <label><input type="checkbox" id="suite-screenshot">套码截图</label>
           <label><input type="checkbox" id="convert-odds">转换倍率</label>
         </div></div>
-<div class="demo-warning">号码识别使用 v2.0.51 Kotlin 同源逻辑；真实发送未开放。</div>
+<div class="demo-warning">仅在云端门禁检查通过后创建任务；网络未知结果不重发。正式双机验收前勿投入生产。</div>
       </div>
       <div class="preview-footer">
         <button class="button ghost" id="preview-edit">返回修改</button>
         <button class="button" id="preview-copy">复制识别结果</button>
-        <button class="button primary" id="preview-send" disabled title="云端发送安全等价验证未完成">确认发送</button>
+        <button class="button primary" id="preview-send" disabled title="登录并完成识别校验后选择执行账号">确认发送</button>
       </div>
     </section>
   </div>
@@ -323,5 +325,5 @@
   </div>
   <p class="warn" style="margin-top:15px">云端登录、状态、历史及回图采用真实 API；任务创建、STOP、取消与人工结案尚未经过生产环境验收，当前不可直接写入。</p>
 </section>
-<script src="parser.js?v=web-a-stage8"></script><script type="module" src="app.js?v=web-a-stage8"></script>
+<script src="parser.js?v=web-a-stage9"></script><script type="module" src="app.js?v=web-a-stage9"></script>
 </body></html>

@@ -1,3 +1,4 @@
+import {isWireCommand} from './send-plan.js';
 /** Supabase read/auth client based on v2.0.51 PhoneA SupabaseApi.kt.
  * Do not store JWT/refresh token in browser storage. No service-role key is used.
  */
@@ -72,7 +73,7 @@ export class WebAClient {
     return (await this.wire('POST','/rest/v1/rpc/'+name,body)).data;
   }
   async createTask(command,id,targetAccount){
-    if(!/^[0-9a-f-]{36}$/i.test(id)||!['seven','arrange'].includes(targetAccount)||!command?.startsWith('M1|'))
+    if(!/^[0-9a-f-]{36}$/i.test(id)||!['seven','arrange'].includes(targetAccount)||!isWireCommand(command))
       throw new CloudError('新建任务参数不合法');
     // send only a frozen, parser-validated command; server's presence gate must also pass.
     return (await this.wire('POST','/rest/v1/remote_tasks?select=*',{
@@ -80,7 +81,7 @@ export class WebAClient {
   }
   async dualCapabilities(){return this.rpc('remote_v110_capabilities');}
   async createDualChain(command,firstId,secondId){
-    if(!/^[0-9a-f-]{36}$/i.test(firstId)||!/^[0-9a-f-]{36}$/i.test(secondId)||firstId===secondId||!command?.startsWith('M1|'))
+    if(!/^[0-9a-f-]{36}$/i.test(firstId)||!/^[0-9a-f-]{36}$/i.test(secondId)||firstId===secondId||!isWireCommand(command))
       throw new CloudError('双账号建单参数不合法');
     const r=await this.rpc('remote_v110_create_plan',{p_command:command,p_first_id:firstId,p_second_id:secondId});
     if(r?.plan_id!==firstId || r?.first_task_id!==firstId || r?.second_task_id!==secondId)

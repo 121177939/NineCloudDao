@@ -71,9 +71,12 @@ export function shouldPermitNewTask({roleCurrent,presence,activeTask,globalContr
   if(uploadInFlight)throw new SafetyLockError('当前网络提交未收口');
   if(activeTask)throw new SafetyLockError('云端存在未完成任务 '+String(activeTask.id||'').slice(0,8));
   if(unresolvedStops?.length)throw new SafetyLockError('云端存在未结案 STOP 请求');
-  if(globalControl?.action!=='resume' || Number(globalControl?.revision||0)<=0 ||
-      Number(globalControl?.ack_revision||-1)!==Number(globalControl?.revision||0) || globalControl?.ack_state!=='resumed')
-    throw new SafetyLockError('全局 STOP 未经 B 确认恢复，禁止发送');
+  // Server permits an initialized no-STOP state (revision=0/action=none),
+  // or an exact B-ACKed resume. A running STOP always blocks creation.
+  const none=globalControl?.action==='none' && Number(globalControl?.revision)===0;
+  const resumed=globalControl?.action==='resume' && Number(globalControl?.revision)>0 &&
+    Number(globalControl?.ack_revision)===Number(globalControl?.revision) && globalControl?.ack_state==='resumed';
+  if(!none&&!resumed)throw new SafetyLockError('全局 STOP 状态未经服务端确认可接单，禁止发送');
   requireBReady(presence);
   return true;
 }

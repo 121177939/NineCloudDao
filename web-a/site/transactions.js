@@ -1,3 +1,4 @@
+import {isWireCommand} from './send-plan.js';
 import {SafetyJournal,SafetyLockError,requireBReady,shouldPermitNewTask,oneTapStopNext,withExclusiveLock,FINAL_STATES} from './safety.js';
 
 /** Fail-closed Web transactional migration candidate. Not activated for production until DB acceptance.
@@ -21,8 +22,8 @@ export class WebTransactions {
       journal:this.tasks.load()||this.stop.load(),uploadInFlight:this.inFlight};
   }
   async sendFrozenCommand(command,selection){
-    if(!['arrange','seven','both'].includes(selection)||!command?.startsWith('M1|'))
-      throw new SafetyLockError('请选择有效账号并使用 Kotlin 识别器确认的 M1 协议');
+    if(!['arrange','seven','both'].includes(selection)||!isWireCommand(command))
+      throw new SafetyLockError('请选择有效账号并使用 Kotlin 识别器确认的 B 兼容指令');
     return withExclusiveLock('cloud-writes',async()=>{
       if(this.inFlight)throw new SafetyLockError('已有提交正在进行');
       if(this.tasks.load()||this.stop.load())throw new SafetyLockError('旧任务或 STOP 未决，请先核对');
@@ -63,7 +64,9 @@ export class WebTransactions {
     if(row.secondId){
       const plan=await this.api.dualPlanSnapshot(row.requestId,row.secondId);
       if(!plan?.plan_exists)return {state:'unknown-plan',row,first};
-      return {state:'plan',row,first,plan};
+      const second=await this.api.task(row.secondId);
+      if(!second)return {state:'unknown-second',row,first,plan};
+      return {state:'plan',row,first,second,plan};
     }
     return {state:FINAL_STATES.includes(first.status)?'terminal':'active',row,first};
   }
@@ -72,7 +75,9 @@ export class WebTransactions {
     if(externalReviewed!==true)throw new SafetyLockError('请先人工核对真实小票与结果');
     const result=await this.reconcileTask();
     if(result.state==='terminal' && !this.stop.load())this.tasks.close(true);
-    else if(result.state==='plan' && result.plan?.unfinished_count===0 && result.plan?.queued_count===0 && !this.stop.load()){
+    else if(result.state==='plan' && result.plan?.unfinished_count===0 && result.plan?.queued_count===0 &&
+      result.plan.first_exists===true && result.plan.second_exists===true &&
+      FINAL_STATES.includes(result.first?.status) && FINAL_STATES.includes(result.second?.status) && !this.stop.load()){
       // A verified terminal plan can be acknowledged, but database plan closure remains
       // a separate explicit RPC after review.
       this.tasks.close(true);
@@ -100,6 +105,9 @@ export class WebTransactions {
       }else if(next.action==='superseded'){
         this.stop.advance('waiting_b_halt',{revision:next.revision});
       }else if(next.action==='release'){
+        // A release POST timeout must not silently retry another resume operation.
+        if(row.phase==='release_unknown')throw new SafetyLockError('STOP 自动释放回复未知；请先核对云端 revision，不允许重复调用释放');
+        this.stop.advance('release_unknown');
         const r=await this.api.releaseStop(next.revision);
         if(!(Number(r?.revision)>next.revision))throw new SafetyLockError('云端未确认自动释放版本');
         this.stop.advance('waiting_b_resume',{resumeRevision:Number(r.revision)});

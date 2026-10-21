@@ -25,6 +25,7 @@ test('server date needed',()=>rejects(()=>requireBReady({row:fresh.row}),/云端
 test('stale B rejects',()=>rejects(()=>requireBReady({row:{...fresh.row,seen_at:new Date(now-22000).toISOString()},serverTime:now}),/过期/));
 test('busy B rejects',()=>rejects(()=>requireBReady({row:{...fresh.row,state:'busy'},serverTime:now}),/空闲/));
 test('fresh unblocked task accepted',()=>assert.equal(shouldPermitNewTask(ok),true));
+test('no STOP revision zero accepted after validated cloud status',()=>assert.equal(shouldPermitNewTask({...ok,globalControl:{action:'none',revision:0}}),true));
 test('blocked on old unresolved',()=>rejects(()=>shouldPermitNewTask({...ok,journal:{requestId:first}}),/未决/));
 test('blocked on cloud active task',()=>rejects(()=>shouldPermitNewTask({...ok,activeTask:{id:first}}),/未完成/));
 test('blocked on stop review',()=>rejects(()=>shouldPermitNewTask({...ok,unresolvedStops:[{phase:'review'}]}),/STOP/));

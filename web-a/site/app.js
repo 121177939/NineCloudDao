@@ -1,14 +1,15 @@
-import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage8';
-import {WebAClient, CloudError} from './supabase.js?v=web-a-stage8';
-import {WebTransactions} from './transactions.js?v=web-a-stage8';
-import {requireBReady} from './safety.js?v=web-a-stage8';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage8';
-import {expandLinkedReviewRows, describeSplitExecutions} from './preview-coverage.js?v=web-a-stage8';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage8';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage9';
+import {WebAClient, CloudError} from './supabase.js?v=web-a-stage9';
+import {WebTransactions} from './transactions.js?v=web-a-stage9';
+import {requireBReady} from './safety.js?v=web-a-stage9';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage9';
+import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage9';
+import {freezeValidatedPlan, assertSameFrozenPlan, planSendSummary} from './send-plan.js?v=web-a-stage9';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage9';
 
-// Web A v2.0.51 — GitHub Pages integration candidate. Local mutation state machine is
-// implemented and unit-tested, but production write actions stay fail-closed until
-// user-approved real Supabase/B acceptance and browser suspend/recovery tests.
+// Web A v2.0.51 — Stage 9 gated sender integration candidate. Local mutation state machine is
+// Gated write actions are wired to the v2.0.51 Supabase protocol.
+// No claim of production acceptance without live Supabase / B / browser validation.
 const $=id=>document.getElementById(id);
 const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const webParser=globalThis.parser?.com?.example?.remotea?.WebParser;
@@ -16,18 +17,19 @@ if(!webParser)throw Error('Kotlin/JS 识别引擎未加载，拒绝提供预览�
 const api=new WebAClient();
 const state={tx:null,page:'entry',filter:'全部',parsed:null,parsedText:'',lastFocus:null,auth:false,
     busy:false,historyOffset:0,historyRows:[],tasks:[],presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[]};
-const FAIL_CLOSED='Web 安全一致性验证尚未完成，当前版本禁止真实建单和修改云端任务。请使用已验收的 Android A 端执行该操作。';
+const FAIL_CLOSED='此操作尚未完成真实云端与 B 端验收，网页端暂不开放；请在 Android A 端处理。';
+const SEND_CAUTION='真实提交将创建云端任务并由 B 执行；网络超时或结果未知不能再次点击重发。首次启用前须先核实线上 RLS、B 心跳、账号预检及 STOP 门禁。';
 function setStatus(text){$('input-status').textContent=text;}
 function modal(title,message,actions=[{label:'知道了'}]){
   state.modalRevision+=1;clearObjects();state.currentHistoryArtifacts=[];
-  $('modal-actions').classList.remove('history-detail-actions');
+  $('modal-actions').classList.remove('history-detail-actions','send-choice-actions');
   $('modal-heading').textContent=title;$('modal-body').textContent=message;
   $('modal-options').replaceChildren();$('modal-actions').replaceChildren();
   for(const a of actions){const b=document.createElement('button');b.className='button'+(a.primary?' primary':' ghost');b.textContent=a.label;
     b.addEventListener('click',async()=>{closeModal();try{await a.onClick?.();}catch(e){modal('操作失败',e.message);}});$('modal-actions').appendChild(b);}
   state.lastFocus=document.activeElement;$('overlay').hidden=false;$('modal-actions').querySelector('button')?.focus();
 }
-function closeModal(){state.modalRevision+=1;clearObjects();state.currentHistoryArtifacts=[];$('modal-actions').classList.remove('history-detail-actions');$('overlay').hidden=true;state.lastFocus?.focus?.();}
+function closeModal(){state.modalRevision+=1;clearObjects();state.currentHistoryArtifacts=[];$('modal-actions').classList.remove('history-detail-actions','send-choice-actions');$('overlay').hidden=true;state.lastFocus?.focus?.();}
 $('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('overlay').hidden)closeModal();else if(!$('preview').hidden)closePreview();}});
 function showLogin(message=''){
@@ -62,7 +64,10 @@ async function showPendingSafetyInfo(){
   try{
     const pending=state.tx.pending();
     if(pending.stop){
-      modal('STOP 未决记录仍在',`上次浏览器留下全局 STOP 请求 ${pending.stop.requestId}，阶段：${pending.stop.phase}。不可假定 B 已恢复。当前网页未启用生产写操作，请使用已验收的 Android A / 服务端审计核实。`);
+      modal('STOP 未决记录仍在',`保留请求 ${pending.stop.requestId}，阶段：${pending.stop.phase}。不可假定 B 已恢复。查询与释放必须依据同一 revision 的 B ACK。`,[
+        {label:'暂不处理'},
+        {label:'继续核查 STOP',primary:true,onClick:continueGlobalStop}
+      ]);
     }else if(pending.task){
       const result=await state.tx.reconcileTask();
       const txt=result.state==='unknown'?'云端查询暂未返回原任务，不能认定创建失败':
@@ -151,7 +156,34 @@ async function refreshAll(){
 }
 $('presence-refresh').addEventListener('click',()=>refreshAll());
 $('tasks-refresh').addEventListener('click',()=>refreshAll());
-$('tasks-stop').addEventListener('click',()=>modal('终止所有任务',FAIL_CLOSED+'\n原 Android 一键 STOP 还包含 B ACK、自动释放版本和浏览器重载后的幂等恢复；当前页面没有完整通过这些验证。'));
+$('tasks-stop').addEventListener('click',()=>{
+  if(!state.tx){modal('不能 STOP','请先登录有效 A 角色会话');return;}
+  modal('确认终止所有任务','这是会影响 B 执行的真实云端 STOP，可能出现结果未知。必须等待 B 对准确 STOP revision ACK，并在安全条件满足后释放；不删除或重发任何旧任务。',[
+    {label:'返回'},
+    {label:'发起全局 STOP',primary:true,onClick:issueGlobalStop}
+  ]);
+});
+async function issueGlobalStop(){
+  if(state.busy){modal('当前忙碌','网络任务尚未收口，请先核对当前提交状态');return;}
+  try{
+    const request=await state.tx.requestOneTapStop();
+    const step=await state.tx.advanceStop();
+    showStopStep(request,step);
+  }catch(e){modal('STOP 状态未确认 · 保持锁定','当前 STOP 操作未获最终确认：'+e.message+'\n请保留同一原始 STOP 请求编号，检查 B 本机与云端审计。');}
+}
+function showStopStep(request,step){
+  const row=state.tx?.pending().stop;
+  const text=`STOP 原始请求：${request?.requestId||row?.requestId||'未知'}\n当前阶段：${row?.phase||'已完成（须核对 B）'}\n本轮动作：${step?.action||'无'}\n云端 revision：${row?.revision||step?.revision||'未知'}\n不得把云端响应当成真实物理 STOP 或已核实下注。`;
+  modal('全局 STOP 进度',text,[
+    {label:'关闭提示'},
+    ...(row?[{label:'继续查询 B ACK / 安全释放',primary:true,onClick:continueGlobalStop}]:[])
+  ]);
+}
+async function continueGlobalStop(){
+  try{const old=state.tx?.pending().stop;if(!old){modal('STOP 未决记录','本地没有 STOP 记录，需先从云端核实状态');return;}
+    const step=await state.tx.advanceStop();showStopStep(old,step);
+  }catch(e){modal('STOP 待人工核实','没有完成释放：'+e.message+'\n保持锁定，请按原 STOP ID 核查云端与 B 端，不能重新创建另一批。');}
+}
 async function loadHistory(reset=false){
   if(!api.loggedIn)return;
   if(reset){state.historyRows=[];$('history-list').textContent='正在加载…';}
@@ -200,7 +232,7 @@ async function showAllHistory(offset=0){
       entry.addEventListener('click',()=>showTaskDetail(row.id,offset));
       wrap.append(checkbox,entry);$('modal-options').appendChild(wrap);
     }
-    $('modal-actions').replaceChildren();$('modal-actions').classList.remove('history-detail-actions');
+    $('modal-actions').replaceChildren();$('modal-actions').classList.remove('history-detail-actions','send-choice-actions');
     shareButton=document.createElement('button');shareButton.className='button primary';shareButton.disabled=true;shareButton.textContent='转发勾选小票到微信（0个任务，最多6张）';
     shareButton.addEventListener('click',async()=>{
       const chosen=rows.filter(row=>selected.has(row.id));if(!chosen.length)return;
@@ -407,23 +439,19 @@ function renderPreview(){
   if(!scatter.length){
     previewDetail(group.content,onlyReview||state.filter!=='全部'?'当前筛选下没有散码':'本次没有单组散码','result-caption');
   }else{
-    const displayGroups=groupVerifiedSlices(scatter);
-    const rawEvidence=displayGroups.filter(g=>g.rows[0].matched).map(g=>g.rows[0].source);
-    const unlocated=displayGroups.filter(g=>!g.rows[0].matched).length;
-    previewDetail(group.content,'原文：'+(rawEvidence.join('，')||'未定位')+(unlocated?`（另有 ${unlocated} 组执行项来源待核对）`:''),'preview-raw');
+    // Native Android preview: concise original numbers + exact execution slices.
+    // 0336 amount 88 appears as two genuine B actions (50 + 38), not an
+    // extra interpretation paragraph. All original source group associations
+    // remain in the audit model; presentation never changes the command.
+    const rawEvidence=scatter.map(r=>r.number);
+    previewDetail(group.content,'原文：'+rawEvidence.join('，'),'preview-raw');
     const grouped=new Map();
-    for(const item of displayGroups){
+    for(const item of scatter){
       const amountText=money(item.amountJiao);
       if(!grouped.has(amountText))grouped.set(amountText,[]);
       grouped.get(amountText).push(item.number);
     }
     previewDetail(group.content,'识别：'+[...grouped].map(([amount,codes])=>`${codes.join('、')}各${amount}`).join('；'),'preview-recognized');
-    for(const g of displayGroups.filter(g=>g.parts.length>1)){
-      previewDetail(group.content,`${g.number} 原文金额 ${money(g.amountJiao)}，执行时拆为 ${g.parts.map(money).join('＋')}；非全转，不改变原金额。`,'result-caption');
-    }
-    for(const summary of describeSplitExecutions(scatter)){
-      previewDetail(group.content,summary,'txt-amber');
-    }
     const problems=[...new Set(scatter.map(x=>x.detail).filter(Boolean))];
     if(problems.length)previewDetail(group.content,'提示：'+problems.join('；'),'txt-amber');
     group.card.setAttribute('role','button');group.card.tabIndex=0;
@@ -438,16 +466,15 @@ function renderPreview(){
     turn.appendChild(label);
     const visibleTurn=expandLinkedReviewRows(model.turns,isVisible);
     if(!visibleTurn.length)previewDetail(turn,'当前筛选下无全转','result-caption');
-    if(model.estimatedTotalVerified){
-      previewDetail(turn,`全转预计金额合计 ${money(model.turnEstimatedJiao)}；全倒/全到/全转为同一执行模式，按各号码不重复排列数计算。`,'result-caption');
-    }else previewDetail(turn,'全转预计金额与权威解析器无法核对，须人工确认','txt-amber');
+    // Match native APP concision: no accounting explainer in the default card.
+    // Authoritative estimated costs remain tested in createPreviewModel and
+    // are presented once in the final confirmation, not 10 times per preview.
+    if(!model.estimatedTotalVerified)previewDetail(turn,'全转金额校验未通过，请返回核对','txt-amber');
     for(const group of groupVerifiedSlices(visibleTurn)){
       const first=group.rows[0];
-      const modeHint=first.modeSource?` · 原文模式：${first.modeSource.trim()}`:'';
-      const partHint=group.parts.length>1?`（执行拆为 ${group.parts.map(money).join('＋')}）`:'';
       const multiplier=turnPermutationCount(group.number);
-      const estimate=model.estimatedTotalVerified&&multiplier?` · 预计${multiplier}码／${money(group.amountJiao*multiplier)}`:'';
-      previewDetail(turn,`第${first.executionIndex}组 · ${group.number} · 全转每码各${money(group.amountJiao)}${partHint}${estimate}${modeHint}${!first.matched?' · 来源待核对':''}`,'preview-recognized');
+      const estimate=multiplier?`（预计${multiplier}码）`:'';
+      previewDetail(turn,`第${first.executionIndex}组 · ${group.number} · 全转 · 各${money(group.amountJiao)}${estimate}${!first.matched?' · 来源待核对':''}`,'preview-recognized');
     }
     turn.onclick=()=>setPreviewHighlights(visibleTurn);host.appendChild(turn);
   }
@@ -488,8 +515,9 @@ function renderPreview(){
       card.onclick=()=>setPreviewHighlights([{start:issue.start,end:issue.end,matched:true}]);host.appendChild(card);
     });
   }
-  $('preview-send').disabled=true;
-  $('preview-send').title=FAIL_CLOSED;
+  const canPrepare=state.auth&&!!state.tx&&!state.busy&&state.parsed?.valid===true&&model.errors.length===0&&model.reviewCount===0&&model.failCount===0&&model.estimatedTotalVerified;
+  $('preview-send').disabled=!canPrepare;
+  $('preview-send').title=canPrepare?'下一步核对账号与发送内容':'需登录，或先修正识别错误/待确认项后才能发送';
 }
 $('preview-input').addEventListener('click',openPreview);
 $('preview-filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){state.filter=b.dataset.filter;renderPreview();}});
@@ -497,17 +525,61 @@ $('review-only').addEventListener('change',e=>{state.filter=e.target.checked?'�
 function closePreview(){$('preview').hidden=true;$('navbar').hidden=false;}
 $('preview-back').onclick=closePreview;$('preview-edit').onclick=closePreview;
 $('reuse-original').onclick=()=>{$('command').value=state.parsedText;closePreview();};
-$('preview-help').onclick=()=>modal('识别预览使用说明','原始内容完整展开。最终只生成1组号码的内容统一汇总到编号1“散码区”；散码区同时显示所有散码原文与按金额归组后的识别结果。点击散码区可以高亮相关原文；生成2组及以上的套码逐条展示并可展开。自动忽略的标题文字用黄色标记，不占编号。\n真实发送仍需通过安全验收。');
+$('preview-help').onclick=()=>modal('识别预览使用说明','与 Android A 一致：散码区按实际执行金额归组；全转区只标示号码、每码金额和预计码数。识别数据由同源 Kotlin/JS 生成。不能确认来源、金额不一致或解析失败的内容禁止发送。\n真实任务发出前会再次检查角色、B 心跳、旧任务和 STOP；云端接收不等于 B 已执行成功。');
 $('preview-copy').onclick=async()=>{
   const model=state.previewModel;
   const text=['散码区',model?.scatterCount?'原文：'+model.scatterOriginal:'无',
-    ...(model?.scatterCount?['识别：'+model.scatterRecognition]:[]),
-    ...(model?.turnCount?['全转区',...groupVerifiedSlices(model.turns).map(g=>`第${g.rows[0].executionIndex}组 ${g.number} 全转 各${money(g.amountJiao)}${g.modeSource?'（原文：'+g.modeSource.trim()+'）':''}`)]:[]),
+    ...(model?.scatterCount?['识别：'+(()=>{const grouped=new Map();for(const item of model.scatter){if(!grouped.has(item.amountText))grouped.set(item.amountText,[]);grouped.get(item.amountText).push(item.number);}return [...grouped].map(([amount,codes])=>codes.join('、')+'各'+amount).join('；');})()]:[]),
+    ...(model?.turnCount?['全转区',...groupVerifiedSlices(model.turns).map(g=>`第${g.rows[0].executionIndex}组 ${g.number} 全转 各${money(g.amountJiao)}（预计${turnPermutationCount(g.number)}码）`)]:[]),
     ...(model?.suiteCount?['套码',...model.suites.map(r=>`原文：${r.source} -> ${r.recognition}各${r.amountText}`)]:[]),
     ...(model?.ignored?.length?['已忽略：'+model.ignored.map(x=>x.source).join('、')]:[])].join('\n');
   try{await navigator.clipboard.writeText(text);modal('复制成功','识别结果已复制');}
   catch(e){modal('复制受限','请长按原始内容复制，或用 HTTPS 打开网页版。');}};
-$('preview-send').onclick=()=>modal('不能发送',FAIL_CLOSED);
+function preparedPlan(){
+  if(!state.auth||!state.tx||!api.loggedIn)throw Error('必须先登录有效的 Web A 会话');
+  if(state.busy)throw Error('已有发送请求正在处理中');
+  if($('command').value!==state.parsedText)throw Error('输入已变化，请重新识别预览');
+  return freezeValidatedPlan(webParser,state.parsedText,state.parsed,state.previewModel,
+      $('suite-screenshot').checked,$('convert-odds').checked);
+}
+function chooseSendAccount(){
+  let planned;
+  try{planned=preparedPlan();}catch(e){modal('无法发送',e.message);return;}
+  modal('发送任务 · 选择账号',SEND_CAUTION,[
+    {label:'返回'},
+    {label:'排列五',onClick:()=>confirmSend('arrange',planned)},
+    {label:'七星彩',onClick:()=>confirmSend('seven',planned)},
+    {label:'排列五＋七星彩',onClick:()=>confirmSend('both',planned)}
+  ]);
+  $('modal-actions').classList.add('send-choice-actions');
+}
+function confirmSend(selection,frozen){
+  try{assertSameFrozenPlan(frozen,preparedPlan());}
+  catch(e){modal('发送已取消',e.message);return;}
+  const summary=planSendSummary(frozen,selection);
+  modal('最终确认发送',summary+'\n\n'+SEND_CAUTION,[
+    {label:'返回修改'},
+    {label:'确认创建云端任务',primary:true,onClick:()=>submitFrozenTask(selection,frozen)}
+  ]);
+}
+async function submitFrozenTask(selection,frozen){
+  if(state.busy)return;
+  try{assertSameFrozenPlan(frozen,preparedPlan());}
+  catch(e){modal('发送已取消',e.message);return;}
+  state.busy=true;$('preview-send').disabled=true;
+  setStatus('正在核对 A 租约、B 心跳、STOP 和既有任务，再创建云端任务；请勿再次点击。');
+  try{
+    const row=await state.tx.sendFrozenCommand(frozen.command,selection);
+    setStatus('云端已接收请求 '+row.requestId.slice(0,8)+'，等待 B 端执行并核实小票；不是下注成功。');
+    closePreview();await refreshTasks();
+    modal('云端已接收任务',`请求编号：${row.requestId}\n账号：${selection==='both'?'排列五＋七星彩':selection==='seven'?'七星彩':'排列五'}\n当前仅表示云端创建请求得到确认。请去「任务」检查 B 进度、小票、截图和最终结果；未知结果不可重发。`);
+  }catch(e){
+    let pending=null;try{pending=state.tx?.pending().task;}catch{}
+    setStatus('发单失败或结果未知：'+e.message);
+    modal(pending?'任务结果未决 · 禁止重发':'未创建任务',e.message+(pending?`\n原请求编号：${pending.requestId}\n安全锁已保留。请人工核对服务器及 B 端，不要再次发单。`:'\n提交前失败，未派发建单请求；仍需排除云端其他未决任务。'));
+  }finally{state.busy=false;renderPreview();}
+}
+$('preview-send').onclick=chooseSendAccount;
 $('suite-screenshot').addEventListener('change',()=>{if(state.parsed?.valid){const p=JSON.parse(webParser.plan(state.parsedText,$('suite-screenshot').checked,$('convert-odds').checked));
   if(!p.valid)modal('截图模式校验失败',p.error);}});
 $('convert-odds').addEventListener('change',()=>{if(state.parsed?.valid){const p=JSON.parse(webParser.plan(state.parsedText,$('suite-screenshot').checked,$('convert-odds').checked));
@@ -522,15 +594,38 @@ function menu(){
       const pending=state.tx.pending();
       const [role,presence,globalControl,unresolved]=await Promise.all([api.isRoleCurrent(),api.presence(),api.globalControl(),api.unresolvedStops()]);
       let ready='不满足';try{requireBReady(presence);ready='空闲且心跳新鲜';}catch{}
-      modal('安全状态核查',`当前 A 角色：${role?'有效':'失效'}\nB 状态：${ready}\n全局控制：${globalControl?.action||'未知'} / ${globalControl?.revision||0}\n未决 STOP：${unresolved?.length??'未知'}\n本地未决任务：${pending.task?.requestId||'无'}\n本地未决 STOP：${pending.stop?.requestId||'无'}\n安全写入：生产验收前关闭。`);
+      modal('安全状态核查',`当前 A 角色：${role?'有效':'失效'}\nB 状态：${ready}\n全局控制：${globalControl?.action||'未知'} / ${globalControl?.revision||0}\n未决 STOP：${unresolved?.length??'未知'}\n本地未决任务：${pending.task?.requestId||'无'}\n本地未决 STOP：${pending.stop?.requestId||'无'}\n安全写入：通过全部门禁才可提交；生产验收状态请查发行说明。`);
     }],
-    ['人工核对并结束旧计划',()=>modal('人工结案',FAIL_CLOSED)],
+    ['人工核查终态并解除本机锁',reviewAndUnlockLocal],
     ['查看本机截图',()=>modal('本机截图','浏览器无法读取 Android A 专用内部文件。可在历史记录打开云端私有截图。')],
     ['退出登录',()=>{api.clear();clearObjects();showLogin('已退出 Web A 会话。本次浏览器会话密钥已清除。');}]
   ];
   choices.forEach(([name,fn])=>{const b=document.createElement('button');b.className='menu-option';b.innerHTML=escapeHTML(name)+'<span>›</span>';b.onclick=()=>{closeModal();Promise.resolve(fn()).catch(e=>modal('操作失败',e.message));};$('modal-options').appendChild(b);});
   const done=document.createElement('button');done.className='button ghost';done.textContent='关闭';done.style.width='100%';done.onclick=closeModal;$('modal-actions').appendChild(done);
   $('overlay').hidden=false;
+}
+async function reviewAndUnlockLocal(){
+  if(!state.tx){modal('不能核查','请先登录');return;}
+  let snapshot;
+  try{snapshot=await state.tx.reconcileTask();}catch(e){modal('核查失败 · 保持锁定',e.message);return;}
+  const pending=state.tx.pending();
+  if(!pending.task){modal('本地未决锁','没有本地未决发单请求；不需要解除。');return;}
+  if(pending.stop){modal('STOP 未决','全局 STOP 仍未核实或释放，不允许结束发单锁。');return;}
+  const first=snapshot.first;
+  const second=snapshot.second;
+  const finished=snapshot.state==='terminal'||(snapshot.state==='plan'&&
+    snapshot.plan?.unfinished_count===0&&snapshot.plan?.queued_count===0&&
+    snapshot.plan?.first_exists===true&&snapshot.plan?.second_exists===true&&
+    ['finished','failed','cancelled'].includes(first?.status)&&['finished','failed','cancelled'].includes(second?.status));
+  if(!finished){modal('仍不可解除本机锁',`原请求 ${pending.task.requestId} 状态：${snapshot.state}。旧任务可能还在执行或服务端暂时无法确认；请先核实目标端和截图。`);return;}
+  const message=`原请求：${pending.task.requestId}\n账号一：${first?.status||'未知'}${second?`\n账号二：${second.status}`:''}\n只有你本人已核对 B 实际执行结果、目标 APP 小票、历史截图与 STOP 记录，才可解除本浏览器的本地锁。解除不等于云端结案，更不等于自动重发。`;
+  modal('人工核实最终确认',message,[
+    {label:'保持锁定'},
+    {label:'已核对小票和 B，解除本机锁',primary:true,onClick:async()=>{
+      try{await state.tx.acknowledgeTerminalTask(true);modal('本机锁已解除','仅解除本浏览器经核实的未决 UUID；任务历史与服务端数据没有删除或修改。');}
+      catch(e){modal('解除失败 · 继续锁定',e.message);}
+    }}
+  ]);
 }
 $('open-settings').onclick=menu;
 async function tick(){
