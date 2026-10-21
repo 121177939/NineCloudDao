@@ -23,7 +23,7 @@ check(data.totalJiao===160,'original monetary total unchanged');
 const suiteStr='1234-1234各1',suite=createPreviewModel(suiteStr,JSON.parse(p.inspect(suiteStr)));
 check(suite.scatterCount===0,'pure suite has no scatter');
 check(suite.suiteCount===1 && suite.suites[0].expectedCount===16,'suite 16 choices retained');
-check(suite.suites[0].source===suiteStr,'original suite source visible');
+check(suite.suites[0].source==='1234-1234'&&suite.suites[0].matched,'original shorthand span visible and source-mapped');
 check(suite.suites[0].examples.length===16,'suite expansion has 16 samples');
 const turn=createPreviewModel('1234全转各1',JSON.parse(p.inspect('1234全转各1')));
 check(turn.scatterCount===0&&turn.turnCount===1,'fullturn not added to ordinary scatter');

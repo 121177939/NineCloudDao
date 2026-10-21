@@ -37,7 +37,7 @@ const noSteal=createPreviewModel(swapped,inspect(swapped));
 check(noSteal.scatterCount===1&&noSteal.suiteCount===1,'mixed suite and scatter recognized');
 check(noSteal.scatter[0].start===11,'scatter must not borrow number inside an earlier mapped suite');
 
-const forged=createPreviewModel('12头34尾各1元',{
+const forged=createPreviewModel('完全无关原文各1元',{
  scatter:[],suites:[{canonical:'12头34尾=1',source:'原文并不存在的文字',amountJiao:10,expectedCount:4}],issues:[]
 });
 check(!forged.suites[0].matched&&forged.suites[0].status==='需确认','not-found suite source must never be reported matched');
@@ -45,7 +45,7 @@ check(forged.suites[0].detail.includes('无法定位'),'not-found suite must exp
 
 const shorthand='1234-1234各1';
 const safeShorthand=createPreviewModel(shorthand,inspect(shorthand));
-check(safeShorthand.suites[0].source===shorthand,'shorthand original text is displayed for manual review');
-check(!safeShorthand.suites[0].matched&&safeShorthand.suites[0].status==='需确认','inferred whole-string shorthand mapping cannot claim verified source span');
+check(safeShorthand.suites[0].source==='1234-1234','supported dash shorthand displays its exact source span without amount');
+check(safeShorthand.suites[0].matched&&safeShorthand.suites[0].status==='正常','authoritative head-tail shorthand maps to its exact original source span');
 
 console.log(`PASS: ${checks} Web A preview audit regression assertions`);

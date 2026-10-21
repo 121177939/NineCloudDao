@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {createPreviewModel} from '../site/preview-model.js';
+const ctx={};vm.runInNewContext(fs.readFileSync(new URL('../site/parser.js',import.meta.url),'utf8'),ctx);
+const parser=ctx.parser.com.example.remotea.WebParser;
+const raw='五子， 全头16尾各2元，。。。。。。。。七星彩，678—387，各2元，67-57X38，67X68-38各1元，2X74，2XX4各20元，271645—269各3元，162745X7-269各1元，2—269，2X7-269各5元，';
+const expected=['全头16尾','678—387','67-57X38','67X68-38','271645—269','162745X7-269','2—269','2X7-269'];
+const parsed=JSON.parse(parser.inspect(raw));
+assert.equal(parsed.valid,true,'the authoritative Kotlin/JS parser accepts the sample');
+assert.equal(parsed.suites.length,8,'all eight suites remain authoritative parser outputs');
+const model=createPreviewModel(raw,parsed);
+assert.equal(model.suiteCount,8);
+assert.equal(model.reviewCount,0,'all eight source spans are now proven, no review-only rows remain');
+assert.deepEqual(model.suites.map(x=>x.matched),Array(8).fill(true));
+for(let i=0;i<expected.length;i++){
+ const row=model.suites[i];
+ assert.equal(raw.slice(row.start,row.end),expected[i],`suite ${i+1} raw source span`);
+ assert.equal(row.source,expected[i],`suite ${i+1} shows original shorthand, not canonical text`);
+ assert.equal(row.status,'正常',`suite ${i+1} status`);
+}
+assert.equal(model.scatterCount,2,'the two scatter codes remain scatter');
+assert.equal(parsed.totalJiao,2160,'authoritative amount total unchanged');
+assert.equal(parsed.command,'M1|S=2X74-20;2XX4-20|T=2,0123456789,_,_,16,2;2,678,_,_,387,2;3,67,57,_,38,1;3,67,_,68,38,1;2,271645,_,_,269,3;3,162745,_,7,269,1;2,2,_,_,269,5;3,2,_,7,269,5','wire command unchanged');
+const forged=createPreviewModel('原文无关文字',{scatter:[],suites:[{canonical:'56头78尾=1',source:'56头78尾=1',amountJiao:10,expectedCount:8}],issues:[]});
+assert.equal(forged.suites[0].matched,false,'unrelated source still fails closed');
+const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
+assert.match(html,/<title>控制中心 · Web A 阶段十四/);
+assert.match(html,/识别预览 <span[^>]+>WAP 14<\/span>/);
+console.log('PASS: exact screenshot aliases all map to their original UTF-16 spans; parser command/amounts unchanged; unrelated source remains unverified');

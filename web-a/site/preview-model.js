@@ -68,6 +68,55 @@ function locateSuiteWithWhitespace(raw,normalized,canonical,occupied){
   return {start:0,end:0,matched:false,source:needle};
 }
 
+// Kotlin/JS returns SuiteBet.canonicalText as its preview hint for legacy shorthand
+// forms such as "全头16尾", "678—387", "67-57X38" and "2X7-269". Those strings
+// are NOT literal substrings of the input. This audit-only mapper builds exact
+// source spellings from the authoritative canonical position map, then returns
+// offsets into the unchanged input. It never parses a wager or changes the wire plan.
+function escapeRegexLiteral(value){
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+}
+function locateSuiteSourceAlias(raw,normalized,canonical,from,occupied){
+  const code=String(canonical||'').split('=')[0];
+  const tokens=[...code.matchAll(/([0-9]+)([头百十尾])/g)];
+  if(tokens.length<2||tokens.length>4||tokens.map(x=>x[0]).join('')!==code)
+    return {start:0,end:0,matched:false,source:code};
+  const fields=new Map(tokens.map(x=>[x[2],x[1]]));
+  const spacer='[ \\t\\r\\n\\u00a0]*';
+  const namedPattern=tokens.map(x=>{
+    const digits=x[1]==='0123456789'?'(?:0123456789|全)':escapeRegexLiteral(x[1]);
+    const label=x[2]==='尾'?'(?:尾|个)':escapeRegexLiteral(x[2]);
+    return digits+spacer+label;
+  }).join(spacer);
+  const patterns=[namedPattern];
+  // Legacy numeric dash shorthand: two groups mean head + tail.
+  if(fields.size===2&&fields.has('头')&&fields.has('尾'))
+    patterns.push(escapeRegexLiteral(fields.get('头'))+'-'+escapeRegexLiteral(fields.get('尾')));
+  // Four numeric groups mean head / hundred / ten / tail.
+  if(fields.size===4&&['头','百','十','尾'].every(k=>fields.has(k)))
+    patterns.push(['头','百','十','尾'].map(k=>escapeRegexLiteral(fields.get(k))).join('-'));
+  // Four comma-separated groups are another supported four-position form.
+  if(fields.size===4&&['头','百','十','尾'].every(k=>fields.has(k)))
+    patterns.push(['头','百','十','尾'].map(k=>escapeRegexLiteral(fields.get(k))).join('[,，]'));
+  // Mask shorthand: each X denotes an omitted position; hyphens are visual only.
+  // Example: canonical 67头57百38尾 -> source tokens 67,57,X,38 -> "67-57X38".
+  const slots=['头','百','十','尾'].map(k=>fields.get(k)||'X');
+  if(slots.includes('X'))patterns.push(slots.map(escapeRegexLiteral).join('-?'));
+  for(const pattern of patterns){
+    const regex=new RegExp(pattern,'g');regex.lastIndex=Math.max(0,from||0);let found;
+    while((found=regex.exec(normalized))!==null){
+      const at=found.index,end=regex.lastIndex;
+      if(end<=at){regex.lastIndex=at+1;continue;}
+      if(end>raw.length||occupied.slice(at,end).some(Boolean))continue;
+      if(at>0&&/[0-9X]/.test(normalized[at-1]))continue;
+      if(end<normalized.length&&/[0-9X]/.test(normalized[end]))continue;
+      const source=raw.slice(at,end);occupied.fill(1,at,end);
+      return {start:at,end,matched:true,source};
+    }
+  }
+  return {start:0,end:0,matched:false,source:code};
+}
+
 function ignoredSpans(source) {
   const used=new Uint8Array(source.length),output=[];
   for(const label of IGNORED_LABELS){
@@ -133,6 +182,12 @@ export function createPreviewModel(source, parsed) {
       // Preserve fail-closed behavior: only compare the precise authoritative
       // digit/position sequence; this is NOT a new wager recognizer.
       span=locateSuiteWithWhitespace(raw,normalized,canonical,occupied);
+    }
+    if(!span.matched){
+      // The authoritative Kotlin parser may canonicalize legacy aliases before
+      // exposing suite.source. Map only spellings proven equivalent to its exact
+      // position map; never mark a guessed/unmatched source as verified.
+      span=locateSuiteSourceAlias(raw,normalized,canonical,from,occupied);
     }
     if(span.matched)nextSuiteOffset.set(needle,span.end);
     // Legacy shorthand can compile into a canonical expression not literally
