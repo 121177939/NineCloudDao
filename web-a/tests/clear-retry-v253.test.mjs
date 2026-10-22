@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const html=readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
+const js=readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
+assert.match(html,/B 新任务开始前最多尝试 3 次清空小票/);
+assert.match(html,/每次必须核实笔数和总金额均为 0/);
+assert.match(html,/三次失败安全停止，不重复下注/);
+assert.match(js,/String\(record\.message\|\|'无'\)/);
+assert.doesNotMatch(js,/clickClearReceipt|retryBetConfirm|repeatClearTap/);
+console.log('PASS WAP 2.0.53: read-only B clear retry notice and cloud failure message; no remote CLEAR');

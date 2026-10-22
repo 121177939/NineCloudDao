@@ -1,3 +1,4 @@
+import {CURRENT_RELEASE} from './current-version.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -25,6 +26,6 @@ assert.equal(parsed.command,'M1|S=2X74-20;2XX4-20|T=2,0123456789,_,_,16,2;2,678,
 const forged=createPreviewModel('原文无关文字',{scatter:[],suites:[{canonical:'56头78尾=1',source:'56头78尾=1',amountJiao:10,expectedCount:8}],issues:[]});
 assert.equal(forged.suites[0].matched,false,'unrelated source still fails closed');
 const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
-assert.match(html,/<title>控制中心 · WAP 2.0.52/);
-assert.match(html,/识别预览 <span[^>]+>WAP 2.0.52<\/span>/);
+assert.match(html,new RegExp(`<title>控制中心 · WAP ${CURRENT_RELEASE.versionName}`));
+assert.match(html,new RegExp(`识别预览 <span[^>]+>WAP ${CURRENT_RELEASE.versionName}<\/span>`));
 console.log('PASS: exact screenshot aliases all map to their original UTF-16 spans; parser command/amounts unchanged; unrelated source remains unverified');

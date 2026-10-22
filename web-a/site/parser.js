@@ -1586,27 +1586,51 @@ var parser = function (_) {
     }
     return true;
   }
-  function toList_2(_this__u8e3s4) {
-    switch (charSequenceLength(_this__u8e3s4)) {
-      case 0:
-        return emptyList();
-      case 1:
-        return listOf_0(new Char_0(charSequenceGet(_this__u8e3s4, 0)));
-      default:
-        return toMutableList_1(_this__u8e3s4);
-    }
-  }
-  function toMutableList_1(_this__u8e3s4) {
-    return toCollection_1(_this__u8e3s4, ArrayList_init_$Create$_0(charSequenceLength(_this__u8e3s4)));
-  }
-  function toCollection_1(_this__u8e3s4, destination) {
+  function mapNotNull(_this__u8e3s4, transform) {
+    // Inline function 'kotlin.text.mapNotNullTo' call
+    var tmp0_mapNotNullTo = ArrayList_init_$Create$();
+    // Inline function 'kotlin.text.forEach' call
     var inductionVariable = 0;
     while (inductionVariable < charSequenceLength(_this__u8e3s4)) {
-      var item = charSequenceGet(_this__u8e3s4, inductionVariable);
+      var element = charSequenceGet(_this__u8e3s4, inductionVariable);
       inductionVariable = inductionVariable + 1 | 0;
-      destination.add_1j60pz_k$(new Char_0(item));
+      // Inline function 'kotlin.text.mapNotNullTo.<anonymous>' call
+      var tmp0_safe_receiver = transform(new Char_0(element));
+      if (tmp0_safe_receiver == null)
+        null;
+      else {
+        // Inline function 'kotlin.let' call
+        // Inline function 'kotlin.contracts.contract' call
+        tmp0_mapNotNullTo.add_1j60pz_k$(tmp0_safe_receiver);
+      }
+    }
+    return tmp0_mapNotNullTo;
+  }
+  function mapNotNullTo(_this__u8e3s4, destination, transform) {
+    // Inline function 'kotlin.text.forEach' call
+    var inductionVariable = 0;
+    while (inductionVariable < charSequenceLength(_this__u8e3s4)) {
+      var element = charSequenceGet(_this__u8e3s4, inductionVariable);
+      inductionVariable = inductionVariable + 1 | 0;
+      // Inline function 'kotlin.text.mapNotNullTo.<anonymous>' call
+      var tmp0_safe_receiver = transform(new Char_0(element));
+      if (tmp0_safe_receiver == null)
+        null;
+      else {
+        // Inline function 'kotlin.let' call
+        // Inline function 'kotlin.contracts.contract' call
+        destination.add_1j60pz_k$(tmp0_safe_receiver);
+      }
     }
     return destination;
+  }
+  function forEach_0(_this__u8e3s4, action) {
+    var inductionVariable = 0;
+    while (inductionVariable < charSequenceLength(_this__u8e3s4)) {
+      var element = charSequenceGet(_this__u8e3s4, inductionVariable);
+      inductionVariable = inductionVariable + 1 | 0;
+      action(new Char_0(element));
+    }
   }
   function toSet_0(_this__u8e3s4) {
     switch (charSequenceLength(_this__u8e3s4)) {
@@ -1617,6 +1641,15 @@ var parser = function (_) {
       default:
         return toCollection_1(_this__u8e3s4, LinkedHashSet_init_$Create$_3(mapCapacity(coerceAtMost(charSequenceLength(_this__u8e3s4), 128))));
     }
+  }
+  function toCollection_1(_this__u8e3s4, destination) {
+    var inductionVariable = 0;
+    while (inductionVariable < charSequenceLength(_this__u8e3s4)) {
+      var item = charSequenceGet(_this__u8e3s4, inductionVariable);
+      inductionVariable = inductionVariable + 1 | 0;
+      destination.add_1j60pz_k$(new Char_0(item));
+    }
+    return destination;
   }
   function groupingBy(_this__u8e3s4, keySelector) {
     return new _no_name_provided__qut3iv_1(_this__u8e3s4, keySelector);
@@ -2828,6 +2861,9 @@ var parser = function (_) {
   }
   function listOf(elements) {
     return elements.length > 0 ? asList(elements) : emptyList();
+  }
+  function listOfNotNull(element) {
+    return !(element == null) ? listOf_0(element) : emptyList();
   }
   function buildList(builderAction) {
     // Inline function 'kotlin.contracts.contract' call
@@ -20186,7 +20222,11 @@ var parser = function (_) {
   }
   function stripTitle($this, s) {
     // Inline function 'kotlin.text.replace' call
-    return Regex_init_$Create$('^\\s*(?:\u6392\u5217\u4E94|\u6392\u5217|\u76F4\\s*[:\uFF1A]|\u76F4\u9009\\s*[:\uFF1A])\\s*', RegexOption_MULTILINE_getInstance()).replace_838ra0_k$(s, '');
+    // Inline function 'kotlin.text.replace' call
+    // Inline function 'kotlin.text.replace' call
+    var tmp1_replace = Regex_init_$Create$('^\\s*(?:\u6392\u5217\u4E94|\u6392\u5217|\u76F4\\s*[:\uFF1A]|\u76F4\u9009\\s*[:\uFF1A])\\s*', RegexOption_MULTILINE_getInstance()).replace_838ra0_k$(s, '');
+    var tmp3_replace = Regex_init_$Create$('^\\s*[\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D\u53410-9]+\\s*[:\uFF1A]\\s*$', RegexOption_MULTILINE_getInstance()).replace_838ra0_k$(tmp1_replace, '');
+    return Regex_init_$Create$('^\\s*[:\uFF1A]\\s*$', RegexOption_MULTILINE_getInstance()).replace_838ra0_k$(tmp3_replace, '');
   }
   function parseBlock($this, raw, money, out, errs) {
     var text = trim(stripTitle($this, raw), charArrayOf_0([_Char___init__impl__6a9atx(32), _Char___init__impl__6a9atx(10), _Char___init__impl__6a9atx(13), _Char___init__impl__6a9atx(46), _Char___init__impl__6a9atx(12290), _Char___init__impl__6a9atx(44), _Char___init__impl__6a9atx(65292), _Char___init__impl__6a9atx(12289), _Char___init__impl__6a9atx(59), _Char___init__impl__6a9atx(65307)]));
@@ -20256,7 +20296,7 @@ var parser = function (_) {
       while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
         var element = tmp0_iterator_0.next_20eer_k$();
         // Inline function 'com.example.remotea.ChineseCodeParser.parseBlock.<anonymous>' call
-        var list = toList_2(element.get_groupValues_rkv314_k$().get_fkrdnv_k$(2));
+        var list = positionIndices(ChineseCodeParser_getInstance(), element.get_groupValues_rkv314_k$().get_fkrdnv_k$(2));
         addAll(tmp0_flatMapTo, list);
       }
       var positionTags = tmp0_flatMapTo;
@@ -20444,30 +20484,110 @@ var parser = function (_) {
     while (tmp0_iterator.hasNext_bitz1p_k$()) {
       var m = tmp0_iterator.next_20eer_k$();
       var digits = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(1) === '\u5168' ? '0123456789' : m.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
-      var indexedObject = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(2);
-      var inductionVariable = 0;
-      var last = indexedObject.length;
-      while (inductionVariable < last) {
-        var tag = charSequenceGet(indexedObject, inductionVariable);
-        inductionVariable = inductionVariable + 1 | 0;
-        var index = tag === _Char___init__impl__6a9atx(22836) ? 0 : tag === _Char___init__impl__6a9atx(30334) ? 1 : tag === _Char___init__impl__6a9atx(21313) ? 2 : (tag === _Char___init__impl__6a9atx(23614) ? true : tag === _Char___init__impl__6a9atx(20010)) ? 3 : -1;
-        if (index === -1 ? true : map.containsKey_wgk31w_k$(index)) {
+      var indices = positionIndices($this, m.get_groupValues_rkv314_k$().get_fkrdnv_k$(2));
+      if (indices.isEmpty_y1axqb_k$()) {
+        // Inline function 'kotlin.collections.plusAssign' call
+        var tmp$ret$4;
+        // Inline function 'kotlin.text.trim' call
+        tmp$ret$4 = toString_3(trim_3(isCharSequence(raw) ? raw : THROW_CCE()));
+        var tmp2_plusAssign = new Problem(tmp$ret$4, '\u4F4D\u7F6E\u91CD\u590D\u6216\u4E0D\u5408\u6CD5');
+        errs.add_1j60pz_k$(tmp2_plusAssign);
+        return Unit_getInstance();
+      }
+      var tmp1_iterator = indices.iterator_jk1svi_k$();
+      while (tmp1_iterator.hasNext_bitz1p_k$()) {
+        var index = tmp1_iterator.next_20eer_k$();
+        if (map.containsKey_wgk31w_k$(index)) {
           // Inline function 'kotlin.collections.plusAssign' call
-          var tmp$ret$4;
+          var tmp$ret$5;
           // Inline function 'kotlin.text.trim' call
-          tmp$ret$4 = toString_3(trim_3(isCharSequence(raw) ? raw : THROW_CCE()));
-          var tmp2_plusAssign = new Problem(tmp$ret$4, '\u4F4D\u7F6E\u91CD\u590D\u6216\u4E0D\u5408\u6CD5');
-          errs.add_1j60pz_k$(tmp2_plusAssign);
+          tmp$ret$5 = toString_3(trim_3(isCharSequence(raw) ? raw : THROW_CCE()));
+          var tmp3_plusAssign = new Problem(tmp$ret$5, '\u4F4D\u7F6E\u91CD\u590D\u6216\u4E0D\u5408\u6CD5');
+          errs.add_1j60pz_k$(tmp3_plusAssign);
           return Unit_getInstance();
         }
         // Inline function 'kotlin.collections.set' call
         map.put_3mhbri_k$(index, digits);
       }
     }
-    var tmp$ret$5;
+    var tmp$ret$6;
     // Inline function 'kotlin.text.trim' call
-    tmp$ret$5 = toString_3(trim_3(isCharSequence(raw) ? raw : THROW_CCE()));
-    addSuite($this, map, money, tmp$ret$5, out, errs);
+    tmp$ret$6 = toString_3(trim_3(isCharSequence(raw) ? raw : THROW_CCE()));
+    addSuite($this, map, money, tmp$ret$6, out, errs);
+  }
+  function positionIndices($this, tag) {
+    var tmp;
+    var tmp_0;
+    if (tag.length > 1) {
+      var tmp$ret$1;
+      $l$block: {
+        // Inline function 'kotlin.text.all' call
+        var inductionVariable = 0;
+        var last = tag.length;
+        while (inductionVariable < last) {
+          var element = charSequenceGet(tag, inductionVariable);
+          inductionVariable = inductionVariable + 1 | 0;
+          // Inline function 'com.example.remotea.ChineseCodeParser.positionIndices.<anonymous>' call
+          if (!contains_10('\u5934\u767E\u5341\u5C3E\u4E2A', element)) {
+            tmp$ret$1 = false;
+            break $l$block;
+          }
+        }
+        tmp$ret$1 = true;
+      }
+      tmp_0 = tmp$ret$1;
+    } else {
+      tmp_0 = false;
+    }
+    if (tmp_0) {
+      // Inline function 'kotlin.text.mapNotNull' call
+      // Inline function 'kotlin.text.mapNotNullTo' call
+      var tmp0_mapNotNullTo = ArrayList_init_$Create$();
+      // Inline function 'kotlin.text.forEach' call
+      var inductionVariable_0 = 0;
+      var last_0 = tag.length;
+      while (inductionVariable_0 < last_0) {
+        var element_0 = charSequenceGet(tag, inductionVariable_0);
+        inductionVariable_0 = inductionVariable_0 + 1 | 0;
+        // Inline function 'kotlin.text.mapNotNullTo.<anonymous>' call
+        // Inline function 'com.example.remotea.ChineseCodeParser.positionIndices.<anonymous>' call
+        var tmp0_safe_receiver = positionIndex(ChineseCodeParser_getInstance(), toString_1(element_0));
+        if (tmp0_safe_receiver == null)
+          null;
+        else {
+          // Inline function 'kotlin.let' call
+          // Inline function 'kotlin.contracts.contract' call
+          tmp0_mapNotNullTo.add_1j60pz_k$(tmp0_safe_receiver);
+        }
+      }
+      tmp = tmp0_mapNotNullTo;
+    } else {
+      tmp = listOfNotNull(positionIndex($this, tag));
+    }
+    return tmp;
+  }
+  function positionIndex($this, tag) {
+    switch (tag) {
+      case '\u5934':
+      case '\u5934\u4F4D':
+        return 0;
+      case '\u767E':
+      case '\u767E\u4F4D':
+        return 1;
+      case '\u5341':
+      case '\u5341\u4F4D':
+      case '1\u4F4D':
+      case '+1\u4F4D':
+      case '\uFF0B1\u4F4D':
+        return 2;
+      case '\u5C3E':
+      case '\u5C3E\u4F4D':
+      case '\u4E2A':
+      case '\u4E2A\u4F4D':
+        return 3;
+      default:
+        return null;
+    }
   }
   function parseUnlabeled($this, s, money, out, errs) {
     if ($this.scatterCode_1.matches_qvb2fs_k$(s)) {
@@ -20842,7 +20962,7 @@ var parser = function (_) {
     ChineseCodeParser_instance = this;
     this.amt_1 = Regex_init_$Create$_0('(?:\u5404\u6253|\u5404|\u6253|[=\uFF1D])\\s*(\\d+(?:\\.\\d+)?|)?\\s*(\u89D2\u94B1|\u6BDB\u94B1|\u5143|\u5757|\u7EC4|\u89D2|\u6BDB)?|[,\uFF0C]\\s*(\\d+(?:\\.\\d+)?)\\s*(\u5143|\u5757|\u7EC4)');
     this.fullPos_1 = Regex_init_$Create$_0('\u7B2C([\u4E00\u4E8C\u4E09\u56DB])\u4F4D\\s*[:\uFF1A]\\s*([0-9]{1,10})');
-    this.namedPos_1 = Regex_init_$Create$_0('(\u5168|[0-9]{1,10})([\u5934\u767E\u5341\u5C3E\u4E2A]+)');
+    this.namedPos_1 = Regex_init_$Create$_0('(\u5168|[0-9]{1,10})(\u5934\u4F4D|\u767E\u4F4D|\u5341\u4F4D|\u5C3E\u4F4D|\u4E2A\u4F4D|[+\uFF0B]?1\u4F4D|[\u5934\u767E\u5341\u5C3E\u4E2A]+)');
     this.fourComma_1 = Regex_init_$Create$_0('^[0-9]{1,10}[,\uFF0C][0-9]{1,10}[,\uFF0C][0-9]{1,10}[,\uFF0C][0-9]{1,10}$');
     this.dashScatter_1 = Regex_init_$Create$_0('^([0-9X]{4})-(\\d+(?:\\.\\d+)?)$');
     this.scatterCode_1 = Regex_init_$Create$_0('^[0-9X]{4}$');
@@ -21258,7 +21378,7 @@ var parser = function (_) {
         // Inline function 'kotlin.collections.plusAssign' call
         codes.add_1j60pz_k$(code);
         pos._v = match.get_range_ixu978_k$().last_1 + 1 | 0;
-        while (pos._v < source.length ? contains_10(' \u3001,\uFF0C\t', charSequenceGet(source, pos._v)) : false) {
+        while (pos._v < source.length ? contains_10(' \u3001,\uFF0C\t\r\n', charSequenceGet(source, pos._v)) : false) {
           pos._v = pos._v + 1 | 0;
         }
         var tmp2_safe_receiver = this.four_1.find_9caqn1_k$(source, pos._v);
@@ -21273,7 +21393,7 @@ var parser = function (_) {
         inspect$fail(source, issues, begin, '\u5168\u8F6C\u683C\u5F0F\u5E94\u4ECE\u56DB\u4F4D\u53F7\u7801\u5F00\u59CB\uFF1B\u672A\u77E5\u6587\u5B57\u7981\u6B62\u5FFD\u7565');
         break $l$loop_10;
       }
-      while (pos._v < source.length ? contains_10(' \t', charSequenceGet(source, pos._v)) : false) {
+      while (pos._v < source.length ? contains_10(' \t\r\n', charSequenceGet(source, pos._v)) : false) {
         pos._v = pos._v + 1 | 0;
       }
       var tmp5_safe_receiver = this.turnWord_1.find_9caqn1_k$(source, pos._v);

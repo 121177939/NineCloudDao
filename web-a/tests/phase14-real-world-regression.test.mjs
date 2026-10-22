@@ -1,3 +1,4 @@
+import {CURRENT_RELEASE} from './current-version.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';import vm from 'node:vm';
 import {createPreviewModel as updated} from '../site/preview-model.js';
@@ -40,8 +41,8 @@ const impossible=updated('12头34尾各1元',{scatter:[],suites:[{canonical:'56�
 assert.equal(impossible.suites[0].matched,false);
 const app=fs.readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
 const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
-assert.match(html,/<title>控制中心 · WAP 2.0.52/);
-assert.match(html,/识别预览 <span[^>]+>WAP 2.0.52<\/span>/);
+assert.match(html,new RegExp(`<title>控制中心 · WAP ${CURRENT_RELEASE.versionName}`));
+assert.match(html,new RegExp(`识别预览 <span[^>]+>WAP ${CURRENT_RELEASE.versionName}<\/span>`));
 assert.match(app,/function systemShareFiles\(files\)/);
 assert.match(app,/return navigator\.share\(\{files\}\)/);
 assert.doesNotMatch(app,/navigator\.share\(\{files,title:/);

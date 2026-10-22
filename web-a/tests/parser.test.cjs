@@ -27,4 +27,18 @@ for(const [input,valid,lines,expectedSuiteCount] of examples){
   assert(plan.command?.length>0);passed++;
  }
 }
+
+const multilineTurn=JSON.parse(engine.inspect('5989\n3948\n3405\n7733\n6081\n各2\n全倒各0.3'));
+assert.equal(multilineTurn.valid,true,'multiline full-turn sample valid');passed++;
+assert.equal(multilineTurn.totalLines,10,'multiline full-turn total lines');passed++;
+assert.equal(multilineTurn.turnCount,5,'multiline full-turn turn count');passed++;
+
+const suiteAliases=JSON.parse(engine.inspect('五:\n\n014569头014569尾各40组。\n\n014569百位014569尾各40组。\n\n014569头014569百位014569+1位014569尾各0.4组。'));
+assert.equal(suiteAliases.valid,true,'suite alias sample valid');passed++;
+assert.deepEqual(suiteAliases.suites.map(x=>x.canonical),[
+  '014569头014569尾=40',
+  '014569百014569尾=40',
+  '014569头014569百014569十014569尾=0.4'
+],'suite aliases canonical');passed++;
+
 console.log(`PASS: ${passed} Kotlin/JS parser and wire assertions`);

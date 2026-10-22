@@ -1,3 +1,4 @@
+import {CURRENT_RELEASE} from './current-version.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -31,8 +32,8 @@ for(const [state,tone] of [['finished','success'],['cancelled','danger'],['faile
 }
 const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
 const app=fs.readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
-check(html.includes('WAP 2.0.52'),'browser deploy version marker');
-check(html.includes('app.js?v=2.0.52'),'new module cache identity');
+check(html.includes(`WAP ${CURRENT_RELEASE.versionName}`),'browser deploy version marker');
+check(html.includes(`app.js?v=${CURRENT_RELEASE.versionName}`),'new module cache identity');
 check(html.includes('modal-scroll')&&html.includes('overflow-x:hidden'),'modal avoids horizontal overflow');
 check(/\.history-detail-actions[^{]*\{[^}]*flex-direction:column;/.test(html),'history buttons stacked on mobile');
 check(/\.history-detail-actions \.button[^{]*\{[^}]*width:100%;/.test(html),'history buttons fit viewport width');

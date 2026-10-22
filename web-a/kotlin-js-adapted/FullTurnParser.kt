@@ -55,12 +55,12 @@ object FullTurnParser {
                 if (code.count { it == 'X' } > 2) { fail(pos,"只支持二字/三字/四字定位"); break }
                 codes += code
                 pos = match.range.last + 1
-                while (pos < source.length && source[pos] in " 、,，\t") pos++
+                while (pos < source.length && source[pos] in " 、,，\t\r\n") pos++
                 if (four.find(source, pos)?.range?.first != pos) break
             }
             if (issues.isNotEmpty()) break
             if (codes.isEmpty()) { fail(begin,"全转格式应从四位号码开始；未知文字禁止忽略"); break }
-            while (pos < source.length && source[pos] in " \t") pos++
+            while (pos < source.length && source[pos] in " \t\r\n") pos++
             // v2.0.39: Full-turn alone is a complete, valid instruction. It must
             // NOT invent a normal bet. A paragraph may also contain plain
             // numeric shorthand such as 1235-1 after a full-turn instruction.

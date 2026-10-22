@@ -1,3 +1,4 @@
+import {CURRENT_RELEASE} from './current-version.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -47,7 +48,7 @@ const source=fs.readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
 const html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
 yes(source.includes('submitFrozenTask(selection,frozen)')&&source.includes('state.tx.sendFrozenCommand(frozen.command,selection)'),'send button invokes transactional actual API');
 yes(source.includes('requestOneTapStop')&&source.includes('progressPendingStop')&&source.includes('setInterval(tick,10000)'),'STOP uses same persisted UUID and auto-progresses while page is active');
-yes(html.includes('WAP 2.0.52')&&html.includes('app.js?v=2.0.52'),'stage-eleven marker and cache-busting are present');
+yes(html.includes(`WAP ${CURRENT_RELEASE.versionName}`)&&html.includes(`app.js?v=${CURRENT_RELEASE.versionName}`),'stage-eleven marker and cache-busting are present');
 yes(source.includes("let picked='arrange'")&&source.includes("['arrange','排列'],['seven','七星'],['both','两个一起']"),'account chooser mirrors native APP single-selection with default arrange');
 yes(source.includes("{label:'下一步',primary:true,onClick:()=>confirmSend(picked,planned)}"),'account selection advances to native-style confirmation');
 yes(source.includes('renderSendSummary(frozen,selection)')&&source.includes("['预计金额',amount]"),'confirmation renders native APP five-row summary');

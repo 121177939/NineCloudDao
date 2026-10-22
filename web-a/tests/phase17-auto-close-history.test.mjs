@@ -1,3 +1,4 @@
+import {CURRENT_RELEASE} from './current-version.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {WebTransactions} from '../site/transactions.js';
@@ -54,7 +55,7 @@ await scenario('cloud absence does not release a local request',async x=>{x.row=
 }
 const html=readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
 const app=readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
-assert(html.includes('WAP 2.0.52') && html.includes('app.js?v=2.0.52'));
+assert(html.includes(`WAP ${CURRENT_RELEASE.versionName}`) && html.includes(`app.js?v=${CURRENT_RELEASE.versionName}`));
 assert(app.includes('renderHistoryRows(tasks)') && app.includes('await refreshTasks(); // history remains live while its tab is open, too.'));
 assert(app.includes('await autoReconcileAfterRefresh()'));
 assert(app.includes('const fingerprint=completed.map'));

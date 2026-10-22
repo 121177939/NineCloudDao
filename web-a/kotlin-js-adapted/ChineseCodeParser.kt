@@ -30,7 +30,7 @@ object ChineseCodeParser {
 
     private val amt = Regex("(?:各打|各|打|[=＝])\\s*(\\d+(?:\\.\\d+)?|)?\\s*(角钱|毛钱|元|块|组|角|毛)?|[,，]\\s*(\\d+(?:\\.\\d+)?)\\s*(元|块|组)")
     private val fullPos = Regex("第([一二三四])位\\s*[:：]\\s*([0-9]{1,10})")
-    private val namedPos = Regex("(全|[0-9]{1,10})([头百十尾个]+)")
+    private val namedPos = Regex("(全|[0-9]{1,10})(头位|百位|十位|尾位|个位|[+＋]?1位|[头百十尾个]+)")
     private val fourComma = Regex("^[0-9]{1,10}[,，][0-9]{1,10}[,，][0-9]{1,10}[,，][0-9]{1,10}$")
     private val dashScatter = Regex("^([0-9X]{4})-(\\d+(?:\\.\\d+)?)$")
     private val scatterCode = Regex("^[0-9X]{4}$")
@@ -135,7 +135,10 @@ object ChineseCodeParser {
     private fun moneyText(jiao: Long): String = if (jiao % 10L == 0L)
         (jiao / 10L).toString() else "${jiao / 10L}.${jiao % 10L}"
 
-    private fun stripTitle(s: String): String = s.replace(Regex("^\\s*(?:排列五|排列|直\\s*[:：]|直选\\s*[:：])\\s*", RegexOption.MULTILINE), "")
+    private fun stripTitle(s: String): String = s
+        .replace(Regex("^\\s*(?:排列五|排列|直\\s*[:：]|直选\\s*[:：])\\s*", RegexOption.MULTILINE), "")
+        .replace(Regex("^\\s*[一二三四五六七八九十0-9]+\\s*[:：]\\s*$", RegexOption.MULTILINE), "")
+        .replace(Regex("^\\s*[:：]\\s*$", RegexOption.MULTILINE), "")
 
     private fun parseBlock(raw: String, money: Long, out: MutableList<Entry>, errs: MutableList<Problem>) {
         val text = stripTitle(raw).trim(' ', '\n', '\r', '.', '。', ',', '，', '、', ';', '；')
@@ -168,7 +171,7 @@ object ChineseCodeParser {
         val blockNamed = namedPos.findAll(text).toList()
         if (blockNamed.isNotEmpty()) {
             val remainder = namedPos.replace(text, "").replace(separators, "").trim()
-            val positionTags = blockNamed.flatMap { it.groupValues[2].toList() }
+            val positionTags = blockNamed.flatMap { positionIndices(it.groupValues[2]) }
             if (remainder.isBlank() && positionTags.size in 2..4 && positionTags.toSet().size == positionTags.size) {
                 parseNamed(text, money, out, errs)
                 return
@@ -227,12 +230,13 @@ object ChineseCodeParser {
         val map = linkedMapOf<Int, String>()
         for (m in matches) {
             val digits = if (m.groupValues[1] == "全") "0123456789" else m.groupValues[1]
-            for (tag in m.groupValues[2]) {
-                val index = when (tag) {
-                    '头' -> 0; '百' -> 1; '十' -> 2; '尾', '个' -> 3
-                    else -> -1
-                }
-                if (index == -1 || map.containsKey(index)) {
+            val indices = positionIndices(m.groupValues[2])
+            if (indices.isEmpty()) {
+                errs += Problem(raw.trim(), "位置重复或不合法")
+                return
+            }
+            for (index in indices) {
+                if (map.containsKey(index)) {
                     errs += Problem(raw.trim(), "位置重复或不合法")
                     return
                 }
@@ -240,6 +244,19 @@ object ChineseCodeParser {
             }
         }
         addSuite(map, money, raw.trim(), out, errs)
+    }
+
+    private fun positionIndices(tag: String): List<Int> =
+        if (tag.length > 1 && tag.all { it in "头百十尾个" }) {
+            tag.mapNotNull { positionIndex(it.toString()) }
+        } else listOfNotNull(positionIndex(tag))
+
+    private fun positionIndex(tag: String): Int? = when (tag) {
+        "头", "头位" -> 0
+        "百", "百位" -> 1
+        "十", "十位", "1位", "+1位", "＋1位" -> 2
+        "尾", "尾位", "个", "个位" -> 3
+        else -> null
     }
 
     private fun parseUnlabeled(s: String, money: Long, out: MutableList<Entry>, errs: MutableList<Problem>) {

@@ -1,9 +1,10 @@
+import {CURRENT_RELEASE} from './current-version.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const app=readFileSync(new URL('../site/app.js',import.meta.url),'utf8');
-const a=readFileSync(new URL('../../PhoneA_v2.0.52_Project/app/src/main/java/com/example/remotea/PresencePresentation.kt',import.meta.url),'utf8');
-const b=readFileSync(new URL('../../PhoneB_v2.0.52_Project/app/src/main/java/com/example/remoteb/RemoteAccessibilityService.kt',import.meta.url),'utf8');
-const recovery=readFileSync(new URL('../../PhoneB_v2.0.52_Project/app/src/main/java/com/example/remoteb/GlobalControlPollRecoveryPolicy.kt',import.meta.url),'utf8');
+const a=readFileSync(new URL(`../../${CURRENT_RELEASE.androidA}/app/src/main/java/com/example/remotea/PresencePresentation.kt`,import.meta.url),'utf8');
+const b=readFileSync(new URL(`../../${CURRENT_RELEASE.androidB}/app/src/main/java/com/example/remoteb/RemoteAccessibilityService.kt`,import.meta.url),'utf8');
+const recovery=readFileSync(new URL(`../../${CURRENT_RELEASE.androidB}/app/src/main/java/com/example/remoteb/GlobalControlPollRecoveryPolicy.kt`,import.meta.url),'utf8');
 assert.match(b,/controlVerificationDelayed\([\s\S]*?\) -> "paused"/);
 assert.match(b,/getBoolean\("global_stop_hold", false\) -> "attention"/);
 assert.match(b,/getBoolean\("accessibility_interrupted", false\) -> "attention"/);

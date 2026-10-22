@@ -50,11 +50,11 @@ export function auditFullTurnSource(raw,normalized,authoritative,flags) {
       const m=peek(CODE);if(!m||m[0].split('X').length>3)break;
       codes.push({number:m[0],start:pos,end:pos+m[0].length,segmentStart:segStart,codeIndex:codes.length});
       pos+=m[0].length;
-      while(pos<normalized.length&&' 、,，\t'.includes(normalized[pos]))pos++;
+      while(pos<normalized.length&&' 、,，\t\r\n'.includes(normalized[pos]))pos++;
       if(!peek(CODE))break;
     }
     if(!codes.length)return null;
-    while(pos<normalized.length&&' \t'.includes(normalized[pos]))pos++;
+    while(pos<normalized.length&&' \t\r\n'.includes(normalized[pos]))pos++;
     const alone=peek(TURN);
     let normal=null,turn=null;
     if(!alone){
@@ -67,7 +67,7 @@ export function auditFullTurnSource(raw,normalized,authoritative,flags) {
     if(turnToken){
       const turnStart=pos;
       pos+=turnToken[0].length;
-      while(pos<normalized.length&&' \t'.includes(normalized[pos]))pos++;
+      while(pos<normalized.length&&' \t\r\n'.includes(normalized[pos]))pos++;
       turn=readAmount();
       if(!turn)return null;
       turn.start=turnStart;
