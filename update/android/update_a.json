@@ -1,9 +1,9 @@
 {
   "applicationId": "com.example.remotea",
-  "versionName": "2.0.52",
-  "versionCode": 106,
+  "versionName": "2.0.54",
+  "versionCode": 108,
   "force": false,
   "apkUrl": "https://raw.githubusercontent.com/121177939/NineCloudDao/main/update/android/%E6%8E%A7%E5%88%B6A.apk",
-  "description": "长时间闲置后的 B 控制连接临时核验失败归类为重连等待而非人工异常；恢复后自动重新核验。真实 STOP、任务锁、双 ACK 不放宽。",
+  "description": "B 新任务开始前清空小票最多点击3次，每次连续核验笔数0/总金额0；3次不通过安全停止，不重试下注确定或重发旧任务。A/WAP 同步展示状态，STOP/发单锁不变。",
   "sha256": ""
 }
