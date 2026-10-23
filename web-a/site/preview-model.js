@@ -11,6 +11,7 @@ export function normalizeForOffsets(source) {
     .replace(/＝/g,'=').replace(/[\t\u00a0]/g,' ')
     .replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-'０'.charCodeAt(0)+48));
   for(const label of IGNORED_LABELS)s=s.split(label).join(' '.repeat(label.length));
+  s=s.replace(/(?<![0-9X+])[0-9X+]{4}(?![0-9X+])/g,m=>m.includes('+')?m.replace(/\+/g,'X'):m);
   return s.replace(/\.{2,}/g,m=>','.repeat(m.length))
     .replace(/(?<=[0-9X])\.(?=[0-9X]{4}(?![0-9X]))/g,',')
     .replace(/(?<![0-9X-])([0-9]{4})-(\d{1,3}(?:\.\d+)?)(?=\s|[,，、。；;]|$)/g,'$1=$2');

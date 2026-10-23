@@ -15,10 +15,13 @@ data class MixedParseReport(val batch: MixedBatch?, val issues: List<BatchIssue>
 }
 
 object MixedParser {
-    // v2.0.40: Detect a named-position suite boundary in an input that also
-    // contains 全转. Existing M1 execution always runs all scatter/turn items
-    // before suites; only that exact source order can be represented safely.
-    private val namedSuiteStart = Regex("(?<![0-9X])(?:[0-9]{1,10}[头百十尾个]|全[头百十尾])")
+    // M1's established execution order is scatter/full-turn first, suites second.
+    // Four numeric dot-separated groups are an explicit four-position suite marker.
+    private val namedSuiteStart = Regex("(?<![0-9X])(?:[0-9]{1,10}[头百十尾个]|全[头百十尾]|[0-9]{1,10}(?:\\.[0-9]{1,10}){3})")
+    // Candidate for a self-contained trailing full-turn-only clause. This is only
+    // a boundary finder; FullTurnParser remains the authority and validates the
+    // entire suffix before any execution-order normalization is allowed.
+    private val trailingFullTurnStart = Regex("(?<![0-9X+])[0-9X+]{4}(?:[ \\t,，、;；。\\r\\n]+[0-9X+]{4})*[ \\t\\r\\n]*全(?:倒|到|转)")
 
     private fun inspectFullTurnThenSuite(raw: String, suiteAt: Int): MixedParseReport {
         val fullText = raw.substring(0, suiteAt)
@@ -52,6 +55,62 @@ object MixedParser {
         }.getOrElse { failure -> MixedParseReport(null, issues + BatchIssue(0, raw.length,
             failure.message ?: "混合全转和套码指令校验失败")) }
     }
+    /**
+     * Explicitly authorized normalization for a suite prefix followed by a final
+     * full-turn-only suffix. The suffix is moved into M1's scatter/full-turn stage;
+     * suite order, source text and all existing safety gates remain unchanged.
+     * Ordinary scatter in the suffix, another earlier full-turn, or any unknown
+     * suffix text causes a hard reject rather than a broader reorder.
+     */
+    private fun inspectSuiteThenTrailingFullTurn(
+        raw: String,
+        suiteAt: Int,
+        turnAt: Int
+    ): MixedParseReport {
+        fun reject(message: String) = MixedParseReport(null, listOf(BatchIssue(turnAt, raw.length, message)))
+        if (turnAt <= suiteAt || turnAt !in 1 until raw.length)
+            return reject("全倒尾注位置不明确，整单停止")
+        val prefixText = raw.substring(0, turnAt)
+        val turnText = raw.substring(turnAt)
+        if (FullTurnParser.applies(prefixText))
+            return reject("仅允许将单一尾部全倒段提前；混合多个全倒段需人工拆分核对")
+
+        val prefix = inspect(prefixText)
+        if (!prefix.valid) return prefix
+        val prefixBatch = prefix.batch ?: return reject("套码与全倒无法安全合并，整单停止")
+        if (prefixBatch.suites.isEmpty())
+            return reject("未找到可供全倒尾注前置的套码，整单停止")
+
+        val tail = FullTurnParser.inspect(turnText)
+        if (!tail.valid) return MixedParseReport(null, tail.issues.map { issue ->
+            issue.copy(start = issue.start + turnAt, endExclusive = issue.endExclusive + turnAt)
+        })
+        val tailBatch = tail.batch ?: return reject("全倒尾注解析为空，整单停止")
+        if (tailBatch.scatter.items.isEmpty() || tailBatch.turnFlags.size != tailBatch.scatter.items.size ||
+            tailBatch.turnFlags.any { !it } || tailBatch.suites.isNotEmpty()) {
+            return reject("尾部只能包含明确的全倒/全到/全转指令；普通码或混合内容不自动换序")
+        }
+
+        val prefixFlags = prefixBatch.scatter.items.indices.map { index ->
+            prefixBatch.turnFlags.getOrElse(index) { false }
+        }
+        val combined = prefixBatch.copy(
+            scatter = BatchOrder(prefixBatch.scatter.items + tailBatch.scatter.items),
+            turnFlags = prefixFlags + tailBatch.turnFlags
+        )
+        val issues = prefix.issues + tail.issues.map { issue ->
+            issue.copy(start = issue.start + turnAt, endExclusive = issue.endExclusive + turnAt)
+        }
+        return runCatching {
+            MixedProtocol.validate(combined)
+            check(MixedProtocol.decode(combined.command).command == combined.command) {
+                "全倒尾注前置后的 M1 指令未能无损往返"
+            }
+            MixedParseReport(combined, issues)
+        }.getOrElse { failure -> MixedParseReport(null, issues + BatchIssue(0, raw.length,
+            failure.message ?: "全倒尾注前置后指令校验失败")) }
+    }
+
     // New-task entry ceiling. Only split final FOUR-position scatter entries;
     // old task wire decoding and 2/3-position amounts stay unchanged.
     private fun splitFourPosition(items: List<BatchItem>): List<BatchItem> = buildList {
@@ -92,7 +151,12 @@ object MixedParser {
     fun inspect(raw: String): MixedParseReport {
         if (FullTurnParser.applies(raw)) {
             val suiteStart = namedSuiteStart.find(raw)?.range?.first
-            if (suiteStart != null) return inspectFullTurnThenSuite(raw, suiteStart)
+            if (suiteStart != null) {
+                val trailingTurnAt = trailingFullTurnStart.findAll(raw).lastOrNull()?.range?.first
+                if (trailingTurnAt != null && trailingTurnAt > suiteStart)
+                    return inspectSuiteThenTrailingFullTurn(raw, suiteStart, trailingTurnAt)
+                return inspectFullTurnThenSuite(raw, suiteStart)
+            }
             return FullTurnParser.inspect(raw)
         }
         val result = try { ChineseCodeParser.parse(raw) } catch (_: Exception) {

@@ -35,6 +35,9 @@ object ChineseCodeParser {
     private val dashScatter = Regex("^([0-9X]{4})-(\\d+(?:\\.\\d+)?)$")
     private val scatterCode = Regex("^[0-9X]{4}$")
     private val digitOrX = Regex("[0-9]+|X")
+    // A four-slot plus mask is another spelling of X, but "+1位" is an established position alias.
+    // Match only standalone four-slot tokens; preserve the original text length/offsets.
+    private val plusMask = Regex("(?<![0-9X+])[0-9X+]{4}(?![0-9X+])")
     private val separators = Regex("[，,、。；;\\n\\r]+")
 
     fun parse(input: String): Result {
@@ -113,7 +116,10 @@ object ChineseCodeParser {
         // dot such as 各1.5元, and never silently strip unknown characters.
         val normalizedDots = raw.replace(Regex("\\.{2,}")) { ",".repeat(it.value.length) }
             .replace(Regex("(?<=[0-9X])\\.(?=[0-9X]{4}(?![0-9X]))"), ",")
-        return normalizedDots.replace(Regex("(?<![0-9X-])([0-9]{4})-(\\d{1,3}(?:\\.\\d+)?)(?=\\s|[,，、。；;]|$)"), "$1=$2")
+        val normalizedMasks = plusMask.replace(normalizedDots) { m ->
+            if ('+' in m.value) m.value.replace('+', 'X') else m.value
+        }
+        return normalizedMasks.replace(Regex("(?<![0-9X-])([0-9]{4})-(\\d{1,3}(?:\\.\\d+)?)(?=\\s|[,，、。；;]|$)"), "$1=$2")
     }
 
     private fun toJiao(number: String, unit: String): Long? = try {
@@ -183,6 +189,14 @@ object ChineseCodeParser {
             // Exactly four comma-separated FOUR-DIGIT codes are four scatter bets,
             // not a four-position suite. This legacy writing is common in pasted lists.
             // Check it before the generic four-position comma syntax.
+            // Exactly FOUR numeric dot groups are the existing four-position suite
+            // syntax with a different separator, not decimal prices or short scatters.
+            // Only parse inside an already separately-priced block; no guessing of
+            // two-digit/three-digit padding or changing the amount policy.
+            if (r.matches(Regex("[0-9]{1,10}(?:\\.[0-9]{1,10}){3}"))) {
+                addSuite(r.split('.').withIndex().associate { it.index to it.value }, money, r, out, errs)
+                continue
+            }
             val commaGroups = r.split(',', '，')
             if (commaGroups.size == 4 && commaGroups.all { scatterCode.matches(it.trim()) }) {
                 commaGroups.forEach { addScatter(it.trim(), money, it.trim(), out) }
@@ -221,8 +235,13 @@ object ChineseCodeParser {
     private fun parseNamed(raw: String, money: Long, out: MutableList<Entry>, errs: MutableList<Problem>) {
         // Allow neighboring named groups with optional spaces. Multiple identical suites
         // separated by a comma are split by parseBlock and remain distinct.
-        val matches = namedPos.findAll(raw).toList()
-        val remainder = namedPos.replace(raw, "").trim()
+        // "123头45尾二=5": "二" explicitly labels a two-position suite, not a
+        // third position or part of the wager amount. Keep the original source
+        // unchanged for provenance and only allow this suffix on EXACTLY two positions.
+        val twoPositionLabel = raw.trimEnd().endsWith("二")
+        val body = if (twoPositionLabel) raw.trimEnd().dropLast(1) else raw
+        val matches = namedPos.findAll(body).toList()
+        val remainder = namedPos.replace(body, "").trim()
         if (remainder.isNotBlank() || matches.isEmpty()) {
             errs += Problem(raw.trim(), "套码位置格式有误")
             return
@@ -242,6 +261,10 @@ object ChineseCodeParser {
                 }
                 map[index] = digits
             }
+        }
+        if (twoPositionLabel && map.size != 2) {
+            errs += Problem(raw.trim(), "二定位标记必须对应恰好两个位置")
+            return
         }
         addSuite(map, money, raw.trim(), out, errs)
     }

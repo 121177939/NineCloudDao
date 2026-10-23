@@ -80,7 +80,9 @@ object BatchParser {
     private fun numberEnd(text: String, next: Int): Boolean = wordEnd(text, next) || (next < text.length && text[next] in "各打")
     private fun at(regex: Regex, text: String, i: Int): MatchResult? = regex.find(text, i)?.takeIf { it.range.first == i }
 
-    private fun normalized(source: String): String = buildString(source.length) {
+    private val plusMask = Regex("(?<![0-9X+])[0-9X+]{4}(?![0-9X+])")
+    private fun normalized(source: String): String {
+        val chars = buildString(source.length) {
         for (ch in source) append(when (ch) {
             in '０'..'９' -> ('0'.code + ch.code - '０'.code).toChar()
             '－', '—', '–', '﹣' -> '-'
@@ -89,6 +91,8 @@ object BatchParser {
             in lookalikeX -> 'X'
             else -> ch
         })
+        }
+        return plusMask.replace(chars) { m -> if ('+' in m.value) m.value.replace('+', 'X') else m.value }
     }
 
     private data class Pending(val value: String, val from: Int, val to: Int)

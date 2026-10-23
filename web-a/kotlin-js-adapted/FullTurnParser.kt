@@ -27,7 +27,10 @@ object FullTurnParser {
         // UTF-16 source offsets by blanking characters rather than removing them.
         val ignoredTitles = listOf("七星彩", "排列五", "七星", "排列", "七五", "七子", "七仔", "五子", "五仔", "排五")
         val titlePattern = Regex(ignoredTitles.sortedByDescending { it.length }.joinToString("|") { Regex.escape(it) })
-        val source = titlePattern.replace(raw) { " ".repeat(it.value.length) }
+        val withoutTitles = titlePattern.replace(raw) { " ".repeat(it.value.length) }
+        val source = Regex("(?<![0-9X+])[0-9X+]{4}(?![0-9X+])").replace(withoutTitles) { m ->
+            if ('+' in m.value) m.value.replace('+', 'X') else m.value
+        }
         val issues = mutableListOf<BatchIssue>()
         val items = mutableListOf<BatchItem>()
         val flags = mutableListOf<Boolean>()
