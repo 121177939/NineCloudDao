@@ -1,13 +1,13 @@
-import {GameRealtime} from './realtime-presence.js?v=2.0.61.1';
-import {historyOnlyParents, parentType, parentState} from './order-history.js?v=2.0.61.1';
-import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage17';
-import {WebAClient, CloudError} from './supabase.js?v=web-a-stage17';
-import {WebTransactions} from './transactions.js?v=web-a-stage17';
-import {requireBReady} from './safety.js?v=web-a-stage17';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=web-a-stage17';
-import {expandLinkedReviewRows} from './preview-coverage.js?v=web-a-stage17';
-import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=web-a-stage17';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=web-a-stage17';
+import {GameRealtime} from './realtime-presence.js?v=2.0.61.1-wapfix1';
+import {historyOnlyParents, parentType, parentState} from './order-history.js?v=2.0.61.1-wapfix1';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=2.0.61.1-wapfix1';
+import {WebAClient, CloudError} from './supabase.js?v=2.0.61.1-wapfix1';
+import {WebTransactions} from './transactions.js?v=2.0.61.1-wapfix1';
+import {requireBReady} from './safety.js?v=2.0.61.1-wapfix1';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=2.0.61.1-wapfix1';
+import {expandLinkedReviewRows} from './preview-coverage.js?v=2.0.61.1-wapfix1';
+import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=2.0.61.1-wapfix1';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=2.0.61.1-wapfix1';
 
 // Web A v2.0.51 — Stage 17: automatic release of proven successful local request locks
 // after B returns idle, plus task/history polling from the same source. STOP, receipt,
@@ -17,6 +17,16 @@ const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const webParser=globalThis.parser?.com?.example?.remotea?.WebParser;
 if(!webParser)throw Error('Kotlin/JS 识别引擎未加载，拒绝提供预览或发送');
 const api=new WebAClient();
+// A partially uploaded GitHub Pages release can mix a new app.js with an old
+// cached supabase.js.  Fail closed and tell the operator which upload to fix.
+const requiredApiMethods=['tasks','orders','queueState','enqueueOrder','cancelQueuedOrder','reviewCloseOrder'];
+const missingApiMethods=requiredApiMethods.filter(method=>typeof api[method]!=='function');
+if(missingApiMethods.length){
+  const detail='WAP 网页文件版本不一致：缺少 '+missingApiMethods.join('、')+'。请上传最新版 web-a/site 的全部文件，再运行 GitHub Pages Actions 发布；此时禁止发单。';
+  const status=document.getElementById('login-status');
+  if(status)status.textContent=detail;
+  throw new Error(detail);
+}
 const state={tx:null,page:'entry',filter:'全部',parsed:null,parsedText:'',lastFocus:null,auth:false,
     busy:false,stopProgressBusy:false,stopProgressText:'',historyOffset:0,historyRows:[],historyFingerprint:null,tasks:[],orders:[],queueHeld:false,refreshBusy:false,autoReleaseBusy:false,presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[]};
 const FAIL_CLOSED='此操作尚未完成真实云端与 B 端验收，网页端暂不开放；请在 Android A 端处理。';
