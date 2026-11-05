@@ -35,13 +35,16 @@ assert.throws(()=>shouldPermitNewTask({...active,globalControl:{action:'stop',re
 assert.throws(()=>shouldPermitNewTask({...active,unresolvedStops:[{phase:'requested'}]}),/STOP/);pass++;
 class Store{constructor(){this.d=new Map()}getItem(k){return this.d.has(k)?this.d.get(k):null}setItem(k,v){this.d.set(k,String(v))}removeItem(k){this.d.delete(k)}}
 const uid='11111111-1111-4111-8111-111111111111',nav={locks:{request:async (_,opts,fn)=>fn({})}};
-const calls=[];const api={uid,async isRoleCurrent(){return true},async presence(){return active.presence},async firstActiveTask(){return null},async globalControl(){return active.globalControl},async unresolvedStops(){return []},async createTask(cmd,id,account){calls.push([cmd,id,account]);return [{id}]},async task(id){return {id,status:'finished'}}};
-const tx=new WebTransactions(api,new Store(),nav);const created=await tx.sendFrozenCommand(freeze('1234各1元').command,'seven');
-yes(created.phase==='created'&&calls.length===1&&calls[0][0]==='1234-1'&&calls[0][2]==='seven','legacy scatter accepted and POST called only once');
-await assert.rejects(tx.sendFrozenCommand('1234-1','seven'),/未决/);pass++;
+const calls=[];const api={uid,async isRoleCurrent(){return true},async presence(){return active.presence},async firstActiveTask(){return {id:'old-task'}},async globalControl(){return active.globalControl},async unresolvedStops(){return []},async queueState(){return {held:false}},
+  async enqueueOrder(cmd,id,account,second){calls.push([cmd,id,account,second]);return {id,order_number:calls.length}},async order(){return null},async task(id){return {id,status:'finished'}}};
+const tx=new WebTransactions(api,new Store(),nav);
+const created=await tx.sendFrozenCommand(freeze('1234各1元').command,'seven');
+yes(created.phase==='created'&&calls.length===1&&calls[0][0]==='1234-1'&&calls[0][2]==='seven','legacy scatter accepted as one queue order');
+yes(tx.pending().task===null,'successful enqueue releases local submit journal');
+await tx.sendFrozenCommand('1234-1','seven');yes(calls.length===2,'continuous sending while prior order is queued');
 const bad=new WebTransactions({...api,presence:async()=>({serverTime:Date.now(),row:{state:'busy',seen_at:new Date().toISOString()}})},new Store(),nav);
-await assert.rejects(bad.sendFrozenCommand('1234-1','seven'),/空闲/);yes(bad.pending().task===null,'B busy blocks POST without leftover false journal');
-const responseUnknown=new WebTransactions({...api,createTask:async()=>{throw Error('Network timeout')}},new Store(),nav);
+const ready=await bad.sendFrozenCommand('1234-1','seven');yes(ready.phase==='created','B busy still accepts queued order');
+const responseUnknown=new WebTransactions({...api,enqueueOrder:async()=>{throw Error('Network timeout')}},new Store(),nav);
 await assert.rejects(responseUnknown.sendFrozenCommand('1234-1','arrange'),/Network timeout/);
 yes(responseUnknown.pending().task?.phase==='unknown','timeout after POST keeps durable unknown lock');
 const source=fs.readFileSync(new URL('../site/app.js',import.meta.url),'utf8');

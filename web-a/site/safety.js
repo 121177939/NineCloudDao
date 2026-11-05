@@ -65,6 +65,25 @@ export function requireBReady(snapshot, now=Date.now()) {
   if(snapshot.row.state!=='idle')throw new SafetyLockError('B 不处于空闲状态，禁止发送');
   return true;
 }
+/** v2.0.60 queue admission allows B busy; STOP and unknown submission still block. */
+export function requireBOnline(snapshot){
+  if(!snapshot?.row || !Number.isFinite(snapshot?.serverTime))throw new SafetyLockError('B 未在线或服务端心跳时间未知');
+  const age=snapshot.serverTime-Date.parse(snapshot.row.seen_at||'');
+  if(!Number.isFinite(age)||age < -2000||age > 60000 ||
+      !['idle','busy','attention','paused'].includes(snapshot.row.state))throw new SafetyLockError('B 心跳超过 60 秒或状态异常，无法接单');
+  return true;
+}
+export function shouldPermitNewOrder({roleCurrent,presence,globalControl,unresolvedStops,journal,uploadInFlight,queueState}){
+  if(!roleCurrent)throw new SafetyLockError('A 角色租约无效');
+  if(journal||uploadInFlight)throw new SafetyLockError('上一请求尚未确认，先核对原订单编号');
+  if(unresolvedStops?.length)throw new SafetyLockError('仍有未核实 STOP 记录');
+  const none=globalControl?.action==='none'&&Number(globalControl?.revision)===0;
+  const resumed=globalControl?.action==='resume'&&Number(globalControl?.revision)>0&&
+      Number(globalControl?.ack_revision)===Number(globalControl?.revision)&&globalControl?.ack_state==='resumed';
+  if(!none&&!resumed)throw new SafetyLockError('STOP 尚未安全释放');
+  if(queueState?.held)throw new SafetyLockError('STOP 后整单队列仍暂停；请核实后手动恢复');
+  requireBOnline(presence);return true;
+}
 export function shouldPermitNewTask({roleCurrent,presence,activeTask,globalControl,unresolvedStops,journal, uploadInFlight}){
   if(!roleCurrent)throw new SafetyLockError('A 端会话不再有效');
   if(journal)throw new SafetyLockError('仍有持久化未决任务/STOP，禁止新建');

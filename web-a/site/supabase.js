@@ -35,6 +35,15 @@ export class WebAClient {
     try{data=JSON.parse(t);}catch{ data=t; }
     return {data,serverTime};
   }
+  /** Optional Supabase Auth self-registration; availability depends on project Auth settings. */
+  async signUp(email,password){
+    if(typeof email!=='string' || !email.includes('@') || typeof password!=='string' ||
+       [...password].length<10) throw new CloudError('注册邮箱须有效，密码至少 10 个字符');
+    const response=(await this.wire('POST','/auth/v1/signup',{email,password},false)).data;
+    if(!response?.user?.id)throw new CloudError('Supabase 未确认创建账号，请检查邮箱或项目注册设置');
+    // Do not silently claim an A role or save a new session during signup.
+    return {needsEmailConfirmation:!response.access_token};
+  }
   async login(email,password){
     this.clear();
     const result=(await this.wire('POST','/auth/v1/token?grant_type=password',{email,password},false)).data;
@@ -76,6 +85,21 @@ export class WebAClient {
   async tasks(offset=0,limit=30){ const p=`/rest/v1/remote_tasks?select=id,command,target_account,status,message,result_path,scatter_path,suite_path,created_at,updated_at&order=created_at.desc&limit=${limit}&offset=${offset}`; return (await this.wire('GET',p)).data; }
   async task(id){if(!/^[0-9a-f-]{36}$/i.test(id))throw new CloudError('任务编号不合法');return (await this.wire('GET',`/rest/v1/remote_tasks?id=eq.${encodeURIComponent(id)}&select=*`)).data?.[0]||null;}
   async firstActiveTask(){return (await this.wire('GET','/rest/v1/remote_tasks?select=*&status=in.(queued,pending,preparing,awaiting_confirm,confirmed,executing)&order=created_at.desc&limit=1')).data?.[0]||null;}
+  // v2.0.60: server-owned FIFO orders, no parallel creation of executable tasks.
+  async orders(){return (await this.wire('GET','/rest/v1/remote_v257_orders?select=id,order_number,selection,state,step,message,second_task_id,created_at,updated_at&order=order_number.desc&limit=200')).data||[];}
+  async order(id){if(!/^[0-9a-f-]{36}$/i.test(id))throw new CloudError('整单编号无效');return (await this.wire('GET',`/rest/v1/remote_v257_orders?select=id,order_number,selection,state,step,message&id=eq.${encodeURIComponent(id)}`)).data?.[0]||null;}
+  async enqueueOrder(command,id,selection,secondId=null){
+    if(!/^[0-9a-f-]{36}$/i.test(id)||!isWireCommand(command)||!['arrange','seven','both'].includes(selection)||
+       (selection==='both')!==(!!secondId) || (secondId!==null&&!/^[0-9a-f-]{36}$/i.test(secondId)))throw new CloudError('整单参数不合法');
+    const result=await this.rpc('remote_v257_enqueue_order',{p_order_id:id,p_command:command,p_selection:selection,p_second_id:secondId});
+    if(result?.id!==id)throw new CloudError('云端订单编号不符，保持本地记录');
+    return result;
+  }
+  async cancelQueuedOrder(id){if(!/^[0-9a-f-]{36}$/i.test(id))throw new CloudError('整单编号无效');return this.rpc('remote_v257_cancel_order',{p_order_id:id});}
+  async queueState(){return this.rpc('remote_v257_queue_state');}
+  async queueDiagnostics(){return this.rpc('remote_v260_queue_diagnostics');}
+  async resumeQueue(){return this.rpc('remote_v257_resume_queue');}
+  async reviewCloseOrder(id,note){if(!/^[0-9a-f-]{36}$/i.test(id)||String(note||'').trim().length<6)throw new CloudError('必须填写至少六字真实执行结果核实备注');return this.rpc('remote_v257_review_close_order',{p_order_id:id,p_review_note:note.trim().slice(0,300),p_external_checked:true});}
   async stops(){return (await this.wire('GET','/rest/v1/remote_stop_requests?select=task_id,batch_id,phase,screenshot_state,screenshot_path,exit_state,note,requested_at,reviewed_at,review_note,auto_release_at,auto_release_revision,auto_release_note&order=requested_at.desc&limit=60')).data||[];}
   async stopsFor(ids){const filtered=ids.filter(id=>/^[0-9a-f-]{36}$/i.test(id)).slice(0,50);if(!filtered.length)return[];return (await this.wire('GET',`/rest/v1/remote_stop_requests?select=task_id,phase,screenshot_path,screenshot_state,exit_state,note,reviewed_at,review_note,auto_release_at,auto_release_revision,auto_release_note&task_id=in.(${filtered.join(',')})&limit=50`)).data||[];}
   async suiteStates(id){if(!/^[0-9a-f-]{36}$/i.test(id))throw new CloudError('任务编号不合法');return (await this.wire('GET',`/rest/v1/remote_task_suite_items?task_id=eq.${id}&select=ordinal,canonical_text,expected_count,amount_jiao,state,reason,updated_at&order=ordinal.asc`)).data||[];}

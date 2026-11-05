@@ -1,6 +1,6 @@
 import {isWireCommand} from './send-plan.js';
 import {confirmedSuccessfulCompletion} from './auto-finalize.js';
-import {SafetyJournal,SafetyLockError,requireBReady,shouldPermitNewTask,oneTapStopNext,withExclusiveLock,FINAL_STATES} from './safety.js';
+import {SafetyJournal,SafetyLockError,requireBReady,shouldPermitNewOrder,oneTapStopNext,withExclusiveLock,FINAL_STATES} from './safety.js';
 
 /** Fail-closed Web transactional migration candidate. Not activated for production until DB acceptance.
  * Stores UUIDs only, NEVER JWT/passwords, passwords or command text. All cloud requests remain the
@@ -16,10 +16,10 @@ export class WebTransactions {
   }
   pending(){return {task:this.tasks.load(),stop:this.stop.load()};}
   async preflight(){
-    const [roleCurrent,presence,activeTask,globalControl,unresolvedStops]=await Promise.all([
-      this.api.isRoleCurrent(),this.api.presence(),this.api.firstActiveTask(),this.api.globalControl(),this.api.unresolvedStops()
+    const [roleCurrent,presence,activeTask,globalControl,unresolvedStops,queueState]=await Promise.all([
+      this.api.isRoleCurrent(),this.api.presence(),this.api.firstActiveTask(),this.api.globalControl(),this.api.unresolvedStops(),typeof this.api.queueState==='function'?this.api.queueState():Promise.resolve({held:false})
     ]);
-    return {roleCurrent,presence,activeTask,globalControl,unresolvedStops,
+    return {roleCurrent,presence,activeTask,globalControl,unresolvedStops,queueState,
       journal:this.tasks.load()||this.stop.load(),uploadInFlight:this.inFlight};
   }
   async sendFrozenCommand(command,selection){
@@ -35,25 +35,21 @@ export class WebTransactions {
       try{
         const inputs=await this.preflight();
         // The journal we just wrote is excluded from preflight's own lock check.
-        shouldPermitNewTask({...inputs,journal:null,uploadInFlight:false});
-        if(selection==='both'){
-          const caps=await this.api.dualCapabilities();
-          if(caps?.ready!==true)throw new SafetyLockError('双账号原子建单服务端未确认就绪');
-        }
+        shouldPermitNewOrder({...inputs,journal:null,uploadInFlight:false});
         // Last authoritative role check just before creating a task.
         if(await this.api.isRoleCurrent()!==true)throw new SafetyLockError('A 角色租约已失效');
         // A STOP may be registered concurrently (the native APP gives STOP priority).
         // The DB trigger serializes the final race; this local recheck avoids needless POSTs.
         if(this.stop.load())throw new SafetyLockError('一键终止已登记，拒绝创建新任务');
         this.tasks.advance('posting');posted=true;
-        if(selection==='both')await this.api.createDualChain(command,firstId,secondId);
-        else{
-          const result=await this.api.createTask(command,firstId,selection);
-          if(!Array.isArray(result)||result.length!==1||result[0].id!==firstId)
-            throw new SafetyLockError('创建请求返回任务编号不一致，状态未知，保持锁定');
-        }
+        const result=await this.api.enqueueOrder(command,firstId,selection,secondId);
+        if(result?.id!==firstId)throw new SafetyLockError('整单创建编号不一致，保持核对');
         this.tasks.advance('created');
-        return this.tasks.load();
+        const acknowledged=this.tasks.load();
+        // Creation acknowledgement is enough to unlock NEXT enqueue; B execution is
+        // tracked by the server-side order, not this browser's upload journal.
+        this.tasks.close(true);
+        return {...acknowledged,orderNumber:result.order_number};
       }catch(e){
         if(!posted){this.tasks.close(true);} // confirmed NO create POST was dispatched.
         else this.tasks.advance('unknown'); // even HTTP errors may be ambiguous; never auto-repeat.
@@ -63,6 +59,8 @@ export class WebTransactions {
   }
   async reconcileTask(){
     const row=this.tasks.load();if(!row)return {state:'none'};
+    const queued=typeof this.api.order==='function' ? await this.api.order(row.requestId) : null;
+    if(queued)return {state:'queue-order',row,order:queued};
     const first=await this.api.task(row.requestId);
     if(!first)return {state:'unknown',row}; // REST zero rows is NOT proof that no create happened.
     if(row.secondId){
@@ -84,6 +82,10 @@ export class WebTransactions {
       const row=this.tasks.load();
       if(!row || this.inFlight || this.stop.load())return {action:'none'};
       const snapshot=await this.reconcileTask();
+      if(snapshot.state==='queue-order' && snapshot.order?.id===row.requestId){
+        this.tasks.close(true);
+        return {action:'released',requestId:row.requestId,reason:'服务端已确认原整单入队，无需等待执行完毕才能继续发单'};
+      }
       if(snapshot.state!=='terminal' && snapshot.state!=='plan')return {action:'waiting'};
       // Unlike normal preflight, our OWN journal is expected here.
       const gate=await this.preflight();
@@ -100,7 +102,8 @@ export class WebTransactions {
   async acknowledgeTerminalTask(externalReviewed){
     if(externalReviewed!==true)throw new SafetyLockError('请先人工核对真实小票与结果');
     const result=await this.reconcileTask();
-    if(result.state==='terminal' && !this.stop.load())this.tasks.close(true);
+    if(result.state==='queue-order' && result.order?.id===result.row?.requestId && !this.stop.load())this.tasks.close(true);
+    else if(result.state==='terminal' && !this.stop.load())this.tasks.close(true);
     else if(result.state==='plan' && result.plan?.unfinished_count===0 && result.plan?.queued_count===0 &&
       result.plan.first_exists===true && result.plan.second_exists===true &&
       FINAL_STATES.includes(result.first?.status) && FINAL_STATES.includes(result.second?.status) && !this.stop.load()){

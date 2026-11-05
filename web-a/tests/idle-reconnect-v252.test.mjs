@@ -15,5 +15,5 @@ assert.match(recovery,/nowElapsedMs - lastVerifiedElapsedMs > 7_000L/);
 assert.match(a,/控制连接核验中（暂缓接单）/);
 assert.match(app,/temporaryControlCheck/);
 assert.match(app,/控制连接核验中（暂缓接单）/);
-assert.match(app,/const ready=fresh&&row.state==='idle'/);
+assert.match(app,/const ready=Number\.isFinite\(age\)[^;]+\['idle','busy','attention','paused'\]\.includes\(row\.state\)/);
 console.log('PASS v2.0.52 A-B-WAP transient reconnect and STOP guards');

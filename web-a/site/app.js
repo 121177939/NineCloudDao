@@ -1,3 +1,5 @@
+import {GameRealtime} from './realtime-presence.js?v=2.0.61.1';
+import {historyOnlyParents, parentType, parentState} from './order-history.js?v=2.0.61.1';
 import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=web-a-stage17';
 import {WebAClient, CloudError} from './supabase.js?v=web-a-stage17';
 import {WebTransactions} from './transactions.js?v=web-a-stage17';
@@ -16,7 +18,7 @@ const webParser=globalThis.parser?.com?.example?.remotea?.WebParser;
 if(!webParser)throw Error('Kotlin/JS 识别引擎未加载，拒绝提供预览或发送');
 const api=new WebAClient();
 const state={tx:null,page:'entry',filter:'全部',parsed:null,parsedText:'',lastFocus:null,auth:false,
-    busy:false,stopProgressBusy:false,stopProgressText:'',historyOffset:0,historyRows:[],historyFingerprint:null,tasks:[],refreshBusy:false,autoReleaseBusy:false,presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[]};
+    busy:false,stopProgressBusy:false,stopProgressText:'',historyOffset:0,historyRows:[],historyFingerprint:null,tasks:[],orders:[],queueHeld:false,refreshBusy:false,autoReleaseBusy:false,presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[]};
 const FAIL_CLOSED='此操作尚未完成真实云端与 B 端验收，网页端暂不开放；请在 Android A 端处理。';
 function setStatus(text){$('input-status').textContent=text;}
 function modal(title,message,actions=[{label:'知道了'}]){
@@ -33,6 +35,7 @@ function closeModal(){state.modalRevision+=1;clearObjects();state.currentHistory
 $('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('overlay').hidden)closeModal();else if(!$('preview').hidden)closePreview();}});
 function showLogin(message=''){
+  stopGameRealtime();
   state.auth=false;state.tx=null;state.parsed=null;state.parsedText='';
   $('login-screen').hidden=false;
   if(message)$('login-status').textContent=message;
@@ -52,12 +55,34 @@ async function login(){
     {label:'确认登录',primary:true,onClick:async()=>{
       state.busy=true;$('login-submit').disabled=true;
       $('login-status').textContent='正在向 Supabase 登录并登记 A 端会话…';
-      try{await api.login(email,password);state.tx=new WebTransactions(api,localStorage);$('login-password').value='';showDashboard();await refreshAll();await showPendingSafetyInfo();}
+      try{await api.login(email,password);state.tx=new WebTransactions(api,localStorage);$('login-password').value='';showDashboard();ensureGameRealtime();await refreshAll();await showPendingSafetyInfo();}
       catch(e){api.clear();showLogin('登录失败：'+e.message);}
       finally{state.busy=false;$('login-submit').disabled=false;}
     }}
   ]);
 }
+// Supabase Auth registration is separate from the Workers BOOTSTRAP_KEY flow.
+// Login remains A-role claimed only AFTER a user actively signs in.
+$('register-toggle').addEventListener('click',()=>{
+  $('register-panel').hidden=!$('register-panel').hidden;
+  $('register-toggle').textContent=$('register-panel').hidden?'注册新的 Supabase 账号':'收起注册';
+});
+$('register-submit').addEventListener('click',async()=>{
+  if(state.busy)return;
+  const email=$('login-email').value.trim();
+  const password=$('login-password').value,confirm=$('register-confirm').value;
+  if(!email.includes('@')||[...password].length<10){$('login-status').textContent='注册邮箱须有效，密码至少10个字符';return;}
+  if(password!==confirm){$('login-status').textContent='两次密码不一致';return;}
+  state.busy=true;$('register-submit').disabled=true;
+  try{
+    const outcome=await api.signUp(email,password);
+    $('login-password').value='';$('register-confirm').value='';
+    $('login-status').textContent=outcome.needsEmailConfirmation?
+      '注册请求已接受。请先在邮箱完成确认，再用本页安全登录；Supabase 项目可能限制公开注册。':
+      '注册请求已接受，请使用邮箱密码点击安全登录；尚未占用 A 角色。';
+  }catch(e){$('login-status').textContent='注册未完成：'+e.message;}
+  finally{state.busy=false;$('register-submit').disabled=false;}
+});
 $('login-submit').addEventListener('click',login);
 $('login-password').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
 async function showPendingSafetyInfo(){
@@ -70,7 +95,7 @@ async function showPendingSafetyInfo(){
       modal('一键终止正在处理',message);
     }else if(pending.task){
       const result=await state.tx.reconcileTask();
-      const txt=result.state==='unknown'?'云端查询暂未返回原任务，不能认定创建失败':
+      const txt=result.state==='queue-order'?'云端已经确认原整单入队；下一次刷新将解除上传锁':result.state==='unknown'?'云端查询暂未返回原任务，不能认定创建失败':
         result.state==='plan'?'双账号计划已查询，请核实两份任务状态与真实回图':
         result.state==='terminal'?'云端显示终态，但仍需核对小票':'当前任务尚未完全结束';
       modal('存在未决任务，禁止重发',`原请求 ID：${pending.task.requestId}\n${txt}。请到任务中心和目标软件核对；不能仅靠刷新页面解除锁。`);
@@ -89,11 +114,24 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>sele
 $('view-all-tasks').addEventListener('click',()=>selectPage('tasks'));
 const validDate=t=>{const d=new Date(t);return Number.isFinite(+d)?d.toLocaleString('zh-CN',{hour12:false}):'时间未知';};
 const statusText=state=>({pending:'等待执行',queued:'等待上一账号',preparing:'准备中',awaiting_confirm:'等待确认',confirmed:'已确认',executing:'执行中',finished:'已完成',failed:'失败',cancelled:'已取消',needs_review:'待人工核实',partial:'部分完成'})[state]||state||'未知';
+let gameRealtime=null;
+let lastRealtime={connected:false,online:false,state:''};
+function ensureGameRealtime(){
+  if(gameRealtime||!api.loggedIn)return;
+  gameRealtime=new GameRealtime(api, p=>{
+    lastRealtime=p;
+    const badge=document.getElementById('b-status');
+    if(!badge)return;
+    if(p.connected){badge.textContent=p.online?'● B 实时在线 · '+({busy:'执行中',paused:'暂停',attention:'待核实',idle:'待命'}[p.state]||'连接中'):'B 离线 · 等待上线';badge.style.color=p.online?'#188c3c':'#b36a00';}
+  },()=>{refreshTasks().catch(()=>{});});
+  gameRealtime.start().catch(()=>{});
+}
+function stopGameRealtime(){gameRealtime?.close();gameRealtime=null;lastRealtime={connected:false,online:false,state:''};}
 function presenceState(p){
   const row=p?.row;if(!row)return {text:'B 尚未上报状态 · 禁止发送',color:'#b36a00',ready:false};
   const age=(p.serverTime||Date.now())-Date.parse(row.seen_at||'');
-  const fresh=Number.isFinite(age)&&age>=-2000&&age<=12000;
-  const ready=fresh&&row.state==='idle';
+  const fresh=Number.isFinite(age)&&age>=-2000&&age<=60000;
+  const ready=Number.isFinite(age)&&age>=-2000&&age<=60000&&['idle','busy','attention','paused'].includes(row.state);
   const ageText=Number.isFinite(age)?`${Math.max(0,Math.floor(age/1000))} 秒前`:'未知';
   const map={idle:'在线 · 空闲待命',busy:'在线 · 正在执行',attention:'在线 · 异常待人工核对',paused:'在线 · 暂停接单'};
   const temporaryControlCheck=row.state==='attention' && /^(全局控制状态暂不可核实|全局 STOP 状态暂不可核实|全局控制正在重连核验|全局控制状态未及时确认)/.test(String(row.stage||''));
@@ -107,7 +145,7 @@ async function refreshPresence(){
   if(!api.loggedIn)return;
   $('b-status').textContent='正在刷新执行端状态…';$('b-status').style.color='var(--muted)';
   try{state.presence=await api.presence();const display=presenceState(state.presence);
-    $('b-status').textContent=display.text;$('b-status').style.color=display.color;
+    $('b-status').textContent=lastRealtime.connected?(lastRealtime.online?'● B 实时在线 · ':'B 离线 · ') + display.text:display.text;$('b-status').style.color=lastRealtime.connected?(lastRealtime.online?'#188c3c':'#b36a00'):display.color;
   }catch(e){state.presence=null;$('b-status').textContent='无法确认 B 状态 · 禁止发送：'+e.message;$('b-status').style.color='#b36a00';}
 }
 function taskCard(row){
@@ -118,6 +156,75 @@ function taskCard(row){
     <div class="sub">${escapeHTML((row.id||'').slice(0,8))} · ${escapeHTML(validDate(row.created_at))}</div>
     <div class="sub">${escapeHTML(String(row.message||'').slice(0,180)||'查看详情、核验记录及原始回图')}</div>`;
   card.addEventListener('click',()=>showTaskDetail(row.id));return card;
+}
+function queueOrderCard(order){
+  const card=document.createElement('div');card.className='card';
+  const label={arrange:'排列五',seven:'七星彩',both:'排列五＋七星彩（整单）'}[order.selection]||'未知';
+  const phase={queued:'排队中',running:`执行中 · 第 ${order.step||1} 步`,finished:'已完成',cancelled:'已取消',reviewed_closed:'人工核实后关闭',needs_review:'待核实 · 队列暂停'}[order.state]||order.state;
+  const text=document.createElement('div');text.className='row-info';
+  const title=document.createElement('strong');title.textContent=`第 ${order.order_number} 单 · ${label}`;
+  const status=document.createElement('span');status.className='state-chip';status.textContent=phase;
+  text.append(title,status);card.append(text);
+  const meta=document.createElement('div');meta.className='sub';meta.textContent=String(order.message||'').slice(0,140)||validDate(order.created_at);card.append(meta);
+  if(order.state==='needs_review' || (order.state==='running' && state.queueHeld)){
+    const close=document.createElement('button');close.type='button';close.className='button danger';
+    close.style.marginTop='10px';close.textContent='核对真实记录后关闭本单';
+    close.addEventListener('click',()=>{
+      const note=window.prompt('请先在目标 App 核实实际执行记录及小票，写下核实结论（至少六字；不自动补单）');
+      if(note===null)return;
+      if(note.trim().length<6){modal('不能关闭','核实备注至少六字，请实际核对后再操作。');return;}
+      modal('确认已核对真实执行结果？','关闭仅解除整单队列阻塞，不会重做订单或修改已执行记录。备注：'+note.trim(),[
+        {label:'返回'},{label:'已核对，关闭此单',primary:true,onClick:async()=>{
+          try{const ok=await api.reviewCloseOrder(order.id,note);await refreshTasks();modal(ok?'已核实关闭':'未关闭',ok?'已核实结案；STOP 队列仍需单独点击恢复，记录及小票保留。':'状态已变化，请刷新后核实。');}
+          catch(e){modal('尚未关闭','服务端拒绝：'+e.message);}
+        }}]);
+    });card.append(close);
+  }
+  if(order.state==='queued'){
+    const cancel=document.createElement('button');cancel.type='button';cancel.className='button danger';
+    cancel.style.marginTop='10px';cancel.textContent='取消此整单';
+    cancel.addEventListener('click',()=>modal('取消第 '+order.order_number+' 单？',
+      '仅取消尚未被 B 领取的整个订单；包含两个彩种时一起取消，不影响其他订单。',[
+      {label:'返回'},{label:'确认取消',primary:true,onClick:async()=>{
+        try{const ok=await api.cancelQueuedOrder(order.id);
+          modal(ok?'取消成功':'取消未生效',ok?'B 将跳过此整单，其他订单保持原顺序。':'订单可能已经开始，或被其他设备修改，请刷新队列核对。');
+          await refreshTasks();
+        }catch(e){modal('取消结果未确认','请重新查询原订单，不要假定已经取消：'+e.message);}
+      }}]));
+    card.append(cancel);
+  }
+  return card;
+}
+/** Terminal parent without an executable child: click for details, no dead numbered card. */
+function orderHistoryCard(order){
+  const card=document.createElement('button');card.type='button';card.className='card history-card queue-history-card';
+  card.style.cssText='width:100%;text-align:left;color:var(--ink);font:inherit';
+  const label=parentType(order.selection),phase=parentState(order.state);
+  const heading=document.createElement('div');heading.className='row-info';
+  const title=document.createElement('strong');title.textContent=label;
+  const status=document.createElement('span');status.className='state-chip';status.textContent=phase+' ›';
+  heading.append(title,status);card.append(heading);
+  const when=document.createElement('div');when.className='sub';when.textContent=validDate(order.created_at);card.append(when);
+  card.addEventListener('click',()=>modal(label+' · '+phase,
+    `队列参考编号：第 ${order.order_number} 单\n时间：${validDate(order.created_at)}\n${order.message||''}\n\n无独立小票；如有回图请进入对应的执行任务历史查看。`));
+  return card;
+}
+function appendQueueResume(host){
+  if(!state.queueHeld)return;
+  const box=document.createElement('div');box.className='card';
+  const note=document.createElement('p');note.textContent='STOP 后整单队列已暂停，请先核实目标 App 记录和小票。';box.append(note);
+  const btn=document.createElement('button');btn.className='button danger';btn.textContent='核实后恢复队列';
+  btn.addEventListener('click',()=>modal('恢复尚未执行的整单？','确认 STOP 已完成回执，并已核对真实执行结果和小票。',[
+    {label:'返回'},{label:'已核对，恢复',primary:true,onClick:async()=>{
+      try{await api.resumeQueue();await refreshTasks();modal('恢复成功','整单队列已经恢复接单与顺序执行。');}
+      catch(e){
+        let detail='';
+        try{const d=await api.queueDiagnostics();
+          detail=`\n诊断：活动任务 ${d.active_tasks}，待核实整单 ${d.unresolved_orders}，STOP 记录 ${d.open_stops}。`;
+        }catch{/* SQL migration may not be installed yet. */}
+        modal('尚未恢复','服务端拒绝恢复：'+e.message+detail);
+      }
+    }}]));box.append(btn);host.prepend(box);
 }
 function historyCard(row){
   const card=document.createElement('button');card.className='card history-card';card.type='button';
@@ -144,22 +251,37 @@ async function refreshTasks(){
   if(state.refreshBusy)return;
   state.refreshBusy=true;
   try{
-    const [tasks,stops]=await Promise.all([api.tasks(0,30),api.stops().catch(()=>[])]);
+    const [tasks,stops,orders,queueState]=await Promise.all([api.tasks(0,30),api.stops().catch(()=>[]),api.orders(),api.queueState()]);
     if(!Array.isArray(tasks))throw new CloudError('任务列表格式不正确');
     const previous=new Map(state.tasks.map(row=>[row.id,row.status]));
     const freshFinish=state.tasks.length>0 && tasks.some(row=>row.status==='finished' &&
       previous.has(row.id) && previous.get(row.id)!=='finished');
-    state.tasks=tasks;state.stopRows=stops;
-    const active=tasks.filter(t=>!['finished','cancelled','failed'].includes(t.status));
+    state.tasks=tasks;state.stopRows=stops;state.orders=orders;state.queueHeld=!!queueState?.held;
+    const parentChildIds=new Set(orders.flatMap(o=>[o.id,o.second_task_id].filter(Boolean)));
+    const active=tasks.filter(t=>!['finished','cancelled','failed'].includes(t.status)&&!parentChildIds.has(t.id));
     $('home-task-list').replaceChildren();$('task-list').replaceChildren();
-    if(!active.length){$('home-task-list').innerHTML='<div class="card"><h3 class="no-task-title">✓ 当前没有进行中的任务</h3><p class="no-task-subtitle">可以输入号码，识别预览后发送。</p></div>';
+    if(!active.length&&!orders.some(o=>['queued','running','needs_review'].includes(o.state))){$('home-task-list').innerHTML='<div class="card"><h3 class="no-task-title">✓ 当前没有进行中的任务</h3><p class="no-task-subtitle">可以输入号码，识别预览后发送。</p></div>';
       $('task-list').innerHTML='<div class="card">暂无执行中或排队任务</div>';
     }else{
       active.slice(0,2).forEach(t=>$('home-task-list').appendChild(taskCard(t)));
       active.slice(0,12).forEach(t=>$('task-list').appendChild(taskCard(t)));
       if(active.length>2){const small=document.createElement('p');small.className='light-note';small.textContent=`还有 ${active.length-2} 份待处理任务，点击“查看全部”。`;$('home-task-list').appendChild(small);}
     }
+    // Parent orders go first; legacy child tasks remain independently accessible.
+    const pendingOrders=orders.filter(o=>['queued','running','needs_review'].includes(o.state));
+    for(const o of pendingOrders.slice(0,200))$('task-list').prepend(queueOrderCard(o));
+    for(const o of pendingOrders.slice(0,2))$('home-task-list').prepend(queueOrderCard(o));
+    appendQueueResume($('task-list'));
     renderHistoryRows(tasks);
+    // Canceled-before-execution parent orders have no remote_tasks child; show them in history.
+    // Remove only our queue-history cards; preserve old receipt history rows.
+    const historyHost=$('history-list');
+    historyHost.querySelectorAll('.queue-history-card').forEach(c=>c.remove());
+    const terminalOrders=historyOnlyParents(orders,tasks).slice(0,20);
+    if(terminalOrders.length){
+      if(historyHost.firstElementChild?.textContent==='暂时没有历史任务')historyHost.replaceChildren();
+      for(const o of terminalOrders)historyHost.appendChild(orderHistoryCard(o));
+    }
     if(freshFinish)setStatus('检测到新完成任务：已自动更新历史记录。正在核验执行端是否安全待命及本机锁。');
   }catch(e){
     const msg=`读取失败，不能推断云端无任务：${e.message}`;
@@ -730,10 +852,10 @@ async function submitFrozenTask(selection,frozen){
   setStatus('正在核对 A 租约、B 心跳、STOP 和既有任务，再创建云端任务；请勿再次点击。');
   try{
     const row=await state.tx.sendFrozenCommand(frozen.command,selection);
-    setStatus('云端已接收请求 '+row.requestId.slice(0,8)+'，等待 B 端执行并核实小票；不是下注成功。');
+    setStatus('整单 #'+row.orderNumber+' 已入队，可继续发送下一单；B 按顺序执行，入队不等于执行完成。');
     closePreview();
     let postSendWarning='';try{await refreshTasks();}catch(error){postSendWarning='\n任务列表刷新失败：'+error.message+'。建单确认仍有效，请稍后按原请求编号核查，勿重发。';}
-    modal('云端已接收任务',`请求编号：${row.requestId}\n账号：${selection==='both'?'排列五＋七星彩':selection==='seven'?'七星彩':'排列五'}\n当前仅表示云端创建请求得到确认。请去「任务」检查 B 进度、小票、截图和最终结果；未知结果不可重发。${postSendWarning}`);
+    modal('整单已入队',`第 ${row.orderNumber} 单\n订单编号：${row.requestId}\n彩种：${selection==='both'?'排列五＋七星彩（整单）':selection==='seven'?'七星彩':'排列五'}\n可以继续发送；B 按整单顺序执行，结果以云端任务与实际小票为准。${postSendWarning}`);
   }catch(e){
     let pending=null;try{pending=state.tx?.pending().task;}catch{}
     setStatus('发单失败或结果未知：'+e.message);
@@ -759,7 +881,7 @@ function menu(){
     }],
     ['人工核查终态并解除本机锁',reviewAndUnlockLocal],
     ['查看本机截图',()=>modal('本机截图','浏览器无法读取 Android A 专用内部文件。可在历史记录打开云端私有截图。')],
-    ['退出登录',()=>{api.clear();clearObjects();showLogin('已退出 Web A 会话。本次浏览器会话密钥已清除。');}]
+    ['退出登录',()=>{stopGameRealtime();api.clear();clearObjects();showLogin('已退出 Web A 会话。本次浏览器会话密钥已清除。');}]
   ];
   choices.forEach(([name,fn])=>{const b=document.createElement('button');b.className='menu-option';b.innerHTML=escapeHTML(name)+'<span>›</span>';b.onclick=()=>{closeModal();Promise.resolve(fn()).catch(e=>modal('操作失败',e.message));};$('modal-options').appendChild(b);});
   const done=document.createElement('button');done.className='button ghost';done.textContent='关闭';done.style.width='100%';done.onclick=closeModal;$('modal-actions').appendChild(done);
@@ -794,7 +916,7 @@ async function tick(){
   try{
     if(state.tx?.pending().stop)await progressPendingStop();
     if(Date.now()-state.lastRoleCheck>15000){state.lastRoleCheck=Date.now();
-      const current=await api.isRoleCurrent();if(!current){api.clear();showLogin('同账号已在另一台 A 端登录，当前 Web A 已退出；请到新设备核查任务。');return;}
+      const current=await api.isRoleCurrent();if(!current){stopGameRealtime();api.clear();showLogin('同账号已在另一台 A 端登录，当前 Web A 已退出；请到新设备核查任务。');return;}
     }
     await refreshPresence();
     await refreshTasks(); // history remains live while its tab is open, too.
@@ -802,6 +924,6 @@ async function tick(){
   }catch(e){setStatus('后台刷新失败（不代表任务已结束）：'+e.message);}
 }
 setInterval(tick,10000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopGameRealtime();else {ensureGameRealtime();tick();}});
 selectPage('entry');showLogin('正在核验原 A 会话…');
-api.restoreSession().then(async restored=>{if(!restored){showLogin('请登录 Web A');return;}state.tx=new WebTransactions(api,localStorage);showDashboard();try{await refreshAll();}catch(e){setStatus('会话已恢复；数据刷新失败：'+e.message);}await showPendingSafetyInfo();}).catch(e=>showLogin('原会话已失效，请重新登录：'+e.message));
+api.restoreSession().then(async restored=>{if(!restored){showLogin('请登录 Web A');return;}state.tx=new WebTransactions(api,localStorage);showDashboard();ensureGameRealtime();try{await refreshAll();}catch(e){setStatus('会话已恢复；数据刷新失败：'+e.message);}await showPendingSafetyInfo();}).catch(e=>showLogin('原会话已失效，请重新登录：'+e.message));
