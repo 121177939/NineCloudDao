@@ -1,75 +1,353 @@
-<!-- version: V2.5.0 CACHE141 -->
 <!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#17130d">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="九霄问道">
-  <meta name="description" content="九霄问道——东方文字修仙人生模拟游戏">
-  <title>九霄问道</title>
-  <link rel="manifest" href="manifest.webmanifest?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="apple-touch-icon" href="assets/icon-192.png?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="styles.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-tianxu-v220.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-tiandao-person-v220.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-exploration-v220.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-equipment01.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-equipment-v210.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-secret-realm01.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-technique-v220.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-world-boss01.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-sect-v2.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
-  <link rel="stylesheet" href="b-spirit-beast-v250.css?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f8fc">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://wqhirteaemujeytsdpit.supabase.co; img-src 'self' blob: data:; font-src 'self'; worker-src 'none'">
+  <meta name="color-scheme" content="light">
+  <title>控制中心 · WAP 2.0.61.1</title>
+  <style>
+    /* Palette, dp, card radius, typography and spacing taken from A v2.0.55 VisualUi.kt/MainActivity.kt. */
+    :root { --bg:#f6f8fc; --white:#ffffff; --ink:#1a2a40; --muted:#6b7a90; --blue:#236fe7;
+      --soft-blue:#e9f1ff; --border:#e5e9f1; --green:#1b9769; --red:#bc4046;
+      --shadow:0 0 0 transparent; --font:"Noto Sans CJK SC","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    }
+    * { box-sizing:border-box; }
+    html, body { width:100%; height:100%; margin:0; }
+    body { background:#edf0f6; font-family:var(--font); color:var(--ink); -webkit-font-smoothing:antialiased; }
+    button,input,textarea { font:inherit; color:inherit; }
+    button { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    button:focus-visible,input:focus-visible,textarea:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+    .app { position:relative; margin:0 auto; max-width:500px; height:100%; height:100dvh;
+      background:var(--bg); display:flex; flex-direction:column; overflow:hidden; }
+    .screens { flex:1 1 auto; overflow:hidden; position:relative; min-height:0; }
+    .page { height:100%; overflow-x:hidden; overflow-y:auto; scrollbar-width:none; overscroll-behavior:contain;
+      padding:20px 17px 25px; }
+    .page::-webkit-scrollbar,.preview-scroll::-webkit-scrollbar { display:none; }
+    [hidden] { display:none !important; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .headings { min-width:0; flex:1; }
+    h1,h2,h3,p { margin:0; }
+    .home-title { font-size:26px; font-weight:750; letter-spacing:-.7px; line-height:1.4; }
+    .home-subtitle { color:var(--muted); font-size:12.5px; line-height:1.5; margin-top:3px; }
+    .button { appearance:none; border:0; background:var(--soft-blue); border-radius:13px; color:var(--blue);
+      padding:9px 10px; min-height:48px; font-size:14.5px; font-weight:700; display:inline-flex;
+      justify-content:center; align-items:center; text-align:center; white-space:nowrap; line-height:1.35; }
+    .button.primary { background:var(--blue); color:white; }
+    .button.ghost { background:#fff; border:1px solid var(--border); }
+    .button.danger { background:#fff0f0; color:var(--red); }
+    .button:disabled { opacity:.45; cursor:not-allowed; }
+    .settings-button { width:73px; flex-shrink:0; }
+    .card { padding:16px; border-radius:20px; border:1px solid var(--border); background:var(--white); }
+    .space-4 { height:4px; } .space-7 { height:7px; } .space-8 { height:8px; }
+    .space-9 { height:9px; } .space-10 { height:10px; } .space-12 { height:12px; }
+    .space-14 { height:14px; } .space-15 { height:15px; } .space-16 { height:16px; }
+    .space-20 { height:20px; }
+    .presence-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .presence-label { color:var(--green); font-size:13px; font-weight:750; }
+    .presence-state { color:var(--muted); font-size:13.5px; line-height:1.55; white-space:pre-line;
+      display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; min-height:20px; }
+    .presence-refresh { width:76px; flex-shrink:0; }
+    .field-title { font-size:18px; font-weight:750; line-height:1.45; }
+    .field-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+    .input-text { display:block; width:100%; min-height:114px; max-height:180px; resize:vertical;
+      background:var(--bg); border:1px solid var(--border); border-radius:14px;
+      padding:12px 13px; font-size:16px; line-height:1.5; font-weight:400; outline:none; }
+    .action-row { display:flex; align-items:stretch; gap:10px; }
+    .action-row > * { min-width:0; }
+    .input-clear { flex:1; } .input-preview { flex:2; }
+    .input-status { color:var(--muted); font-size:12px; line-height:1.55; white-space:pre-line;
+      word-break:break-word; min-height:18px; cursor:pointer; }
+    .section-head { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .section-title { font-size:20px; font-weight:750; letter-spacing:-.3px; }
+    .no-task-title { font-size:15px; font-weight:700; margin-bottom:5px; }
+    .no-task-subtitle { font-size:12px; color:var(--muted); line-height:1.5; }
+    .footer-caption { font-size:11.5px; color:var(--muted); line-height:1.6; }
+    .navbar { width:100%; min-height:70px; height:calc(70px + env(safe-area-inset-bottom));
+      padding:8px 9px calc(11px + env(safe-area-inset-bottom)); flex:0 0 auto;
+      background:var(--white); box-shadow:0 -3px 14px rgba(37,52,75,.045);
+      display:flex; align-items:center; justify-content:space-around; }
+    .tab { width:33.333%; height:100%; display:flex; flex-direction:column; align-items:center;
+      justify-content:center; background:none; border:0; gap:2px; color:var(--muted); }
+    .tab.active { color:var(--blue); }
+    .tab-icon { font-size:20px; font-weight:700; height:25px; line-height:25px; }
+    .tab-label { font-size:12px; font-weight:700; }
+    .minor-title { font-size:19px; font-weight:750; line-height:1.5; }
+    .minor-subtitle { font-size:12px; color:var(--muted); line-height:1.6; }
+    .task-grid { display:grid; grid-template-columns:1fr 2fr; gap:10px; }
+    .status-note { color:var(--muted); font-size:12px; line-height:1.6; }
+    .task-list { display:flex; flex-direction:column; gap:10px; }
+    .overlay { position:fixed; inset:0; left:0; right:0; width:100%; max-width:500px; margin:0 auto; z-index:70; background:rgba(14,25,42,.36); display:flex;
+      justify-content:center; align-items:center; padding:12px; padding-bottom:max(12px, env(safe-area-inset-bottom)); }
+    .modal { background:var(--white); border-radius:21px; padding:16px; box-shadow:0 24px 54px rgba(11,32,73,.16);
+      display:flex; flex-direction:column; width:100%; max-width:440px; min-width:0; min-height:0;
+      max-height:calc(100dvh - 24px - env(safe-area-inset-bottom)); overflow:hidden; }
+    .modal-scroll { flex:1 1 auto; min-width:0; min-height:0; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; padding:2px 2px 12px; }
+    .modal-scroll > * { min-width:0; max-width:100%; }
+    .modal-title { font-size:19px; font-weight:750; margin-bottom:6px; }
+    .modal-desc { white-space:pre-line; color:var(--muted); font-size:13.5px; line-height:1.7; }
+    .modal-actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:10px; width:100%; min-width:0; flex:0 0 auto; }
+    .modal-actions > * {min-width:0;}
+    .modal-actions .button { flex:1; }
+    .menu-option { width:100%; display:flex; text-align:left; padding:15px 1px; align-items:center;
+      justify-content:space-between; border:0; background:none; font-size:14px; border-bottom:1px solid var(--border); }
+    .menu-option:last-child { border-bottom:0; }
+    .menu-option span { color:var(--muted); }
+    /* v2.0.55's native preview is a full-screen view with single scroll body and fixed controls. */
+    .preview { z-index:5; position:absolute; inset:0; background:#f8fafe; display:flex; flex-direction:column;
+      padding:3px 10px 5px; }
+    .preview-top { display:flex; align-items:center; min-height:40px; gap:2px; }
+    .preview-back { border:0; background:none; color:var(--ink); font-size:28px; width:34px; height:38px; }
+    .preview-title { font-size:19.8px; font-weight:750; flex:1; }
+    .preview-help { border:0; background:none; font-size:13.7px; font-weight:700; color:var(--blue); }
+    .preview-scroll { flex:1; overflow:auto; scrollbar-width:none; overscroll-behavior:contain; }
+    .preview-card { border:1px solid var(--border); border-radius:14px; background:#fff; padding:7px 8px; margin-bottom:6px; }
+    .preview-raw {font-size:13px;line-height:1.38;font-weight:700;color:var(--ink);word-break:break-word;margin-top:6px;}
+    .preview-recognized {font-size:13px;line-height:1.4;color:#149b68;word-break:break-word;margin-top:5px;}
+    .preview-detail {min-width:0;white-space:pre-wrap;word-break:break-word;}
+    .preview-suite-line {display:flex;gap:7px;align-items:center;justify-content:space-between;}
+    .preview-suite-line .preview-recognized {flex:1;min-width:0;}
+    .preview-suite-line .result-caption {flex:none;white-space:nowrap;}
+    .preview-suite-examples {margin-top:8px;padding:7px;background:#f0f7ff;border-radius:9px;font-size:12px;white-space:pre-wrap;}
+    .preview-suite-examples .preview-detail {line-height:1.55;}
+    .preview-empty-suite {font-size:12.5px;color:var(--muted);padding:9px 10px;}
+    .preview-ignored {font-size:11.7px;font-weight:700;color:#e09500;padding:1px 5px 4px;cursor:pointer;}
+    .ignored-mark {background:#ffeda4;color:#704f00;}
+    .selected-mark {background:#c2deff;color:#004ead;}
+    .txt-amber {color:#e09500;}
+    .txt-blue {color:var(--blue);}
+    .row-status {font-size:11.9px;white-space:nowrap;font-weight:700;}
+    .preview .preview-row-content {font-size:13.4px;}
+    .preview .result-top strong {font-size:14px;font-weight:750;}
+    .preview .result-count {font-size:16.5px;line-height:1.35;}
+    .preview .preview-scroll {padding-bottom:4px;}
+    .preview .preview-card {margin-bottom:6px;}
+    .preview .checkbox-row {min-height:23px;}
+    .preview .checkbox-row label {font-size:13px;}
+    .preview .preview-footer {min-height:57px;}
+    .preview .preview-footer .button {font-weight:700;}
+    @media(min-width:420px) and (max-width:500px) { .preview .result-count {font-size:16px;} }
+
+    .preview-card-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+    .preview-small-title { font-size:14.9px; font-weight:750; }
+    .preview-text { border-radius:10px; border:1px solid #dbe6f6; background:#f0f7ff;
+      margin-top:5px; padding:7px 8px; white-space:pre-wrap; word-break:break-word; font-size:14.1px; line-height:1.5; }
+    .chip-list { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin:5px 0 6px; }
+    .chip { border:0; padding:7px 1px; background:#fff; border-radius:9px; font-size:11.7px; font-weight:750;
+      color:var(--ink); text-align:center; }
+    .chip.selected { color:#fff; background:var(--blue); }
+    .chip.amber { color:#a37100; background:#fff7da; }
+    .chip.red { color:#bc4046; background:#ffebed; }
+    .preview-row { display:flex; gap:6px; align-items:flex-start; }
+    .round-index { height:22px; width:22px; min-width:22px; border-radius:50%; color:white;
+      background:var(--blue); font-size:11px; display:inline-flex; align-items:center; justify-content:center; font-weight:700; }
+    .preview-row-content { min-width:0; flex:1; font-size:12.9px; line-height:1.45; }
+    .result-top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .result-status { font-weight:700; color:#e09500; font-size:11.8px; white-space:nowrap; }
+    .result-caption { font-size:11.6px; color:var(--muted); margin-top:3px; }
+    .result-count { font-size:16.5px; font-weight:750; line-height:1.5; }
+    .filter-small { display:flex; align-items:center; gap:2px; color:var(--muted); font-size:10px; white-space:nowrap; }
+    .checkbox-row { display:flex; align-items:center; gap:14px; }
+    .checkbox-row label { display:flex; align-items:center; gap:6px; flex:1; font-size:13px; }
+    input[type=checkbox] { accent-color:var(--blue); width:16px; height:16px; }
+    .preview-footer { display:flex; gap:5px; min-height:55px; align-items:center; padding-top:4px; }
+    .preview-footer .button { font-size:12px; min-height:44px; padding:6px; }
+    .preview-footer .button:nth-child(1) { flex:1; }
+    .preview-footer .button:nth-child(2), .preview-footer .button:nth-child(3) { flex:1.25; }
+    .demo-warning { font-size:11px; color:#b36a00; margin:6px 1px; line-height:1.45; }
+    .login-page { flex:1; padding:62px 22px 30px; overflow:auto; background:var(--bg); }
+    .login-title { font-size:30px; font-weight:750; line-height:1.4; }
+    .login-label { display:block; font-size:13px; font-weight:700; margin:12px 0 6px; }
+    .login-input { width:100%; padding:12px; border:1px solid var(--border); background:var(--bg);
+      border-radius:12px; font-size:15px; min-height:46px; }
+    @media (max-width:360px) { .page { padding-left:13px; padding-right:13px; }
+      .section-title { font-size:18px; } .presence-label { font-size:12px; } .button { font-size:13px; }
+    }
+    @media (min-width:501px) { .app { box-shadow:0 9px 48px rgba(21,45,82,.15); } }
+    .login-full { position:fixed; inset:0; background:var(--bg); z-index:40; overflow:auto; padding:62px 22px 30px; max-width:500px; margin:auto; }
+    .login-panel { margin-top:30px; }
+    .list-stack { display:flex; flex-direction:column; gap:10px; }
+    .task-card { cursor:pointer; }
+    .task-card .sub {font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.5;}
+    .history-card { cursor:pointer; width:100%; text-align:left; color:var(--ink); font:inherit; padding:22px 20px; border-radius:25px; }
+    .history-card .row-info strong {font-size:17px;font-weight:750;}
+    .history-card .sub {font-size:14px;color:var(--muted);margin-top:12px;line-height:1.5;}
+    .history-status {display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;white-space:nowrap;}
+    .history-status-dot {display:inline-block;width:10px;height:10px;border-radius:50%;background:currentColor;flex:none;}
+    .history-card .history-status.tone-success, .history-all-row .tone-success {color:#1b9769;}
+    .history-card .history-status.tone-danger, .history-all-row .tone-danger {color:#bc4046;}
+    .history-card .history-status.tone-warning, .history-all-row .tone-warning {color:#b36a00;}
+    .history-card .history-status-dot {background-color:currentColor;}
+    .tone-success {color:var(--green)} .tone-danger {color:var(--red)} .tone-warning {color:#b36a00} .tone-neutral {color:var(--muted)}
+    .account-choice-list {display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+    .account-choice {width:100%;min-height:52px;display:flex;align-items:center;gap:12px;text-align:left;
+      padding:12px 15px;border:1px solid var(--border);border-radius:13px;background:#fff;color:var(--ink);font-size:15px;font-weight:600;}
+    .account-choice.selected {border-color:var(--blue);background:var(--soft-blue);color:var(--blue);}
+    .account-choice-radio {font-size:20px;line-height:1;min-width:20px;text-align:center;color:var(--blue);}
+    .account-choice-label {flex:1;}
+    .send-summary-card {border:1px solid var(--border);border-radius:15px;background:#fff;padding:13px 14px;margin-top:10px;}
+    .send-summary-row {display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+    .send-summary-row:first-child {padding-top:0;}
+    .send-summary-row:last-child {border-bottom:0;padding-bottom:0;}
+    .send-summary-name {flex:0 0 76px;color:var(--muted);font-size:13px;line-height:1.5;}
+    .send-summary-value {flex:1;min-width:0;text-align:right;font-size:14px;line-height:1.5;font-weight:650;overflow-wrap:anywhere;}
+    .send-summary-value.emphasis {font-size:16px;color:var(--blue);font-weight:800;}
+    .stop-progress {margin:10px 0 0;padding:11px 12px;border:1px solid #dbe6f6;border-radius:12px;background:var(--soft-blue);
+      color:var(--blue);font-size:12px;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere;}
+    .send-choice-actions {flex-direction:column;align-items:stretch;flex-wrap:nowrap;}
+    .send-choice-actions .button {width:100%;min-height:44px;flex:none;}
+    .history-detail-actions {display:flex; flex-direction:column; flex-wrap:nowrap; gap:8px; max-height:min(41dvh,300px); overflow-y:auto; overscroll-behavior:contain;}
+    .history-detail-actions .button {display:flex;width:100%;max-width:100%;min-height:42px;flex:0 0 auto;white-space:normal;overflow-wrap:anywhere;padding:8px 10px;line-height:1.4;}
+    .history-all-controls {display:flex;gap:6px;margin:5px 0 10px;}
+    .history-all-controls .button {min-height:38px;flex:1;padding:6px 4px;font-size:12px;}
+    .history-all-row {display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+    .history-all-row input {width:16px;height:16px;accent-color:var(--blue);}
+    .history-all-entry {display:block;width:100%;border:0;background:transparent;text-align:left;padding:0;font:inherit;min-width:0;}
+    .history-all-entry strong {font-size:12.5px;font-weight:700;}
+    .history-all-entry .history-status {font-size:11.5px;}
+    .history-all-entry .sub {font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.45;}
+    .history-artifact {margin-top:12px;padding-top:10px;border-top:1px solid var(--border);}
+    .history-artifact-title {font-size:16px;font-weight:750;line-height:1.45;}
+    .history-artifact-note {font-size:11.5px;color:var(--muted);line-height:1.5;margin:6px 0 2px;}
+    .history-artifact-error {font-size:12px;color:var(--red);line-height:1.5;margin-top:7px;overflow-wrap:anywhere;}
+    .history-safety-note {font-size:11.5px;color:var(--muted);line-height:1.5;}
+    .ticket-image {display:block;width:auto;max-width:100%;height:auto;max-height:none;object-fit:contain;margin:8px auto;}
+    .history-artifact,.history-artifact img {min-width:0;max-width:100%;} 
+    .warn {color:#b36a00;white-space:pre-wrap;font-size:12px;line-height:1.5;}
+    .row-info{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+    .txt-red{color:var(--red)}
+    .txt-green{color:var(--green)}
+    .light-note{font-size:11px;line-height:1.5;color:var(--muted)}
+    .menu-option{cursor:pointer}
+    .state-chip{font-weight:700;color:var(--blue)}
+  </style>
 </head>
 <body>
-  <div class="ink ink-a" aria-hidden="true"></div>
-  <div class="ink ink-b" aria-hidden="true"></div>
-
-  <div class="page-scale-stage">
-  <div class="page-scale-content">
-  <header class="topbar">
-    <div class="brand" aria-label="九霄问道">
-      <span class="brand-seal">道</span>
-      <div>
-        <strong>九霄问道</strong>
-        <small>一介凡人 · 百年求道</small>
+<div class="app" id="app">
+  <div class="screens" id="screens">
+    <section class="page" id="page-entry" aria-label="录入">
+      <div class="topbar">
+        <div class="headings"><h1 class="home-title">控制中心</h1><div class="home-subtitle">发送任务 · 查看实时进度</div></div>
+        <button class="button ghost settings-button" id="open-settings">设置</button>
       </div>
-    </div>
-    <div id="accountArea" class="account-area"></div>
-  </header>
-
-  <main id="app" class="app-shell" aria-live="polite">
-    <section class="loading-screen">
-      <div class="loader-ring" aria-hidden="true"></div>
-      <p>正在叩问天机……</p>
+      <div class="space-16"></div>
+      <div class="card">
+        <div class="presence-head"><div class="presence-label">●&nbsp; 执行端连接</div>
+          <button class="button presence-refresh" id="presence-refresh">刷新</button>
+        </div>
+        <div class="space-7"></div>
+        <div class="presence-state" id="b-status">尚未登录，无法读取 B 状态</div>
+      </div>
+      <div class="space-14"></div>
+      <div class="card">
+        <h2 class="field-title">号码输入</h2><div class="space-4"></div>
+        <div class="field-desc">支持直接粘贴多行号码</div>
+        <div class="space-12"></div>
+        <textarea id="command" class="input-text" spellcheck="false" aria-label="号码输入" placeholder="请输入或粘贴号码"></textarea>
+        <div class="space-12"></div>
+        <div class="action-row">
+          <button id="clear-input" class="button ghost input-clear">清空</button>
+          <button id="preview-input" class="button primary input-preview">识别并预览</button>
+        </div>
+        <div class="space-9"></div>
+        <div class="input-status" id="input-status" role="status">原 Kotlin 同源识别已启用；真实云端写入仍待安全验收。</div>
+      </div>
+      <div class="space-20"></div>
+      <div class="section-head"><h2 class="section-title">当前任务</h2>
+        <button class="button" id="view-all-tasks">查看全部 ›</button></div>
+      <div class="space-10"></div>
+<div id="home-task-list" class="list-stack"><div class="card">正在等待云端状态…</div></div>
+      <div class="space-8"></div>
+      <p class="footer-caption">进度来自执行端已核验记录，不会提前标记完成。B 新任务开始前最多尝试 3 次清空小票，每次必须核实笔数和总金额均为 0；三次失败安全停止，不重复下注。</p>
     </section>
-  </main>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <div id="modalRoot"></div>
+    <section class="page" id="page-tasks" hidden aria-label="任务">
+      <h1 class="minor-title">任务中心</h1><p class="minor-subtitle">只显示云端真实状态，执行中可展开查看详情</p>
+      <div class="space-14"></div>
+      <div class="task-grid">
+        <button class="button" id="tasks-refresh">刷新</button>
+        <button class="button danger" id="tasks-stop">终止所有任务</button>
+      </div>
+      <p class="stop-progress" id="stop-progress" role="status" aria-live="polite" hidden></p>
+      <div class="space-20"></div>
+<div class="task-list" id="task-list"><div class="card">登录后读取任务。</div></div>
+    </section>
 
-  <footer class="footer">
-    <span>Web Alpha <span id="versionText">1.2</span></span>
-    <span>云端项目 · <span id="projectRefText">加载中</span></span>
-  </footer>
+    <section class="page" id="page-history" hidden aria-label="历史">
+      <h1 class="minor-title">历史记录</h1>
+      <p class="minor-subtitle">以可点击的真实任务记录为主，查看回图与详情</p>
+      <div class="space-14"></div>
+      <button class="button primary" style="width:100%" id="history-all">查看全部历史 · 微信转发小票</button>
+      <div class="light-note" id="wap-build-id" aria-label="网页版本">WAP 2.0.61.1 · 与 Android A/B 版本同步</div>
+      <div class="space-15"></div>
+<div class="list-stack" id="history-list"><div class="card">登录后读取历史。</div></div>
+    </section>
+
+    <section class="preview" id="preview" hidden aria-label="识别预览">
+      <div class="preview-top">
+        <button class="preview-back" id="preview-back" aria-label="返回">‹</button>
+        <span class="preview-title">识别预览 <span style="font-size:10px;font-weight:500;color:#738197;white-space:nowrap">WAP 2.0.61.1</span></span>
+        <button class="preview-help" id="preview-help">使用说明</button>
+      </div>
+      <div class="preview-scroll">
+        <div class="preview-card">
+          <div class="preview-card-top"><span class="preview-small-title" id="original-title">原始内容</span>
+            <button class="button ghost" style="min-height:30px;padding:4px 7px;font-size:13px" id="reuse-original">复用原文</button></div>
+          <div class="preview-text" id="original-text"></div>
+        </div>
+        <div class="result-top"><span class="result-count" id="result-count">识别结果</span><button class="button ghost" style="min-height:27px;padding:2px 7px;font-size:11px" id="preview-locator-diagnostic">定位诊断</button>
+          <label class="filter-small"><input type="checkbox" id="review-only">只看需确认/失败</label></div>
+        <div id="preview-ignored" class="preview-ignored" hidden></div>
+        <div class="chip-list" id="preview-filters">
+          <button class="chip selected" data-filter="全部">全部(0)</button>
+          <button class="chip" data-filter="正常">正常(0)</button>
+          <button class="chip amber" data-filter="需确认">需确认(0)</button>
+          <button class="chip red" data-filter="失败">失败(0)</button>
+        </div>
+        <div id="preview-rows"></div>
+        <div class="preview-card"><div class="checkbox-row">
+          <label><input type="checkbox" id="suite-screenshot">套码截图</label>
+          <label><input type="checkbox" id="convert-odds">转换倍率</label>
+        </div></div>
+<div class="demo-warning">仅在云端门禁检查通过后创建任务；网络未知结果不重发。正式双机验收前勿投入生产。</div>
+      </div>
+      <div class="preview-footer">
+        <button class="button ghost" id="preview-edit">返回修改</button>
+        <button class="button" id="preview-copy">复制识别结果</button>
+        <button class="button primary" id="preview-send" disabled title="登录并完成识别校验后选择执行账号">确认发送</button>
+      </div>
+    </section>
   </div>
-  </div>
 
-  <script src="config.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="update-guard.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="app.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="b-technique-v220.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="b-equipment01.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="b-equipment-v210.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="b-secret-realm01.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="b-world-boss01.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="b-sect-v2.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="b-tiandao-person-v220.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="b-exploration-v220.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-  <script src="b-spirit-beast-v250.js?v=v2-5-0-cache141-decompose-modal-scrollfix-admin41-sql268r1"></script>
-</body>
-</html>
+  <nav class="navbar" id="navbar" aria-label="主导航">
+    <button class="tab active" data-page="entry"><span class="tab-icon">✎</span><span class="tab-label">录入</span></button>
+    <button class="tab" data-page="tasks"><span class="tab-icon">▤</span><span class="tab-label">任务</span></button>
+    <button class="tab" data-page="history"><span class="tab-icon">▣</span><span class="tab-label">历史</span></button>
+  </nav>
+  <div class="overlay" id="overlay" hidden role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+    <h2 class="modal-title" id="modal-heading"></h2><div class="modal-scroll" id="modal-scroll"><div class="modal-desc" id="modal-body"></div>
+    <div id="modal-options"></div></div><div class="modal-actions" id="modal-actions"></div>
+  </div></div>
+<section class="login-full" id="login-screen">
+  <h1 class="login-title">控制中心</h1><p class="minor-subtitle" style="margin-top:7px">手机 A · 号码录入与任务管理（Web 版）</p>
+  <div class="card login-panel"><h2 class="field-title">欢迎使用</h2><p class="field-desc">使用与 Android A 相同的 Supabase 账号登录</p>
+    <label class="login-label" for="login-email">登录邮箱</label><input class="login-input" id="login-email" type="email" autocomplete="username" placeholder="请输入邮箱">
+    <label class="login-label" for="login-password">密码</label><input class="login-input" id="login-password" type="password" autocomplete="current-password" placeholder="请输入密码">
+    <div class="space-16"></div><button class="button primary" style="width:100%" id="login-submit">安全登录</button>
+    <div class="space-12"></div><button class="button ghost" style="width:100%" id="register-toggle" type="button">注册新的 Supabase 账号</button>
+    <div id="register-panel" hidden>
+      <div class="space-12"></div>
+      <p class="field-desc">使用上面的邮箱和密码（至少 10 个字符）；注册可能需要邮箱验证。此处不使用 Workers 管理员密钥。</p>
+      <label class="login-label" for="register-confirm">再次输入注册密码</label>
+      <input class="login-input" id="register-confirm" type="password" autocomplete="new-password" placeholder="确认注册密码">
+      <div class="space-12"></div><button class="button primary" style="width:100%" id="register-submit" type="button">创建 Supabase 账号</button>
+    </div>
+    <div class="space-12"></div><div class="status-note" id="login-status">提示：新 Web A 登录会占用 A 端会话，原 Android A 可能被退出。请勿在旧任务未决时跨设备操作。</div>
+  </div>
+  <p class="warn" style="margin-top:15px">Web A 直连 Supabase 发单与一键 STOP 流程；生产环境权限、B 真机回执和小票链路仍需按验收清单核验。发送结果未知时禁止重复提交。</p>
+</section>
+<script src="parser.js?v=2.0.61.1"></script><script type="module" src="app.js?v=2.0.61.1"></script>
+</body></html>
