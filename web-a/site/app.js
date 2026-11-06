@@ -1,13 +1,15 @@
-import {GameRealtime} from './realtime-presence.js?v=2.0.61.1-wapfix1';
-import {historyOnlyParents, parentType, parentState} from './order-history.js?v=2.0.61.1-wapfix1';
-import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=2.0.61.1-wapfix1';
-import {WebAClient, CloudError} from './supabase.js?v=2.0.61.1-wapfix1';
-import {WebTransactions} from './transactions.js?v=2.0.61.1-wapfix1';
-import {requireBReady} from './safety.js?v=2.0.61.1-wapfix1';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=2.0.61.1-wapfix1';
-import {expandLinkedReviewRows} from './preview-coverage.js?v=2.0.61.1-wapfix1';
-import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=2.0.61.1-wapfix1';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=2.0.61.1-wapfix1';
+import {diagEvent,diagText,diagCopy,diagDownload} from './diagnostics.js?v=2.0.63.1';
+import {GameRealtime} from './realtime-presence.js?v=2.0.63.1';
+import {presenceState} from './presence-display.js?v=2.0.63.1';
+import {historyOnlyParents, parentType, parentState} from './order-history.js?v=2.0.63.1';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=2.0.63.1';
+import {WebAClient, CloudError} from './supabase.js?v=2.0.63.1';
+import {WebTransactions} from './transactions.js?v=2.0.63.1';
+import {requireBReady} from './safety.js?v=2.0.63.1';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=2.0.63.1';
+import {expandLinkedReviewRows} from './preview-coverage.js?v=2.0.63.1';
+import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=2.0.63.1';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=2.0.63.1';
 
 // Web A v2.0.51 — Stage 17: automatic release of proven successful local request locks
 // after B returns idle, plus task/history polling from the same source. STOP, receipt,
@@ -32,6 +34,7 @@ const state={tx:null,page:'entry',filter:'全部',parsed:null,parsedText:'',last
 const FAIL_CLOSED='此操作尚未完成真实云端与 B 端验收，网页端暂不开放；请在 Android A 端处理。';
 function setStatus(text){$('input-status').textContent=text;}
 function modal(title,message,actions=[{label:'知道了'}]){
+  if(/失败|错误|异常|未创建|未知结果/.test(String(title)))diagEvent('ui','ERROR_MODAL');
   state.modalRevision+=1;clearObjects();state.currentHistoryArtifacts=[];
   $('modal-actions').classList.remove('history-detail-actions','send-choice-actions');
   $('modal-options').classList.remove('account-choice-list');
@@ -65,8 +68,8 @@ async function login(){
     {label:'确认登录',primary:true,onClick:async()=>{
       state.busy=true;$('login-submit').disabled=true;
       $('login-status').textContent='正在向 Supabase 登录并登记 A 端会话…';
-      try{await api.login(email,password);state.tx=new WebTransactions(api,localStorage);$('login-password').value='';showDashboard();ensureGameRealtime();await refreshAll();await showPendingSafetyInfo();}
-      catch(e){api.clear();showLogin('登录失败：'+e.message);}
+      try{diagEvent('auth','LOGIN_START');await api.login(email,password);diagEvent('auth','LOGIN_OK');state.tx=new WebTransactions(api,localStorage);$('login-password').value='';showDashboard();ensureGameRealtime();await refreshAll();await showPendingSafetyInfo();}
+      catch(e){diagEvent('auth','LOGIN_FAILED',{error:e});api.clear();showLogin('登录失败：'+e.message);}
       finally{state.busy=false;$('login-submit').disabled=false;}
     }}
   ]);
@@ -94,6 +97,7 @@ $('register-submit').addEventListener('click',async()=>{
   finally{state.busy=false;$('register-submit').disabled=false;}
 });
 $('login-submit').addEventListener('click',login);
+$('login-diagnostics').addEventListener('click',()=>modal('故障日志（脱敏）',diagText().slice(-6500),[{label:'关闭'},{label:'下载完整 TXT',primary:true,onClick:diagDownload}]));
 $('login-password').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
 async function showPendingSafetyInfo(){
   if(!state.tx)return;
@@ -125,38 +129,23 @@ $('view-all-tasks').addEventListener('click',()=>selectPage('tasks'));
 const validDate=t=>{const d=new Date(t);return Number.isFinite(+d)?d.toLocaleString('zh-CN',{hour12:false}):'时间未知';};
 const statusText=state=>({pending:'等待执行',queued:'等待上一账号',preparing:'准备中',awaiting_confirm:'等待确认',confirmed:'已确认',executing:'执行中',finished:'已完成',failed:'失败',cancelled:'已取消',needs_review:'待人工核实',partial:'部分完成'})[state]||state||'未知';
 let gameRealtime=null;
-let lastRealtime={connected:false,online:false,state:''};
 function ensureGameRealtime(){
   if(gameRealtime||!api.loggedIn)return;
-  gameRealtime=new GameRealtime(api, p=>{
-    lastRealtime=p;
-    const badge=document.getElementById('b-status');
-    if(!badge)return;
-    if(p.connected){badge.textContent=p.online?'● B 实时在线 · '+({busy:'执行中',paused:'暂停',attention:'待核实',idle:'待命'}[p.state]||'连接中'):'B 离线 · 等待上线';badge.style.color=p.online?'#188c3c':'#b36a00';}
-  },()=>{refreshTasks().catch(()=>{});});
-  gameRealtime.start().catch(()=>{});
+  // Realtime is an optional wakeup path. It does NOT decide whether B is online.
+  gameRealtime=new GameRealtime(api, _p=>{},()=>{refreshTasks().catch(()=>{});});
+  gameRealtime.start().catch(e=>{diagEvent('realtime','INITIAL_START_FAILED_RETRYING',{error:e});});
 }
-function stopGameRealtime(){gameRealtime?.close();gameRealtime=null;lastRealtime={connected:false,online:false,state:''};}
-function presenceState(p){
-  const row=p?.row;if(!row)return {text:'B 尚未上报状态 · 禁止发送',color:'#b36a00',ready:false};
-  const age=(p.serverTime||Date.now())-Date.parse(row.seen_at||'');
-  const fresh=Number.isFinite(age)&&age>=-2000&&age<=60000;
-  const ready=Number.isFinite(age)&&age>=-2000&&age<=60000&&['idle','busy','attention','paused'].includes(row.state);
-  const ageText=Number.isFinite(age)?`${Math.max(0,Math.floor(age/1000))} 秒前`:'未知';
-  const map={idle:'在线 · 空闲待命',busy:'在线 · 正在执行',attention:'在线 · 异常待人工核对',paused:'在线 · 暂停接单'};
-  const temporaryControlCheck=row.state==='attention' && /^(全局控制状态暂不可核实|全局 STOP 状态暂不可核实|全局控制正在重连核验|全局控制状态未及时确认)/.test(String(row.stage||''));
-  let text=fresh?(temporaryControlCheck?'在线 · 控制连接核验中（暂缓接单）':(map[row.state]||'在线 · 状态未知')):'状态未确认 · 心跳已过期（可能断线或上报失败）';
-  if(fresh&&Number(row.total_items)>0)text+=` · ${Number(row.completed_items)||0}/${Number(row.total_items)}组`;
-  text+=' · '+ageText+'更新';
-  if(fresh&&row.stage&&row.state!=='idle')text+='\n'+String(row.stage).slice(0,100);
-  return {text,color:ready?'#188c3c':(row.state==='busy'&&fresh?'#1870b8':'#b36a00'),ready};
-}
+function stopGameRealtime(){gameRealtime?.close();gameRealtime=null;}
 async function refreshPresence(){
   if(!api.loggedIn)return;
-  $('b-status').textContent='正在刷新执行端状态…';$('b-status').style.color='var(--muted)';
+  // Do not flash a connecting/offline label between healthy 10-second polls.
   try{state.presence=await api.presence();const display=presenceState(state.presence);
-    $('b-status').textContent=lastRealtime.connected?(lastRealtime.online?'● B 实时在线 · ':'B 离线 · ') + display.text:display.text;$('b-status').style.color=lastRealtime.connected?(lastRealtime.online?'#188c3c':'#b36a00'):display.color;
-  }catch(e){state.presence=null;$('b-status').textContent='无法确认 B 状态 · 禁止发送：'+e.message;$('b-status').style.color='#b36a00';}
+    $('b-status').textContent=display.text;$('b-status').style.color=display.color;
+  }catch(e){
+    state.presence=null; // No sending permission without a fresh server response.
+    diagEvent('presence','REFRESH_FAILED',{error:e});
+    $('b-status').textContent='B 状态暂时无法核实 · 暂缓发送';$('b-status').style.color='#b36a00';
+  }
 }
 function taskCard(row){
   const card=document.createElement('button');
@@ -861,12 +850,15 @@ async function submitFrozenTask(selection,frozen){
   state.busy=true;$('preview-send').disabled=true;
   setStatus('正在核对 A 租约、B 心跳、STOP 和既有任务，再创建云端任务；请勿再次点击。');
   try{
+    diagEvent('order','ENQUEUE_START');
     const row=await state.tx.sendFrozenCommand(frozen.command,selection);
+    diagEvent('order','ENQUEUE_OK');
     setStatus('整单 #'+row.orderNumber+' 已入队，可继续发送下一单；B 按顺序执行，入队不等于执行完成。');
     closePreview();
     let postSendWarning='';try{await refreshTasks();}catch(error){postSendWarning='\n任务列表刷新失败：'+error.message+'。建单确认仍有效，请稍后按原请求编号核查，勿重发。';}
     modal('整单已入队',`第 ${row.orderNumber} 单\n订单编号：${row.requestId}\n彩种：${selection==='both'?'排列五＋七星彩（整单）':selection==='seven'?'七星彩':'排列五'}\n可以继续发送；B 按整单顺序执行，结果以云端任务与实际小票为准。${postSendWarning}`);
   }catch(e){
+    diagEvent('order','ENQUEUE_FAILED_OR_UNKNOWN',{error:e});
     let pending=null;try{pending=state.tx?.pending().task;}catch{}
     setStatus('发单失败或结果未知：'+e.message);
     modal(pending?'任务结果未决 · 禁止重发':'未创建任务',e.message+(pending?`\n原请求编号：${pending.requestId}\n安全锁已保留。请人工核对服务器及 B 端，不要再次发单。`:'\n提交前失败，未派发建单请求；仍需排除云端其他未决任务。'));
@@ -890,8 +882,13 @@ function menu(){
       modal('安全状态核查',`当前 A 角色：${role?'有效':'失效'}\nB 状态：${ready}\n全局控制：${globalControl?.action||'未知'} / ${globalControl?.revision||0}\n未决 STOP：${unresolved?.length??'未知'}\n本地未决任务：${pending.task?.requestId||'无'}\n本地未决 STOP：${pending.stop?.requestId||'无'}\n安全写入：通过全部门禁才可提交；生产验收状态请查发行说明。`);
     }],
     ['人工核查终态并解除本机锁',reviewAndUnlockLocal],
+    ['故障日志：查看 / 导出',()=>modal('本机故障日志（脱敏）',diagText().slice(-6500),[
+      {label:'关闭'},
+      {label:'复制日志',onClick:async()=>{try{await diagCopy();}catch(e){diagEvent('diagnostics','COPY_FAILED',{error:e});modal('复制失败','浏览器未允许复制，请使用下载日志。');}}},
+      {label:'下载完整 TXT',primary:true,onClick:()=>diagDownload()}
+    ])],
     ['查看本机截图',()=>modal('本机截图','浏览器无法读取 Android A 专用内部文件。可在历史记录打开云端私有截图。')],
-    ['退出登录',()=>{stopGameRealtime();api.clear();clearObjects();showLogin('已退出 Web A 会话。本次浏览器会话密钥已清除。');}]
+    ['退出登录',()=>{diagEvent('auth','LOGOUT');stopGameRealtime();api.clear();clearObjects();showLogin('已退出 Web A 会话。本次浏览器会话密钥已清除。');}]
   ];
   choices.forEach(([name,fn])=>{const b=document.createElement('button');b.className='menu-option';b.innerHTML=escapeHTML(name)+'<span>›</span>';b.onclick=()=>{closeModal();Promise.resolve(fn()).catch(e=>modal('操作失败',e.message));};$('modal-options').appendChild(b);});
   const done=document.createElement('button');done.className='button ghost';done.textContent='关闭';done.style.width='100%';done.onclick=closeModal;$('modal-actions').appendChild(done);
@@ -931,9 +928,27 @@ async function tick(){
     await refreshPresence();
     await refreshTasks(); // history remains live while its tab is open, too.
     await autoReconcileAfterRefresh();
-  }catch(e){setStatus('后台刷新失败（不代表任务已结束）：'+e.message);}
+  }catch(e){diagEvent('background','REFRESH_FAILED',{error:e});setStatus('后台刷新失败（不代表任务已结束）：'+e.message);}
 }
 setInterval(tick,10000);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)stopGameRealtime();else {ensureGameRealtime();tick();}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopGameRealtime();else {if(!state.auth&&api.hasSavedSession())resumeStoredSession();else {ensureGameRealtime();tick();}}});
 selectPage('entry');showLogin('正在核验原 A 会话…');
-api.restoreSession().then(async restored=>{if(!restored){showLogin('请登录 Web A');return;}state.tx=new WebTransactions(api,localStorage);showDashboard();ensureGameRealtime();try{await refreshAll();}catch(e){setStatus('会话已恢复；数据刷新失败：'+e.message);}await showPendingSafetyInfo();}).catch(e=>showLogin('原会话已失效，请重新登录：'+e.message));
+let recoveryInProgress=false;
+async function resumeStoredSession(){
+  if(recoveryInProgress||api.loggedIn||state.busy||document.hidden)return;
+  recoveryInProgress=true;
+  try{
+    const restored=await api.restoreSession();
+    if(!restored){showLogin('请登录 Web A');return;}
+    state.tx=new WebTransactions(api,localStorage);showDashboard();ensureGameRealtime();
+    try{await refreshAll();}catch(e){setStatus('会话已恢复；数据刷新失败：'+e.message);}
+    try{await showPendingSafetyInfo();}catch(e){diagEvent('auth','POST_RESTORE_REFRESH_FAILED',{error:e});}
+  }catch(e){
+    if(api.hasSavedSession()){
+      showLogin('网络临时中断，已保留登录信息；联网后将自动重试。也可手动重新登录。');
+    }else showLogin('原会话已失效，请重新登录：'+e.message);
+  }finally{recoveryInProgress=false;}
+}
+resumeStoredSession();
+// Reopening a page during a network outage must not permanently lose the login.
+setInterval(()=>{if(!state.auth&&api.hasSavedSession())resumeStoredSession();},15000);

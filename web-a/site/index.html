@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://wqhirteaemujeytsdpit.supabase.co; img-src 'self' blob: data:; font-src 'self'; worker-src 'none'">
   <meta name="color-scheme" content="light">
-  <title>控制中心 · WAP 2.0.61.1</title>
+  <title>控制中心 · WAP 2.0.63.1</title>
   <style>
     /* Palette, dp, card radius, typography and spacing taken from A v2.0.55 VisualUi.kt/MainActivity.kt. */
     :root { --bg:#f6f8fc; --white:#ffffff; --ink:#1a2a40; --muted:#6b7a90; --blue:#236fe7;
@@ -281,7 +281,7 @@
       <p class="minor-subtitle">以可点击的真实任务记录为主，查看回图与详情</p>
       <div class="space-14"></div>
       <button class="button primary" style="width:100%" id="history-all">查看全部历史 · 微信转发小票</button>
-      <div class="light-note" id="wap-build-id" aria-label="网页版本">WAP 2.0.61.1 · 与 Android A/B 版本同步</div>
+      <div class="light-note" id="wap-build-id" aria-label="网页版本">WAP 2.0.63.1 · 与 Android A/B 版本同步</div>
       <div class="space-15"></div>
 <div class="list-stack" id="history-list"><div class="card">登录后读取历史。</div></div>
     </section>
@@ -289,7 +289,7 @@
     <section class="preview" id="preview" hidden aria-label="识别预览">
       <div class="preview-top">
         <button class="preview-back" id="preview-back" aria-label="返回">‹</button>
-        <span class="preview-title">识别预览 <span style="font-size:10px;font-weight:500;color:#738197;white-space:nowrap">WAP 2.0.61.1</span></span>
+        <span class="preview-title">识别预览 <span style="font-size:10px;font-weight:500;color:#738197;white-space:nowrap">WAP 2.0.63.1</span></span>
         <button class="preview-help" id="preview-help">使用说明</button>
       </div>
       <div class="preview-scroll">
@@ -345,9 +345,10 @@
       <input class="login-input" id="register-confirm" type="password" autocomplete="new-password" placeholder="确认注册密码">
       <div class="space-12"></div><button class="button primary" style="width:100%" id="register-submit" type="button">创建 Supabase 账号</button>
     </div>
+    <div class="space-12"></div><button class="button ghost" type="button" id="login-diagnostics" style="width:100%">查看 / 下载故障日志</button>
     <div class="space-12"></div><div class="status-note" id="login-status">提示：新 Web A 登录会占用 A 端会话，原 Android A 可能被退出。请勿在旧任务未决时跨设备操作。</div>
   </div>
   <p class="warn" style="margin-top:15px">Web A 直连 Supabase 发单与一键 STOP 流程；生产环境权限、B 真机回执和小票链路仍需按验收清单核验。发送结果未知时禁止重复提交。</p>
 </section>
-<script src="parser.js?v=2.0.61.1-wapfix1"></script><script type="module" src="app.js?v=2.0.61.1-wapfix1"></script>
+<script src="parser.js?v=2.0.63.1"></script><script type="module" src="app.js?v=2.0.63.1"></script>
 </body></html>

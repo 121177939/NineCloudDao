@@ -1,4 +1,5 @@
 import {isWireCommand} from './send-plan.js';
+import {diagEvent,diagRoute} from './diagnostics.js?v=2.0.63.1';
 /** Supabase read/auth client based on v2.0.51 PhoneA SupabaseApi.kt.
  * Refresh token is saved in per-tab sessionStorage to survive reload only; never localStorage. No service-role key is used.
  */
@@ -13,6 +14,7 @@ export class WebAClient {
   get loggedIn() { return !!(this.access && this.refresh && this.uid && this.roleClaimed); }
   clear() { this.access='';this.refresh='';this.expiry=0;this.uid='';this.roleClaimed=false;try{this.sessionStore?.removeItem('web-a-refresh-v12');}catch{} }
   async wire(method,path,body=undefined,auth=true,raw=false,representation=false) {
+    const start=performance.now(),route=diagRoute(path);
     if (auth) await this.ensureSession();
     const headers={ 'apikey':this.key,'Cache-Control':'no-store' };
     if(auth) headers.Authorization='Bearer '+this.access;
@@ -21,12 +23,18 @@ export class WebAClient {
     let response;
     try {
       response=await fetch(this.url+path, {method,headers,body:body===undefined?undefined:JSON.stringify(body),cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(24000)});
-    } catch(e) { throw new CloudError('网络连接失败或请求超时，不能据此认定任务不存在：'+e.message); }
+    } catch(e) {
+      diagEvent('rest','NETWORK_FAILED.'+route,{elapsedMs:performance.now()-start,error:e});
+      throw new CloudError('网络连接失败或请求超时，不能据此认定任务不存在：'+e.message);
+    }
     if(!response.ok){
+      diagEvent('rest','HTTP_REJECT.'+route,{status:response.status,elapsedMs:performance.now()-start});
       const value=await response.text().catch(()=> '');let code='';
       try{code=JSON.parse(value).code||'';}catch{}
       throw new CloudError(`云端 HTTP ${response.status}${code?' / '+code:''}：${value.slice(0,240)}`,response.status,code);
     }
+    if(method!=='GET'||route.startsWith('auth.'))
+      diagEvent('rest','HTTP_OK.'+route,{status:response.status,elapsedMs:performance.now()-start});
     const receivedDate=response.headers.get('Date');
     const serverTime=receivedDate?Date.parse(receivedDate):null;
     if(raw) return {data:await response.blob(),serverTime};
@@ -58,25 +66,60 @@ export class WebAClient {
     }catch(e){ this.clear();throw e; }
   }
   saveRefresh(){try{if(this.refresh)this.sessionStore?.setItem('web-a-refresh-v12',this.refresh);}catch{}}
+  hasSavedSession(){try{return !!this.sessionStore?.getItem('web-a-refresh-v12');}catch{return false;}}
+  /** Only a definite auth/role rejection invalidates the stored refresh token.
+   * Network failures, timeouts, rate limits and server 5xx MUST preserve recovery.
+   */
+  static permanentSessionRejection(error){
+    if(!(error instanceof CloudError))return false;
+    return [400,401,403,404,422].includes(error.status);
+  }
   async restoreSession(){
+    // Coalesce overlapping startup and browser-resume attempts; refresh tokens rotate.
+    if(this.restoring)return this.restoring;
+    this.restoring=this.restoreSessionOnce().finally(()=>{this.restoring=null;});
+    return this.restoring;
+  }
+  async restoreSessionOnce(){
     let token='';try{token=this.sessionStore?.getItem('web-a-refresh-v12')||'';}catch{}
     if(!token)return false;
     try{
       const response=(await this.wire('POST','/auth/v1/token?grant_type=refresh_token',{refresh_token:token},false)).data;
-      if(!response?.user?.id||!response?.access_token||!response?.refresh_token)throw new CloudError('刷新会话缺少身份');
-      this.acceptSession(response);this.roleClaimed=true;
-      if(await this.isRoleCurrent()!==true)throw new CloudError('原 A 角色租约已失效');
-      this.saveRefresh();return true;
-    }catch(e){this.clear();throw e;}
+      if(!response?.user?.id||!response?.access_token||!response?.refresh_token){
+        // Malformed responses are not proof that the user's refresh token was revoked.
+        throw new CloudError('刷新会话回复不完整，等待网络恢复');
+      }
+      this.acceptSession(response);
+      // Persist the rotated refresh token BEFORE another network call (role verification).
+      // Otherwise a timeout during role check strands the browser with the used token.
+      this.saveRefresh();this.roleClaimed=true;
+      const current=await this.isRoleCurrent();
+      if(current!==true){
+        this.clear();throw new CloudError('原 A 角色租约已失效，请手动重新登录',403,'role_revoked');
+      }
+      diagEvent('auth','SESSION_RESTORED');return true;
+    }catch(e){
+      if(WebAClient.permanentSessionRejection(e)){
+        diagEvent('auth','SESSION_PERMANENTLY_REJECTED',{status:e.status});this.clear();
+      }else{
+        // The short-lived access token may still exist, but do not treat it as a
+        // verified login until a successful server role check has completed.
+        this.roleClaimed=false;
+        diagEvent('auth','SESSION_RESTORE_TRANSIENT_FAILURE',{error:e});
+      }
+      throw e;
+    }
   }
   acceptSession(data){this.access=data.access_token;this.refresh=data.refresh_token;this.uid=data.user?.id||this.uid;this.expiry=Date.now()+1000*Number(data.expires_in||3600);}
   async ensureSession(){
     if(!this.access || !this.refresh)throw new CloudError('请重新登录');
     if(Date.now()+60000<this.expiry)return;
     if(!this.refreshing)this.refreshing=(async()=>{
+      diagEvent('auth','TOKEN_REFRESH_START');
       const token=this.refresh;
       const r=(await this.wire('POST','/auth/v1/token?grant_type=refresh_token',{refresh_token:token},false)).data;
-      this.acceptSession(r);this.saveRefresh();
+      if(!r?.access_token||!r?.refresh_token||!r?.user?.id)throw new CloudError('刷新会话回复不完整');
+      this.acceptSession(r);this.saveRefresh();diagEvent('auth','TOKEN_REFRESH_OK');
     })().finally(()=>{this.refreshing=null;});
     await this.refreshing;
   }

@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const js=readFileSync(new URL('../site/realtime-presence.js',import.meta.url),'utf8');
-const {GameRealtime}=await import('data:text/javascript;base64,'+Buffer.from(js).toString('base64'));
+const {GameRealtime}=await import(new URL('../site/realtime-presence.js',import.meta.url).href);
 const sockets=[];
 globalThis.document={hidden:false};
 globalThis.WebSocket=class MockSocket {

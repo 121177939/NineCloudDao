@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+const local=new Map();
+globalThis.localStorage={getItem:(k)=>local.get(k)||null,setItem:(k,v)=>local.set(k,v)};
+const {diagRoute,diagEvent,diagText}=await import('../site/diagnostics.js');
+assert.equal(diagRoute('/auth/v1/token?grant_type=refresh_token'),'auth.token');
+assert.equal(diagRoute('/storage/v1/object/authenticated/task-shots/private-file.png'),'storage.object');
+assert.equal(diagRoute('/rest/v1/remote_tasks?id=eq.secret'),'table.remote_tasks');
+diagEvent('rest','HTTP_REJECT.'+diagRoute('/rest/v1/rpc/remote_v257_enqueue_order'),{status:409,error:new TypeError('password, jwt and numbers')});
+const text=diagText();
+assert.match(text,/http=409/);
+assert.match(text,/remote_v257_enqueue_order/);
+assert.doesNotMatch(text,/password, jwt and numbers/);
+assert.doesNotMatch(text,/private-file.png/);
+for(let i=0;i<1005;i++)diagEvent('test','EVENT');
+assert.ok(JSON.parse(local.get('twophone-diagnostics-v262')).length<=900);
+console.log('PASS diagnostic redaction, API route minimization and retention');
