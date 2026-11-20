@@ -1,15 +1,15 @@
-import {diagEvent,diagText,diagCopy,diagDownload} from './diagnostics.js?v=2.0.63.1';
-import {GameRealtime} from './realtime-presence.js?v=2.0.63.1';
-import {presenceState} from './presence-display.js?v=2.0.63.1';
-import {historyOnlyParents, parentType, parentState} from './order-history.js?v=2.0.63.1';
-import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=2.0.63.1';
-import {WebAClient, CloudError} from './supabase.js?v=2.0.63.1';
-import {WebTransactions} from './transactions.js?v=2.0.63.1';
-import {requireBReady} from './safety.js?v=2.0.63.1';
-import {createPreviewModel, moneyJiao} from './preview-model.js?v=2.0.63.1';
-import {expandLinkedReviewRows} from './preview-coverage.js?v=2.0.63.1';
-import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=2.0.63.1';
-import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=2.0.63.1';
+import {diagEvent,diagText,diagCopy,diagDownload} from './diagnostics.js?v=4.1.6';
+import {GameRealtime} from './realtime-presence.js?v=4.1.6';
+import {presenceState} from './presence-display.js?v=4.1.6';
+import {historyOnlyParents, parentType, parentState} from './order-history.js?v=4.1.6';
+import {groupVerifiedSlices,turnPermutationCount} from './fullturn-audit.js?v=4.1.6';
+import {WebAClient, CloudError} from './supabase.js?v=4.1.6';
+import {WebTransactions} from './transactions.js?v=4.1.6';
+import {requireBReady} from './safety.js?v=4.1.6';
+import {createPreviewModel, moneyJiao} from './preview-model.js?v=4.1.6';
+import {expandLinkedReviewRows} from './preview-coverage.js?v=4.1.6';
+import {freezeValidatedPlan, assertSameFrozenPlan} from './send-plan.js?v=4.1.6';
+import {planHistoryArtifacts, historyCardPresentation, historyDetailStatus} from './history-detail.js?v=4.1.6';
 
 // Web A v2.0.51 — Stage 17: automatic release of proven successful local request locks
 // after B returns idle, plus task/history polling from the same source. STOP, receipt,
@@ -21,7 +21,7 @@ if(!webParser)throw Error('Kotlin/JS 识别引擎未加载，拒绝提供预览�
 const api=new WebAClient();
 // A partially uploaded GitHub Pages release can mix a new app.js with an old
 // cached supabase.js.  Fail closed and tell the operator which upload to fix.
-const requiredApiMethods=['tasks','orders','queueState','enqueueOrder','cancelQueuedOrder','reviewCloseOrder'];
+const requiredApiMethods=['tasks','orders','queueState','enqueueOrder','cancelQueuedOrder','reviewCloseOrder','recognitionRulesCurrent','taskDailyOrdinal'];
 const missingApiMethods=requiredApiMethods.filter(method=>typeof api[method]!=='function');
 if(missingApiMethods.length){
   const detail='WAP 网页文件版本不一致：缺少 '+missingApiMethods.join('、')+'。请上传最新版 web-a/site 的全部文件，再运行 GitHub Pages Actions 发布；此时禁止发单。';
@@ -30,9 +30,43 @@ if(missingApiMethods.length){
   throw new Error(detail);
 }
 const state={tx:null,page:'entry',filter:'全部',parsed:null,parsedText:'',lastFocus:null,auth:false,
-    busy:false,stopProgressBusy:false,stopProgressText:'',historyOffset:0,historyRows:[],historyFingerprint:null,tasks:[],orders:[],queueHeld:false,refreshBusy:false,autoReleaseBusy:false,presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[]};
+    busy:false,stopProgressBusy:false,stopProgressText:'',historyOffset:0,historyRows:[],historyFingerprint:null,tasks:[],orders:[],queueHeld:false,refreshBusy:false,autoReleaseBusy:false,presence:null,stopRows:[],activeObjectUrls:[],lastRoleCheck:0,previewModel:null,expandedSuites:new Set(),modalRevision:0,currentHistoryArtifacts:[],ambiguitySelections:[],ruleVersion:0,taskNameCache:new Map()};
 const FAIL_CLOSED='此操作尚未完成真实云端与 B 端验收，网页端暂不开放；请在 Android A 端处理。';
 function setStatus(text){$('input-status').textContent=text;}
+const RULE_RS='\x1e',RULE_US='\x1f',RULE_CACHE_KEY='web-a-recognition-rules-v416';
+function safeRuleField(value){const text=String(value??'');if(text.includes(RULE_RS)||text.includes(RULE_US))throw Error('规则包含不支持的控制字符');return text;}
+function packRecognitionRules(raw){
+  const items=JSON.parse(raw);if(!Array.isArray(items)||items.length>100)throw Error('云端规则包格式错误');
+  return items.map((r,i)=>[
+    safeRuleField(r.id||`rule-${i}`),safeRuleField(r.name||''),safeRuleField(r.pattern||''),safeRuleField(r.replacement||''),
+    safeRuleField(r.source_template||''),safeRuleField(r.target_template||''),r.enabled===false?'0':'1',
+    safeRuleField(r.rule_type||'style'),String(Number.isInteger(r.dsl_version)?r.dsl_version:1),String(Number.isInteger(r.min_client_code)?r.min_client_code:0)
+  ].join(RULE_US)).join(RULE_RS);
+}
+function packAmbiguitySelections(selections=[]){return selections.map(x=>[x.type,x.source,String(x.occurrence||0),x.choiceKey].map(safeRuleField).join(RULE_US)).join(RULE_RS);}
+async function sha256Hex(text){const bytes=new TextEncoder().encode(text);const hash=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+async function installRecognitionPackage(pkg,{persist=true}={}){
+  const version=Number(pkg?.version||0),raw=typeof pkg?.rules_json==='string'?pkg.rules_json:null,expected=String(pkg?.sha256||'').toLowerCase();
+  if(!Number.isSafeInteger(version)||version<0||raw===null||!/^[0-9a-f]{64}$/.test(expected))throw Error('云端规则包字段不完整');
+  const actual=await sha256Hex(raw);if(actual!==expected)throw Error('云端规则完整性校验失败，继续使用旧规则');
+  const result=JSON.parse(webParser.installRules(version,packRecognitionRules(raw)));if(!result.ok)throw Error(result.error||'规则安装失败');
+  state.ruleVersion=version;if(persist)localStorage.setItem(RULE_CACHE_KEY,JSON.stringify({version,rules_json:raw,sha256:expected}));return version;
+}
+async function loadCachedRecognitionRules(){
+  try{const raw=localStorage.getItem(RULE_CACHE_KEY);if(!raw)return 0;return await installRecognitionPackage(JSON.parse(raw),{persist:false});}
+  catch(e){localStorage.removeItem(RULE_CACHE_KEY);diagEvent('recognition','RULE_CACHE_REJECTED',{error:e});return 0;}
+}
+async function syncRecognitionRules({quiet=false}={}){
+  if(!api.loggedIn)throw Error('请先登录 Web A');
+  const version=await installRecognitionPackage(await api.recognitionRulesCurrent());
+  if(!quiet)setStatus(`号码识别规则已同步到 v${version}；WAP 与 Android A 使用同一规则包。`);
+  return version;
+}
+function detectAmbiguities(input){try{return JSON.parse(webParser.ambiguities(input))||[];}catch{return [];}}
+function parserWithSelections(){const packed=packAmbiguitySelections(state.ambiguitySelections);return {
+  inspect:input=>webParser.inspectWithSelections(input,packed),
+  plan:(input,screenshot,convertedOdds)=>webParser.planWithSelections(input,!!screenshot,!!convertedOdds,packed)
+};}
 function modal(title,message,actions=[{label:'知道了'}]){
   if(/失败|错误|异常|未创建|未知结果/.test(String(title)))diagEvent('ui','ERROR_MODAL');
   state.modalRevision+=1;clearObjects();state.currentHistoryArtifacts=[];
@@ -49,7 +83,7 @@ $('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal(
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('overlay').hidden)closeModal();else if(!$('preview').hidden)closePreview();}});
 function showLogin(message=''){
   stopGameRealtime();
-  state.auth=false;state.tx=null;state.parsed=null;state.parsedText='';
+  state.auth=false;state.tx=null;state.parsed=null;state.parsedText='';state.ambiguitySelections=[];
   $('login-screen').hidden=false;
   if(message)$('login-status').textContent=message;
   $('b-status').textContent='未登录 · 暂停更新';
@@ -128,6 +162,8 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>sele
 $('view-all-tasks').addEventListener('click',()=>selectPage('tasks'));
 const validDate=t=>{const d=new Date(t);return Number.isFinite(+d)?d.toLocaleString('zh-CN',{hour12:false}):'时间未知';};
 const statusText=state=>({pending:'等待执行',queued:'等待上一账号',preparing:'准备中',awaiting_confirm:'等待确认',confirmed:'已确认',executing:'执行中',finished:'已完成',failed:'失败',cancelled:'已取消',needs_review:'待人工核实',partial:'部分完成'})[state]||state||'未知';
+function localDayLabel(createdAt){const d=new Date(createdAt);if(!Number.isFinite(+d))return String(createdAt||'').slice(0,10).replaceAll('-','');return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;}
+async function taskDisplayName(row){if(!row?.id)return '';if(state.taskNameCache.has(row.id))return state.taskNameCache.get(row.id);let ordinal=0;try{ordinal=await api.taskDailyOrdinal(row.id,row.created_at);}catch{}const name=ordinal>0?`${localDayLabel(row.created_at)}-${ordinal}`:String(row.id).slice(0,8);state.taskNameCache.set(row.id,name);return name;}
 let gameRealtime=null;
 function ensureGameRealtime(){
   if(gameRealtime||!api.loggedIn)return;
@@ -152,9 +188,9 @@ function taskCard(row){
   card.className='card task-card';card.type='button';card.style.cssText='width:100%;text-align:left;color:var(--ink);font:inherit;';
   const acct=row.target_account==='seven'?'七星彩':row.target_account==='arrange'?'排列五':'双账号';
   card.innerHTML=`<div class="row-info"><strong>${escapeHTML(acct)} · ${escapeHTML(statusText(row.status))}</strong><span class="state-chip">›</span></div>
-    <div class="sub">${escapeHTML((row.id||'').slice(0,8))} · ${escapeHTML(validDate(row.created_at))}</div>
+    <div class="sub"><span data-task-display>${escapeHTML((row.id||'').slice(0,8))}</span> · ${escapeHTML(validDate(row.created_at))}</div>
     <div class="sub">${escapeHTML(String(row.message||'').slice(0,180)||'查看详情、核验记录及原始回图')}</div>`;
-  card.addEventListener('click',()=>showTaskDetail(row.id));return card;
+  card.addEventListener('click',()=>showTaskDetail(row.id));taskDisplayName(row).then(name=>{const el=card.querySelector('[data-task-display]');if(el)el.textContent=name;});return card;
 }
 function queueOrderCard(order){
   const card=document.createElement('div');card.className='card';
@@ -230,9 +266,9 @@ function historyCard(row){
   const acct=row.target_account==='seven'?'七星彩':row.target_account==='both'?'双账号检查':'排列五';
   const presentation=historyCardPresentation(row.status,row.message);
   card.innerHTML=`<div class="row-info"><strong>${escapeHTML(acct)}</strong><span class="history-status tone-${escapeHTML(presentation.tone)}"><span class="history-status-dot" aria-hidden="true"></span>${escapeHTML(presentation.label)}</span></div>
-    <div class="sub">${escapeHTML(presentation.summary)}</div>`;
+    <div class="sub"><span data-task-display>${escapeHTML(String(row.id||'').slice(0,8))}</span> · ${escapeHTML(presentation.summary)}</div>`;
   card.setAttribute('aria-label',`${acct}，${presentation.label}，点击查看任务详情与小票`);
-  card.addEventListener('click',()=>showTaskDetail(row.id));return card;
+  card.addEventListener('click',()=>showTaskDetail(row.id));taskDisplayName(row).then(name=>{const el=card.querySelector('[data-task-display]');if(el)el.textContent=name;});return card;
 }
 function renderHistoryRows(rows){
   // The same cloud response updates tasks AND the recent terminal history, no manual reload.
@@ -513,7 +549,8 @@ async function showTaskDetail(id,returnToAllHistoryOffset=null){
     }));
     if(revision!==state.modalRevision||$('overlay').hidden)return;
     state.currentHistoryArtifacts=artifacts.filter(a=>a.blob);
-    $('modal-heading').textContent='任务 '+String(id).slice(0,8);
+    const displayName=await taskDisplayName(record);if(revision!==state.modalRevision||$('overlay').hidden)return;
+    $('modal-heading').textContent='任务 '+displayName;
     const lines=[
       `时间：${validDate(record.created_at)}`,
       `任务状态：${historyDetailStatus(record.status)}`,
@@ -569,24 +606,52 @@ $('clear-input').addEventListener('click',()=>{if(!$('command').value)return;
   ]);
 });
 $('input-status').addEventListener('click',()=>modal('任务提示',$('input-status').textContent));
-function useParser(input){
-  try{const raw=webParser.inspect(input);return JSON.parse(raw);}
+function useParser(input,selections=state.ambiguitySelections){
+  try{const raw=webParser.inspectWithSelections(input,packAmbiguitySelections(selections));return JSON.parse(raw);}
   catch(e){return {valid:false,command:null,scatter:[],suites:[],totalJiao:0,issues:[{start:0,end:input.length,severity:'ERROR',message:e.message}]};}
 }
 function money(jiao){return `${(jiao/10).toFixed(1).replace(/\.0$/,'')}元`;}
-function openPreview(){
-  const input=$('command').value;
-  if(!input.trim()){modal('请输入号码','请先输入或粘贴号码，再打开识别预览。');return;}
-  state.parsed=useParser(input);state.parsedText=input;state.filter='全部';
+function finishOpenPreview(input,selections=[]){
+  state.ambiguitySelections=selections;state.parsed=useParser(input,selections);state.parsedText=input;state.filter='全部';
   state.previewModel=createPreviewModel(input,state.parsed);state.expandedSuites.clear();
   $('review-only').checked=false;$('suite-screenshot').checked=false;$('convert-odds').checked=false;
-  $('original-title').textContent=`原始内容（共 ${input.length} 字）`;
-  $('original-text').textContent=input;
-  renderPreview();$('preview').hidden=false;$('navbar').hidden=true;
-  $('preview').querySelector('.preview-scroll').scrollTop=0;
-  if(state.parsed.valid){setStatus(`识别成功：${state.parsed.totalLines}条，预计金额 ${money(Number(state.parsed.totalJiao))}。`);}else{
-    setStatus('识别失败：'+state.parsed.issues.filter(x=>x.severity==='ERROR').map(x=>x.message).slice(0,3).join('；'));
-  }
+  $('original-title').textContent=`原始内容（共 ${input.length} 字）`;$('original-text').textContent=input;
+  renderPreview();$('preview').hidden=false;$('navbar').hidden=true;$('preview').querySelector('.preview-scroll').scrollTop=0;
+  if(state.parsed.valid)setStatus(`识别成功：${state.parsed.totalLines}条，预计金额 ${money(Number(state.parsed.totalJiao))}。`);
+  else setStatus('识别失败：'+state.parsed.issues.filter(x=>x.severity==='ERROR').map(x=>x.message).slice(0,3).join('；'));
+}
+function showAmbiguityConfirm(input,ambiguities){
+  $('modal-heading').textContent=`发现 ${ambiguities.length} 处需要确认`;
+  $('modal-body').textContent='同一写法存在多个合法含义。请选择正确意思；确定后才进入完整识别预览。';
+  $('modal-options').replaceChildren();$('modal-actions').replaceChildren();
+  const selected=new Map();
+  ambiguities.forEach((a,index)=>{
+    const card=document.createElement('div');card.className='send-summary-card';
+    const title=document.createElement('div');title.className='history-artifact-title';title.textContent=`${index+1}. 原文：${a.source}`;card.appendChild(title);
+    const desc=document.createElement('div');desc.className='result-caption';desc.textContent=a.explanation||'';card.appendChild(desc);
+    const group=document.createElement('div');group.className='account-choice-list';
+    (a.choices||[]).forEach(c=>{
+      const b=document.createElement('button');b.type='button';b.className='account-choice';b.setAttribute('role','radio');b.setAttribute('aria-checked','false');
+      const radio=document.createElement('span');radio.className='account-choice-radio';radio.textContent='○';
+      const label=document.createElement('span');label.className='account-choice-label';
+      const strong=document.createElement('strong');strong.textContent=c.title;const br=document.createElement('br');
+      const norm=document.createTextNode(c.normalized);const small=document.createElement('span');small.className='result-caption';small.textContent='\n'+c.detail;
+      label.append(strong,br,norm,small);b.append(radio,label);
+      b.onclick=()=>{selected.set(a.id,c.key);[...group.querySelectorAll('.account-choice')].forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-checked','false');x.querySelector('.account-choice-radio').textContent='○';});b.classList.add('selected');b.setAttribute('aria-checked','true');radio.textContent='◉';};
+      group.appendChild(b);
+    });card.appendChild(group);$('modal-options').appendChild(card);
+  });
+  const back=document.createElement('button');back.className='button ghost';back.textContent='返回修改';back.onclick=closeModal;
+  const confirm=document.createElement('button');confirm.className='button primary';confirm.textContent='确定并继续预览';confirm.onclick=()=>{
+    if(selected.size!==ambiguities.length){setStatus('还有歧义项未选择，不能继续预览。');return;}
+    const selections=ambiguities.map(a=>({type:a.type,source:a.source,occurrence:a.occurrence,choiceKey:selected.get(a.id)}));closeModal();finishOpenPreview(input,selections);
+  };
+  $('modal-actions').append(back,confirm);state.lastFocus=document.activeElement;$('overlay').hidden=false;
+}
+function openPreview(){
+  const input=$('command').value;if(!input.trim()){modal('请输入号码','请先输入或粘贴号码，再打开识别预览。');return;}
+  const ambiguities=detectAmbiguities(input);if(ambiguities.length){showAmbiguityConfirm(input,ambiguities);return;}
+  finishOpenPreview(input,[]);
 }
 function setPreviewHighlights(spans=[]){
   const source=state.parsedText, model=state.previewModel;
@@ -769,7 +834,7 @@ function preparedPlan(){
   if(!state.auth||!state.tx||!api.loggedIn)throw Error('必须先登录有效的 Web A 会话');
   if(state.busy)throw Error('已有发送请求正在处理中');
   if($('command').value!==state.parsedText)throw Error('输入已变化，请重新识别预览');
-  return freezeValidatedPlan(webParser,state.parsedText,state.parsed,state.previewModel,
+  return freezeValidatedPlan(parserWithSelections(),state.parsedText,state.parsed,state.previewModel,
       $('suite-screenshot').checked,$('convert-odds').checked);
 }
 function chooseSendAccount(){
@@ -865,14 +930,15 @@ async function submitFrozenTask(selection,frozen){
   }finally{state.busy=false;renderPreview();}
 }
 $('preview-send').onclick=chooseSendAccount;
-$('suite-screenshot').addEventListener('change',()=>{if(state.parsed?.valid){const p=JSON.parse(webParser.plan(state.parsedText,$('suite-screenshot').checked,$('convert-odds').checked));
+$('suite-screenshot').addEventListener('change',()=>{if(state.parsed?.valid){const p=JSON.parse(parserWithSelections().plan(state.parsedText,$('suite-screenshot').checked,$('convert-odds').checked));
   if(!p.valid)modal('截图模式校验失败',p.error);}});
-$('convert-odds').addEventListener('change',()=>{if(state.parsed?.valid){const p=JSON.parse(webParser.plan(state.parsedText,$('suite-screenshot').checked,$('convert-odds').checked));
+$('convert-odds').addEventListener('change',()=>{if(state.parsed?.valid){const p=JSON.parse(parserWithSelections().plan(state.parsedText,$('suite-screenshot').checked,$('convert-odds').checked));
   if(!p.valid)modal('转换赔率校验失败',p.error);}});
 function menu(){
   $('modal-heading').textContent='设置与故障处理';$('modal-body').textContent='';$('modal-options').replaceChildren();$('modal-actions').replaceChildren();
   const choices=[
     ['同步与恢复任务状态',()=>refreshAll()],
+    [`同步号码识别规则（当前 v${state.ruleVersion||Number(webParser.ruleVersion?.()||0)}）`,()=>syncRecognitionRules()],
     ['网络超时：核对原任务',()=>showPendingSafetyInfo()],
     ['Web 安全状态检查',async()=>{
       if(!state.tx){modal('安全状态','未登录，无法核实角色与云端状态');return;}
@@ -932,7 +998,7 @@ async function tick(){
 }
 setInterval(tick,10000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stopGameRealtime();else {if(!state.auth&&api.hasSavedSession())resumeStoredSession();else {ensureGameRealtime();tick();}}});
-selectPage('entry');showLogin('正在核验原 A 会话…');
+loadCachedRecognitionRules().catch(()=>{});selectPage('entry');showLogin('正在核验原 A 会话…');
 let recoveryInProgress=false;
 async function resumeStoredSession(){
   if(recoveryInProgress||api.loggedIn||state.busy||document.hidden)return;

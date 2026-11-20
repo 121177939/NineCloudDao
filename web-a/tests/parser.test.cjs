@@ -42,3 +42,11 @@ assert.deepEqual(suiteAliases.suites.map(x=>x.canonical),[
 ],'suite aliases canonical');passed++;
 
 console.log(`PASS: ${passed} Kotlin/JS parser and wire assertions`);
+
+const asciiPeriod=JSON.parse(engine.inspect('16百49十38尾各2组.38百49十38尾各2组'));
+assert.equal(asciiPeriod.valid,true,'ASCII period between completed amount blocks must be accepted');passed++;
+assert.equal(asciiPeriod.suites.length,2,'ASCII period keeps two independent suites');passed++;
+assert.equal(asciiPeriod.totalJiao,320,'ASCII period sample total = 32 yuan');passed++;
+const decimalPeriod=JSON.parse(engine.inspect('16百49十38尾各0.5组.38百49十38尾各0.5组'));
+assert.equal(decimalPeriod.valid,true,'decimal dot must remain part of amount');passed++;
+assert.equal(decimalPeriod.totalJiao,80,'decimal amount unaffected by period separator support');passed++;

@@ -1,4 +1,4 @@
-import {diagEvent} from './diagnostics.js?v=2.0.63.1';
+import {diagEvent} from './diagnostics.js?v=4.1.6';
 /** Realtime is a hint/visibility channel only: Supabase SQL remains authority. */
 export class GameRealtime {
   constructor(api,update,wake=()=>{}){

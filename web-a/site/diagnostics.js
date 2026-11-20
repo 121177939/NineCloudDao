@@ -1,4 +1,4 @@
-/** TwoPhoneRemote 2.0.63.1 local structured diagnostic logger.
+/** TwoPhoneRemote 4.1.6 local structured diagnostic logger.
  * Always log event categories, not free-form backend messages, user input or credentials.
  * No remote upload; localStorage retention is bounded, and private mode degrades to memory.
  */
@@ -36,7 +36,7 @@ export function diagEvent(area,event,{status=0,elapsedMs=-1,error=null}={}){
 }
 export function diagText(){
   const rows=load();
-  return 'TwoPhoneRemote WAP 2.0.63.1 | Local diagnostic report\n'+
+  return 'TwoPhoneRemote WAP 4.1.6 | Local diagnostic report\n'+
     'Exported: '+new Date().toISOString()+'\n'+
     'No passwords, tokens, email addresses, request bodies or lottery numbers are collected.\n'+
     'Events are best-effort and may be unavailable when the page is terminated abruptly.\n\n'+

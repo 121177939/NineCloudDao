@@ -1,5 +1,5 @@
 import {isWireCommand} from './send-plan.js';
-import {diagEvent,diagRoute} from './diagnostics.js?v=2.0.63.1';
+import {diagEvent,diagRoute} from './diagnostics.js?v=4.1.6';
 /** Supabase read/auth client based on v2.0.51 PhoneA SupabaseApi.kt.
  * Refresh token is saved in per-tab sessionStorage to survive reload only; never localStorage. No service-role key is used.
  */
@@ -124,6 +124,20 @@ export class WebAClient {
     await this.refreshing;
   }
   async isRoleCurrent(){if(!this.roleClaimed)return false;return (await this.wire('POST','/rest/v1/rpc/remote_role_current',{p_role:'A'})).data===true;}
+  async recognitionRulesCurrent(){return this.rpc('remote_v400_recognition_rules');}
+  async taskDailyOrdinal(id,createdAt){
+    if(!/^[0-9a-f-]{36}$/i.test(id))throw new CloudError('任务编号不合法');
+    const d=new Date(createdAt);if(!Number.isFinite(+d))return 0;
+    const start=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+    const end=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1);
+    const q=v=>encodeURIComponent(v);
+    const path='/rest/v1/remote_tasks?select=id,created_at,command'+
+      '&created_at=gte.'+q(start.toISOString())+'&created_at=lt.'+q(end.toISOString())+
+      '&order=created_at.asc,id.asc&limit=1000';
+    const rows=(await this.wire('GET',path)).data||[];let ordinal=0;
+    for(const row of rows){if(row.command==='C1|ACCOUNT_CHECK')continue;ordinal++;if(row.id===id)return ordinal;}
+    return 0;
+  }
   async presence(){ const r=await this.wire('GET','/rest/v1/remote_device_presence?select=state,task_id,completed_items,total_items,stage,seen_at&limit=1');return {row:r.data?.[0]||null,serverTime:r.serverTime};}
   async tasks(offset=0,limit=30){ const p=`/rest/v1/remote_tasks?select=id,command,target_account,status,message,result_path,scatter_path,suite_path,created_at,updated_at&order=created_at.desc&limit=${limit}&offset=${offset}`; return (await this.wire('GET',p)).data; }
   async task(id){if(!/^[0-9a-f-]{36}$/i.test(id))throw new CloudError('任务编号不合法');return (await this.wire('GET',`/rest/v1/remote_tasks?id=eq.${encodeURIComponent(id)}&select=*`)).data?.[0]||null;}

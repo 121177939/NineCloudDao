@@ -76,10 +76,11 @@ var parser = function (_) {
   setMetadataFor(sam$kotlin_Comparator$0_0, 'sam$kotlin_Comparator$0', classMeta, VOID, [Comparator]);
   setMetadataFor(Sequence, 'Sequence', interfaceMeta);
   setMetadataFor(_no_name_provided__qut3iv, VOID, classMeta, VOID, [Sequence]);
-  setMetadataFor(Iterable_0, 'Iterable', interfaceMeta);
-  setMetadataFor(_no_name_provided__qut3iv_0, VOID, classMeta, VOID, [Iterable_0]);
   setMetadataFor(Grouping, 'Grouping', interfaceMeta);
-  setMetadataFor(_no_name_provided__qut3iv_1, VOID, classMeta, VOID, [Grouping]);
+  setMetadataFor(_no_name_provided__qut3iv_0, VOID, classMeta, VOID, [Grouping]);
+  setMetadataFor(Iterable_0, 'Iterable', interfaceMeta);
+  setMetadataFor(_no_name_provided__qut3iv_1, VOID, classMeta, VOID, [Iterable_0]);
+  setMetadataFor(_no_name_provided__qut3iv_2, VOID, classMeta, VOID, [Grouping]);
   setMetadataFor(Exception, 'Exception', classMeta, Error);
   setMetadataFor(RuntimeException, 'RuntimeException', classMeta, Exception);
   setMetadataFor(KotlinNothingValueException, 'KotlinNothingValueException', classMeta, RuntimeException);
@@ -123,7 +124,7 @@ var parser = function (_) {
   setMetadataFor(EmptyList, 'EmptyList', objectMeta, VOID, [List, Serializable, RandomAccess]);
   setMetadataFor(IndexedValue, 'IndexedValue', classMeta);
   setMetadataFor(IndexingIterable, 'IndexingIterable', classMeta, VOID, [Iterable_0]);
-  setMetadataFor(_no_name_provided__qut3iv_2, VOID, classMeta, VOID, [Iterable_0]);
+  setMetadataFor(_no_name_provided__qut3iv_3, VOID, classMeta, VOID, [Iterable_0]);
   setMetadataFor(IndexingIterator, 'IndexingIterator', classMeta, VOID, [Iterator_3]);
   setMetadataFor(EmptyMap, 'EmptyMap', objectMeta, VOID, [Map, Serializable]);
   setMetadataFor(IntIterator, 'IntIterator', classMeta, VOID, [Iterator_3]);
@@ -137,7 +138,7 @@ var parser = function (_) {
   setMetadataFor(SequenceScope, 'SequenceScope', classMeta, VOID, VOID, VOID, VOID, [1]);
   setMetadataFor(Continuation, 'Continuation', interfaceMeta);
   setMetadataFor(SequenceBuilderIterator, 'SequenceBuilderIterator', classMeta, SequenceScope, [SequenceScope, Iterator_3, Continuation], VOID, VOID, [1]);
-  setMetadataFor(_no_name_provided__qut3iv_3, VOID, classMeta, VOID, [Sequence]);
+  setMetadataFor(_no_name_provided__qut3iv_4, VOID, classMeta, VOID, [Sequence]);
   setMetadataFor(GeneratorSequence$iterator$1, VOID, classMeta, VOID, [Iterator_3]);
   setMetadataFor(GeneratorSequence, 'GeneratorSequence', classMeta, VOID, [Sequence]);
   setMetadataFor(DropTakeSequence, 'DropTakeSequence', interfaceMeta, VOID, [Sequence]);
@@ -150,7 +151,9 @@ var parser = function (_) {
   setMetadataFor(SubSequence, 'SubSequence', classMeta, VOID, [Sequence, DropTakeSequence]);
   setMetadataFor(FlatteningSequence$iterator$1, VOID, classMeta, VOID, [Iterator_3]);
   setMetadataFor(FlatteningSequence, 'FlatteningSequence', classMeta, VOID, [Sequence]);
-  setMetadataFor(_no_name_provided__qut3iv_4, VOID, classMeta, VOID, [Sequence]);
+  setMetadataFor(FilteringSequence$iterator$1, VOID, classMeta, VOID, [Iterator_3]);
+  setMetadataFor(FilteringSequence, 'FilteringSequence', classMeta, VOID, [Sequence]);
+  setMetadataFor(_no_name_provided__qut3iv_5, VOID, classMeta, VOID, [Sequence]);
   setMetadataFor(EmptySet, 'EmptySet', objectMeta, VOID, [Set, Serializable]);
   setMetadataFor(sam$kotlin_Comparator$0_1, 'sam$kotlin_Comparator$0', classMeta, VOID, [Comparator]);
   setMetadataFor(sam$kotlin_Comparator$0_2, 'sam$kotlin_Comparator$0', classMeta, VOID, [Comparator]);
@@ -169,7 +172,7 @@ var parser = function (_) {
   setMetadataFor(CallsInPlace, 'CallsInPlace', interfaceMeta, VOID, [Effect]);
   setMetadataFor(ReturnsNotNull, 'ReturnsNotNull', interfaceMeta, VOID, [SimpleEffect]);
   setMetadataFor(RestrictsSuspension, 'RestrictsSuspension', classMeta, VOID, [Annotation]);
-  setMetadataFor(_no_name_provided__qut3iv_5, VOID, classMeta, VOID, [Continuation]);
+  setMetadataFor(_no_name_provided__qut3iv_6, VOID, classMeta, VOID, [Continuation]);
   setMetadataFor(Key_0, 'Key', interfaceMeta);
   setMetadataFor(Key, 'Key', objectMeta, VOID, [Key_0]);
   function plus(context) {
@@ -298,6 +301,7 @@ var parser = function (_) {
   setMetadataFor(Error_0, 'Error', classMeta, Error);
   setMetadataFor(NotImplementedError, 'NotImplementedError', classMeta, Error_0);
   setMetadataFor(Pair, 'Pair', classMeta, VOID, [Serializable]);
+  setMetadataFor(Triple, 'Triple', classMeta, VOID, [Serializable]);
   setMetadataFor(Companion_11, 'Companion', objectMeta);
   setMetadataFor(UByte, 'UByte', classMeta, VOID, [Comparable]);
   setMetadataFor(Iterator, 'Iterator', classMeta, VOID, [Iterator_3]);
@@ -409,7 +413,7 @@ var parser = function (_) {
   setMetadataFor(NodeJsOutput, 'NodeJsOutput', classMeta, BaseOutput);
   setMetadataFor(BufferedOutput, 'BufferedOutput', classMeta, BaseOutput);
   setMetadataFor(BufferedOutputToConsoleLog, 'BufferedOutputToConsoleLog', classMeta, BufferedOutput);
-  setMetadataFor(_no_name_provided__qut3iv_6, VOID, classMeta, VOID, [Continuation]);
+  setMetadataFor(_no_name_provided__qut3iv_7, VOID, classMeta, VOID, [Continuation]);
   setMetadataFor(EnumEntriesSerializationProxy, 'EnumEntriesSerializationProxy', classMeta);
   setMetadataFor(JsPolyfill, 'JsPolyfill', classMeta, VOID, [Annotation]);
   setMetadataFor(KCallable, 'KCallable', interfaceMeta);
@@ -476,8 +480,8 @@ var parser = function (_) {
   setMetadataFor(KFunction1, 'KFunction1', interfaceMeta);
   setMetadataFor(Digit, 'Digit', objectMeta);
   setMetadataFor(CompletedContinuation, 'CompletedContinuation', objectMeta, VOID, [Continuation]);
-  setMetadataFor(_no_name_provided__qut3iv_7, VOID, classMeta, CoroutineImpl);
   setMetadataFor(_no_name_provided__qut3iv_8, VOID, classMeta, CoroutineImpl);
+  setMetadataFor(_no_name_provided__qut3iv_9, VOID, classMeta, CoroutineImpl);
   setMetadataFor(IllegalArgumentException, 'IllegalArgumentException', classMeta, RuntimeException);
   setMetadataFor(IndexOutOfBoundsException, 'IndexOutOfBoundsException', classMeta, RuntimeException);
   setMetadataFor(IllegalStateException, 'IllegalStateException', classMeta, RuntimeException);
@@ -505,10 +509,11 @@ var parser = function (_) {
   setMetadataFor(Result_0, 'Result', classMeta);
   setMetadataFor(sam$kotlin_Comparator$0_5, 'sam$kotlin_Comparator$0', classMeta, VOID, [Comparator]);
   setMetadataFor(sam$kotlin_Comparator$0_6, 'sam$kotlin_Comparator$0', classMeta, VOID, [Comparator]);
-  setMetadataFor(ChineseCodeParser, 'ChineseCodeParser', objectMeta);
-  setMetadataFor(_no_name_provided__qut3iv_9, VOID, classMeta, VOID, [Grouping]);
-  setMetadataFor(FullTurnAmount, 'FullTurnAmount', objectMeta);
   setMetadataFor(sam$kotlin_Comparator$0_7, 'sam$kotlin_Comparator$0', classMeta, VOID, [Comparator]);
+  setMetadataFor(ChineseCodeParser, 'ChineseCodeParser', objectMeta);
+  setMetadataFor(_no_name_provided__qut3iv_10, VOID, classMeta, VOID, [Grouping]);
+  setMetadataFor(FullTurnAmount, 'FullTurnAmount', objectMeta);
+  setMetadataFor(sam$kotlin_Comparator$0_8, 'sam$kotlin_Comparator$0', classMeta, VOID, [Comparator]);
   setMetadataFor(FullTurnParser, 'FullTurnParser', objectMeta);
   setMetadataFor(MixedParseReport, 'MixedParseReport', classMeta);
   setMetadataFor(Span, 'Span', classMeta);
@@ -519,6 +524,16 @@ var parser = function (_) {
   setMetadataFor(MixedBatch, 'MixedBatch', classMeta);
   setMetadataFor(MixedProtocol, 'MixedProtocol', objectMeta);
   setMetadataFor(PositionAmountPolicy, 'PositionAmountPolicy', objectMeta);
+  setMetadataFor(RecognitionAmbiguityChoice, 'RecognitionAmbiguityChoice', classMeta);
+  setMetadataFor(RecognitionAmbiguity, 'RecognitionAmbiguity', classMeta);
+  setMetadataFor(RecognitionAmbiguitySelection, 'RecognitionAmbiguitySelection', classMeta);
+  setMetadataFor(RecognitionAmbiguityChoices, 'RecognitionAmbiguityChoices', classMeta);
+  setMetadataFor(RecognitionRuleSpec, 'RecognitionRuleSpec', classMeta);
+  setMetadataFor(_no_name_provided__qut3iv_11, VOID, classMeta, VOID, [Grouping]);
+  setMetadataFor(_no_name_provided__qut3iv_12, VOID, classMeta, VOID, [Grouping]);
+  setMetadataFor(RecognitionRuleTemplate, 'RecognitionRuleTemplate', objectMeta);
+  setMetadataFor(sam$kotlin_Comparator$0_9, 'sam$kotlin_Comparator$0', classMeta, VOID, [Comparator]);
+  setMetadataFor(RecognitionRuleRuntime, 'RecognitionRuleRuntime', objectMeta);
   setMetadataFor(SuiteToScatter, 'SuiteToScatter', objectMeta);
   setMetadataFor(WebParser, 'WebParser', objectMeta);
   setMetadataFor(Math_0, 'Math', objectMeta);
@@ -1189,6 +1204,19 @@ var parser = function (_) {
     tmp$ret$0 = new sam$kotlin_Comparator$0_0(tmp);
     return sortedWith(_this__u8e3s4, tmp$ret$0);
   }
+  function distinctBy(_this__u8e3s4, selector) {
+    var set = HashSet_init_$Create$();
+    var list = ArrayList_init_$Create$();
+    var tmp0_iterator = _this__u8e3s4.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var e = tmp0_iterator.next_20eer_k$();
+      var key = selector(e);
+      if (set.add_1j60pz_k$(key)) {
+        list.add_1j60pz_k$(e);
+      }
+    }
+    return list;
+  }
   function plus_1(_this__u8e3s4, element) {
     var result = ArrayList_init_$Create$_0(_this__u8e3s4.get_size_woubt6_k$() + 1 | 0);
     result.addAll_oxxjjk_k$(_this__u8e3s4);
@@ -1252,6 +1280,84 @@ var parser = function (_) {
   function getOrNull_0(_this__u8e3s4, index) {
     return (index >= 0 ? index <= get_lastIndex_5(_this__u8e3s4) : false) ? _this__u8e3s4.get_fkrdnv_k$(index) : null;
   }
+  function associateBy(_this__u8e3s4, keySelector) {
+    var capacity = coerceAtLeast(mapCapacity(collectionSizeOrDefault(_this__u8e3s4, 10)), 16);
+    // Inline function 'kotlin.collections.associateByTo' call
+    var tmp0_associateByTo = LinkedHashMap_init_$Create$_2(capacity);
+    var tmp0_iterator = _this__u8e3s4.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var element = tmp0_iterator.next_20eer_k$();
+      tmp0_associateByTo.put_3mhbri_k$(keySelector(element), element);
+    }
+    return tmp0_associateByTo;
+  }
+  function associateByTo_0(_this__u8e3s4, destination, keySelector) {
+    var tmp0_iterator = _this__u8e3s4.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var element = tmp0_iterator.next_20eer_k$();
+      destination.put_3mhbri_k$(keySelector(element), element);
+    }
+    return destination;
+  }
+  function groupingBy(_this__u8e3s4, keySelector) {
+    return new _no_name_provided__qut3iv_0(_this__u8e3s4, keySelector);
+  }
+  function last(_this__u8e3s4) {
+    if (_this__u8e3s4.isEmpty_y1axqb_k$())
+      throw NoSuchElementException_init_$Create$_0('List is empty.');
+    return _this__u8e3s4.get_fkrdnv_k$(get_lastIndex_5(_this__u8e3s4));
+  }
+  function distinct(_this__u8e3s4) {
+    return toList(toMutableSet(_this__u8e3s4));
+  }
+  function toMutableSet(_this__u8e3s4) {
+    var tmp;
+    if (isInterface(_this__u8e3s4, Collection)) {
+      tmp = LinkedHashSet_init_$Create$_1(_this__u8e3s4);
+    } else {
+      tmp = toCollection_0(_this__u8e3s4, LinkedHashSet_init_$Create$_0());
+    }
+    return tmp;
+  }
+  function mapNotNull(_this__u8e3s4, transform) {
+    // Inline function 'kotlin.collections.mapNotNullTo' call
+    var tmp0_mapNotNullTo = ArrayList_init_$Create$();
+    // Inline function 'kotlin.collections.forEach' call
+    var tmp0_iterator = _this__u8e3s4.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var element = tmp0_iterator.next_20eer_k$();
+      // Inline function 'kotlin.collections.mapNotNullTo.<anonymous>' call
+      var tmp0_safe_receiver = transform(element);
+      if (tmp0_safe_receiver == null)
+        null;
+      else {
+        // Inline function 'kotlin.let' call
+        // Inline function 'kotlin.contracts.contract' call
+        tmp0_mapNotNullTo.add_1j60pz_k$(tmp0_safe_receiver);
+      }
+    }
+    return tmp0_mapNotNullTo;
+  }
+  function mapNotNullTo(_this__u8e3s4, destination, transform) {
+    // Inline function 'kotlin.collections.forEach' call
+    var tmp0_iterator = _this__u8e3s4.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var element = tmp0_iterator.next_20eer_k$();
+      // Inline function 'kotlin.collections.mapNotNullTo.<anonymous>' call
+      var tmp0_safe_receiver = transform(element);
+      if (tmp0_safe_receiver == null)
+        null;
+      else {
+        // Inline function 'kotlin.let' call
+        // Inline function 'kotlin.contracts.contract' call
+        destination.add_1j60pz_k$(tmp0_safe_receiver);
+      }
+    }
+    return destination;
+  }
+  function singleOrNull(_this__u8e3s4) {
+    return _this__u8e3s4.get_size_woubt6_k$() === 1 ? _this__u8e3s4.get_fkrdnv_k$(0) : null;
+  }
   function filterIndexed(_this__u8e3s4, predicate) {
     // Inline function 'kotlin.collections.filterIndexedTo' call
     var tmp0_filterIndexedTo = ArrayList_init_$Create$();
@@ -1281,6 +1387,30 @@ var parser = function (_) {
       if (predicate(checkIndexOverflow(tmp1), item)) {
         destination.add_1j60pz_k$(item);
       }
+    }
+    return destination;
+  }
+  function mapIndexed(_this__u8e3s4, transform) {
+    // Inline function 'kotlin.collections.mapIndexedTo' call
+    var tmp0_mapIndexedTo = ArrayList_init_$Create$_0(collectionSizeOrDefault(_this__u8e3s4, 10));
+    var index = 0;
+    var tmp0_iterator = _this__u8e3s4.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var item = tmp0_iterator.next_20eer_k$();
+      var tmp1 = index;
+      index = tmp1 + 1 | 0;
+      tmp0_mapIndexedTo.add_1j60pz_k$(transform(checkIndexOverflow(tmp1), item));
+    }
+    return tmp0_mapIndexedTo;
+  }
+  function mapIndexedTo(_this__u8e3s4, destination, transform) {
+    var index = 0;
+    var tmp0_iterator = _this__u8e3s4.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var item = tmp0_iterator.next_20eer_k$();
+      var tmp1 = index;
+      index = tmp1 + 1 | 0;
+      destination.add_1j60pz_k$(transform(checkIndexOverflow(tmp1), item));
     }
     return destination;
   }
@@ -1330,6 +1460,16 @@ var parser = function (_) {
       return tmp$ret$0;
     };
   }
+  function _no_name_provided__qut3iv_0($this_groupingBy, $keySelector) {
+    this.$this_groupingBy_1 = $this_groupingBy;
+    this.$keySelector_1 = $keySelector;
+  }
+  protoOf(_no_name_provided__qut3iv_0).sourceIterator_2zqxcn_k$ = function () {
+    return this.$this_groupingBy_1.iterator_jk1svi_k$();
+  };
+  protoOf(_no_name_provided__qut3iv_0).keyOf_dhlc0l_k$ = function (element) {
+    return this.$keySelector_1(element);
+  };
   function toList_0(_this__u8e3s4) {
     if (_this__u8e3s4.get_size_woubt6_k$() === 0)
       return emptyList();
@@ -1474,6 +1614,26 @@ var parser = function (_) {
       return maximumValue;
     return _this__u8e3s4;
   }
+  function contains_8(_this__u8e3s4, value) {
+    return contains_9(isInterface(_this__u8e3s4, ClosedRange) ? _this__u8e3s4 : THROW_CCE(), value);
+  }
+  function contains_9(_this__u8e3s4, value) {
+    // Inline function 'kotlin.let' call
+    var tmp0_let = toIntExactOrNull(value);
+    // Inline function 'kotlin.contracts.contract' call
+    // Inline function 'kotlin.ranges.contains.<anonymous>' call
+    return !(tmp0_let == null) ? _this__u8e3s4.contains_2ehdtg_k$(tmp0_let) : false;
+  }
+  function toIntExactOrNull(_this__u8e3s4) {
+    var tmp;
+    var containsLower = toLong_0(IntCompanionObject_getInstance().MIN_VALUE);
+    if (_this__u8e3s4.compareTo_n4fqi2_k$(toLong_0(IntCompanionObject_getInstance().MAX_VALUE)) <= 0 ? containsLower.compareTo_n4fqi2_k$(_this__u8e3s4) <= 0 : false) {
+      tmp = _this__u8e3s4.toInt_1tsl84_k$();
+    } else {
+      tmp = null;
+    }
+    return tmp;
+  }
   function take(_this__u8e3s4, n) {
     // Inline function 'kotlin.require' call
     // Inline function 'kotlin.contracts.contract' call
@@ -1499,7 +1659,13 @@ var parser = function (_) {
   }
   function asIterable(_this__u8e3s4) {
     // Inline function 'kotlin.collections.Iterable' call
-    return new _no_name_provided__qut3iv_0(_this__u8e3s4);
+    return new _no_name_provided__qut3iv_1(_this__u8e3s4);
+  }
+  function firstOrNull_1(_this__u8e3s4) {
+    var iterator = _this__u8e3s4.iterator_jk1svi_k$();
+    if (!iterator.hasNext_bitz1p_k$())
+      return null;
+    return iterator.next_20eer_k$();
   }
   function toList_1(_this__u8e3s4) {
     var it = _this__u8e3s4.iterator_jk1svi_k$();
@@ -1533,10 +1699,13 @@ var parser = function (_) {
       last = iterator.next_20eer_k$();
     return last;
   }
-  function _no_name_provided__qut3iv_0($this_asIterable) {
+  function filter_0(_this__u8e3s4, predicate) {
+    return new FilteringSequence(_this__u8e3s4, true, predicate);
+  }
+  function _no_name_provided__qut3iv_1($this_asIterable) {
     this.$this_asIterable_1 = $this_asIterable;
   }
-  protoOf(_no_name_provided__qut3iv_0).iterator_jk1svi_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_1).iterator_jk1svi_k$ = function () {
     // Inline function 'kotlin.sequences.asIterable.<anonymous>' call
     return this.$this_asIterable_1.iterator_jk1svi_k$();
   };
@@ -1606,6 +1775,31 @@ var parser = function (_) {
     }
     return true;
   }
+  function first(_this__u8e3s4) {
+    // Inline function 'kotlin.text.isEmpty' call
+    if (charSequenceLength(_this__u8e3s4) === 0)
+      throw NoSuchElementException_init_$Create$_0('Char sequence is empty.');
+    return charSequenceGet(_this__u8e3s4, 0);
+  }
+  function toSet_0(_this__u8e3s4) {
+    switch (charSequenceLength(_this__u8e3s4)) {
+      case 0:
+        return emptySet();
+      case 1:
+        return setOf(new Char_0(charSequenceGet(_this__u8e3s4, 0)));
+      default:
+        return toCollection_1(_this__u8e3s4, LinkedHashSet_init_$Create$_3(mapCapacity(coerceAtMost(charSequenceLength(_this__u8e3s4), 128))));
+    }
+  }
+  function toCollection_1(_this__u8e3s4, destination) {
+    var inductionVariable = 0;
+    while (inductionVariable < charSequenceLength(_this__u8e3s4)) {
+      var item = charSequenceGet(_this__u8e3s4, inductionVariable);
+      inductionVariable = inductionVariable + 1 | 0;
+      destination.add_1j60pz_k$(new Char_0(item));
+    }
+    return destination;
+  }
   function dropLast(_this__u8e3s4, n) {
     // Inline function 'kotlin.require' call
     // Inline function 'kotlin.contracts.contract' call
@@ -1629,7 +1823,7 @@ var parser = function (_) {
     // Inline function 'kotlin.js.asDynamic' call
     return _this__u8e3s4.substring(0, tmp1_substring);
   }
-  function mapNotNull(_this__u8e3s4, transform) {
+  function mapNotNull_0(_this__u8e3s4, transform) {
     // Inline function 'kotlin.text.mapNotNullTo' call
     var tmp0_mapNotNullTo = ArrayList_init_$Create$();
     // Inline function 'kotlin.text.forEach' call
@@ -1649,7 +1843,7 @@ var parser = function (_) {
     }
     return tmp0_mapNotNullTo;
   }
-  function mapNotNullTo(_this__u8e3s4, destination, transform) {
+  function mapNotNullTo_0(_this__u8e3s4, destination, transform) {
     // Inline function 'kotlin.text.forEach' call
     var inductionVariable = 0;
     while (inductionVariable < charSequenceLength(_this__u8e3s4)) {
@@ -1675,39 +1869,61 @@ var parser = function (_) {
       action(new Char_0(element));
     }
   }
-  function toSet_0(_this__u8e3s4) {
-    switch (charSequenceLength(_this__u8e3s4)) {
-      case 0:
-        return emptySet();
-      case 1:
-        return setOf(new Char_0(charSequenceGet(_this__u8e3s4, 0)));
-      default:
-        return toCollection_1(_this__u8e3s4, LinkedHashSet_init_$Create$_3(mapCapacity(coerceAtMost(charSequenceLength(_this__u8e3s4), 128))));
-    }
-  }
-  function toCollection_1(_this__u8e3s4, destination) {
+  function indexOfFirst_0(_this__u8e3s4, predicate) {
     var inductionVariable = 0;
-    while (inductionVariable < charSequenceLength(_this__u8e3s4)) {
-      var item = charSequenceGet(_this__u8e3s4, inductionVariable);
-      inductionVariable = inductionVariable + 1 | 0;
-      destination.add_1j60pz_k$(new Char_0(item));
+    var last = charSequenceLength(_this__u8e3s4) - 1 | 0;
+    if (inductionVariable <= last)
+      do {
+        var index = inductionVariable;
+        inductionVariable = inductionVariable + 1 | 0;
+        if (predicate(new Char_0(charSequenceGet(_this__u8e3s4, index)))) {
+          return index;
+        }
+      }
+       while (inductionVariable <= last);
+    return -1;
+  }
+  function indexOfLast_0(_this__u8e3s4, predicate) {
+    var inductionVariable = charSequenceLength(_this__u8e3s4) - 1 | 0;
+    if (0 <= inductionVariable)
+      do {
+        var index = inductionVariable;
+        inductionVariable = inductionVariable + -1 | 0;
+        if (predicate(new Char_0(charSequenceGet(_this__u8e3s4, index)))) {
+          return index;
+        }
+      }
+       while (0 <= inductionVariable);
+    return -1;
+  }
+  function groupingBy_0(_this__u8e3s4, keySelector) {
+    return new _no_name_provided__qut3iv_2(_this__u8e3s4, keySelector);
+  }
+  function takeLast(_this__u8e3s4, n) {
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(n >= 0)) {
+      // Inline function 'kotlin.text.takeLast.<anonymous>' call
+      var message = 'Requested character count ' + n + ' is less than zero.';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message));
     }
-    return destination;
+    var length = _this__u8e3s4.length;
+    // Inline function 'kotlin.text.substring' call
+    var tmp1_substring = length - coerceAtMost(n, length) | 0;
+    // Inline function 'kotlin.js.asDynamic' call
+    return _this__u8e3s4.substring(tmp1_substring);
   }
-  function groupingBy(_this__u8e3s4, keySelector) {
-    return new _no_name_provided__qut3iv_1(_this__u8e3s4, keySelector);
-  }
-  function _no_name_provided__qut3iv_1($this_groupingBy, $keySelector) {
+  function _no_name_provided__qut3iv_2($this_groupingBy, $keySelector) {
     this.$this_groupingBy_1 = $this_groupingBy;
     this.$keySelector_1 = $keySelector;
   }
-  protoOf(_no_name_provided__qut3iv_1).sourceIterator_2zqxcn_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_2).sourceIterator_2zqxcn_k$ = function () {
     return iterator_2(this.$this_groupingBy_1);
   };
-  protoOf(_no_name_provided__qut3iv_1).keyOf_qdizoa_k$ = function (element) {
+  protoOf(_no_name_provided__qut3iv_2).keyOf_qdizoa_k$ = function (element) {
     return this.$keySelector_1(new Char_0(element));
   };
-  protoOf(_no_name_provided__qut3iv_1).keyOf_dhlc0l_k$ = function (element) {
+  protoOf(_no_name_provided__qut3iv_2).keyOf_dhlc0l_k$ = function (element) {
     return this.keyOf_qdizoa_k$(element instanceof Char_0 ? element.value_1 : THROW_CCE());
   };
   function contentEquals(_this__u8e3s4, other) {
@@ -2920,6 +3136,9 @@ var parser = function (_) {
   function throwCountOverflow() {
     throw ArithmeticException_init_$Create$_0('Count overflow has happened.');
   }
+  function orEmpty(_this__u8e3s4) {
+    return _this__u8e3s4 == null ? emptyList() : _this__u8e3s4;
+  }
   function Grouping() {
   }
   function fold_2(_this__u8e3s4, initialValue, operation) {
@@ -3029,7 +3248,7 @@ var parser = function (_) {
     return tmp;
   }
   function Iterable(iterator) {
-    return new _no_name_provided__qut3iv_2(iterator);
+    return new _no_name_provided__qut3iv_3(iterator);
   }
   function _get_iteratorFactory__v4c94b($this) {
     return $this.iteratorFactory_1;
@@ -3040,10 +3259,10 @@ var parser = function (_) {
   protoOf(IndexingIterable).iterator_jk1svi_k$ = function () {
     return new IndexingIterator(this.iteratorFactory_1());
   };
-  function _no_name_provided__qut3iv_2($iterator) {
+  function _no_name_provided__qut3iv_3($iterator) {
     this.$iterator_1 = $iterator;
   }
-  protoOf(_no_name_provided__qut3iv_2).iterator_jk1svi_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_3).iterator_jk1svi_k$ = function () {
     return this.$iterator_1();
   };
   function _get_iterator__8i7rvn($this) {
@@ -3174,7 +3393,7 @@ var parser = function (_) {
   function linkedMapOf() {
     return LinkedHashMap_init_$Create$();
   }
-  function contains_8(_this__u8e3s4, key) {
+  function contains_10(_this__u8e3s4, key) {
     // Inline function 'kotlin.collections.containsKey' call
     return (isInterface(_this__u8e3s4, Map) ? _this__u8e3s4 : THROW_CCE()).containsKey_wgk31w_k$(key);
   }
@@ -3299,6 +3518,18 @@ var parser = function (_) {
     }
     return destination;
   }
+  function getOrPut(_this__u8e3s4, key, defaultValue) {
+    var value = _this__u8e3s4.get_1mhr4y_k$(key);
+    var tmp;
+    if (value == null) {
+      var answer = defaultValue();
+      _this__u8e3s4.put_3mhbri_k$(key, answer);
+      tmp = answer;
+    } else {
+      tmp = value;
+    }
+    return tmp;
+  }
   function removeAll(_this__u8e3s4, predicate) {
     return filterInPlace(_this__u8e3s4, predicate, true);
   }
@@ -3416,7 +3647,7 @@ var parser = function (_) {
   }
   function sequence(block) {
     // Inline function 'kotlin.sequences.Sequence' call
-    return new _no_name_provided__qut3iv_3(block);
+    return new _no_name_provided__qut3iv_4(block);
   }
   function SequenceScope() {
   }
@@ -3590,10 +3821,10 @@ var parser = function (_) {
     return State_Failed;
   }
   var State_Failed;
-  function _no_name_provided__qut3iv_3($block) {
+  function _no_name_provided__qut3iv_4($block) {
     this.$block_1 = $block;
   }
-  protoOf(_no_name_provided__qut3iv_3).iterator_jk1svi_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_4).iterator_jk1svi_k$ = function () {
     // Inline function 'kotlin.sequences.sequence.<anonymous>' call
     return iterator_1(this.$block_1);
   };
@@ -3601,7 +3832,7 @@ var parser = function (_) {
     return new GeneratorSequence(seedFunction, nextFunction);
   }
   function Sequence_0(iterator) {
-    return new _no_name_provided__qut3iv_4(iterator);
+    return new _no_name_provided__qut3iv_5(iterator);
   }
   function calcNext($this) {
     $this.nextItem_1 = $this.nextState_1 === -2 ? $this.this$0__1.getInitialValue_1() : $this.this$0__1.getNextValue_1(ensureNotNull($this.nextItem_1));
@@ -3889,10 +4120,77 @@ var parser = function (_) {
   protoOf(FlatteningSequence).iterator_jk1svi_k$ = function () {
     return new FlatteningSequence$iterator$1(this);
   };
-  function _no_name_provided__qut3iv_4($iterator) {
+  function calcNext_0($this) {
+    while ($this.iterator_1.hasNext_bitz1p_k$()) {
+      var item = $this.iterator_1.next_20eer_k$();
+      if ($this.this$0__1.predicate_1(item) === $this.this$0__1.sendWhen_1) {
+        $this.nextItem_1 = item;
+        $this.nextState_1 = 1;
+        return Unit_getInstance();
+      }
+    }
+    $this.nextState_1 = 0;
+  }
+  function _get_sequence__636p7u_3($this) {
+    return $this.sequence_1;
+  }
+  function _get_sendWhen__otjfah($this) {
+    return $this.sendWhen_1;
+  }
+  function _get_predicate__2fkrra($this) {
+    return $this.predicate_1;
+  }
+  function FilteringSequence$iterator$1(this$0) {
+    this.this$0__1 = this$0;
+    this.iterator_1 = this$0.sequence_1.iterator_jk1svi_k$();
+    this.nextState_1 = -1;
+    this.nextItem_1 = null;
+  }
+  protoOf(FilteringSequence$iterator$1).get_iterator_c8vxs9_k$ = function () {
+    return this.iterator_1;
+  };
+  protoOf(FilteringSequence$iterator$1).set_nextState_2xkipd_k$ = function (_set____db54di) {
+    this.nextState_1 = _set____db54di;
+  };
+  protoOf(FilteringSequence$iterator$1).get_nextState_sgmh11_k$ = function () {
+    return this.nextState_1;
+  };
+  protoOf(FilteringSequence$iterator$1).set_nextItem_g5pjau_k$ = function (_set____db54di) {
+    this.nextItem_1 = _set____db54di;
+  };
+  protoOf(FilteringSequence$iterator$1).get_nextItem_892p3l_k$ = function () {
+    return this.nextItem_1;
+  };
+  protoOf(FilteringSequence$iterator$1).next_20eer_k$ = function () {
+    if (this.nextState_1 === -1) {
+      calcNext_0(this);
+    }
+    if (this.nextState_1 === 0)
+      throw NoSuchElementException_init_$Create$();
+    var result = this.nextItem_1;
+    this.nextItem_1 = null;
+    this.nextState_1 = -1;
+    return (result == null ? true : isObject(result)) ? result : THROW_CCE();
+  };
+  protoOf(FilteringSequence$iterator$1).hasNext_bitz1p_k$ = function () {
+    if (this.nextState_1 === -1) {
+      calcNext_0(this);
+    }
+    return this.nextState_1 === 1;
+  };
+  function FilteringSequence(sequence, sendWhen, predicate) {
+    sendWhen = sendWhen === VOID ? true : sendWhen;
+    this.sequence_1 = sequence;
+    this.sendWhen_1 = sendWhen;
+    this.predicate_1 = predicate;
+  }
+  protoOf(FilteringSequence).iterator_jk1svi_k$ = function () {
+    return new FilteringSequence$iterator$1(this);
+  };
+  function _no_name_provided__qut3iv_5($iterator) {
     this.$iterator_1 = $iterator;
   }
-  protoOf(_no_name_provided__qut3iv_4).iterator_jk1svi_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_5).iterator_jk1svi_k$ = function () {
     return this.$iterator_1();
   };
   function emptySet() {
@@ -4160,7 +4458,7 @@ var parser = function (_) {
   function Continuation() {
   }
   function Continuation_0(context, resumeWith) {
-    return new _no_name_provided__qut3iv_5(context, resumeWith);
+    return new _no_name_provided__qut3iv_6(context, resumeWith);
   }
   function RestrictsSuspension() {
   }
@@ -4193,14 +4491,14 @@ var parser = function (_) {
   function get_coroutineContext() {
     throw new NotImplementedError('Implemented as intrinsic');
   }
-  function _no_name_provided__qut3iv_5($context, $resumeWith) {
+  function _no_name_provided__qut3iv_6($context, $resumeWith) {
     this.$context_1 = $context;
     this.$resumeWith_1 = $resumeWith;
   }
-  protoOf(_no_name_provided__qut3iv_5).get_context_h02k06_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_6).get_context_h02k06_k$ = function () {
     return this.$context_1;
   };
-  protoOf(_no_name_provided__qut3iv_5).resumeWith_s3a3yh_k$ = function (result) {
+  protoOf(_no_name_provided__qut3iv_6).resumeWith_s3a3yh_k$ = function (result) {
     return this.$resumeWith_1(new Result(result));
   };
   function Key() {
@@ -4320,19 +4618,19 @@ var parser = function (_) {
       size = size + 1 | 0;
     }
   }
-  function contains_9($this, element) {
+  function contains_11($this, element) {
     return equals_0($this.get_j1ktw6_k$(element.get_key_18j28a_k$()), element);
   }
   function containsAll_0($this, context) {
     var cur = context;
     while (true) {
-      if (!contains_9($this, cur.element_1))
+      if (!contains_11($this, cur.element_1))
         return false;
       var next = cur.left_1;
       if (next instanceof CombinedContext) {
         cur = next;
       } else {
-        return contains_9($this, isInterface(next, Element) ? next : THROW_CCE());
+        return contains_11($this, isInterface(next, Element) ? next : THROW_CCE());
       }
     }
   }
@@ -6196,6 +6494,15 @@ var parser = function (_) {
     }
     return tmp;
   }
+  function digitToInt(_this__u8e3s4) {
+    // Inline function 'kotlin.also' call
+    var tmp0_also = digitOf(_this__u8e3s4, 10);
+    // Inline function 'kotlin.contracts.contract' call
+    // Inline function 'kotlin.text.digitToInt.<anonymous>' call
+    if (tmp0_also < 0)
+      throw IllegalArgumentException_init_$Create$_0('Char ' + new Char_0(_this__u8e3s4) + ' is not a decimal digit');
+    return tmp0_also;
+  }
   function get_HEX_DIGITS_TO_DECIMAL() {
     _init_properties_HexExtensions_kt__wu8rc3();
     return HEX_DIGITS_TO_DECIMAL;
@@ -6464,7 +6771,7 @@ var parser = function (_) {
     }
     return toString_3(tmp$ret$1);
   }
-  function contains_10(_this__u8e3s4, char, ignoreCase) {
+  function contains_12(_this__u8e3s4, char, ignoreCase) {
     ignoreCase = ignoreCase === VOID ? false : ignoreCase;
     return indexOf_6(_this__u8e3s4, char, VOID, ignoreCase) >= 0;
   }
@@ -6700,7 +7007,7 @@ var parser = function (_) {
     }
     return tmp;
   }
-  function calcNext_0($this) {
+  function calcNext_1($this) {
     if ($this.nextSearchIndex_1 < 0) {
       $this.nextState_1 = 0;
       $this.nextItem_1 = null;
@@ -6789,7 +7096,7 @@ var parser = function (_) {
   };
   protoOf(DelimitedRangesSequence$iterator$1).next_20eer_k$ = function () {
     if (this.nextState_1 === -1) {
-      calcNext_0(this);
+      calcNext_1(this);
     }
     if (this.nextState_1 === 0)
       throw NoSuchElementException_init_$Create$();
@@ -6801,7 +7108,7 @@ var parser = function (_) {
   };
   protoOf(DelimitedRangesSequence$iterator$1).hasNext_bitz1p_k$ = function () {
     if (this.nextState_1 === -1) {
-      calcNext_0(this);
+      calcNext_1(this);
     }
     return this.nextState_1 === 1;
   };
@@ -7168,6 +7475,61 @@ var parser = function (_) {
       tmp = _this__u8e3s4.lastIndexOf(string, startIndex);
     }
     return tmp;
+  }
+  function trimStart_2(_this__u8e3s4) {
+    return toString_3(trimStart_3(isCharSequence(_this__u8e3s4) ? _this__u8e3s4 : THROW_CCE()));
+  }
+  function trimStart_3(_this__u8e3s4) {
+    var tmp$ret$1;
+    $l$block: {
+      // Inline function 'kotlin.text.trimStart' call
+      var inductionVariable = 0;
+      var last = charSequenceLength(_this__u8e3s4) - 1 | 0;
+      if (inductionVariable <= last)
+        do {
+          var index = inductionVariable;
+          inductionVariable = inductionVariable + 1 | 0;
+          if (!isWhitespace(charSequenceGet(_this__u8e3s4, index))) {
+            tmp$ret$1 = charSequenceSubSequence(_this__u8e3s4, index, charSequenceLength(_this__u8e3s4));
+            break $l$block;
+          }
+        }
+         while (inductionVariable <= last);
+      tmp$ret$1 = '';
+    }
+    return tmp$ret$1;
+  }
+  function orEmpty_0(_this__u8e3s4) {
+    return _this__u8e3s4 == null ? '' : _this__u8e3s4;
+  }
+  function removePrefix(_this__u8e3s4, prefix) {
+    if (startsWith_0(_this__u8e3s4, prefix)) {
+      // Inline function 'kotlin.text.substring' call
+      var tmp0_substring = charSequenceLength(prefix);
+      // Inline function 'kotlin.js.asDynamic' call
+      return _this__u8e3s4.substring(tmp0_substring);
+    }
+    return _this__u8e3s4;
+  }
+  function startsWith_0(_this__u8e3s4, prefix, ignoreCase) {
+    ignoreCase = ignoreCase === VOID ? false : ignoreCase;
+    var tmp;
+    var tmp_0;
+    if (!ignoreCase) {
+      tmp_0 = typeof _this__u8e3s4 === 'string';
+    } else {
+      tmp_0 = false;
+    }
+    if (tmp_0) {
+      tmp = typeof prefix === 'string';
+    } else {
+      tmp = false;
+    }
+    if (tmp)
+      return startsWith_1(_this__u8e3s4, prefix);
+    else {
+      return regionMatchesImpl(_this__u8e3s4, 0, prefix, 0, charSequenceLength(prefix), ignoreCase);
+    }
   }
   function _set_index__fyfqnn_0($this, _set____db54di) {
     $this.index_1 = _set____db54di;
@@ -7596,6 +7958,61 @@ var parser = function (_) {
     if (!equals_0(this.first_1, tmp0_other_with_cast.first_1))
       return false;
     if (!equals_0(this.second_1, tmp0_other_with_cast.second_1))
+      return false;
+    return true;
+  };
+  function Triple(first, second, third) {
+    this.first_1 = first;
+    this.second_1 = second;
+    this.third_1 = third;
+  }
+  protoOf(Triple).get_first_irdx8n_k$ = function () {
+    return this.first_1;
+  };
+  protoOf(Triple).get_second_jf7fjx_k$ = function () {
+    return this.second_1;
+  };
+  protoOf(Triple).get_third_iz27um_k$ = function () {
+    return this.third_1;
+  };
+  protoOf(Triple).toString = function () {
+    return '(' + this.first_1 + ', ' + this.second_1 + ', ' + this.third_1 + ')';
+  };
+  protoOf(Triple).component1_7eebsc_k$ = function () {
+    return this.first_1;
+  };
+  protoOf(Triple).component2_7eebsb_k$ = function () {
+    return this.second_1;
+  };
+  protoOf(Triple).component3_7eebsa_k$ = function () {
+    return this.third_1;
+  };
+  protoOf(Triple).copy_a6vyki_k$ = function (first, second, third) {
+    return new Triple(first, second, third);
+  };
+  protoOf(Triple).copy$default_4i3nr7_k$ = function (first, second, third, $super) {
+    first = first === VOID ? this.first_1 : first;
+    second = second === VOID ? this.second_1 : second;
+    third = third === VOID ? this.third_1 : third;
+    return $super === VOID ? this.copy_a6vyki_k$(first, second, third) : $super.copy_a6vyki_k$.call(this, first, second, third);
+  };
+  protoOf(Triple).hashCode = function () {
+    var result = this.first_1 == null ? 0 : hashCode(this.first_1);
+    result = imul(result, 31) + (this.second_1 == null ? 0 : hashCode(this.second_1)) | 0;
+    result = imul(result, 31) + (this.third_1 == null ? 0 : hashCode(this.third_1)) | 0;
+    return result;
+  };
+  protoOf(Triple).equals = function (other) {
+    if (this === other)
+      return true;
+    if (!(other instanceof Triple))
+      return false;
+    var tmp0_other_with_cast = other instanceof Triple ? other : THROW_CCE();
+    if (!equals_0(this.first_1, tmp0_other_with_cast.first_1))
+      return false;
+    if (!equals_0(this.second_1, tmp0_other_with_cast.second_1))
+      return false;
+    if (!equals_0(this.third_1, tmp0_other_with_cast.third_1))
       return false;
     return true;
   };
@@ -13422,20 +13839,20 @@ var parser = function (_) {
     return EmptyContinuation;
   }
   var EmptyContinuation;
-  function _no_name_provided__qut3iv_6($tmp0_Continuation) {
+  function _no_name_provided__qut3iv_7($tmp0_Continuation) {
     this.$tmp0_Continuation_1 = $tmp0_Continuation;
   }
-  protoOf(_no_name_provided__qut3iv_6).get_context_h02k06_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_7).get_context_h02k06_k$ = function () {
     return this.$tmp0_Continuation_1;
   };
-  protoOf(_no_name_provided__qut3iv_6).resumeWith_7onugl_k$ = function (result) {
+  protoOf(_no_name_provided__qut3iv_7).resumeWith_7onugl_k$ = function (result) {
     // Inline function 'kotlin.getOrThrow' call
     throwOnFailure(result);
     var tmp = _Result___get_value__impl__bjfvqg(result);
     (tmp == null ? true : isObject(tmp)) || THROW_CCE();
     return Unit_getInstance();
   };
-  protoOf(_no_name_provided__qut3iv_6).resumeWith_s3a3yh_k$ = function (result) {
+  protoOf(_no_name_provided__qut3iv_7).resumeWith_s3a3yh_k$ = function (result) {
     return this.resumeWith_7onugl_k$(result);
   };
   var properties_initialized_EmptyContinuation_kt_4jdb9w;
@@ -13444,7 +13861,7 @@ var parser = function (_) {
       properties_initialized_EmptyContinuation_kt_4jdb9w = true;
       // Inline function 'kotlin.coroutines.Continuation' call
       var tmp0_Continuation = EmptyCoroutineContext_getInstance();
-      EmptyContinuation = new _no_name_provided__qut3iv_6(tmp0_Continuation);
+      EmptyContinuation = new _no_name_provided__qut3iv_7(tmp0_Continuation);
     }
   }
   function asDynamic(_this__u8e3s4) {
@@ -15019,7 +15436,7 @@ var parser = function (_) {
     return findNext(initStickyPattern(this), toString_3(input), index, this.nativePattern_1);
   };
   protoOf(Regex).replace_838ra0_k$ = function (input, replacement) {
-    if (!contains_10(replacement, _Char___init__impl__6a9atx(92)) ? !contains_10(replacement, _Char___init__impl__6a9atx(36)) : false) {
+    if (!contains_12(replacement, _Char___init__impl__6a9atx(92)) ? !contains_12(replacement, _Char___init__impl__6a9atx(36)) : false) {
       // Inline function 'kotlin.text.nativeReplace' call
       var tmp0_nativeReplace = toString_3(input);
       var tmp1_nativeReplace = this.nativePattern_1;
@@ -15049,7 +15466,7 @@ var parser = function (_) {
     return sb.toString();
   };
   protoOf(Regex).replaceFirst_hwe6o0_k$ = function (input, replacement) {
-    if (!contains_10(replacement, _Char___init__impl__6a9atx(92)) ? !contains_10(replacement, _Char___init__impl__6a9atx(36)) : false) {
+    if (!contains_12(replacement, _Char___init__impl__6a9atx(92)) ? !contains_12(replacement, _Char___init__impl__6a9atx(36)) : false) {
       var nonGlobalOptions = toFlags(this.options_1, 'u');
       // Inline function 'kotlin.text.nativeReplace' call
       var tmp0_nativeReplace = toString_3(input);
@@ -15684,7 +16101,7 @@ var parser = function (_) {
     // Inline function 'kotlin.js.asDynamic' call
     return _this__u8e3s4.replace(tmp0_nativeReplace, tmp1_nativeReplace);
   }
-  function startsWith_0(_this__u8e3s4, prefix, ignoreCase) {
+  function startsWith_1(_this__u8e3s4, prefix, ignoreCase) {
     ignoreCase = ignoreCase === VOID ? false : ignoreCase;
     if (!ignoreCase) {
       // Inline function 'kotlin.text.nativeStartsWith' call
@@ -18357,10 +18774,10 @@ var parser = function (_) {
   }
   function createCoroutineUnintercepted(_this__u8e3s4, receiver, completion) {
     // Inline function 'kotlin.coroutines.intrinsics.createCoroutineFromSuspendFunction' call
-    return new _no_name_provided__qut3iv_7(completion, _this__u8e3s4, receiver);
+    return new _no_name_provided__qut3iv_8(completion, _this__u8e3s4, receiver);
   }
   function createCoroutineFromSuspendFunction(completion, block) {
-    return new _no_name_provided__qut3iv_8(completion, block);
+    return new _no_name_provided__qut3iv_9(completion, block);
   }
   function invokeSuspendSuperTypeWithReceiver(_this__u8e3s4, receiver, completion) {
     throw new NotImplementedError('It is intrinsic method');
@@ -18371,13 +18788,13 @@ var parser = function (_) {
   function invokeSuspendSuperTypeWithReceiverAndParam(_this__u8e3s4, receiver, param, completion) {
     throw new NotImplementedError('It is intrinsic method');
   }
-  function _no_name_provided__qut3iv_7($completion, $this_createCoroutineUnintercepted, $receiver) {
+  function _no_name_provided__qut3iv_8($completion, $this_createCoroutineUnintercepted, $receiver) {
     this.$completion_1 = $completion;
     this.$this_createCoroutineUnintercepted_1 = $this_createCoroutineUnintercepted;
     this.$receiver_1 = $receiver;
     CoroutineImpl.call(this, isInterface($completion, Continuation) ? $completion : THROW_CCE());
   }
-  protoOf(_no_name_provided__qut3iv_7).doResume_5yljmg_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_8).doResume_5yljmg_k$ = function () {
     if (this.exception_1 != null)
       throw this.exception_1;
     // Inline function 'kotlin.coroutines.intrinsics.createCoroutineUnintercepted.<anonymous>' call
@@ -18385,11 +18802,11 @@ var parser = function (_) {
     var a = this.$this_createCoroutineUnintercepted_1;
     return typeof a === 'function' ? a(this.$receiver_1, this.$completion_1) : this.$this_createCoroutineUnintercepted_1.invoke_5zdxxo_k$(this.$receiver_1, this.$completion_1);
   };
-  function _no_name_provided__qut3iv_8($completion, $block) {
+  function _no_name_provided__qut3iv_9($completion, $block) {
     this.$block_1 = $block;
     CoroutineImpl.call(this, isInterface($completion, Continuation) ? $completion : THROW_CCE());
   }
-  protoOf(_no_name_provided__qut3iv_8).doResume_5yljmg_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_9).doResume_5yljmg_k$ = function () {
     if (this.exception_1 != null)
       throw this.exception_1;
     return this.$block_1();
@@ -19382,13 +19799,13 @@ var parser = function (_) {
     return $this.lookalikeX_1;
   }
   function separator($this, ch) {
-    return (contains_10($this.separators_1, ch) ? true : isWhitespace(ch)) ? true : Character_getInstance().isSpaceChar_awyu4q_k$(ch);
+    return (contains_12($this.separators_1, ch) ? true : isWhitespace(ch)) ? true : Character_getInstance().isSpaceChar_awyu4q_k$(ch);
   }
   function wordEnd($this, text, next) {
     return next >= text.length ? true : separator($this, charSequenceGet(text, next));
   }
   function numberEnd($this, text, next) {
-    return wordEnd($this, text, next) ? true : next < text.length ? contains_10('\u5404\u6253', charSequenceGet(text, next)) : false;
+    return wordEnd($this, text, next) ? true : next < text.length ? contains_12('\u5404\u6253', charSequenceGet(text, next)) : false;
   }
   function at($this, regex, text, i) {
     var tmp0_safe_receiver = regex.find_9caqn1_k$(text, i);
@@ -19439,7 +19856,7 @@ var parser = function (_) {
         tmp = _Char___init__impl__6a9atx(61);
       } else if ((ch === _Char___init__impl__6a9atx(120) ? true : ch === _Char___init__impl__6a9atx(42)) ? true : ch === _Char___init__impl__6a9atx(65290)) {
         tmp = _Char___init__impl__6a9atx(88);
-      } else if (contains_10(BatchParser_getInstance().lookalikeX_1, ch)) {
+      } else if (contains_12(BatchParser_getInstance().lookalikeX_1, ch)) {
         tmp = _Char___init__impl__6a9atx(88);
       } else {
         tmp = ch;
@@ -19532,7 +19949,7 @@ var parser = function (_) {
           var element = charSequenceGet(number, inductionVariable);
           inductionVariable = inductionVariable + 1 | 0;
           // Inline function 'com.example.remotea.BatchParser.inspect.checkNumber.<anonymous>' call
-          if (!contains_10('0123456789X', element)) {
+          if (!contains_12('0123456789X', element)) {
             tmp$ret$1 = true;
             break $l$block;
           }
@@ -19619,7 +20036,7 @@ var parser = function (_) {
     previousGroupAmount._v = amount;
   }
   function BatchParser$normalized$lambda(m) {
-    return contains_10(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43)) ? replace_1(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43), _Char___init__impl__6a9atx(88)) : m.get_value_j01efc_k$();
+    return contains_12(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43)) ? replace_1(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43), _Char___init__impl__6a9atx(88)) : m.get_value_j01efc_k$();
   }
   function BatchParser$inspect$lambda(it) {
     return it.start_1;
@@ -19665,7 +20082,7 @@ var parser = function (_) {
       do {
         var i = inductionVariable;
         inductionVariable = inductionVariable + 1 | 0;
-        if (contains_10(this.lookalikeX_1, charSequenceGet(source, i))) {
+        if (contains_12(this.lookalikeX_1, charSequenceGet(source, i))) {
           var tmp = i + 1 | 0;
           var tmp_0 = new Char_0(charSequenceGet(source, i));
           var tmp$ret$7;
@@ -20142,6 +20559,21 @@ var parser = function (_) {
       return false;
     return true;
   };
+  function _get_cnIntegerPattern__hpvxke($this) {
+    return $this.cnIntegerPattern_1;
+  }
+  function _get_cnNumberPattern__dlz3n9($this) {
+    return $this.cnNumberPattern_1;
+  }
+  function _get_amountExprPattern__z58y1a($this) {
+    return $this.amountExprPattern_1;
+  }
+  function _get_commaAmountExprPattern__lqpv0j($this) {
+    return $this.commaAmountExprPattern_1;
+  }
+  function _get_amountBoundary__deufyv($this) {
+    return $this.amountBoundary_1;
+  }
   function _get_amt__e6596x($this) {
     return $this.amt_1;
   }
@@ -20169,43 +20601,35 @@ var parser = function (_) {
   function _get_separators__k0y4nx_0($this) {
     return $this.separators_1;
   }
-  function toJiao($this, number, unit) {
+  function decimalToJiao($this, number, unit) {
     var tmp;
     try {
-      var tmp_0;
-      // Inline function 'kotlin.text.isEmpty' call
-      if (charSequenceLength(number) === 0) {
-        tmp_0 = '1';
-      } else {
-        tmp_0 = number;
-      }
-      var value = tmp_0;
-      var parts = split(value, charArrayOf_0([_Char___init__impl__6a9atx(46)]));
+      var parts = split(number, charArrayOf_0([_Char___init__impl__6a9atx(46)]));
       // Inline function 'kotlin.require' call
-      var tmp_1;
+      var tmp_0;
       var containsArg = parts.get_size_woubt6_k$();
       if (1 <= containsArg ? containsArg <= 2 : false) {
-        var tmp$ret$1;
+        var tmp$ret$0;
         $l$block_1: {
           // Inline function 'kotlin.collections.all' call
-          var tmp_2;
+          var tmp_1;
           if (isInterface(parts, Collection)) {
-            tmp_2 = parts.isEmpty_y1axqb_k$();
+            tmp_1 = parts.isEmpty_y1axqb_k$();
           } else {
-            tmp_2 = false;
+            tmp_1 = false;
           }
-          if (tmp_2) {
-            tmp$ret$1 = true;
+          if (tmp_1) {
+            tmp$ret$0 = true;
             break $l$block_1;
           }
           var tmp0_iterator = parts.iterator_jk1svi_k$();
           while (tmp0_iterator.hasNext_bitz1p_k$()) {
             var element = tmp0_iterator.next_20eer_k$();
-            // Inline function 'com.example.remotea.ChineseCodeParser.toJiao.<anonymous>' call
-            var tmp_3;
+            // Inline function 'com.example.remotea.ChineseCodeParser.decimalToJiao.<anonymous>' call
+            var tmp_2;
             // Inline function 'kotlin.text.isNotEmpty' call
             if (charSequenceLength(element) > 0) {
-              var tmp$ret$4;
+              var tmp$ret$3;
               $l$block_0: {
                 // Inline function 'kotlin.text.all' call
                 var inductionVariable = 0;
@@ -20214,44 +20638,44 @@ var parser = function (_) {
                   var element_0 = charSequenceGet(element, inductionVariable);
                   inductionVariable = inductionVariable + 1 | 0;
                   if (!isDigit(element_0)) {
-                    tmp$ret$4 = false;
+                    tmp$ret$3 = false;
                     break $l$block_0;
                   }
                 }
-                tmp$ret$4 = true;
+                tmp$ret$3 = true;
               }
-              tmp_3 = tmp$ret$4;
+              tmp_2 = tmp$ret$3;
             } else {
-              tmp_3 = false;
+              tmp_2 = false;
             }
-            if (!tmp_3) {
-              tmp$ret$1 = false;
+            if (!tmp_2) {
+              tmp$ret$0 = false;
               break $l$block_1;
             }
           }
-          tmp$ret$1 = true;
+          tmp$ret$0 = true;
         }
-        tmp_1 = tmp$ret$1;
+        tmp_0 = tmp$ret$0;
       } else {
-        tmp_1 = false;
+        tmp_0 = false;
       }
       // Inline function 'kotlin.contracts.contract' call
       // Inline function 'kotlin.require' call
       // Inline function 'kotlin.contracts.contract' call
-      if (!tmp_1) {
+      if (!tmp_0) {
         // Inline function 'kotlin.require.<anonymous>' call
         var message = 'Failed requirement.';
         throw IllegalArgumentException_init_$Create$_0(toString_3(message));
       }
       // Inline function 'kotlin.collections.getOrElse' call
-      var tmp_4;
+      var tmp_3;
       if (1 <= get_lastIndex_5(parts)) {
-        tmp_4 = parts.get_fkrdnv_k$(1);
+        tmp_3 = parts.get_fkrdnv_k$(1);
       } else {
-        // Inline function 'com.example.remotea.ChineseCodeParser.toJiao.<anonymous>' call
-        tmp_4 = '';
+        // Inline function 'com.example.remotea.ChineseCodeParser.decimalToJiao.<anonymous>' call
+        tmp_3 = '';
       }
-      var frac = tmp_4;
+      var frac = tmp_3;
       // Inline function 'kotlin.require' call
       // Inline function 'kotlin.contracts.contract' call
       // Inline function 'kotlin.require' call
@@ -20263,18 +20687,18 @@ var parser = function (_) {
       }
       var numerator = toLong(parts.get_fkrdnv_k$(0) + frac);
       var denominator = toLong('1' + repeat_0('0', frac.length));
-      var unitTimes = (startsWith_0(unit, '\u89D2') ? true : startsWith_0(unit, '\u6BDB')) ? new Long(1, 0) : new Long(10, 0);
+      var times = (startsWith_1(unit, '\u89D2') ? true : startsWith_1(unit, '\u6BDB')) ? new Long(1, 0) : new Long(10, 0);
       // Inline function 'kotlin.require' call
       Companion_getInstance_25();
       // Inline function 'kotlin.contracts.contract' call
       // Inline function 'kotlin.require' call
       // Inline function 'kotlin.contracts.contract' call
-      if (!(numerator.compareTo_n4fqi2_k$((new Long(-1, 2147483647)).div_9s1fi3_k$(unitTimes)) <= 0)) {
+      if (!(numerator.compareTo_n4fqi2_k$((new Long(-1, 2147483647)).div_9s1fi3_k$(times)) <= 0)) {
         // Inline function 'kotlin.require.<anonymous>' call
         var message_1 = 'Failed requirement.';
         throw IllegalArgumentException_init_$Create$_0(toString_3(message_1));
       }
-      var product = numerator.times_2zfqpc_k$(unitTimes);
+      var product = numerator.times_2zfqpc_k$(times);
       // Inline function 'kotlin.require' call
       // Inline function 'kotlin.contracts.contract' call
       // Inline function 'kotlin.require' call
@@ -20287,25 +20711,140 @@ var parser = function (_) {
       // Inline function 'kotlin.takeIf' call
       var tmp4_takeIf = product.div_9s1fi3_k$(denominator);
       // Inline function 'kotlin.contracts.contract' call
-      var tmp_5;
-      // Inline function 'com.example.remotea.ChineseCodeParser.toJiao.<anonymous>' call
+      var tmp_4;
+      // Inline function 'com.example.remotea.ChineseCodeParser.decimalToJiao.<anonymous>' call
       if (tmp4_takeIf.compareTo_n4fqi2_k$(new Long(0, 0)) > 0) {
-        tmp_5 = tmp4_takeIf;
+        tmp_4 = tmp4_takeIf;
       } else {
-        tmp_5 = null;
+        tmp_4 = null;
       }
-      tmp = tmp_5;
+      tmp = tmp_4;
     } catch ($p) {
-      var tmp_6;
+      var tmp_5;
       if ($p instanceof Exception) {
         var _ = $p;
-        tmp_6 = null;
+        tmp_5 = null;
       } else {
         throw $p;
       }
-      tmp = tmp_6;
+      tmp = tmp_5;
     }
     return tmp;
+  }
+  function chineseDigit($this, c) {
+    return (c === _Char___init__impl__6a9atx(38646) ? true : c === _Char___init__impl__6a9atx(12295)) ? 0 : c === _Char___init__impl__6a9atx(19968) ? 1 : (c === _Char___init__impl__6a9atx(20108) ? true : c === _Char___init__impl__6a9atx(20004)) ? 2 : c === _Char___init__impl__6a9atx(19977) ? 3 : c === _Char___init__impl__6a9atx(22235) ? 4 : c === _Char___init__impl__6a9atx(20116) ? 5 : c === _Char___init__impl__6a9atx(20845) ? 6 : c === _Char___init__impl__6a9atx(19971) ? 7 : c === _Char___init__impl__6a9atx(20843) ? 8 : c === _Char___init__impl__6a9atx(20061) ? 9 : null;
+  }
+  function chineseInteger($this, raw) {
+    if (isBlank(raw))
+      return null;
+    if (!contains_12(raw, _Char___init__impl__6a9atx(21313)) ? !contains_12(raw, _Char___init__impl__6a9atx(30334)) : false) {
+      // Inline function 'kotlin.text.map' call
+      // Inline function 'kotlin.text.mapTo' call
+      var tmp0_mapTo = ArrayList_init_$Create$_0(charSequenceLength(raw));
+      var inductionVariable = 0;
+      var last = raw.length;
+      while (inductionVariable < last) {
+        var item = charSequenceGet(raw, inductionVariable);
+        inductionVariable = inductionVariable + 1 | 0;
+        var tmp$ret$0;
+        // Inline function 'com.example.remotea.ChineseCodeParser.chineseInteger.<anonymous>' call
+        var tmp0_elvis_lhs = chineseDigit(ChineseCodeParser_getInstance(), item);
+        var tmp;
+        if (tmp0_elvis_lhs == null) {
+          return null;
+        } else {
+          tmp = tmp0_elvis_lhs;
+        }
+        tmp$ret$0 = tmp;
+        tmp0_mapTo.add_1j60pz_k$(tmp$ret$0);
+      }
+      var digits = tmp0_mapTo;
+      return toLongOrNull(joinToString_0(digits, ''));
+    }
+    var total = new Long(0, 0);
+    var pending = null;
+    var inductionVariable_0 = 0;
+    var last_0 = raw.length;
+    while (inductionVariable_0 < last_0) {
+      var c = charSequenceGet(raw, inductionVariable_0);
+      inductionVariable_0 = inductionVariable_0 + 1 | 0;
+      if (c === _Char___init__impl__6a9atx(21313)) {
+        var tmp_0 = total;
+        var tmp2_elvis_lhs = pending;
+        total = tmp_0.plus_u6jwas_k$(numberToLong(tmp2_elvis_lhs == null ? 1 : tmp2_elvis_lhs).times_2zfqpc_k$(new Long(10, 0)));
+        pending = null;
+      } else if (c === _Char___init__impl__6a9atx(30334)) {
+        var tmp_1 = total;
+        var tmp3_elvis_lhs = pending;
+        total = tmp_1.plus_u6jwas_k$(numberToLong(tmp3_elvis_lhs == null ? 1 : tmp3_elvis_lhs).times_2zfqpc_k$(new Long(100, 0)));
+        pending = null;
+      } else {
+        var tmp4_elvis_lhs = chineseDigit($this, c);
+        var tmp_2;
+        if (tmp4_elvis_lhs == null) {
+          return null;
+        } else {
+          tmp_2 = tmp4_elvis_lhs;
+        }
+        pending = tmp_2;
+      }
+    }
+    // Inline function 'kotlin.Long.plus' call
+    var tmp0_plus = total;
+    var tmp5_elvis_lhs = pending;
+    var tmp1_plus = tmp5_elvis_lhs == null ? 0 : tmp5_elvis_lhs;
+    total = tmp0_plus.plus_u6jwas_k$(toLong_0(tmp1_plus));
+    // Inline function 'kotlin.takeIf' call
+    var tmp2_takeIf = total;
+    // Inline function 'kotlin.contracts.contract' call
+    var tmp_3;
+    // Inline function 'com.example.remotea.ChineseCodeParser.chineseInteger.<anonymous>' call
+    if ((new Long(0, 0)).compareTo_n4fqi2_k$(tmp2_takeIf) <= 0 ? tmp2_takeIf.compareTo_n4fqi2_k$(new Long(100000, 0)) <= 0 : false) {
+      tmp_3 = tmp2_takeIf;
+    } else {
+      tmp_3 = null;
+    }
+    return tmp_3;
+  }
+  function chineseNumberText($this, raw) {
+    var parts = split(raw, charArrayOf_0([_Char___init__impl__6a9atx(28857)]));
+    if (parts.get_size_woubt6_k$() > 2)
+      return null;
+    var tmp0_elvis_lhs = chineseInteger($this, parts.get_fkrdnv_k$(0));
+    var tmp;
+    if (tmp0_elvis_lhs == null) {
+      return null;
+    } else {
+      tmp = tmp0_elvis_lhs;
+    }
+    var whole = tmp;
+    if (parts.get_size_woubt6_k$() === 1)
+      return whole.toString();
+    // Inline function 'kotlin.text.map' call
+    var tmp0_map = parts.get_fkrdnv_k$(1);
+    // Inline function 'kotlin.text.mapTo' call
+    var tmp0_mapTo = ArrayList_init_$Create$_0(charSequenceLength(tmp0_map));
+    var inductionVariable = 0;
+    var last = tmp0_map.length;
+    while (inductionVariable < last) {
+      var item = charSequenceGet(tmp0_map, inductionVariable);
+      inductionVariable = inductionVariable + 1 | 0;
+      var tmp$ret$0;
+      // Inline function 'com.example.remotea.ChineseCodeParser.chineseNumberText.<anonymous>' call
+      var tmp0_elvis_lhs_0 = chineseDigit(ChineseCodeParser_getInstance(), item);
+      var tmp_0;
+      if (tmp0_elvis_lhs_0 == null) {
+        return null;
+      } else {
+        tmp_0 = tmp0_elvis_lhs_0;
+      }
+      tmp$ret$0 = tmp_0;
+      tmp0_mapTo.add_1j60pz_k$(tmp$ret$0);
+    }
+    var frac = joinToString_0(tmp0_mapTo, '');
+    if (isBlank(frac))
+      return null;
+    return toString_3(whole) + '.' + frac;
   }
   function moneyText($this, jiao) {
     return jiao.rem_9rbcjo_k$(new Long(10, 0)).equals(new Long(0, 0)) ? jiao.div_9s1fi3_k$(new Long(10, 0)).toString() : toString_3(jiao.div_9s1fi3_k$(new Long(10, 0))) + '.' + toString_3(jiao.rem_9rbcjo_k$(new Long(10, 0)));
@@ -20318,7 +20857,7 @@ var parser = function (_) {
     var tmp3_replace = Regex_init_$Create$('^\\s*[\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D\u53410-9]+\\s*[:\uFF1A]\\s*$', RegexOption_MULTILINE_getInstance()).replace_838ra0_k$(tmp1_replace, '');
     return Regex_init_$Create$('^\\s*[:\uFF1A]\\s*$', RegexOption_MULTILINE_getInstance()).replace_838ra0_k$(tmp3_replace, '');
   }
-  function parseBlock($this, raw, money, out, errs) {
+  function parseBlock($this, raw, money, out, errs, ambiguityChoices) {
     var text = trim(stripTitle($this, raw), charArrayOf_0([_Char___init__impl__6a9atx(32), _Char___init__impl__6a9atx(10), _Char___init__impl__6a9atx(13), _Char___init__impl__6a9atx(46), _Char___init__impl__6a9atx(12290), _Char___init__impl__6a9atx(44), _Char___init__impl__6a9atx(65292), _Char___init__impl__6a9atx(12289), _Char___init__impl__6a9atx(59), _Char___init__impl__6a9atx(65307)]));
     if (isBlank(text)) {
       // Inline function 'kotlin.collections.plusAssign' call
@@ -20469,36 +21008,85 @@ var parser = function (_) {
         tmp_1 = false;
       }
       if (tmp_1) {
-        // Inline function 'kotlin.collections.forEach' call
-        var tmp0_iterator_3 = commaGroups.iterator_jk1svi_k$();
-        while (tmp0_iterator_3.hasNext_bitz1p_k$()) {
-          var element_2 = tmp0_iterator_3.next_20eer_k$();
-          // Inline function 'com.example.remotea.ChineseCodeParser.parseBlock.<anonymous>' call
-          var tmp_4 = ChineseCodeParser_getInstance();
-          // Inline function 'kotlin.text.trim' call
-          var tmp_5 = toString_3(trim_3(isCharSequence(element_2) ? element_2 : THROW_CCE()));
-          var tmp$ret$25;
-          // Inline function 'kotlin.text.trim' call
-          tmp$ret$25 = toString_3(trim_3(isCharSequence(element_2) ? element_2 : THROW_CCE()));
-          addScatter(tmp_4, tmp_5, money, tmp$ret$25, out);
+        var tmp$ret$24;
+        $l$block_2: {
+          // Inline function 'kotlin.collections.all' call
+          var tmp_4;
+          if (isInterface(commaGroups, Collection)) {
+            tmp_4 = commaGroups.isEmpty_y1axqb_k$();
+          } else {
+            tmp_4 = false;
+          }
+          if (tmp_4) {
+            tmp$ret$24 = true;
+            break $l$block_2;
+          }
+          var tmp0_iterator_3 = commaGroups.iterator_jk1svi_k$();
+          while (tmp0_iterator_3.hasNext_bitz1p_k$()) {
+            var element_2 = tmp0_iterator_3.next_20eer_k$();
+            // Inline function 'com.example.remotea.ChineseCodeParser.parseBlock.<anonymous>' call
+            // Inline function 'kotlin.text.trim' call
+            var d = toString_3(trim_3(isCharSequence(element_2) ? element_2 : THROW_CCE()));
+            if (!(toSet_0(d).get_size_woubt6_k$() === d.length)) {
+              tmp$ret$24 = false;
+              break $l$block_2;
+            }
+          }
+          tmp$ret$24 = true;
+        }
+        var suiteMeaningLegal = tmp$ret$24;
+        var decision = suiteMeaningLegal ? ambiguityChoices.next_xee9n3_k$('four_scatter_or_position', r) : null;
+        if (decision === 'four_position') {
+          // Inline function 'kotlin.collections.associate' call
+          var tmp13_associate = withIndex(commaGroups);
+          var capacity_0 = coerceAtLeast(mapCapacity(collectionSizeOrDefault(tmp13_associate, 10)), 16);
+          // Inline function 'kotlin.collections.associateTo' call
+          var tmp0_associateTo_0 = LinkedHashMap_init_$Create$_2(capacity_0);
+          var tmp0_iterator_4 = tmp13_associate.iterator_jk1svi_k$();
+          while (tmp0_iterator_4.hasNext_bitz1p_k$()) {
+            var element_3 = tmp0_iterator_4.next_20eer_k$();
+            // Inline function 'kotlin.collections.plusAssign' call
+            // Inline function 'com.example.remotea.ChineseCodeParser.parseBlock.<anonymous>' call
+            var tmp$ret$27;
+            // Inline function 'kotlin.text.trim' call
+            var tmp0_trim = element_3.value_1;
+            tmp$ret$27 = toString_3(trim_3(isCharSequence(tmp0_trim) ? tmp0_trim : THROW_CCE()));
+            var tmp0_plusAssign_1 = to(element_3.index_1, tmp$ret$27);
+            tmp0_associateTo_0.put_3mhbri_k$(tmp0_plusAssign_1.first_1, tmp0_plusAssign_1.second_1);
+          }
+          addSuite($this, tmp0_associateTo_0, money, r, out, errs);
+        } else {
+          // Inline function 'kotlin.collections.forEach' call
+          var tmp0_iterator_5 = commaGroups.iterator_jk1svi_k$();
+          while (tmp0_iterator_5.hasNext_bitz1p_k$()) {
+            var element_4 = tmp0_iterator_5.next_20eer_k$();
+            // Inline function 'com.example.remotea.ChineseCodeParser.parseBlock.<anonymous>' call
+            var tmp_5 = ChineseCodeParser_getInstance();
+            // Inline function 'kotlin.text.trim' call
+            var tmp_6 = toString_3(trim_3(isCharSequence(element_4) ? element_4 : THROW_CCE()));
+            var tmp$ret$32;
+            // Inline function 'kotlin.text.trim' call
+            tmp$ret$32 = toString_3(trim_3(isCharSequence(element_4) ? element_4 : THROW_CCE()));
+            addScatter(tmp_5, tmp_6, money, tmp$ret$32, out);
+          }
         }
         continue $l$loop_2;
       }
       if ($this.fourComma_1.matches_qvb2fs_k$(r)) {
         // Inline function 'kotlin.collections.associate' call
-        var tmp13_associate = withIndex(commaGroups);
-        var capacity_0 = coerceAtLeast(mapCapacity(collectionSizeOrDefault(tmp13_associate, 10)), 16);
+        var tmp14_associate = withIndex(commaGroups);
+        var capacity_1 = coerceAtLeast(mapCapacity(collectionSizeOrDefault(tmp14_associate, 10)), 16);
         // Inline function 'kotlin.collections.associateTo' call
-        var tmp0_associateTo_0 = LinkedHashMap_init_$Create$_2(capacity_0);
-        var tmp0_iterator_4 = tmp13_associate.iterator_jk1svi_k$();
-        while (tmp0_iterator_4.hasNext_bitz1p_k$()) {
-          var element_3 = tmp0_iterator_4.next_20eer_k$();
+        var tmp0_associateTo_1 = LinkedHashMap_init_$Create$_2(capacity_1);
+        var tmp0_iterator_6 = tmp14_associate.iterator_jk1svi_k$();
+        while (tmp0_iterator_6.hasNext_bitz1p_k$()) {
+          var element_5 = tmp0_iterator_6.next_20eer_k$();
           // Inline function 'kotlin.collections.plusAssign' call
           // Inline function 'com.example.remotea.ChineseCodeParser.parseBlock.<anonymous>' call
-          var tmp0_plusAssign_1 = to(element_3.index_1, element_3.value_1);
-          tmp0_associateTo_0.put_3mhbri_k$(tmp0_plusAssign_1.first_1, tmp0_plusAssign_1.second_1);
+          var tmp0_plusAssign_2 = to(element_5.index_1, element_5.value_1);
+          tmp0_associateTo_1.put_3mhbri_k$(tmp0_plusAssign_2.first_1, tmp0_plusAssign_2.second_1);
         }
-        addSuite($this, tmp0_associateTo_0, money, r, out, errs);
+        addSuite($this, tmp0_associateTo_1, money, r, out, errs);
         continue $l$loop_2;
       }
       // Inline function 'kotlin.text.split' call
@@ -20510,54 +21098,54 @@ var parser = function (_) {
         var v = toString_3(trim_3(isCharSequence(part) ? part : THROW_CCE()));
         if (isBlank(v))
           continue $l$loop_3;
-        if ((((contains_10(v, _Char___init__impl__6a9atx(22836)) ? true : contains_10(v, _Char___init__impl__6a9atx(30334))) ? true : contains_10(v, _Char___init__impl__6a9atx(21313))) ? true : contains_10(v, _Char___init__impl__6a9atx(23614))) ? true : contains_10(v, _Char___init__impl__6a9atx(20010))) {
+        if ((((contains_12(v, _Char___init__impl__6a9atx(22836)) ? true : contains_12(v, _Char___init__impl__6a9atx(30334))) ? true : contains_12(v, _Char___init__impl__6a9atx(21313))) ? true : contains_12(v, _Char___init__impl__6a9atx(23614))) ? true : contains_12(v, _Char___init__impl__6a9atx(20010))) {
           parseNamed($this, part, money, out, errs);
         } else {
           // Inline function 'kotlin.text.split' call
           var components = Regex_init_$Create$_0('\\s+').split_8rwwda_k$(v, 0);
           if (components.get_size_woubt6_k$() === 1) {
-            parseUnlabeled($this, v, money, out, errs);
+            parseUnlabeled($this, v, money, out, errs, ambiguityChoices);
           } else {
             var glued = joinToString_0(components, '');
-            var tmp_6;
+            var tmp_7;
             if ($this.scatterCode_1.matches_qvb2fs_k$(glued)) {
-              var tmp$ret$32;
-              $l$block_2: {
+              var tmp$ret$39;
+              $l$block_4: {
                 // Inline function 'kotlin.collections.none' call
-                var tmp_7;
+                var tmp_8;
                 if (isInterface(components, Collection)) {
-                  tmp_7 = components.isEmpty_y1axqb_k$();
+                  tmp_8 = components.isEmpty_y1axqb_k$();
                 } else {
-                  tmp_7 = false;
+                  tmp_8 = false;
                 }
-                if (tmp_7) {
-                  tmp$ret$32 = true;
-                  break $l$block_2;
+                if (tmp_8) {
+                  tmp$ret$39 = true;
+                  break $l$block_4;
                 }
-                var tmp0_iterator_5 = components.iterator_jk1svi_k$();
-                while (tmp0_iterator_5.hasNext_bitz1p_k$()) {
-                  var element_4 = tmp0_iterator_5.next_20eer_k$();
+                var tmp0_iterator_7 = components.iterator_jk1svi_k$();
+                while (tmp0_iterator_7.hasNext_bitz1p_k$()) {
+                  var element_6 = tmp0_iterator_7.next_20eer_k$();
                   // Inline function 'com.example.remotea.ChineseCodeParser.parseBlock.<anonymous>' call
-                  if (ChineseCodeParser_getInstance().scatterCode_1.matches_qvb2fs_k$(element_4)) {
-                    tmp$ret$32 = false;
-                    break $l$block_2;
+                  if (ChineseCodeParser_getInstance().scatterCode_1.matches_qvb2fs_k$(element_6)) {
+                    tmp$ret$39 = false;
+                    break $l$block_4;
                   }
                 }
-                tmp$ret$32 = true;
+                tmp$ret$39 = true;
               }
-              tmp_6 = tmp$ret$32;
+              tmp_7 = tmp$ret$39;
             } else {
-              tmp_6 = false;
+              tmp_7 = false;
             }
-            if (tmp_6) {
+            if (tmp_7) {
               addScatter($this, glued, money, part, out);
             } else {
               // Inline function 'kotlin.collections.forEach' call
-              var tmp0_iterator_6 = components.iterator_jk1svi_k$();
-              while (tmp0_iterator_6.hasNext_bitz1p_k$()) {
-                var element_5 = tmp0_iterator_6.next_20eer_k$();
+              var tmp0_iterator_8 = components.iterator_jk1svi_k$();
+              while (tmp0_iterator_8.hasNext_bitz1p_k$()) {
+                var element_7 = tmp0_iterator_8.next_20eer_k$();
                 // Inline function 'com.example.remotea.ChineseCodeParser.parseBlock.<anonymous>' call
-                parseUnlabeled(ChineseCodeParser_getInstance(), element_5, money, out, errs);
+                parseUnlabeled(ChineseCodeParser_getInstance(), element_7, money, out, errs, ambiguityChoices);
               }
             }
           }
@@ -20641,6 +21229,10 @@ var parser = function (_) {
       errs.add_1j60pz_k$(tmp4_plusAssign);
       return Unit_getInstance();
     }
+    if ((!twoPositionLabel ? map.get_size_woubt6_k$() === 1 : false) ? map.containsKey_wgk31w_k$(0) : false) {
+      // Inline function 'kotlin.collections.set' call
+      map.put_3mhbri_k$(3, '0123456789');
+    }
     var tmp$ret$9;
     // Inline function 'kotlin.text.trim' call
     tmp$ret$9 = toString_3(trim_3(isCharSequence(raw) ? raw : THROW_CCE()));
@@ -20659,7 +21251,7 @@ var parser = function (_) {
           var element = charSequenceGet(tag, inductionVariable);
           inductionVariable = inductionVariable + 1 | 0;
           // Inline function 'com.example.remotea.ChineseCodeParser.positionIndices.<anonymous>' call
-          if (!contains_10('\u5934\u767E\u5341\u5C3E\u4E2A', element)) {
+          if (!contains_12('\u5934\u767E\u5341\u5C3E\u4E2A', element)) {
             tmp$ret$1 = false;
             break $l$block;
           }
@@ -20720,24 +21312,47 @@ var parser = function (_) {
         return null;
     }
   }
-  function parseUnlabeled($this, s, money, out, errs) {
+  function parseUnlabeled($this, s, money, out, errs, ambiguityChoices) {
     if ($this.scatterCode_1.matches_qvb2fs_k$(s)) {
       addScatter($this, s, money, s, out);
       return Unit_getInstance();
     }
+    var dashAmbiguous = Regex_init_$Create$_0('^([0-9]{4})-([0-9]{1,10})$').matchEntire_9c62aj_k$(s);
+    if (!(dashAmbiguous == null)) {
+      var internalAmount = decimalToJiao($this, dashAmbiguous.get_groupValues_rkv314_k$().get_fkrdnv_k$(2), '\u5143');
+      var scatterLegal = (!(internalAmount == null) ? internalAmount.compareTo_n4fqi2_k$(toLong_0(IntCompanionObject_getInstance().MAX_VALUE)) <= 0 : false) ? PositionAmountPolicy_getInstance().accepts_492uff_k$(4, internalAmount.toInt_1tsl84_k$()) : false;
+      var suiteLegal = money.compareTo_n4fqi2_k$(toLong_0(IntCompanionObject_getInstance().MAX_VALUE)) <= 0 ? PositionAmountPolicy_getInstance().accepts_492uff_k$(2, money.toInt_1tsl84_k$()) : false;
+      var tmp;
+      if (scatterLegal ? suiteLegal : false) {
+        tmp = ambiguityChoices == null ? null : ambiguityChoices.next_xee9n3_k$('dash_amount_or_head_tail', s);
+      } else {
+        tmp = null;
+      }
+      var decision = tmp;
+      if (decision === 'scatter_amount' ? true : (decision == null ? scatterLegal : false) ? !suiteLegal : false) {
+        if (!scatterLegal ? true : internalAmount == null) {
+          // Inline function 'kotlin.collections.plusAssign' call
+          var tmp0_plusAssign = new Problem(s, '\u91D1\u989D\u65E0\u6548');
+          errs.add_1j60pz_k$(tmp0_plusAssign);
+        } else {
+          addScatter($this, dashAmbiguous.get_groupValues_rkv314_k$().get_fkrdnv_k$(1), internalAmount, s, out);
+        }
+        return Unit_getInstance();
+      }
+    }
     var numeric = split(s, charArrayOf_0([_Char___init__impl__6a9atx(45)]));
-    var tmp;
+    var tmp_0;
     if (numeric.get_size_woubt6_k$() === 4) {
       var tmp$ret$0;
       $l$block_0: {
         // Inline function 'kotlin.collections.all' call
-        var tmp_0;
+        var tmp_1;
         if (isInterface(numeric, Collection)) {
-          tmp_0 = numeric.isEmpty_y1axqb_k$();
+          tmp_1 = numeric.isEmpty_y1axqb_k$();
         } else {
-          tmp_0 = false;
+          tmp_1 = false;
         }
-        if (tmp_0) {
+        if (tmp_1) {
           tmp$ret$0 = true;
           break $l$block_0;
         }
@@ -20753,39 +21368,39 @@ var parser = function (_) {
         }
         tmp$ret$0 = true;
       }
-      tmp = tmp$ret$0;
+      tmp_0 = tmp$ret$0;
     } else {
-      tmp = false;
+      tmp_0 = false;
     }
-    if (tmp) {
+    if (tmp_0) {
       // Inline function 'kotlin.collections.associate' call
-      var tmp0_associate = withIndex(numeric);
-      var capacity = coerceAtLeast(mapCapacity(collectionSizeOrDefault(tmp0_associate, 10)), 16);
+      var tmp1_associate = withIndex(numeric);
+      var capacity = coerceAtLeast(mapCapacity(collectionSizeOrDefault(tmp1_associate, 10)), 16);
       // Inline function 'kotlin.collections.associateTo' call
       var tmp0_associateTo = LinkedHashMap_init_$Create$_2(capacity);
-      var tmp0_iterator_0 = tmp0_associate.iterator_jk1svi_k$();
+      var tmp0_iterator_0 = tmp1_associate.iterator_jk1svi_k$();
       while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
         var element_0 = tmp0_iterator_0.next_20eer_k$();
         // Inline function 'kotlin.collections.plusAssign' call
         // Inline function 'com.example.remotea.ChineseCodeParser.parseUnlabeled.<anonymous>' call
-        var tmp0_plusAssign = to(element_0.index_1, element_0.value_1);
-        tmp0_associateTo.put_3mhbri_k$(tmp0_plusAssign.first_1, tmp0_plusAssign.second_1);
+        var tmp0_plusAssign_0 = to(element_0.index_1, element_0.value_1);
+        tmp0_associateTo.put_3mhbri_k$(tmp0_plusAssign_0.first_1, tmp0_plusAssign_0.second_1);
       }
       addSuite($this, tmp0_associateTo, money, s, out, errs);
       return Unit_getInstance();
     }
-    var tmp_1;
+    var tmp_2;
     if (numeric.get_size_woubt6_k$() === 2) {
       var tmp$ret$6;
       $l$block_2: {
         // Inline function 'kotlin.collections.all' call
-        var tmp_2;
+        var tmp_3;
         if (isInterface(numeric, Collection)) {
-          tmp_2 = numeric.isEmpty_y1axqb_k$();
+          tmp_3 = numeric.isEmpty_y1axqb_k$();
         } else {
-          tmp_2 = false;
+          tmp_3 = false;
         }
-        if (tmp_2) {
+        if (tmp_3) {
           tmp$ret$6 = true;
           break $l$block_2;
         }
@@ -20801,32 +21416,32 @@ var parser = function (_) {
         }
         tmp$ret$6 = true;
       }
-      tmp_1 = tmp$ret$6;
+      tmp_2 = tmp$ret$6;
     } else {
-      tmp_1 = false;
+      tmp_2 = false;
     }
-    if (tmp_1) {
+    if (tmp_2) {
       addSuite($this, mapOf([to(0, numeric.get_fkrdnv_k$(0)), to(3, numeric.get_fkrdnv_k$(1))]), money, s, out, errs);
       return Unit_getInstance();
     }
-    if (contains_10(s, _Char___init__impl__6a9atx(88)) ? true : contains_10(s, _Char___init__impl__6a9atx(45))) {
+    if (contains_12(s, _Char___init__impl__6a9atx(88)) ? true : contains_12(s, _Char___init__impl__6a9atx(45))) {
       var compact = replace_2(s, '-', '');
       // Inline function 'kotlin.text.matches' call
       if (Regex_init_$Create$_0('[0-9X]+').matches_qvb2fs_k$(compact)) {
-        var tmp_3 = $this.digitOrX_1.findAll$default_n4kn43_k$(s);
-        var tokens = toList_1(map_0(tmp_3, ChineseCodeParser$parseUnlabeled$lambda));
-        var tmp_4;
+        var tmp_4 = $this.digitOrX_1.findAll$default_n4kn43_k$(s);
+        var tokens = toList_1(map_0(tmp_4, ChineseCodeParser$parseUnlabeled$lambda));
+        var tmp_5;
         if (tokens.get_size_woubt6_k$() === 4) {
           var tmp$ret$10;
           $l$block_4: {
             // Inline function 'kotlin.collections.any' call
-            var tmp_5;
+            var tmp_6;
             if (isInterface(tokens, Collection)) {
-              tmp_5 = tokens.isEmpty_y1axqb_k$();
+              tmp_6 = tokens.isEmpty_y1axqb_k$();
             } else {
-              tmp_5 = false;
+              tmp_6 = false;
             }
-            if (tmp_5) {
+            if (tmp_6) {
               tmp$ret$10 = false;
               break $l$block_4;
             }
@@ -20841,17 +21456,17 @@ var parser = function (_) {
             }
             tmp$ret$10 = false;
           }
-          tmp_4 = tmp$ret$10;
+          tmp_5 = tmp$ret$10;
         } else {
-          tmp_4 = false;
+          tmp_5 = false;
         }
-        if (tmp_4) {
+        if (tmp_5) {
           // Inline function 'kotlin.collections.associate' call
           // Inline function 'kotlin.collections.filter' call
-          var tmp2_filter = withIndex(tokens);
+          var tmp3_filter = withIndex(tokens);
           // Inline function 'kotlin.collections.filterTo' call
           var tmp0_filterTo = ArrayList_init_$Create$();
-          var tmp0_iterator_3 = tmp2_filter.iterator_jk1svi_k$();
+          var tmp0_iterator_3 = tmp3_filter.iterator_jk1svi_k$();
           while (tmp0_iterator_3.hasNext_bitz1p_k$()) {
             var element_3 = tmp0_iterator_3.next_20eer_k$();
             // Inline function 'com.example.remotea.ChineseCodeParser.parseUnlabeled.<anonymous>' call
@@ -20867,8 +21482,8 @@ var parser = function (_) {
             var element_4 = tmp0_iterator_4.next_20eer_k$();
             // Inline function 'kotlin.collections.plusAssign' call
             // Inline function 'com.example.remotea.ChineseCodeParser.parseUnlabeled.<anonymous>' call
-            var tmp0_plusAssign_0 = to(element_4.index_1, element_4.value_1);
-            tmp0_associateTo_0.put_3mhbri_k$(tmp0_plusAssign_0.first_1, tmp0_plusAssign_0.second_1);
+            var tmp0_plusAssign_1 = to(element_4.index_1, element_4.value_1);
+            tmp0_associateTo_0.put_3mhbri_k$(tmp0_plusAssign_1.first_1, tmp0_plusAssign_1.second_1);
           }
           var map = tmp0_associateTo_0;
           addSuite($this, map, money, s, out, errs);
@@ -20877,8 +21492,12 @@ var parser = function (_) {
       }
     }
     // Inline function 'kotlin.collections.plusAssign' call
-    var tmp4_plusAssign = new Problem(s, '\u53F7\u7801\u683C\u5F0F\u9519\u8BEF');
-    errs.add_1j60pz_k$(tmp4_plusAssign);
+    var tmp5_plusAssign = new Problem(s, '\u53F7\u7801\u683C\u5F0F\u9519\u8BEF');
+    errs.add_1j60pz_k$(tmp5_plusAssign);
+  }
+  function parseUnlabeled$default($this, s, money, out, errs, ambiguityChoices, $super) {
+    ambiguityChoices = ambiguityChoices === VOID ? null : ambiguityChoices;
+    return parseUnlabeled($this, s, money, out, errs, ambiguityChoices);
   }
   function addScatter($this, code, amount, source, out) {
     // Inline function 'kotlin.collections.plusAssign' call
@@ -20930,7 +21549,7 @@ var parser = function (_) {
     var tmp$ret$2;
     // Inline function 'kotlin.comparisons.compareBy' call
     var tmp_1 = ChineseCodeParser$addSuite$lambda;
-    tmp$ret$2 = new sam$kotlin_Comparator$0_6(tmp_1);
+    tmp$ret$2 = new sam$kotlin_Comparator$0_7(tmp_1);
     tmp$ret$3 = sortedWith(tmp2_sortedBy, tmp$ret$2);
     var sorted = toMap_0(tmp$ret$3);
     var tmp$ret$4;
@@ -21036,6 +21655,59 @@ var parser = function (_) {
   protoOf(sam$kotlin_Comparator$0_6).compare = function (a, b) {
     return this.compare_6tbigh_k$(a, b);
   };
+  function sam$kotlin_Comparator$0_7(function_0) {
+    this.function_1 = function_0;
+  }
+  protoOf(sam$kotlin_Comparator$0_7).compare_6tbigh_k$ = function (a, b) {
+    return this.function_1(a, b);
+  };
+  protoOf(sam$kotlin_Comparator$0_7).compare = function (a, b) {
+    return this.compare_6tbigh_k$(a, b);
+  };
+  function findAmbiguities$nextOccurrence(occurrence, type, source) {
+    var key = to(type, source);
+    var tmp0_elvis_lhs = occurrence.get_1mhr4y_k$(key);
+    var n = tmp0_elvis_lhs == null ? 0 : tmp0_elvis_lhs;
+    // Inline function 'kotlin.collections.set' call
+    var tmp0_set = n + 1 | 0;
+    occurrence.put_3mhbri_k$(key, tmp0_set);
+    return n;
+  }
+  function findAmbiguities$uniqueDigits(value) {
+    var tmp;
+    var tmp_0;
+    // Inline function 'kotlin.text.isNotBlank' call
+    if (!isBlank(value)) {
+      var tmp$ret$2;
+      $l$block: {
+        // Inline function 'kotlin.text.all' call
+        var inductionVariable = 0;
+        var last = value.length;
+        while (inductionVariable < last) {
+          var element = charSequenceGet(value, inductionVariable);
+          inductionVariable = inductionVariable + 1 | 0;
+          // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.uniqueDigits.<anonymous>' call
+          if (!isDigit(element)) {
+            tmp$ret$2 = false;
+            break $l$block;
+          }
+        }
+        tmp$ret$2 = true;
+      }
+      tmp_0 = tmp$ret$2;
+    } else {
+      tmp_0 = false;
+    }
+    if (tmp_0) {
+      tmp = toSet_0(value).get_size_woubt6_k$() === value.length;
+    } else {
+      tmp = false;
+    }
+    return tmp;
+  }
+  function findAmbiguities$moneyLabel(jiao) {
+    return jiao.rem_9rbcjo_k$(new Long(10, 0)).equals(new Long(0, 0)) ? toString_3(jiao.div_9s1fi3_k$(new Long(10, 0))) + '\u5143' : toString_3(jiao.div_9s1fi3_k$(new Long(10, 0))) + '.' + toString_3(jiao.rem_9rbcjo_k$(new Long(10, 0))) + '\u5143';
+  }
   function ChineseCodeParser$normalizeForOffsets$lambda(a, b) {
     // Inline function 'kotlin.comparisons.compareValuesBy' call
     // Inline function 'com.example.remotea.ChineseCodeParser.normalizeForOffsets.<anonymous>' call
@@ -21049,10 +21721,19 @@ var parser = function (_) {
     return repeat_0(',', it.get_value_j01efc_k$().length);
   }
   function ChineseCodeParser$normalizeForOffsets$lambda_1(m) {
-    return contains_10(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43)) ? replace_1(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43), _Char___init__impl__6a9atx(88)) : m.get_value_j01efc_k$();
+    return contains_12(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43)) ? replace_1(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43), _Char___init__impl__6a9atx(88)) : m.get_value_j01efc_k$();
   }
   function ChineseCodeParser$parseUnlabeled$lambda(it) {
     return it.get_value_j01efc_k$();
+  }
+  function ChineseCodeParser$findAmbiguities$lambda(a, b) {
+    // Inline function 'kotlin.comparisons.compareValuesBy' call
+    // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+    var tmp = a.start_1;
+    var tmp$ret$1;
+    // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+    tmp$ret$1 = b.start_1;
+    return compareValues(tmp, tmp$ret$1);
   }
   function ChineseCodeParser$addSuite$lambda(a, b) {
     // Inline function 'kotlin.comparisons.compareValuesBy' call
@@ -21094,7 +21775,12 @@ var parser = function (_) {
   }
   function ChineseCodeParser() {
     ChineseCodeParser_instance = this;
-    this.amt_1 = Regex_init_$Create$_0('(?:\u5404\u6253|\u5404|\u6253|[=\uFF1D])\\s*(\\d+(?:\\.\\d+)?|)?\\s*(\u89D2\u94B1|\u6BDB\u94B1|\u5143|\u5757|\u7EC4|\u89D2|\u6BDB)?|[,\uFF0C]\\s*(\\d+(?:\\.\\d+)?)\\s*(\u5143|\u5757|\u7EC4)');
+    this.cnIntegerPattern_1 = '[\u96F6\u3007\u4E00\u4E8C\u4E24\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D\u5341\u767E]+';
+    this.cnNumberPattern_1 = this.cnIntegerPattern_1 + '(?:\u70B9[\u96F6\u3007\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D]+)?';
+    this.amountExprPattern_1 = '(?:' + (this.cnIntegerPattern_1 + '(?:\u5143|\u5757)(?:\u534A|[\u96F6\u3007\u4E00\u4E8C\u4E24\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D](?:\u89D2|\u6BDB)?)') + ('|' + this.cnIntegerPattern_1 + '(?:\u5143|\u5757)' + this.cnIntegerPattern_1 + '(?:\u89D2|\u6BDB)') + '|\\d+(?:\\.\\d+)?(?:\u89D2\u94B1|\u6BDB\u94B1|\u5757\u94B1|\u5143|\u5757|\u7EC4|\u89D2|\u6BDB)?' + ('|' + this.cnNumberPattern_1 + '(?:\u89D2\u94B1|\u6BDB\u94B1|\u5757\u94B1|\u5143|\u5757|\u7EC4|\u89D2|\u6BDB)?') + ')';
+    this.commaAmountExprPattern_1 = '(?:\\d+(?:\\.\\d+)?(?:\u89D2\u94B1|\u6BDB\u94B1|\u5757\u94B1|\u5143|\u5757|\u7EC4|\u89D2|\u6BDB)' + ('|' + this.cnNumberPattern_1 + '(?:\u89D2\u94B1|\u6BDB\u94B1|\u5757\u94B1|\u5143|\u5757|\u7EC4|\u89D2|\u6BDB)') + ')';
+    this.amountBoundary_1 = '(?=\\s|[,\uFF0C\u3001\u3002\uFF1B;.\\n\\r]|(?:\u6392\u5217\u4E94|\u6392\u5217|\u4E03\u661F\u5F69|\u4E03\u661F|\u4E94\u5B50|\u4E03\u5B50|\u6392\u4E94)|$)';
+    this.amt_1 = Regex_init_$Create$_0('(?:(?:[=\uFF1D]\\s*(?:\u5404\u6253|\u6BCF\u4E2A|\u5404|\u6BCF|\u6253)?|\u5404\u6253|\u6BCF\u4E2A|\u5404|\u6BCF|\u6253)\\s*(' + this.amountExprPattern_1 + ')|[,\uFF0C]\\s*(' + this.commaAmountExprPattern_1 + '))' + this.amountBoundary_1);
     this.fullPos_1 = Regex_init_$Create$_0('\u7B2C([\u4E00\u4E8C\u4E09\u56DB])\u4F4D\\s*[:\uFF1A]\\s*([0-9]{1,10})');
     this.namedPos_1 = Regex_init_$Create$_0('(\u5168|[0-9]{1,10})(\u5934\u4F4D|\u767E\u4F4D|\u5341\u4F4D|\u5C3E\u4F4D|\u4E2A\u4F4D|[+\uFF0B]?1\u4F4D|[\u5934\u767E\u5341\u5C3E\u4E2A]+)');
     this.fourComma_1 = Regex_init_$Create$_0('^[0-9]{1,10}[,\uFF0C][0-9]{1,10}[,\uFF0C][0-9]{1,10}[,\uFF0C][0-9]{1,10}$');
@@ -21102,100 +21788,122 @@ var parser = function (_) {
     this.scatterCode_1 = Regex_init_$Create$_0('^[0-9X]{4}$');
     this.digitOrX_1 = Regex_init_$Create$_0('[0-9]+|X');
     this.plusMask_1 = Regex_init_$Create$_0('(?<![0-9X+])[0-9X+]{4}(?![0-9X+])');
-    this.separators_1 = Regex_init_$Create$_0('[\uFF0C,\u3001\u3002\uFF1B;\\n\\r]+');
+    this.separators_1 = Regex_init_$Create$_0('[\uFF0C,\u3001\u3002\uFF1B;.\\n\\r]+');
   }
-  protoOf(ChineseCodeParser).parse_4mmrzm_k$ = function (input) {
+  protoOf(ChineseCodeParser).parse_v0izfz_k$ = function (input, ambiguitySelections) {
     var text = this.normalizeForOffsets_fylbs3_k$(input);
     // Inline function 'kotlin.collections.mutableListOf' call
     var entries = ArrayList_init_$Create$();
+    var ambiguityChoices = new RecognitionAmbiguityChoices(ambiguitySelections);
     // Inline function 'kotlin.collections.mutableListOf' call
     var errors = ArrayList_init_$Create$();
     var from = 0;
     var sawAmount = false;
     var previousAmount = null;
     var tmp0_iterator = this.amt_1.findAll$default_n4kn43_k$(text).iterator_jk1svi_k$();
-    $l$loop: while (tmp0_iterator.hasNext_bitz1p_k$()) {
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
       var m = tmp0_iterator.next_20eer_k$();
       // Inline function 'kotlin.text.ifBlank' call
-      var tmp0_ifBlank = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(2);
+      var tmp0_ifBlank = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
       var tmp;
       if (isBlank(tmp0_ifBlank)) {
         // Inline function 'com.example.remotea.ChineseCodeParser.parse.<anonymous>' call
-        tmp = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(4);
+        tmp = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(2);
       } else {
         tmp = tmp0_ifBlank;
       }
-      var unit = tmp;
-      // Inline function 'kotlin.text.ifBlank' call
-      var tmp1_ifBlank = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
-      var tmp_0;
-      if (isBlank(tmp1_ifBlank)) {
-        // Inline function 'com.example.remotea.ChineseCodeParser.parse.<anonymous>' call
-        tmp_0 = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(3);
-      } else {
-        tmp_0 = tmp1_ifBlank;
-      }
-      var number = tmp_0;
-      if (isBlank(number) ? isBlank(unit) : false)
-        continue $l$loop;
+      var amountExpression = tmp;
       // Inline function 'kotlin.text.substring' call
-      var tmp2_substring = from;
-      var tmp3_substring = m.get_range_ixu978_k$().first_1;
+      var tmp1_substring = from;
+      var tmp2_substring = m.get_range_ixu978_k$().first_1;
       // Inline function 'kotlin.js.asDynamic' call
-      var block = text.substring(tmp2_substring, tmp3_substring);
-      var money = toJiao(this, number, unit);
+      var block = text.substring(tmp1_substring, tmp2_substring);
+      var money = this.toJiaoExpression_3tav3_k$(amountExpression);
       if (money == null) {
         // Inline function 'kotlin.collections.plusAssign' call
-        var tmp4_plusAssign = new Problem(m.get_value_j01efc_k$(), '\u91D1\u989D\u65E0\u6548');
-        errors.add_1j60pz_k$(tmp4_plusAssign);
+        var tmp3_plusAssign = new Problem(m.get_value_j01efc_k$(), '\u91D1\u989D\u65E0\u6548');
+        errors.add_1j60pz_k$(tmp3_plusAssign);
       } else {
         var normalizedBlock = trim(stripTitle(this, block), charArrayOf_0([_Char___init__impl__6a9atx(32), _Char___init__impl__6a9atx(10), _Char___init__impl__6a9atx(13), _Char___init__impl__6a9atx(46), _Char___init__impl__6a9atx(12290), _Char___init__impl__6a9atx(44), _Char___init__impl__6a9atx(65292), _Char___init__impl__6a9atx(12289), _Char___init__impl__6a9atx(59), _Char___init__impl__6a9atx(65307)]));
         if (!((isBlank(normalizedBlock) ? sawAmount : false) ? equals_0(previousAmount, money) : false)) {
-          parseBlock(this, block, money, entries, errors);
+          parseBlock(this, block, money, entries, errors, ambiguityChoices);
         }
         sawAmount = true;
         previousAmount = money;
       }
       from = m.get_range_ixu978_k$().last_1 + 1 | 0;
     }
-    var tmp$ret$9;
+    var tmp$ret$7;
     // Inline function 'kotlin.text.substring' call
-    var tmp5_substring = from;
+    var tmp4_substring = from;
     // Inline function 'kotlin.js.asDynamic' call
-    tmp$ret$9 = text.substring(tmp5_substring);
-    var trailing = trim(stripTitle(this, tmp$ret$9), charArrayOf_0([_Char___init__impl__6a9atx(32), _Char___init__impl__6a9atx(10), _Char___init__impl__6a9atx(13), _Char___init__impl__6a9atx(46), _Char___init__impl__6a9atx(12290), _Char___init__impl__6a9atx(44), _Char___init__impl__6a9atx(65292), _Char___init__impl__6a9atx(12289), _Char___init__impl__6a9atx(59), _Char___init__impl__6a9atx(65307)]));
-    var tmp_1;
+    tmp$ret$7 = text.substring(tmp4_substring);
+    var trailing = trim(stripTitle(this, tmp$ret$7), charArrayOf_0([_Char___init__impl__6a9atx(32), _Char___init__impl__6a9atx(10), _Char___init__impl__6a9atx(13), _Char___init__impl__6a9atx(46), _Char___init__impl__6a9atx(12290), _Char___init__impl__6a9atx(44), _Char___init__impl__6a9atx(65292), _Char___init__impl__6a9atx(12289), _Char___init__impl__6a9atx(59), _Char___init__impl__6a9atx(65307)]));
     // Inline function 'kotlin.text.isNotBlank' call
     if (!isBlank(trailing)) {
-      tmp_1 = !(trailing === '\u4E94');
-    } else {
-      tmp_1 = false;
-    }
-    if (tmp_1) {
       var singleDash = this.dashScatter_1.matchEntire_9c62aj_k$(trailing);
       if (!(singleDash == null)) {
-        var jiao = toJiao(this, singleDash.get_groupValues_rkv314_k$().get_fkrdnv_k$(2), '\u5143');
+        var jiao = decimalToJiao(this, singleDash.get_groupValues_rkv314_k$().get_fkrdnv_k$(2), '\u5143');
         if (!(jiao == null)) {
           // Inline function 'kotlin.collections.plusAssign' call
-          var tmp6_plusAssign = new Entry_0(Kind_SCATTER_getInstance(), singleDash.get_groupValues_rkv314_k$().get_fkrdnv_k$(1) + '=' + moneyText(this, jiao), jiao, new Long(1, 0), VOID, trailing);
-          entries.add_1j60pz_k$(tmp6_plusAssign);
+          var tmp5_plusAssign = new Entry_0(Kind_SCATTER_getInstance(), singleDash.get_groupValues_rkv314_k$().get_fkrdnv_k$(1) + '=' + moneyText(this, jiao), jiao, new Long(1, 0), VOID, trailing);
+          entries.add_1j60pz_k$(tmp5_plusAssign);
         } else {
           // Inline function 'kotlin.collections.plusAssign' call
-          var tmp7_plusAssign = new Problem(trailing, '\u91D1\u989D\u65E0\u6548');
-          errors.add_1j60pz_k$(tmp7_plusAssign);
+          var tmp6_plusAssign = new Problem(trailing, '\u91D1\u989D\u65E0\u6548');
+          errors.add_1j60pz_k$(tmp6_plusAssign);
         }
       } else {
         // Inline function 'kotlin.collections.plusAssign' call
-        var tmp8_plusAssign = new Problem(trailing, '\u7F3A\u5C11\u6216\u65E0\u6CD5\u786E\u5B9A\u91D1\u989D');
-        errors.add_1j60pz_k$(tmp8_plusAssign);
+        var tmp7_plusAssign = new Problem(trailing, '\u7F3A\u5C11\u6216\u65E0\u6CD5\u786E\u5B9A\u91D1\u989D');
+        errors.add_1j60pz_k$(tmp7_plusAssign);
       }
     }
     if ((!sawAmount ? entries.isEmpty_y1axqb_k$() : false) ? errors.isEmpty_y1axqb_k$() : false) {
       // Inline function 'kotlin.collections.plusAssign' call
-      var tmp9_plusAssign = new Problem(input, '\u6CA1\u6709\u53EF\u8BC6\u522B\u53F7\u7801');
-      errors.add_1j60pz_k$(tmp9_plusAssign);
+      var tmp8_plusAssign = new Problem(input, '\u6CA1\u6709\u53EF\u8BC6\u522B\u53F7\u7801');
+      errors.add_1j60pz_k$(tmp8_plusAssign);
     }
     return new Result_0(entries, errors);
+  };
+  protoOf(ChineseCodeParser).parse$default_hjvoim_k$ = function (input, ambiguitySelections, $super) {
+    ambiguitySelections = ambiguitySelections === VOID ? emptyList() : ambiguitySelections;
+    return $super === VOID ? this.parse_v0izfz_k$(input, ambiguitySelections) : $super.parse_v0izfz_k$.call(this, input, ambiguitySelections);
+  };
+  protoOf(ChineseCodeParser).followingAmountSpan_gwf5zj_k$ = function (input, after) {
+    var text = this.normalizeForOffsets_fylbs3_k$(input);
+    var safeAfter = coerceIn(after, 0, text.length);
+    var tmp0_elvis_lhs = firstOrNull_1(this.amt_1.findAll_u4n4j0_k$(text, safeAfter));
+    var tmp;
+    if (tmp0_elvis_lhs == null) {
+      return null;
+    } else {
+      tmp = tmp0_elvis_lhs;
+    }
+    var match = tmp;
+    // Inline function 'kotlin.text.substring' call
+    var tmp0_substring = match.get_range_ixu978_k$().first_1;
+    // Inline function 'kotlin.js.asDynamic' call
+    var between = text.substring(safeAfter, tmp0_substring);
+    var tmp$ret$3;
+    $l$block: {
+      // Inline function 'kotlin.text.any' call
+      var inductionVariable = 0;
+      var last = between.length;
+      while (inductionVariable < last) {
+        var element = charSequenceGet(between, inductionVariable);
+        inductionVariable = inductionVariable + 1 | 0;
+        // Inline function 'com.example.remotea.ChineseCodeParser.followingAmountSpan.<anonymous>' call
+        if (((((element === _Char___init__impl__6a9atx(12290) ? true : element === _Char___init__impl__6a9atx(46)) ? true : element === _Char___init__impl__6a9atx(65307)) ? true : element === _Char___init__impl__6a9atx(59)) ? true : element === _Char___init__impl__6a9atx(10)) ? true : element === _Char___init__impl__6a9atx(13)) {
+          tmp$ret$3 = true;
+          break $l$block;
+        }
+      }
+      tmp$ret$3 = false;
+    }
+    if (tmp$ret$3)
+      return null;
+    return match.get_range_ixu978_k$();
   };
   protoOf(ChineseCodeParser).normalizeForOffsets_fylbs3_k$ = function (s) {
     // Inline function 'kotlin.text.map' call
@@ -21229,7 +21937,7 @@ var parser = function (_) {
     }
     var raw0 = joinToString_0(tmp0_mapTo, '');
     // Inline function 'kotlin.collections.sortedByDescending' call
-    var tmp3_sortedByDescending = listOf(['\u4E03\u661F\u5F69', '\u6392\u5217\u4E94', '\u4E03\u4E94', '\u4E94\u4E03', '\u4E03\u661F', '\u4E03\u5B50', '\u4E03\u4ED4', '\u4E94\u5B50', '\u4E94\u4ED4', '\u6392\u4E94', '\u6392\u5217', '\u5B50', '\u4E03', '\u4E94']);
+    var tmp3_sortedByDescending = listOf(['\u4E03\u661F\u5F69', '\u6392\u5217\u4E94', '\u4E03\u4E94', '\u4E94\u4E03', '\u4E03\u661F', '\u4E03\u5B50', '\u4E03\u4ED4', '\u4E94\u5B50', '\u4E94\u4ED4', '\u6392\u4E94', '\u6392\u5217']);
     var tmp$ret$7;
     // Inline function 'kotlin.comparisons.compareByDescending' call
     var tmp_2 = ChineseCodeParser$normalizeForOffsets$lambda;
@@ -21252,8 +21960,463 @@ var parser = function (_) {
     var tmp7_replace = tmp5_replace.replace_8a09nm_k$(raw, tmp6_replace);
     var normalizedDots = Regex_init_$Create$_0('(?<=[0-9X])\\.(?=[0-9X]{4}(?![0-9X]))').replace_838ra0_k$(tmp7_replace, ',');
     var normalizedMasks = this.plusMask_1.replace_8a09nm_k$(normalizedDots, ChineseCodeParser$normalizeForOffsets$lambda_1);
-    // Inline function 'kotlin.text.replace' call
-    return Regex_init_$Create$_0('(?<![0-9X-])([0-9]{4})-(\\d{1,3}(?:\\.\\d+)?)(?=\\s|[,\uFF0C\u3001\u3002\uFF1B;]|$)').replace_838ra0_k$(normalizedMasks, '$1=$2');
+    return normalizedMasks;
+  };
+  protoOf(ChineseCodeParser).toJiaoExpression_3tav3_k$ = function (raw) {
+    var s = replace_2(replace_2(replace_2(replace_2(replace_2(raw, ' ', ''), '\u5757\u94B1', '\u5757'), '\u89D2\u94B1', '\u89D2'), '\u6BDB\u94B1', '\u6BDB'), '\u7EC4', '\u5143');
+    if (isBlank(s))
+      return null;
+    var tmp0_safe_receiver = Regex_init_$Create$_0('^(\\d+(?:\\.\\d+)?)(\u5143|\u5757|\u89D2|\u6BDB)?$').matchEntire_9c62aj_k$(s);
+    if (tmp0_safe_receiver == null)
+      null;
+    else {
+      // Inline function 'kotlin.let' call
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp = ChineseCodeParser_getInstance();
+      var tmp_0 = tmp0_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
+      var tmp$ret$1;
+      // Inline function 'kotlin.text.ifBlank' call
+      var tmp0_ifBlank = tmp0_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(2);
+      var tmp_1;
+      if (isBlank(tmp0_ifBlank)) {
+        // Inline function 'com.example.remotea.ChineseCodeParser.toJiaoExpression.<anonymous>.<anonymous>' call
+        tmp_1 = '\u5143';
+      } else {
+        tmp_1 = tmp0_ifBlank;
+      }
+      tmp$ret$1 = tmp_1;
+      return decimalToJiao(tmp, tmp_0, tmp$ret$1);
+    }
+    var tmp1_safe_receiver = Regex_init_$Create$_0('^(\\d+)(\u5143|\u5757)(\u534A|\\d(?:\u89D2|\u6BDB)?)$').matchEntire_9c62aj_k$(s);
+    if (tmp1_safe_receiver == null)
+      null;
+    else {
+      // Inline function 'kotlin.let' call
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp0_elvis_lhs = toLongOrNull(tmp1_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(1));
+      var tmp_2;
+      if (tmp0_elvis_lhs == null) {
+        return null;
+      } else {
+        tmp_2 = tmp0_elvis_lhs;
+      }
+      var whole = tmp_2;
+      var tail = tmp1_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(3);
+      var jiao = tail === '\u534A' ? new Long(5, 0) : toLong_0(digitToInt(first(tail)));
+      // Inline function 'kotlin.takeIf' call
+      var tmp0_takeIf = whole.times_2zfqpc_k$(new Long(10, 0)).plus_u6jwas_k$(jiao);
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp_3;
+      // Inline function 'com.example.remotea.ChineseCodeParser.toJiaoExpression.<anonymous>.<anonymous>' call
+      if (tmp0_takeIf.compareTo_n4fqi2_k$(new Long(0, 0)) > 0) {
+        tmp_3 = tmp0_takeIf;
+      } else {
+        tmp_3 = null;
+      }
+      return tmp_3;
+    }
+    var tmp2_safe_receiver = Regex_init_$Create$_0('^(\\d+)(\u5143|\u5757)(\\d+)(\u89D2|\u6BDB)$').matchEntire_9c62aj_k$(s);
+    if (tmp2_safe_receiver == null)
+      null;
+    else {
+      // Inline function 'kotlin.let' call
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp0_elvis_lhs_0 = toLongOrNull(tmp2_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(1));
+      var tmp_4;
+      if (tmp0_elvis_lhs_0 == null) {
+        return null;
+      } else {
+        tmp_4 = tmp0_elvis_lhs_0;
+      }
+      var yuan = tmp_4;
+      var tmp1_elvis_lhs = toLongOrNull(tmp2_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(3));
+      var tmp_5;
+      if (tmp1_elvis_lhs == null) {
+        return null;
+      } else {
+        tmp_5 = tmp1_elvis_lhs;
+      }
+      var jiao_0 = tmp_5;
+      // Inline function 'kotlin.ranges.contains' call
+      var tmp0_contains = numberRangeToNumber(0, 9);
+      if (!contains_9(isInterface(tmp0_contains, ClosedRange) ? tmp0_contains : THROW_CCE(), jiao_0))
+        return null;
+      // Inline function 'kotlin.takeIf' call
+      var tmp1_takeIf = yuan.times_2zfqpc_k$(new Long(10, 0)).plus_u6jwas_k$(jiao_0);
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp_6;
+      // Inline function 'com.example.remotea.ChineseCodeParser.toJiaoExpression.<anonymous>.<anonymous>' call
+      if (tmp1_takeIf.compareTo_n4fqi2_k$(new Long(0, 0)) > 0) {
+        tmp_6 = tmp1_takeIf;
+      } else {
+        tmp_6 = null;
+      }
+      return tmp_6;
+    }
+    var tmp3_safe_receiver = Regex_init_$Create$_0('^(' + this.cnIntegerPattern_1 + ')(\u5143|\u5757)(' + this.cnIntegerPattern_1 + ')(\u89D2|\u6BDB)$').matchEntire_9c62aj_k$(s);
+    if (tmp3_safe_receiver == null)
+      null;
+    else {
+      // Inline function 'kotlin.let' call
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp0_elvis_lhs_1 = chineseInteger(ChineseCodeParser_getInstance(), tmp3_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(1));
+      var tmp_7;
+      if (tmp0_elvis_lhs_1 == null) {
+        return null;
+      } else {
+        tmp_7 = tmp0_elvis_lhs_1;
+      }
+      var yuan_0 = tmp_7;
+      var tmp1_elvis_lhs_0 = chineseInteger(ChineseCodeParser_getInstance(), tmp3_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(3));
+      var tmp_8;
+      if (tmp1_elvis_lhs_0 == null) {
+        return null;
+      } else {
+        tmp_8 = tmp1_elvis_lhs_0;
+      }
+      var jiao_1 = tmp_8;
+      // Inline function 'kotlin.ranges.contains' call
+      var tmp0_contains_0 = numberRangeToNumber(0, 9);
+      if (!contains_9(isInterface(tmp0_contains_0, ClosedRange) ? tmp0_contains_0 : THROW_CCE(), jiao_1))
+        return null;
+      // Inline function 'kotlin.takeIf' call
+      var tmp1_takeIf_0 = yuan_0.times_2zfqpc_k$(new Long(10, 0)).plus_u6jwas_k$(jiao_1);
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp_9;
+      // Inline function 'com.example.remotea.ChineseCodeParser.toJiaoExpression.<anonymous>.<anonymous>' call
+      if (tmp1_takeIf_0.compareTo_n4fqi2_k$(new Long(0, 0)) > 0) {
+        tmp_9 = tmp1_takeIf_0;
+      } else {
+        tmp_9 = null;
+      }
+      return tmp_9;
+    }
+    var tmp4_safe_receiver = Regex_init_$Create$_0('^(' + this.cnIntegerPattern_1 + ')(\u5143|\u5757)(\u534A|[\u96F6\u3007\u4E00\u4E8C\u4E24\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D](?:\u89D2|\u6BDB)?)$').matchEntire_9c62aj_k$(s);
+    if (tmp4_safe_receiver == null)
+      null;
+    else {
+      // Inline function 'kotlin.let' call
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp0_elvis_lhs_2 = chineseInteger(ChineseCodeParser_getInstance(), tmp4_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(1));
+      var tmp_10;
+      if (tmp0_elvis_lhs_2 == null) {
+        return null;
+      } else {
+        tmp_10 = tmp0_elvis_lhs_2;
+      }
+      var yuan_1 = tmp_10;
+      var tail_0 = tmp4_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(3);
+      var tmp_11;
+      if (tail_0 === '\u534A') {
+        tmp_11 = new Long(5, 0);
+      } else {
+        var tmp1_safe_receiver_0 = chineseDigit(ChineseCodeParser_getInstance(), first(tail_0));
+        var tmp2_elvis_lhs = tmp1_safe_receiver_0 == null ? null : toLong_0(tmp1_safe_receiver_0);
+        var tmp_12;
+        if (tmp2_elvis_lhs == null) {
+          return null;
+        } else {
+          tmp_12 = tmp2_elvis_lhs;
+        }
+        tmp_11 = tmp_12;
+      }
+      var jiao_2 = tmp_11;
+      // Inline function 'kotlin.takeIf' call
+      var tmp0_takeIf_0 = yuan_1.times_2zfqpc_k$(new Long(10, 0)).plus_u6jwas_k$(jiao_2);
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp_13;
+      // Inline function 'com.example.remotea.ChineseCodeParser.toJiaoExpression.<anonymous>.<anonymous>' call
+      if (tmp0_takeIf_0.compareTo_n4fqi2_k$(new Long(0, 0)) > 0) {
+        tmp_13 = tmp0_takeIf_0;
+      } else {
+        tmp_13 = null;
+      }
+      return tmp_13;
+    }
+    var tmp5_safe_receiver = Regex_init_$Create$_0('^(' + this.cnNumberPattern_1 + ')(\u5143|\u5757|\u89D2|\u6BDB)?$').matchEntire_9c62aj_k$(s);
+    if (tmp5_safe_receiver == null)
+      null;
+    else {
+      // Inline function 'kotlin.let' call
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp0_elvis_lhs_3 = chineseNumberText(ChineseCodeParser_getInstance(), tmp5_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(1));
+      var tmp_14;
+      if (tmp0_elvis_lhs_3 == null) {
+        return null;
+      } else {
+        tmp_14 = tmp0_elvis_lhs_3;
+      }
+      var number = tmp_14;
+      var tmp_15 = ChineseCodeParser_getInstance();
+      var tmp$ret$18;
+      // Inline function 'kotlin.text.ifBlank' call
+      var tmp0_ifBlank_0 = tmp5_safe_receiver.get_groupValues_rkv314_k$().get_fkrdnv_k$(2);
+      var tmp_16;
+      if (isBlank(tmp0_ifBlank_0)) {
+        // Inline function 'com.example.remotea.ChineseCodeParser.toJiaoExpression.<anonymous>.<anonymous>' call
+        tmp_16 = '\u5143';
+      } else {
+        tmp_16 = tmp0_ifBlank_0;
+      }
+      tmp$ret$18 = tmp_16;
+      return decimalToJiao(tmp_15, number, tmp$ret$18);
+    }
+    return null;
+  };
+  protoOf(ChineseCodeParser).findAmbiguities_jakvhr_k$ = function (input) {
+    var text = this.normalizeForOffsets_fylbs3_k$(input);
+    // Inline function 'kotlin.collections.mutableListOf' call
+    var result = ArrayList_init_$Create$();
+    // Inline function 'kotlin.collections.mutableMapOf' call
+    var occurrence = LinkedHashMap_init_$Create$();
+    var from = 0;
+    var tmp0_iterator = this.amt_1.findAll$default_n4kn43_k$(text).iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var m = tmp0_iterator.next_20eer_k$();
+      // Inline function 'kotlin.text.ifBlank' call
+      var tmp0_ifBlank = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
+      var tmp;
+      if (isBlank(tmp0_ifBlank)) {
+        // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+        tmp = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(2);
+      } else {
+        tmp = tmp0_ifBlank;
+      }
+      var amountExpression = tmp;
+      var sharedMoney = this.toJiaoExpression_3tav3_k$(amountExpression);
+      if (!(sharedMoney == null)) {
+        // Inline function 'kotlin.text.substring' call
+        var tmp1_substring = from;
+        var tmp2_substring = m.get_range_ixu978_k$().first_1;
+        // Inline function 'kotlin.js.asDynamic' call
+        var block = text.substring(tmp1_substring, tmp2_substring);
+        var clauseRegex = Regex_init_$Create$_0('[^\uFF0C,\u3001\u3002\uFF1B;.\\n\\r]+');
+        var tmp1_iterator = clauseRegex.findAll$default_n4kn43_k$(block).iterator_jk1svi_k$();
+        $l$loop_2: while (tmp1_iterator.hasNext_bitz1p_k$()) {
+          var cm = tmp1_iterator.next_20eer_k$();
+          var rawClause = cm.get_value_j01efc_k$();
+          // Inline function 'kotlin.let' call
+          var tmp$ret$7;
+          $l$block: {
+            // Inline function 'kotlin.text.indexOfFirst' call
+            var inductionVariable = 0;
+            var last = charSequenceLength(rawClause) - 1 | 0;
+            if (inductionVariable <= last)
+              do {
+                var index = inductionVariable;
+                inductionVariable = inductionVariable + 1 | 0;
+                // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+                var tmp3_anonymous = charSequenceGet(rawClause, index);
+                if (!isWhitespace(tmp3_anonymous)) {
+                  tmp$ret$7 = index;
+                  break $l$block;
+                }
+              }
+               while (inductionVariable <= last);
+            tmp$ret$7 = -1;
+          }
+          var tmp4_let = tmp$ret$7;
+          // Inline function 'kotlin.contracts.contract' call
+          // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+          var leading = tmp4_let < 0 ? 0 : tmp4_let;
+          // Inline function 'kotlin.let' call
+          var tmp$ret$11;
+          $l$block_0: {
+            // Inline function 'kotlin.text.indexOfLast' call
+            var inductionVariable_0 = charSequenceLength(rawClause) - 1 | 0;
+            if (0 <= inductionVariable_0)
+              do {
+                var index_0 = inductionVariable_0;
+                inductionVariable_0 = inductionVariable_0 + -1 | 0;
+                // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+                var tmp5_anonymous = charSequenceGet(rawClause, index_0);
+                if (!isWhitespace(tmp5_anonymous)) {
+                  tmp$ret$11 = index_0;
+                  break $l$block_0;
+                }
+              }
+               while (0 <= inductionVariable_0);
+            tmp$ret$11 = -1;
+          }
+          var tmp6_let = tmp$ret$11;
+          // Inline function 'kotlin.contracts.contract' call
+          // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+          var trailing = tmp6_let < 0 ? rawClause.length - 1 | 0 : tmp6_let;
+          // Inline function 'kotlin.text.substring' call
+          var tmp7_substring = trailing + 1 | 0;
+          // Inline function 'kotlin.js.asDynamic' call
+          var clause = rawClause.substring(leading, tmp7_substring);
+          var tmp2_elvis_lhs = Regex_init_$Create$_0('^([0-9]{4})-([0-9]{1,10})$').matchEntire_9c62aj_k$(clause);
+          var tmp_0;
+          if (tmp2_elvis_lhs == null) {
+            continue $l$loop_2;
+          } else {
+            tmp_0 = tmp2_elvis_lhs;
+          }
+          var dm = tmp_0;
+          var head = dm.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
+          var tail = dm.get_groupValues_rkv314_k$().get_fkrdnv_k$(2);
+          if (!findAmbiguities$uniqueDigits(head) ? true : !findAmbiguities$uniqueDigits(tail))
+            continue $l$loop_2;
+          var tmp3_elvis_lhs = decimalToJiao(this, tail, '\u5143');
+          var tmp_1;
+          if (tmp3_elvis_lhs == null) {
+            continue $l$loop_2;
+          } else {
+            tmp_1 = tmp3_elvis_lhs;
+          }
+          var internalMoney = tmp_1;
+          var scatterLegal = internalMoney.compareTo_n4fqi2_k$(toLong_0(IntCompanionObject_getInstance().MAX_VALUE)) <= 0 ? PositionAmountPolicy_getInstance().accepts_492uff_k$(4, internalMoney.toInt_1tsl84_k$()) : false;
+          var suiteLegal = sharedMoney.compareTo_n4fqi2_k$(toLong_0(IntCompanionObject_getInstance().MAX_VALUE)) <= 0 ? PositionAmountPolicy_getInstance().accepts_492uff_k$(2, sharedMoney.toInt_1tsl84_k$()) : false;
+          if (!scatterLegal ? true : !suiteLegal)
+            continue $l$loop_2;
+          var combos = toLong_0(head.length).times_2zfqpc_k$(toLong_0(tail.length));
+          var globalStart = (from + cm.get_range_ixu978_k$().first_1 | 0) + leading | 0;
+          var globalEnd = globalStart + clause.length | 0;
+          var occ = findAmbiguities$nextOccurrence(occurrence, 'dash_amount_or_head_tail', clause);
+          // Inline function 'kotlin.collections.plusAssign' call
+          var tmp8_plusAssign = new RecognitionAmbiguity('dash:' + globalStart + ':' + globalEnd, 'dash_amount_or_head_tail', clause, globalStart, globalEnd, occ, '\u201C\u53F7\u7801-\u6570\u5B57\u201D\u65E2\u53EF\u80FD\u662F\u53F7\u7801\u91D1\u989D\uFF0C\u4E5F\u53EF\u80FD\u662F\u5934\u5C3E\u4E8C\u5B9A\u4F4D\u5E76\u7EE7\u627F\u672C\u6BB5\u91D1\u989D\u3002', listOf([new RecognitionAmbiguityChoice('scatter_amount', '\u53F7\u7801\u91D1\u989D\uFF08\u6563\u7801\uFF09', head + ' \u5404' + findAmbiguities$moneyLabel(internalMoney), '1 \u4E2A\u72EC\u7ACB\u53F7\u7801 \xB7 \u672C\u9879 ' + findAmbiguities$moneyLabel(internalMoney), new Long(1, 0), internalMoney), new RecognitionAmbiguityChoice('head_tail_shared', '\u5934\u5C3E\u4E8C\u5B9A\u4F4D\uFF08\u5957\u7801\uFF09', head + '\u5934' + tail + '\u5C3E\uFF0C\u5404' + findAmbiguities$moneyLabel(sharedMoney), toString_3(combos) + ' \u7EC4 \xD7 ' + findAmbiguities$moneyLabel(sharedMoney) + ' \xB7 \u672C\u9879 ' + findAmbiguities$moneyLabel(sharedMoney.times_2zfqpc_k$(combos)), combos, sharedMoney.times_2zfqpc_k$(combos))]));
+          result.add_1j60pz_k$(tmp8_plusAssign);
+        }
+        var lineRegex = Regex_init_$Create$_0('[^\u3002\uFF1B;.\\n\\r]+');
+        var tmp4_iterator = lineRegex.findAll$default_n4kn43_k$(block).iterator_jk1svi_k$();
+        $l$loop_5: while (tmp4_iterator.hasNext_bitz1p_k$()) {
+          var lm = tmp4_iterator.next_20eer_k$();
+          // Inline function 'kotlin.text.trim' call
+          var tmp$ret$16;
+          // Inline function 'kotlin.text.trim' call
+          var tmp9_trim = lm.get_value_j01efc_k$();
+          tmp$ret$16 = toString_3(trim_3(isCharSequence(tmp9_trim) ? tmp9_trim : THROW_CCE()));
+          var tmp10_trim = trim(tmp$ret$16, charArrayOf_0([_Char___init__impl__6a9atx(65292), _Char___init__impl__6a9atx(44), _Char___init__impl__6a9atx(12289)]));
+          var cleanLine = toString_3(trim_3(isCharSequence(tmp10_trim) ? tmp10_trim : THROW_CCE()));
+          // Inline function 'kotlin.collections.map' call
+          var tmp11_map = split(cleanLine, charArrayOf_0([_Char___init__impl__6a9atx(44), _Char___init__impl__6a9atx(65292)]));
+          // Inline function 'kotlin.collections.mapTo' call
+          var tmp0_mapTo = ArrayList_init_$Create$_0(collectionSizeOrDefault(tmp11_map, 10));
+          var tmp0_iterator_0 = tmp11_map.iterator_jk1svi_k$();
+          while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+            var item = tmp0_iterator_0.next_20eer_k$();
+            var tmp$ret$19;
+            // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+            // Inline function 'kotlin.text.trim' call
+            tmp$ret$19 = toString_3(trim_3(isCharSequence(item) ? item : THROW_CCE()));
+            tmp0_mapTo.add_1j60pz_k$(tmp$ret$19);
+          }
+          var groups = tmp0_mapTo;
+          var tmp_2;
+          if (!(groups.get_size_woubt6_k$() === 4)) {
+            tmp_2 = true;
+          } else {
+            var tmp$ret$22;
+            $l$block_2: {
+              // Inline function 'kotlin.collections.any' call
+              var tmp_3;
+              if (isInterface(groups, Collection)) {
+                tmp_3 = groups.isEmpty_y1axqb_k$();
+              } else {
+                tmp_3 = false;
+              }
+              if (tmp_3) {
+                tmp$ret$22 = false;
+                break $l$block_2;
+              }
+              var tmp0_iterator_1 = groups.iterator_jk1svi_k$();
+              while (tmp0_iterator_1.hasNext_bitz1p_k$()) {
+                var element = tmp0_iterator_1.next_20eer_k$();
+                // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+                if (!ChineseCodeParser_getInstance().scatterCode_1.matches_qvb2fs_k$(element)) {
+                  tmp$ret$22 = true;
+                  break $l$block_2;
+                }
+              }
+              tmp$ret$22 = false;
+            }
+            tmp_2 = tmp$ret$22;
+          }
+          if (tmp_2)
+            continue $l$loop_5;
+          var tmp$ret$24;
+          $l$block_4: {
+            // Inline function 'kotlin.collections.any' call
+            var tmp_4;
+            if (isInterface(groups, Collection)) {
+              tmp_4 = groups.isEmpty_y1axqb_k$();
+            } else {
+              tmp_4 = false;
+            }
+            if (tmp_4) {
+              tmp$ret$24 = false;
+              break $l$block_4;
+            }
+            var tmp0_iterator_2 = groups.iterator_jk1svi_k$();
+            while (tmp0_iterator_2.hasNext_bitz1p_k$()) {
+              var element_0 = tmp0_iterator_2.next_20eer_k$();
+              // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+              if (!findAmbiguities$uniqueDigits(element_0)) {
+                tmp$ret$24 = true;
+                break $l$block_4;
+              }
+            }
+            tmp$ret$24 = false;
+          }
+          if (tmp$ret$24)
+            continue $l$loop_5;
+          // Inline function 'kotlin.takeIf' call
+          var tmp12_takeIf = indexOf_7(lm.get_value_j01efc_k$(), cleanLine);
+          // Inline function 'kotlin.contracts.contract' call
+          var tmp_5;
+          // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+          if (tmp12_takeIf >= 0) {
+            tmp_5 = tmp12_takeIf;
+          } else {
+            tmp_5 = null;
+          }
+          var tmp5_elvis_lhs = tmp_5;
+          var tmp_6;
+          if (tmp5_elvis_lhs == null) {
+            continue $l$loop_5;
+          } else {
+            tmp_6 = tmp5_elvis_lhs;
+          }
+          var localStart = tmp_6;
+          var lineStart = (from + lm.get_range_ixu978_k$().first_1 | 0) + localStart | 0;
+          var lineEnd = lineStart + cleanLine.length | 0;
+          var occ_0 = findAmbiguities$nextOccurrence(occurrence, 'four_scatter_or_position', cleanLine);
+          // Inline function 'kotlin.collections.fold' call
+          var accumulator = new Long(1, 0);
+          var tmp0_iterator_3 = groups.iterator_jk1svi_k$();
+          while (tmp0_iterator_3.hasNext_bitz1p_k$()) {
+            var element_1 = tmp0_iterator_3.next_20eer_k$();
+            // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+            var tmp13_anonymous = accumulator;
+            accumulator = Math_getInstance().multiplyExact_iytfnz_k$(tmp13_anonymous, toLong_0(element_1.length));
+          }
+          var combos_0 = accumulator;
+          // Inline function 'kotlin.collections.plusAssign' call
+          var tmp14_plusAssign = new RecognitionAmbiguity('four:' + lineStart + ':' + lineEnd, 'four_scatter_or_position', cleanLine, lineStart, lineEnd, occ_0, '\u521A\u597D\u56DB\u7EC4\u56DB\u4F4D\u6570\u5B57\uFF0C\u65E2\u53EF\u80FD\u662F 4 \u4E2A\u72EC\u7ACB\u53F7\u7801\uFF0C\u4E5F\u53EF\u80FD\u5206\u522B\u4EE3\u8868\u5934/\u767E/\u5341/\u5C3E\u3002', listOf([new RecognitionAmbiguityChoice('four_scatter', '4 \u4E2A\u72EC\u7ACB\u53F7\u7801', joinToString_0(groups, '\u3001') + ('\uFF0C\u5404' + findAmbiguities$moneyLabel(sharedMoney)), '4 \u4E2A\u53F7\u7801 \xD7 ' + findAmbiguities$moneyLabel(sharedMoney) + ' \xB7 \u5408\u8BA1 ' + findAmbiguities$moneyLabel(sharedMoney.times_2zfqpc_k$(new Long(4, 0))), new Long(4, 0), sharedMoney.times_2zfqpc_k$(new Long(4, 0))), new RecognitionAmbiguityChoice('four_position', '\u56DB\u5B9A\u4F4D', groups.get_fkrdnv_k$(0) + '\u5934' + groups.get_fkrdnv_k$(1) + '\u767E' + groups.get_fkrdnv_k$(2) + '\u5341' + groups.get_fkrdnv_k$(3) + '\u5C3E\uFF0C\u5404' + findAmbiguities$moneyLabel(sharedMoney), toString_3(combos_0) + ' \u7EC4 \xD7 ' + findAmbiguities$moneyLabel(sharedMoney) + ' \xB7 \u5408\u8BA1 ' + findAmbiguities$moneyLabel(sharedMoney.times_2zfqpc_k$(combos_0)), combos_0, sharedMoney.times_2zfqpc_k$(combos_0))]));
+          result.add_1j60pz_k$(tmp14_plusAssign);
+        }
+      }
+      from = m.get_range_ixu978_k$().last_1 + 1 | 0;
+    }
+    // Inline function 'kotlin.collections.sortedBy' call
+    // Inline function 'kotlin.collections.distinctBy' call
+    var set = HashSet_init_$Create$();
+    var list = ArrayList_init_$Create$();
+    var tmp0_iterator_4 = result.iterator_jk1svi_k$();
+    while (tmp0_iterator_4.hasNext_bitz1p_k$()) {
+      var e = tmp0_iterator_4.next_20eer_k$();
+      // Inline function 'com.example.remotea.ChineseCodeParser.findAmbiguities.<anonymous>' call
+      var key = listOf([e.type_1, e.start_1, e.endExclusive_1, e.source_1]);
+      if (set.add_1j60pz_k$(key)) {
+        list.add_1j60pz_k$(e);
+      }
+    }
+    var tmp$ret$32;
+    // Inline function 'kotlin.comparisons.compareBy' call
+    var tmp_7 = ChineseCodeParser$findAmbiguities$lambda;
+    tmp$ret$32 = new sam$kotlin_Comparator$0_6(tmp_7);
+    return sortedWith(list, tmp$ret$32);
   };
   var ChineseCodeParser_instance;
   function ChineseCodeParser_getInstance() {
@@ -21261,17 +22424,17 @@ var parser = function (_) {
       new ChineseCodeParser();
     return ChineseCodeParser_instance;
   }
-  function _no_name_provided__qut3iv_9($code) {
+  function _no_name_provided__qut3iv_10($code) {
     this.$code_1 = $code;
   }
-  protoOf(_no_name_provided__qut3iv_9).sourceIterator_2zqxcn_k$ = function () {
+  protoOf(_no_name_provided__qut3iv_10).sourceIterator_2zqxcn_k$ = function () {
     return iterator_2(this.$code_1);
   };
-  protoOf(_no_name_provided__qut3iv_9).keyOf_88tdut_k$ = function (element) {
+  protoOf(_no_name_provided__qut3iv_10).keyOf_88tdut_k$ = function (element) {
     // Inline function 'com.example.remotea.FullTurnAmount.multiplier.<anonymous>' call
     return element;
   };
-  protoOf(_no_name_provided__qut3iv_9).keyOf_dhlc0l_k$ = function (element) {
+  protoOf(_no_name_provided__qut3iv_10).keyOf_dhlc0l_k$ = function (element) {
     return new Char_0(this.keyOf_88tdut_k$(element instanceof Char_0 ? element.value_1 : THROW_CCE()));
   };
   function FullTurnAmount() {
@@ -21288,7 +22451,7 @@ var parser = function (_) {
     // Inline function 'kotlin.collections.map' call
     var tmp$ret$1;
     // Inline function 'kotlin.text.groupingBy' call
-    tmp$ret$1 = new _no_name_provided__qut3iv_9(code);
+    tmp$ret$1 = new _no_name_provided__qut3iv_10(code);
     var tmp1_map = eachCount(tmp$ret$1).get_values_ksazhn_k$();
     // Inline function 'kotlin.collections.mapTo' call
     var tmp0_mapTo = ArrayList_init_$Create$_0(collectionSizeOrDefault(tmp1_map, 10));
@@ -21364,17 +22527,17 @@ var parser = function (_) {
   function _get_largeFour__bqa7ow($this) {
     return $this.largeFour_1;
   }
-  function sam$kotlin_Comparator$0_7(function_0) {
+  function sam$kotlin_Comparator$0_8(function_0) {
     this.function_1 = function_0;
   }
-  protoOf(sam$kotlin_Comparator$0_7).compare_6tbigh_k$ = function (a, b) {
+  protoOf(sam$kotlin_Comparator$0_8).compare_6tbigh_k$ = function (a, b) {
     return this.function_1(a, b);
   };
-  protoOf(sam$kotlin_Comparator$0_7).compare = function (a, b) {
+  protoOf(sam$kotlin_Comparator$0_8).compare = function (a, b) {
     return this.compare_6tbigh_k$(a, b);
   };
   function inspect$skip(pos, source) {
-    while (pos._v < source.length ? contains_10(FullTurnParser_getInstance().separator_1, charSequenceGet(source, pos._v)) : false) {
+    while (pos._v < source.length ? contains_12(FullTurnParser_getInstance().separator_1, charSequenceGet(source, pos._v)) : false) {
       pos._v = pos._v + 1 | 0;
     }
     return pos._v;
@@ -21415,7 +22578,7 @@ var parser = function (_) {
     return repeat_0(' ', it.get_value_j01efc_k$().length);
   }
   function FullTurnParser$inspect$lambda_2(m) {
-    return contains_10(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43)) ? replace_1(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43), _Char___init__impl__6a9atx(88)) : m.get_value_j01efc_k$();
+    return contains_12(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43)) ? replace_1(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(43), _Char___init__impl__6a9atx(88)) : m.get_value_j01efc_k$();
   }
   function FullTurnParser() {
     FullTurnParser_instance = this;
@@ -21462,7 +22625,7 @@ var parser = function (_) {
     var tmp$ret$0;
     // Inline function 'kotlin.comparisons.compareByDescending' call
     var tmp = FullTurnParser$inspect$lambda;
-    tmp$ret$0 = new sam$kotlin_Comparator$0_7(tmp);
+    tmp$ret$0 = new sam$kotlin_Comparator$0_8(tmp);
     var tmp_0 = sortedWith(ignoredTitles, tmp$ret$0);
     var titlePattern = Regex_init_$Create$_0(joinToString_0(tmp_0, '|', VOID, VOID, VOID, VOID, FullTurnParser$inspect$lambda_0));
     var withoutTitles = titlePattern.replace_8a09nm_k$(raw, FullTurnParser$inspect$lambda_1);
@@ -21519,7 +22682,7 @@ var parser = function (_) {
         // Inline function 'kotlin.collections.plusAssign' call
         codes.add_1j60pz_k$(code);
         pos._v = match.get_range_ixu978_k$().last_1 + 1 | 0;
-        while (pos._v < source.length ? contains_10(' \u3001,\uFF0C\t\r\n', charSequenceGet(source, pos._v)) : false) {
+        while (pos._v < source.length ? contains_12(' \u3001,\uFF0C\t\r\n', charSequenceGet(source, pos._v)) : false) {
           pos._v = pos._v + 1 | 0;
         }
         var tmp2_safe_receiver = this.four_1.find_9caqn1_k$(source, pos._v);
@@ -21534,7 +22697,7 @@ var parser = function (_) {
         inspect$fail(source, issues, begin, '\u5168\u8F6C\u683C\u5F0F\u5E94\u4ECE\u56DB\u4F4D\u53F7\u7801\u5F00\u59CB\uFF1B\u672A\u77E5\u6587\u5B57\u7981\u6B62\u5FFD\u7565');
         break $l$loop_10;
       }
-      while (pos._v < source.length ? contains_10(' \t\r\n', charSequenceGet(source, pos._v)) : false) {
+      while (pos._v < source.length ? contains_12(' \t\r\n', charSequenceGet(source, pos._v)) : false) {
         pos._v = pos._v + 1 | 0;
       }
       var tmp5_safe_receiver = this.turnWord_1.find_9caqn1_k$(source, pos._v);
@@ -21708,7 +22871,7 @@ var parser = function (_) {
       var turnJiao = null;
       if (!(turn == null)) {
         pos._v = turn.get_range_ixu978_k$().last_1 + 1 | 0;
-        while (pos._v < source.length ? contains_10(' \t', charSequenceGet(source, pos._v)) : false) {
+        while (pos._v < source.length ? contains_12(' \t', charSequenceGet(source, pos._v)) : false) {
           pos._v = pos._v + 1 | 0;
         }
         var tmp13_safe_receiver = this.amount_1.find_9caqn1_k$(source, pos._v);
@@ -21981,7 +23144,7 @@ var parser = function (_) {
       return first;
     if (FullTurnParser_getInstance().applies_q0k5zf_k$(suiteText))
       return new MixedParseReport(null, listOf_0(new BatchIssue(suiteAt, raw.length, '\u5957\u7801\u540E\u4E0D\u652F\u6301\u7EE7\u7EED\u5168\u8F6C\uFF1B\u8BF7\u5C06\u5957\u7801\u653E\u5728\u672C\u5355\u6700\u540E')));
-    var second = $this.inspect_h150z1_k$(suiteText);
+    var second = inspectCore$default($this, suiteText);
     if (!second.get_valid_j01e4z_k$()) {
       // Inline function 'kotlin.collections.map' call
       var tmp0_map = second.issues_1;
@@ -22077,7 +23240,7 @@ var parser = function (_) {
     var turnText = raw.substring(turnAt);
     if (FullTurnParser_getInstance().applies_q0k5zf_k$(prefixText))
       return inspectSuiteThenTrailingFullTurn$reject(turnAt, raw, '\u4EC5\u5141\u8BB8\u5C06\u5355\u4E00\u5C3E\u90E8\u5168\u5012\u6BB5\u63D0\u524D\uFF1B\u6DF7\u5408\u591A\u4E2A\u5168\u5012\u6BB5\u9700\u4EBA\u5DE5\u62C6\u5206\u6838\u5BF9');
-    var prefix = $this.inspect_h150z1_k$(prefixText);
+    var prefix = inspectCore$default($this, prefixText);
     if (!prefix.get_valid_j01e4z_k$())
       return prefix;
     var tmp0_elvis_lhs = prefix.batch_1;
@@ -22339,6 +23502,437 @@ var parser = function (_) {
     tmp0_set.put_3mhbri_k$(snippet, tmp1_set);
     return new Span(at, coerceAtMost(at + snippet.length | 0, this.raw_1.length));
   };
+  function inspectCore($this, raw, ambiguitySelections) {
+    if (FullTurnParser_getInstance().applies_q0k5zf_k$(raw)) {
+      var tmp0_safe_receiver = $this.namedSuiteStart_1.find$default_bc99zm_k$(raw);
+      var tmp1_safe_receiver = tmp0_safe_receiver == null ? null : tmp0_safe_receiver.get_range_ixu978_k$();
+      var suiteStart = tmp1_safe_receiver == null ? null : tmp1_safe_receiver.first_1;
+      if (!(suiteStart == null)) {
+        var tmp2_safe_receiver = lastOrNull($this.trailingFullTurnStart_1.findAll$default_n4kn43_k$(raw));
+        var tmp3_safe_receiver = tmp2_safe_receiver == null ? null : tmp2_safe_receiver.get_range_ixu978_k$();
+        var trailingTurnAt = tmp3_safe_receiver == null ? null : tmp3_safe_receiver.first_1;
+        if (!(trailingTurnAt == null) ? trailingTurnAt > suiteStart : false)
+          return inspectSuiteThenTrailingFullTurn($this, raw, suiteStart, trailingTurnAt);
+        return inspectFullTurnThenSuite($this, raw, suiteStart);
+      }
+      return FullTurnParser_getInstance().inspect_h150z1_k$(raw);
+    }
+    var tmp;
+    try {
+      tmp = ChineseCodeParser_getInstance().parse_v0izfz_k$(raw, ambiguitySelections);
+    } catch ($p) {
+      var tmp_0;
+      if ($p instanceof Exception) {
+        var _ = $p;
+        return new MixedParseReport(null, listOf_0(new BatchIssue(0, raw.length, '\u8F93\u5165\u592A\u957F\u6216\u91D1\u989D\u8D85\u51FA\u8303\u56F4')));
+      } else {
+        throw $p;
+      }
+    }
+    var result = tmp;
+    if (result.get_suites_jo42h0_k$().isEmpty_y1axqb_k$() ? ambiguitySelections.isEmpty_y1axqb_k$() : false) {
+      var legacy = BatchParser_getInstance().inspect_h150z1_k$(raw);
+      if (legacy.get_valid_j01e4z_k$()) {
+        // Inline function 'kotlin.collections.filter' call
+        var tmp0_filter = legacy.issues_1;
+        // Inline function 'kotlin.collections.filterTo' call
+        var tmp0_filterTo = ArrayList_init_$Create$();
+        var tmp0_iterator = tmp0_filter.iterator_jk1svi_k$();
+        while (tmp0_iterator.hasNext_bitz1p_k$()) {
+          var element = tmp0_iterator.next_20eer_k$();
+          // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+          if (!element.notice_1.equals(BatchNotice_LOOKALIKE_getInstance()) ? !element.notice_1.equals(BatchNotice_NOTE_getInstance()) : false) {
+            tmp0_filterTo.add_1j60pz_k$(element);
+          }
+        }
+        var legacyIssues = toMutableList_0(tmp0_filterTo);
+        var locator = new SpanLocator(raw);
+        var tmp4_iterator = ensureNotNull(legacy.order_1).items_1.iterator_jk1svi_k$();
+        while (tmp4_iterator.hasNext_bitz1p_k$()) {
+          var item = tmp4_iterator.next_20eer_k$();
+          var positions = PositionAmountPolicy_getInstance().positionCount_8wd4rf_k$(item.number_1);
+          if (!PositionAmountPolicy_getInstance().accepts_492uff_k$(positions, item.amountJiao_1)) {
+            var base = locator.locate_2z36oh_k$(item.number_1);
+            var span = extendAdjacentAmount($this, raw, base);
+            // Inline function 'kotlin.collections.plusAssign' call
+            var tmp1_plusAssign = new BatchIssue(span.start_1, span.endExclusive_1, PositionAmountPolicy_getInstance().error_di0po9_k$(positions));
+            legacyIssues.add_1j60pz_k$(tmp1_plusAssign);
+          } else {
+            locator.locate_2z36oh_k$(item.number_1);
+          }
+        }
+        var tmp_1;
+        var tmp$ret$3;
+        $l$block_0: {
+          // Inline function 'kotlin.collections.none' call
+          var tmp_2;
+          if (isInterface(legacyIssues, Collection)) {
+            tmp_2 = legacyIssues.isEmpty_y1axqb_k$();
+          } else {
+            tmp_2 = false;
+          }
+          if (tmp_2) {
+            tmp$ret$3 = true;
+            break $l$block_0;
+          }
+          var tmp0_iterator_0 = legacyIssues.iterator_jk1svi_k$();
+          while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+            var element_0 = tmp0_iterator_0.next_20eer_k$();
+            // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+            if (element_0.severity_1.equals(BatchSeverity_ERROR_getInstance())) {
+              tmp$ret$3 = false;
+              break $l$block_0;
+            }
+          }
+          tmp$ret$3 = true;
+        }
+        if (tmp$ret$3) {
+          // Inline function 'kotlin.takeIf' call
+          // Inline function 'kotlin.also' call
+          var tmp2_also = new MixedBatch(new BatchOrder(splitFourPosition($this, legacy.order_1.items_1)), emptyList());
+          // Inline function 'kotlin.contracts.contract' call
+          // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+          // Inline function 'kotlin.getOrElse' call
+          // Inline function 'kotlin.runCatching' call
+          MixedParser_getInstance();
+          var tmp_3;
+          try {
+            // Inline function 'kotlin.Companion.success' call
+            Companion_getInstance_10();
+            MixedProtocol_getInstance().validate_vqvp97_k$(tmp2_also);
+            tmp_3 = _Result___init__impl__xyqfz8(Unit_getInstance());
+          } catch ($p) {
+            var tmp_4;
+            if ($p instanceof Error) {
+              var e = $p;
+              // Inline function 'kotlin.Companion.failure' call
+              Companion_getInstance_10();
+              tmp_4 = _Result___init__impl__xyqfz8(createFailure(e));
+            } else {
+              throw $p;
+            }
+            tmp_3 = tmp_4;
+          }
+          var tmp1_getOrElse = tmp_3;
+          // Inline function 'kotlin.contracts.contract' call
+          var exception = Result__exceptionOrNull_impl_p6xea9(tmp1_getOrElse);
+          var tmp_5;
+          if (exception == null) {
+            var tmp_6 = _Result___get_value__impl__bjfvqg(tmp1_getOrElse);
+            tmp_5 = (tmp_6 == null ? true : isObject(tmp_6)) ? tmp_6 : THROW_CCE();
+          } else {
+            var tmp_7 = raw.length;
+            var tmp0_elvis_lhs = exception.message;
+            var tmp0_plusAssign = new BatchIssue(0, tmp_7, tmp0_elvis_lhs == null ? '\u62C6\u5206\u540E\u8D85\u8FC7\u4EFB\u52A1\u9650\u5236' : tmp0_elvis_lhs);
+            legacyIssues.add_1j60pz_k$(tmp0_plusAssign);
+            tmp_5 = Unit_getInstance();
+          }
+          // Inline function 'kotlin.contracts.contract' call
+          var tmp_8;
+          // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+          var tmp$ret$10;
+          $l$block_2: {
+            // Inline function 'kotlin.collections.none' call
+            var tmp_9;
+            if (isInterface(legacyIssues, Collection)) {
+              tmp_9 = legacyIssues.isEmpty_y1axqb_k$();
+            } else {
+              tmp_9 = false;
+            }
+            if (tmp_9) {
+              tmp$ret$10 = true;
+              break $l$block_2;
+            }
+            var tmp0_iterator_1 = legacyIssues.iterator_jk1svi_k$();
+            while (tmp0_iterator_1.hasNext_bitz1p_k$()) {
+              var element_1 = tmp0_iterator_1.next_20eer_k$();
+              // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>.<anonymous>' call
+              if (element_1.severity_1.equals(BatchSeverity_ERROR_getInstance())) {
+                tmp$ret$10 = false;
+                break $l$block_2;
+              }
+            }
+            tmp$ret$10 = true;
+          }
+          if (tmp$ret$10) {
+            tmp_8 = tmp2_also;
+          } else {
+            tmp_8 = null;
+          }
+          tmp_1 = tmp_8;
+        } else {
+          tmp_1 = null;
+        }
+        return new MixedParseReport(tmp_1, legacyIssues);
+      }
+    }
+    // Inline function 'kotlin.collections.mutableListOf' call
+    var issues = ArrayList_init_$Create$();
+    var problemLocator = new SpanLocator(raw);
+    var tmp5_iterator = result.problems_1.iterator_jk1svi_k$();
+    while (tmp5_iterator.hasNext_bitz1p_k$()) {
+      var problem = tmp5_iterator.next_20eer_k$();
+      var span_0 = problemLocator.locate_2z36oh_k$(problem.source_1);
+      // Inline function 'kotlin.collections.plusAssign' call
+      var tmp4_plusAssign = new BatchIssue(span_0.start_1, span_0.endExclusive_1, problem.reason_1);
+      issues.add_1j60pz_k$(tmp4_plusAssign);
+    }
+    // Inline function 'kotlin.collections.mutableListOf' call
+    var scattered = ArrayList_init_$Create$();
+    // Inline function 'kotlin.collections.mutableListOf' call
+    var suites = ArrayList_init_$Create$();
+    // Inline function 'kotlin.collections.mutableSetOf' call
+    var seenScatter = LinkedHashSet_init_$Create$_0();
+    // Inline function 'kotlin.collections.mutableSetOf' call
+    var seenSuites = LinkedHashSet_init_$Create$_0();
+    var entryLocator = new SpanLocator(raw);
+    var tmp6_iterator = result.entries_1.iterator_jk1svi_k$();
+    $l$loop_3: while (tmp6_iterator.hasNext_bitz1p_k$()) {
+      var entry = tmp6_iterator.next_20eer_k$();
+      var baseSpan = entryLocator.locate_2z36oh_k$(entry.source_1);
+      var itemSpan = extendAdjacentAmount($this, raw, baseSpan);
+      // Inline function 'kotlin.takeIf' call
+      var tmp5_takeIf = entry.amountJiao_1;
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp_10;
+      // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+      if ((new Long(1, 0)).compareTo_n4fqi2_k$(tmp5_takeIf) <= 0 ? tmp5_takeIf.compareTo_n4fqi2_k$(new Long(1000000, 0)) <= 0 : false) {
+        tmp_10 = tmp5_takeIf;
+      } else {
+        tmp_10 = null;
+      }
+      var tmp7_safe_receiver = tmp_10;
+      var amount = tmp7_safe_receiver == null ? null : tmp7_safe_receiver.toInt_1tsl84_k$();
+      if (amount == null) {
+        // Inline function 'kotlin.collections.plusAssign' call
+        var tmp6_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, '\u91D1\u989D\u8D85\u51FA\u8303\u56F4');
+        issues.add_1j60pz_k$(tmp6_plusAssign);
+        continue $l$loop_3;
+      }
+      if (entry.kind_1.equals(Kind_SCATTER_getInstance())) {
+        var number = substringBefore(entry.canonical_1, _Char___init__impl__6a9atx(61));
+        var tmp_11;
+        if (!Regex_init_$Create$_0('[0-9X]{4}').matches_qvb2fs_k$(number)) {
+          tmp_11 = true;
+        } else {
+          // Inline function 'kotlin.text.count' call
+          var count = 0;
+          var inductionVariable = 0;
+          var last = number.length;
+          while (inductionVariable < last) {
+            var element_2 = charSequenceGet(number, inductionVariable);
+            inductionVariable = inductionVariable + 1 | 0;
+            // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+            if (element_2 === _Char___init__impl__6a9atx(88)) {
+              count = count + 1 | 0;
+            }
+          }
+          tmp_11 = count > 2;
+        }
+        if (tmp_11) {
+          // Inline function 'kotlin.collections.plusAssign' call
+          var tmp7_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, '\u53F7\u7801\u683C\u5F0F\u9519\u8BEF');
+          issues.add_1j60pz_k$(tmp7_plusAssign);
+          continue $l$loop_3;
+        }
+        var positions_0 = PositionAmountPolicy_getInstance().positionCount_8wd4rf_k$(number);
+        if (!PositionAmountPolicy_getInstance().accepts_492uff_k$(positions_0, amount)) {
+          // Inline function 'kotlin.collections.plusAssign' call
+          var tmp8_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, PositionAmountPolicy_getInstance().error_di0po9_k$(positions_0));
+          issues.add_1j60pz_k$(tmp8_plusAssign);
+          continue $l$loop_3;
+        }
+        if (!seenScatter.add_1j60pz_k$(number)) {
+          duplicateIssue($this, itemSpan, issues);
+        }
+        // Inline function 'kotlin.collections.plusAssign' call
+        var tmp9_plusAssign = new BatchItem(number, amount);
+        scattered.add_1j60pz_k$(tmp9_plusAssign);
+      } else {
+        var keys = 'HBTW';
+        // Inline function 'kotlin.collections.mapKeys' call
+        var tmp10_mapKeys = entry.positions_1;
+        // Inline function 'kotlin.collections.mapKeysTo' call
+        var tmp0_mapKeysTo = LinkedHashMap_init_$Create$_2(mapCapacity(tmp10_mapKeys.get_size_woubt6_k$()));
+        // Inline function 'kotlin.collections.associateByTo' call
+        var tmp0_iterator_2 = tmp10_mapKeys.get_entries_p20ztl_k$().iterator_jk1svi_k$();
+        while (tmp0_iterator_2.hasNext_bitz1p_k$()) {
+          var element_3 = tmp0_iterator_2.next_20eer_k$();
+          var tmp$ret$23;
+          // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+          tmp$ret$23 = charSequenceGet(keys, element_3.get_key_18j28a_k$());
+          var tmp_12 = new Char_0(tmp$ret$23);
+          var tmp$ret$24;
+          // Inline function 'kotlin.collections.mapKeysTo.<anonymous>' call
+          tmp$ret$24 = element_3.get_value_j01efc_k$();
+          tmp0_mapKeysTo.put_3mhbri_k$(tmp_12, tmp$ret$24);
+        }
+        var values = tmp0_mapKeysTo;
+        var tmp$ret$29;
+        // Inline function 'kotlin.text.ifBlank' call
+        var tmp11_ifBlank = entry.source_1;
+        var tmp_13;
+        if (isBlank(tmp11_ifBlank)) {
+          // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+          tmp_13 = substringBefore(entry.canonical_1, _Char___init__impl__6a9atx(61));
+        } else {
+          tmp_13 = tmp11_ifBlank;
+        }
+        tmp$ret$29 = tmp_13;
+        var suite = new SuiteBet(values, amount, tmp$ret$29);
+        var tmp$ret$32;
+        // Inline function 'kotlin.runCatching' call
+        var tmp_14;
+        try {
+          // Inline function 'kotlin.Companion.success' call
+          Companion_getInstance_10();
+          suite.validate_68yk05_k$();
+          tmp_14 = _Result___init__impl__xyqfz8(Unit_getInstance());
+        } catch ($p) {
+          var tmp_15;
+          if ($p instanceof Error) {
+            var e_0 = $p;
+            // Inline function 'kotlin.Companion.failure' call
+            Companion_getInstance_10();
+            tmp_15 = _Result___init__impl__xyqfz8(createFailure(e_0));
+          } else {
+            throw $p;
+          }
+          tmp_14 = tmp_15;
+        }
+        tmp$ret$32 = tmp_14;
+        if (_Result___get_isFailure__impl__jpiriv(tmp$ret$32)) {
+          // Inline function 'kotlin.collections.plusAssign' call
+          var tmp12_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, '\u5957\u7801\u683C\u5F0F\u9519\u8BEF');
+          issues.add_1j60pz_k$(tmp12_plusAssign);
+          continue $l$loop_3;
+        }
+        if (!PositionAmountPolicy_getInstance().accepts_492uff_k$(suite.get_mode_woqlt8_k$(), amount)) {
+          // Inline function 'kotlin.collections.plusAssign' call
+          var tmp13_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, PositionAmountPolicy_getInstance().error_di0po9_k$(suite.get_mode_woqlt8_k$()));
+          issues.add_1j60pz_k$(tmp13_plusAssign);
+          continue $l$loop_3;
+        }
+        if (!seenSuites.add_1j60pz_k$(suite.get_canonicalText_xvz1ug_k$())) {
+          duplicateIssue($this, itemSpan, issues);
+        }
+        // Inline function 'kotlin.collections.plusAssign' call
+        suites.add_1j60pz_k$(suite);
+      }
+    }
+    var candidate = new MixedBatch(new BatchOrder(splitFourPosition($this, scattered)), suites);
+    var tmp$ret$33;
+    $l$block_4: {
+      // Inline function 'kotlin.collections.none' call
+      var tmp_16;
+      if (isInterface(issues, Collection)) {
+        tmp_16 = issues.isEmpty_y1axqb_k$();
+      } else {
+        tmp_16 = false;
+      }
+      if (tmp_16) {
+        tmp$ret$33 = true;
+        break $l$block_4;
+      }
+      var tmp0_iterator_3 = issues.iterator_jk1svi_k$();
+      while (tmp0_iterator_3.hasNext_bitz1p_k$()) {
+        var element_4 = tmp0_iterator_3.next_20eer_k$();
+        // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+        if (element_4.severity_1.equals(BatchSeverity_ERROR_getInstance())) {
+          tmp$ret$33 = false;
+          break $l$block_4;
+        }
+      }
+      tmp$ret$33 = true;
+    }
+    if (tmp$ret$33) {
+      // Inline function 'kotlin.onFailure' call
+      // Inline function 'kotlin.runCatching' call
+      var tmp_17;
+      try {
+        // Inline function 'kotlin.Companion.success' call
+        Companion_getInstance_10();
+        // Inline function 'kotlin.require' call
+        var tmp_18 = candidate.scatter_1.items_1.get_size_woubt6_k$();
+        BatchParser_getInstance();
+        // Inline function 'kotlin.contracts.contract' call
+        if (!(tmp_18 <= 50)) {
+          // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>.<anonymous>' call
+          var message = '\u62C6\u5206\u540E\u6563\u7801\u6761\u6570\u8D85\u51FA\u9650\u5236';
+          throw IllegalArgumentException_init_$Create$_0(toString_3(message));
+        }
+        MixedProtocol_getInstance().validate_vqvp97_k$(candidate);
+        // Inline function 'kotlin.contracts.contract' call
+        // Inline function 'kotlin.contracts.contract' call
+        var tmp_19;
+        if (!(MixedProtocol_getInstance().decode_5vkj71_k$(candidate.get_command_gze7aa_k$()).get_command_gze7aa_k$() === candidate.get_command_gze7aa_k$())) {
+          // Inline function 'kotlin.require.<anonymous>' call
+          var message_0 = 'Failed requirement.';
+          throw IllegalArgumentException_init_$Create$_0(toString_3(message_0));
+        }
+        tmp_17 = _Result___init__impl__xyqfz8(Unit_getInstance());
+      } catch ($p) {
+        var tmp_20;
+        if ($p instanceof Error) {
+          var e_1 = $p;
+          // Inline function 'kotlin.Companion.failure' call
+          Companion_getInstance_10();
+          tmp_20 = _Result___init__impl__xyqfz8(createFailure(e_1));
+        } else {
+          throw $p;
+        }
+        tmp_17 = tmp_20;
+      }
+      var tmp14_onFailure = tmp_17;
+      // Inline function 'kotlin.contracts.contract' call
+      var tmp0_safe_receiver_0 = Result__exceptionOrNull_impl_p6xea9(tmp14_onFailure);
+      if (tmp0_safe_receiver_0 == null)
+        null;
+      else {
+        // Inline function 'kotlin.let' call
+        // Inline function 'kotlin.contracts.contract' call
+        var tmp_21 = raw.length;
+        var tmp0_elvis_lhs_0 = tmp0_safe_receiver_0.message;
+        var tmp0_plusAssign_0 = new BatchIssue(0, tmp_21, tmp0_elvis_lhs_0 == null ? '\u4EFB\u52A1\u8D85\u51FA\u9650\u5236' : tmp0_elvis_lhs_0);
+        issues.add_1j60pz_k$(tmp0_plusAssign_0);
+      }
+    }
+    var tmp_22;
+    var tmp$ret$42;
+    $l$block_6: {
+      // Inline function 'kotlin.collections.none' call
+      var tmp_23;
+      if (isInterface(issues, Collection)) {
+        tmp_23 = issues.isEmpty_y1axqb_k$();
+      } else {
+        tmp_23 = false;
+      }
+      if (tmp_23) {
+        tmp$ret$42 = true;
+        break $l$block_6;
+      }
+      var tmp0_iterator_4 = issues.iterator_jk1svi_k$();
+      while (tmp0_iterator_4.hasNext_bitz1p_k$()) {
+        var element_5 = tmp0_iterator_4.next_20eer_k$();
+        // Inline function 'com.example.remotea.MixedParser.inspectCore.<anonymous>' call
+        if (element_5.severity_1.equals(BatchSeverity_ERROR_getInstance())) {
+          tmp$ret$42 = false;
+          break $l$block_6;
+        }
+      }
+      tmp$ret$42 = true;
+    }
+    if (tmp$ret$42) {
+      tmp_22 = candidate;
+    } else {
+      tmp_22 = null;
+    }
+    return new MixedParseReport(tmp_22, issues);
+  }
+  function inspectCore$default($this, raw, ambiguitySelections, $super) {
+    ambiguitySelections = ambiguitySelections === VOID ? emptyList() : ambiguitySelections;
+    return inspectCore($this, raw, ambiguitySelections);
+  }
   function extendAdjacentAmount($this, raw, base) {
     var tmp;
     var tmp_0;
@@ -22388,421 +23982,45 @@ var parser = function (_) {
     this.namedSuiteStart_1 = Regex_init_$Create$_0('(?<![0-9X])(?:[0-9]{1,10}[\u5934\u767E\u5341\u5C3E\u4E2A]|\u5168[\u5934\u767E\u5341\u5C3E]|[0-9]{1,10}(?:\\.[0-9]{1,10}){3})');
     this.trailingFullTurnStart_1 = Regex_init_$Create$_0('(?<![0-9X+])[0-9X+]{4}(?:[ \\t,\uFF0C\u3001;\uFF1B\u3002\\r\\n]+[0-9X+]{4})*[ \\t\\r\\n]*\u5168(?:\u5012|\u5230|\u8F6C)');
   }
-  protoOf(MixedParser).inspect_h150z1_k$ = function (raw) {
-    if (FullTurnParser_getInstance().applies_q0k5zf_k$(raw)) {
-      var tmp0_safe_receiver = this.namedSuiteStart_1.find$default_bc99zm_k$(raw);
-      var tmp1_safe_receiver = tmp0_safe_receiver == null ? null : tmp0_safe_receiver.get_range_ixu978_k$();
-      var suiteStart = tmp1_safe_receiver == null ? null : tmp1_safe_receiver.first_1;
-      if (!(suiteStart == null)) {
-        var tmp2_safe_receiver = lastOrNull(this.trailingFullTurnStart_1.findAll$default_n4kn43_k$(raw));
-        var tmp3_safe_receiver = tmp2_safe_receiver == null ? null : tmp2_safe_receiver.get_range_ixu978_k$();
-        var trailingTurnAt = tmp3_safe_receiver == null ? null : tmp3_safe_receiver.first_1;
-        if (!(trailingTurnAt == null) ? trailingTurnAt > suiteStart : false)
-          return inspectSuiteThenTrailingFullTurn(this, raw, suiteStart, trailingTurnAt);
-        return inspectFullTurnThenSuite(this, raw, suiteStart);
-      }
-      return FullTurnParser_getInstance().inspect_h150z1_k$(raw);
-    }
+  protoOf(MixedParser).inspect_fp3eb4_k$ = function (raw, ambiguitySelections) {
     var tmp;
     try {
-      tmp = ChineseCodeParser_getInstance().parse_4mmrzm_k$(raw);
+      tmp = RecognitionRuleRuntime_getInstance().apply_hgk8r7_k$(raw);
     } catch ($p) {
       var tmp_0;
       if ($p instanceof Exception) {
-        var _ = $p;
-        return new MixedParseReport(null, listOf_0(new BatchIssue(0, raw.length, '\u8F93\u5165\u592A\u957F\u6216\u91D1\u989D\u8D85\u51FA\u8303\u56F4')));
+        var e = $p;
+        var tmp_1 = raw.length;
+        var tmp0_elvis_lhs = e.message;
+        return new MixedParseReport(null, listOf_0(new BatchIssue(0, tmp_1, tmp0_elvis_lhs == null ? '\u4E91\u7AEF\u8BC6\u522B\u89C4\u5219\u6267\u884C\u5931\u8D25' : tmp0_elvis_lhs)));
       } else {
         throw $p;
       }
     }
-    var result = tmp;
-    if (result.get_suites_jo42h0_k$().isEmpty_y1axqb_k$()) {
-      var legacy = BatchParser_getInstance().inspect_h150z1_k$(raw);
-      if (legacy.get_valid_j01e4z_k$()) {
-        // Inline function 'kotlin.collections.filter' call
-        var tmp0_filter = legacy.issues_1;
-        // Inline function 'kotlin.collections.filterTo' call
-        var tmp0_filterTo = ArrayList_init_$Create$();
-        var tmp0_iterator = tmp0_filter.iterator_jk1svi_k$();
-        while (tmp0_iterator.hasNext_bitz1p_k$()) {
-          var element = tmp0_iterator.next_20eer_k$();
-          // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>' call
-          if (!element.notice_1.equals(BatchNotice_LOOKALIKE_getInstance()) ? !element.notice_1.equals(BatchNotice_NOTE_getInstance()) : false) {
-            tmp0_filterTo.add_1j60pz_k$(element);
-          }
-        }
-        var legacyIssues = toMutableList_0(tmp0_filterTo);
-        var locator = new SpanLocator(raw);
-        var tmp4_iterator = ensureNotNull(legacy.order_1).items_1.iterator_jk1svi_k$();
-        while (tmp4_iterator.hasNext_bitz1p_k$()) {
-          var item = tmp4_iterator.next_20eer_k$();
-          var positions = PositionAmountPolicy_getInstance().positionCount_8wd4rf_k$(item.number_1);
-          if (!PositionAmountPolicy_getInstance().accepts_492uff_k$(positions, item.amountJiao_1)) {
-            var base = locator.locate_2z36oh_k$(item.number_1);
-            var span = extendAdjacentAmount(this, raw, base);
-            // Inline function 'kotlin.collections.plusAssign' call
-            var tmp1_plusAssign = new BatchIssue(span.start_1, span.endExclusive_1, PositionAmountPolicy_getInstance().error_di0po9_k$(positions));
-            legacyIssues.add_1j60pz_k$(tmp1_plusAssign);
-          } else {
-            locator.locate_2z36oh_k$(item.number_1);
-          }
-        }
-        var tmp_1;
-        var tmp$ret$3;
-        $l$block_0: {
-          // Inline function 'kotlin.collections.none' call
-          var tmp_2;
-          if (isInterface(legacyIssues, Collection)) {
-            tmp_2 = legacyIssues.isEmpty_y1axqb_k$();
-          } else {
-            tmp_2 = false;
-          }
-          if (tmp_2) {
-            tmp$ret$3 = true;
-            break $l$block_0;
-          }
-          var tmp0_iterator_0 = legacyIssues.iterator_jk1svi_k$();
-          while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
-            var element_0 = tmp0_iterator_0.next_20eer_k$();
-            // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>' call
-            if (element_0.severity_1.equals(BatchSeverity_ERROR_getInstance())) {
-              tmp$ret$3 = false;
-              break $l$block_0;
-            }
-          }
-          tmp$ret$3 = true;
-        }
-        if (tmp$ret$3) {
-          // Inline function 'kotlin.takeIf' call
-          // Inline function 'kotlin.also' call
-          var tmp2_also = new MixedBatch(new BatchOrder(splitFourPosition(this, legacy.order_1.items_1)), emptyList());
-          // Inline function 'kotlin.contracts.contract' call
-          // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>' call
-          // Inline function 'kotlin.getOrElse' call
-          // Inline function 'kotlin.runCatching' call
-          MixedParser_getInstance();
-          var tmp_3;
-          try {
-            // Inline function 'kotlin.Companion.success' call
-            Companion_getInstance_10();
-            MixedProtocol_getInstance().validate_vqvp97_k$(tmp2_also);
-            tmp_3 = _Result___init__impl__xyqfz8(Unit_getInstance());
-          } catch ($p) {
-            var tmp_4;
-            if ($p instanceof Error) {
-              var e = $p;
-              // Inline function 'kotlin.Companion.failure' call
-              Companion_getInstance_10();
-              tmp_4 = _Result___init__impl__xyqfz8(createFailure(e));
-            } else {
-              throw $p;
-            }
-            tmp_3 = tmp_4;
-          }
-          var tmp1_getOrElse = tmp_3;
-          // Inline function 'kotlin.contracts.contract' call
-          var exception = Result__exceptionOrNull_impl_p6xea9(tmp1_getOrElse);
-          var tmp_5;
-          if (exception == null) {
-            var tmp_6 = _Result___get_value__impl__bjfvqg(tmp1_getOrElse);
-            tmp_5 = (tmp_6 == null ? true : isObject(tmp_6)) ? tmp_6 : THROW_CCE();
-          } else {
-            var tmp_7 = raw.length;
-            var tmp0_elvis_lhs = exception.message;
-            var tmp0_plusAssign = new BatchIssue(0, tmp_7, tmp0_elvis_lhs == null ? '\u62C6\u5206\u540E\u8D85\u8FC7\u4EFB\u52A1\u9650\u5236' : tmp0_elvis_lhs);
-            legacyIssues.add_1j60pz_k$(tmp0_plusAssign);
-            tmp_5 = Unit_getInstance();
-          }
-          // Inline function 'kotlin.contracts.contract' call
-          var tmp_8;
-          // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>' call
-          var tmp$ret$10;
-          $l$block_2: {
-            // Inline function 'kotlin.collections.none' call
-            var tmp_9;
-            if (isInterface(legacyIssues, Collection)) {
-              tmp_9 = legacyIssues.isEmpty_y1axqb_k$();
-            } else {
-              tmp_9 = false;
-            }
-            if (tmp_9) {
-              tmp$ret$10 = true;
-              break $l$block_2;
-            }
-            var tmp0_iterator_1 = legacyIssues.iterator_jk1svi_k$();
-            while (tmp0_iterator_1.hasNext_bitz1p_k$()) {
-              var element_1 = tmp0_iterator_1.next_20eer_k$();
-              // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>.<anonymous>' call
-              if (element_1.severity_1.equals(BatchSeverity_ERROR_getInstance())) {
-                tmp$ret$10 = false;
-                break $l$block_2;
-              }
-            }
-            tmp$ret$10 = true;
-          }
-          if (tmp$ret$10) {
-            tmp_8 = tmp2_also;
-          } else {
-            tmp_8 = null;
-          }
-          tmp_1 = tmp_8;
-        } else {
-          tmp_1 = null;
-        }
-        return new MixedParseReport(tmp_1, legacyIssues);
-      }
-    }
-    // Inline function 'kotlin.collections.mutableListOf' call
-    var issues = ArrayList_init_$Create$();
-    var problemLocator = new SpanLocator(raw);
-    var tmp5_iterator = result.problems_1.iterator_jk1svi_k$();
-    while (tmp5_iterator.hasNext_bitz1p_k$()) {
-      var problem = tmp5_iterator.next_20eer_k$();
-      var span_0 = problemLocator.locate_2z36oh_k$(problem.source_1);
-      // Inline function 'kotlin.collections.plusAssign' call
-      var tmp4_plusAssign = new BatchIssue(span_0.start_1, span_0.endExclusive_1, problem.reason_1);
-      issues.add_1j60pz_k$(tmp4_plusAssign);
-    }
-    // Inline function 'kotlin.collections.mutableListOf' call
-    var scattered = ArrayList_init_$Create$();
-    // Inline function 'kotlin.collections.mutableListOf' call
-    var suites = ArrayList_init_$Create$();
-    // Inline function 'kotlin.collections.mutableSetOf' call
-    var seenScatter = LinkedHashSet_init_$Create$_0();
-    // Inline function 'kotlin.collections.mutableSetOf' call
-    var seenSuites = LinkedHashSet_init_$Create$_0();
-    var entryLocator = new SpanLocator(raw);
-    var tmp6_iterator = result.entries_1.iterator_jk1svi_k$();
-    $l$loop_3: while (tmp6_iterator.hasNext_bitz1p_k$()) {
-      var entry = tmp6_iterator.next_20eer_k$();
-      var baseSpan = entryLocator.locate_2z36oh_k$(entry.source_1);
-      var itemSpan = extendAdjacentAmount(this, raw, baseSpan);
-      // Inline function 'kotlin.takeIf' call
-      var tmp5_takeIf = entry.amountJiao_1;
-      // Inline function 'kotlin.contracts.contract' call
-      var tmp_10;
+    var rewritten = tmp;
+    var report = inspectCore(this, rewritten, ambiguitySelections);
+    if (rewritten === raw ? true : report.get_valid_j01e4z_k$())
+      return report;
+    // Inline function 'kotlin.collections.map' call
+    var tmp0_map = report.issues_1;
+    // Inline function 'kotlin.collections.mapTo' call
+    var tmp0_mapTo = ArrayList_init_$Create$_0(collectionSizeOrDefault(tmp0_map, 10));
+    var tmp0_iterator = tmp0_map.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var item = tmp0_iterator.next_20eer_k$();
+      var tmp$ret$0;
       // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>' call
-      if ((new Long(1, 0)).compareTo_n4fqi2_k$(tmp5_takeIf) <= 0 ? tmp5_takeIf.compareTo_n4fqi2_k$(new Long(1000000, 0)) <= 0 : false) {
-        tmp_10 = tmp5_takeIf;
-      } else {
-        tmp_10 = null;
-      }
-      var tmp7_safe_receiver = tmp_10;
-      var amount = tmp7_safe_receiver == null ? null : tmp7_safe_receiver.toInt_1tsl84_k$();
-      if (amount == null) {
-        // Inline function 'kotlin.collections.plusAssign' call
-        var tmp6_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, '\u91D1\u989D\u8D85\u51FA\u8303\u56F4');
-        issues.add_1j60pz_k$(tmp6_plusAssign);
-        continue $l$loop_3;
-      }
-      if (entry.kind_1.equals(Kind_SCATTER_getInstance())) {
-        var number = substringBefore(entry.canonical_1, _Char___init__impl__6a9atx(61));
-        var tmp_11;
-        if (!Regex_init_$Create$_0('[0-9X]{4}').matches_qvb2fs_k$(number)) {
-          tmp_11 = true;
-        } else {
-          // Inline function 'kotlin.text.count' call
-          var count = 0;
-          var inductionVariable = 0;
-          var last = number.length;
-          while (inductionVariable < last) {
-            var element_2 = charSequenceGet(number, inductionVariable);
-            inductionVariable = inductionVariable + 1 | 0;
-            // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>' call
-            if (element_2 === _Char___init__impl__6a9atx(88)) {
-              count = count + 1 | 0;
-            }
-          }
-          tmp_11 = count > 2;
-        }
-        if (tmp_11) {
-          // Inline function 'kotlin.collections.plusAssign' call
-          var tmp7_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, '\u53F7\u7801\u683C\u5F0F\u9519\u8BEF');
-          issues.add_1j60pz_k$(tmp7_plusAssign);
-          continue $l$loop_3;
-        }
-        var positions_0 = PositionAmountPolicy_getInstance().positionCount_8wd4rf_k$(number);
-        if (!PositionAmountPolicy_getInstance().accepts_492uff_k$(positions_0, amount)) {
-          // Inline function 'kotlin.collections.plusAssign' call
-          var tmp8_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, PositionAmountPolicy_getInstance().error_di0po9_k$(positions_0));
-          issues.add_1j60pz_k$(tmp8_plusAssign);
-          continue $l$loop_3;
-        }
-        if (!seenScatter.add_1j60pz_k$(number)) {
-          duplicateIssue(this, itemSpan, issues);
-        }
-        // Inline function 'kotlin.collections.plusAssign' call
-        var tmp9_plusAssign = new BatchItem(number, amount);
-        scattered.add_1j60pz_k$(tmp9_plusAssign);
-      } else {
-        var keys = 'HBTW';
-        // Inline function 'kotlin.collections.mapKeys' call
-        var tmp10_mapKeys = entry.positions_1;
-        // Inline function 'kotlin.collections.mapKeysTo' call
-        var tmp0_mapKeysTo = LinkedHashMap_init_$Create$_2(mapCapacity(tmp10_mapKeys.get_size_woubt6_k$()));
-        // Inline function 'kotlin.collections.associateByTo' call
-        var tmp0_iterator_2 = tmp10_mapKeys.get_entries_p20ztl_k$().iterator_jk1svi_k$();
-        while (tmp0_iterator_2.hasNext_bitz1p_k$()) {
-          var element_3 = tmp0_iterator_2.next_20eer_k$();
-          var tmp$ret$23;
-          // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>' call
-          tmp$ret$23 = charSequenceGet(keys, element_3.get_key_18j28a_k$());
-          var tmp_12 = new Char_0(tmp$ret$23);
-          var tmp$ret$24;
-          // Inline function 'kotlin.collections.mapKeysTo.<anonymous>' call
-          tmp$ret$24 = element_3.get_value_j01efc_k$();
-          tmp0_mapKeysTo.put_3mhbri_k$(tmp_12, tmp$ret$24);
-        }
-        var values = tmp0_mapKeysTo;
-        var suite = new SuiteBet(values, amount, entry.source_1);
-        var tmp$ret$30;
-        // Inline function 'kotlin.runCatching' call
-        var tmp_13;
-        try {
-          // Inline function 'kotlin.Companion.success' call
-          Companion_getInstance_10();
-          suite.validate_68yk05_k$();
-          tmp_13 = _Result___init__impl__xyqfz8(Unit_getInstance());
-        } catch ($p) {
-          var tmp_14;
-          if ($p instanceof Error) {
-            var e_0 = $p;
-            // Inline function 'kotlin.Companion.failure' call
-            Companion_getInstance_10();
-            tmp_14 = _Result___init__impl__xyqfz8(createFailure(e_0));
-          } else {
-            throw $p;
-          }
-          tmp_13 = tmp_14;
-        }
-        tmp$ret$30 = tmp_13;
-        if (_Result___get_isFailure__impl__jpiriv(tmp$ret$30)) {
-          // Inline function 'kotlin.collections.plusAssign' call
-          var tmp11_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, '\u5957\u7801\u683C\u5F0F\u9519\u8BEF');
-          issues.add_1j60pz_k$(tmp11_plusAssign);
-          continue $l$loop_3;
-        }
-        if (!PositionAmountPolicy_getInstance().accepts_492uff_k$(suite.get_mode_woqlt8_k$(), amount)) {
-          // Inline function 'kotlin.collections.plusAssign' call
-          var tmp12_plusAssign = new BatchIssue(itemSpan.start_1, itemSpan.endExclusive_1, PositionAmountPolicy_getInstance().error_di0po9_k$(suite.get_mode_woqlt8_k$()));
-          issues.add_1j60pz_k$(tmp12_plusAssign);
-          continue $l$loop_3;
-        }
-        if (!seenSuites.add_1j60pz_k$(suite.get_canonicalText_xvz1ug_k$())) {
-          duplicateIssue(this, itemSpan, issues);
-        }
-        // Inline function 'kotlin.collections.plusAssign' call
-        suites.add_1j60pz_k$(suite);
-      }
+      tmp$ret$0 = item.copy$default_ch5oms_k$(0, raw.length, '\u89C4\u5219\u8F6C\u6362\u540E\uFF1A' + item.message_1);
+      tmp0_mapTo.add_1j60pz_k$(tmp$ret$0);
     }
-    var candidate = new MixedBatch(new BatchOrder(splitFourPosition(this, scattered)), suites);
-    var tmp$ret$31;
-    $l$block_4: {
-      // Inline function 'kotlin.collections.none' call
-      var tmp_15;
-      if (isInterface(issues, Collection)) {
-        tmp_15 = issues.isEmpty_y1axqb_k$();
-      } else {
-        tmp_15 = false;
-      }
-      if (tmp_15) {
-        tmp$ret$31 = true;
-        break $l$block_4;
-      }
-      var tmp0_iterator_3 = issues.iterator_jk1svi_k$();
-      while (tmp0_iterator_3.hasNext_bitz1p_k$()) {
-        var element_4 = tmp0_iterator_3.next_20eer_k$();
-        // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>' call
-        if (element_4.severity_1.equals(BatchSeverity_ERROR_getInstance())) {
-          tmp$ret$31 = false;
-          break $l$block_4;
-        }
-      }
-      tmp$ret$31 = true;
-    }
-    if (tmp$ret$31) {
-      // Inline function 'kotlin.onFailure' call
-      // Inline function 'kotlin.runCatching' call
-      var tmp_16;
-      try {
-        // Inline function 'kotlin.Companion.success' call
-        Companion_getInstance_10();
-        // Inline function 'kotlin.require' call
-        var tmp_17 = candidate.scatter_1.items_1.get_size_woubt6_k$();
-        BatchParser_getInstance();
-        // Inline function 'kotlin.contracts.contract' call
-        if (!(tmp_17 <= 50)) {
-          // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>.<anonymous>' call
-          var message = '\u62C6\u5206\u540E\u6563\u7801\u6761\u6570\u8D85\u51FA\u9650\u5236';
-          throw IllegalArgumentException_init_$Create$_0(toString_3(message));
-        }
-        MixedProtocol_getInstance().validate_vqvp97_k$(candidate);
-        // Inline function 'kotlin.contracts.contract' call
-        // Inline function 'kotlin.contracts.contract' call
-        var tmp_18;
-        if (!(MixedProtocol_getInstance().decode_5vkj71_k$(candidate.get_command_gze7aa_k$()).get_command_gze7aa_k$() === candidate.get_command_gze7aa_k$())) {
-          // Inline function 'kotlin.require.<anonymous>' call
-          var message_0 = 'Failed requirement.';
-          throw IllegalArgumentException_init_$Create$_0(toString_3(message_0));
-        }
-        tmp_16 = _Result___init__impl__xyqfz8(Unit_getInstance());
-      } catch ($p) {
-        var tmp_19;
-        if ($p instanceof Error) {
-          var e_1 = $p;
-          // Inline function 'kotlin.Companion.failure' call
-          Companion_getInstance_10();
-          tmp_19 = _Result___init__impl__xyqfz8(createFailure(e_1));
-        } else {
-          throw $p;
-        }
-        tmp_16 = tmp_19;
-      }
-      var tmp13_onFailure = tmp_16;
-      // Inline function 'kotlin.contracts.contract' call
-      var tmp0_safe_receiver_0 = Result__exceptionOrNull_impl_p6xea9(tmp13_onFailure);
-      if (tmp0_safe_receiver_0 == null)
-        null;
-      else {
-        // Inline function 'kotlin.let' call
-        // Inline function 'kotlin.contracts.contract' call
-        var tmp_20 = raw.length;
-        var tmp0_elvis_lhs_0 = tmp0_safe_receiver_0.message;
-        var tmp0_plusAssign_0 = new BatchIssue(0, tmp_20, tmp0_elvis_lhs_0 == null ? '\u4EFB\u52A1\u8D85\u51FA\u9650\u5236' : tmp0_elvis_lhs_0);
-        issues.add_1j60pz_k$(tmp0_plusAssign_0);
-      }
-    }
-    var tmp_21;
-    var tmp$ret$40;
-    $l$block_6: {
-      // Inline function 'kotlin.collections.none' call
-      var tmp_22;
-      if (isInterface(issues, Collection)) {
-        tmp_22 = issues.isEmpty_y1axqb_k$();
-      } else {
-        tmp_22 = false;
-      }
-      if (tmp_22) {
-        tmp$ret$40 = true;
-        break $l$block_6;
-      }
-      var tmp0_iterator_4 = issues.iterator_jk1svi_k$();
-      while (tmp0_iterator_4.hasNext_bitz1p_k$()) {
-        var element_5 = tmp0_iterator_4.next_20eer_k$();
-        // Inline function 'com.example.remotea.MixedParser.inspect.<anonymous>' call
-        if (element_5.severity_1.equals(BatchSeverity_ERROR_getInstance())) {
-          tmp$ret$40 = false;
-          break $l$block_6;
-        }
-      }
-      tmp$ret$40 = true;
-    }
-    if (tmp$ret$40) {
-      tmp_21 = candidate;
-    } else {
-      tmp_21 = null;
-    }
-    return new MixedParseReport(tmp_21, issues);
+    return new MixedParseReport(null, tmp0_mapTo);
+  };
+  protoOf(MixedParser).inspect$default_a8xtc4_k$ = function (raw, ambiguitySelections, $super) {
+    ambiguitySelections = ambiguitySelections === VOID ? emptyList() : ambiguitySelections;
+    return $super === VOID ? this.inspect_fp3eb4_k$(raw, ambiguitySelections) : $super.inspect_fp3eb4_k$.call(this, raw, ambiguitySelections);
+  };
+  protoOf(MixedParser).inspectCanonical_26tfcv_k$ = function (raw) {
+    return inspectCore$default(this, raw);
   };
   var MixedParser_instance;
   function MixedParser_getInstance() {
@@ -22960,7 +24178,7 @@ var parser = function (_) {
         while (tmp0_iterator.hasNext_bitz1p_k$()) {
           var element = tmp0_iterator.next_20eer_k$().value_1;
           // Inline function 'com.example.remotea.SuiteBet.validate.<anonymous>' call
-          if (!contains_10('HBTW', element)) {
+          if (!contains_12('HBTW', element)) {
             tmp$ret$0 = false;
             break $l$block_0;
           }
@@ -23545,14 +24763,14 @@ var parser = function (_) {
     }
   };
   protoOf(MixedProtocol).decode_5vkj71_k$ = function (value) {
-    if (!startsWith_0(value, 'M1|')) {
+    if (!startsWith_1(value, 'M1|')) {
       var result = new MixedBatch(BatchParser_getInstance().fromCommand_cg8se8_k$(value), emptyList());
       this.validate_vqvp97_k$(result);
       return result;
     }
     // Inline function 'kotlin.require' call
     // Inline function 'kotlin.contracts.contract' call
-    if (!(value.length <= 8000 ? startsWith_0(value, 'M1|S=') : false)) {
+    if (!(value.length <= 8000 ? startsWith_1(value, 'M1|S=') : false)) {
       // Inline function 'com.example.remotea.MixedProtocol.decode.<anonymous>' call
       var message = '\u975E\u6807\u51C6\u6DF7\u5408\u6307\u4EE4';
       throw IllegalArgumentException_init_$Create$_0(toString_3(message));
@@ -23672,7 +24890,7 @@ var parser = function (_) {
       }
       // Inline function 'kotlin.require' call
       // Inline function 'kotlin.contracts.contract' call
-      if (!(flagParts.get_fkrdnv_k$(1).length === scatter.items_1.get_size_woubt6_k$() ? contains_10(flagParts.get_fkrdnv_k$(1), _Char___init__impl__6a9atx(49)) : false)) {
+      if (!(flagParts.get_fkrdnv_k$(1).length === scatter.items_1.get_size_woubt6_k$() ? contains_12(flagParts.get_fkrdnv_k$(1), _Char___init__impl__6a9atx(49)) : false)) {
         // Inline function 'com.example.remotea.MixedProtocol.decode.<anonymous>' call
         var message_5 = '\u5168\u8F6C\u4F4D\u6570\u4E0D\u7B26';
         throw IllegalArgumentException_init_$Create$_0(toString_3(message_5));
@@ -23899,6 +25117,1526 @@ var parser = function (_) {
       new PositionAmountPolicy();
     return PositionAmountPolicy_instance;
   }
+  function RecognitionAmbiguityChoice(key, title, normalized, detail, combinations, totalJiao) {
+    this.key_1 = key;
+    this.title_1 = title;
+    this.normalized_1 = normalized;
+    this.detail_1 = detail;
+    this.combinations_1 = combinations;
+    this.totalJiao_1 = totalJiao;
+  }
+  protoOf(RecognitionAmbiguityChoice).get_key_18j28a_k$ = function () {
+    return this.key_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).get_title_iz32un_k$ = function () {
+    return this.title_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).get_normalized_u3mzcw_k$ = function () {
+    return this.normalized_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).get_detail_cbtnx6_k$ = function () {
+    return this.detail_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).get_combinations_qxt1hp_k$ = function () {
+    return this.combinations_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).get_totalJiao_11cql4_k$ = function () {
+    return this.totalJiao_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).component1_7eebsc_k$ = function () {
+    return this.key_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).component2_7eebsb_k$ = function () {
+    return this.title_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).component3_7eebsa_k$ = function () {
+    return this.normalized_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).component4_7eebs9_k$ = function () {
+    return this.detail_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).component5_7eebs8_k$ = function () {
+    return this.combinations_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).component6_7eebs7_k$ = function () {
+    return this.totalJiao_1;
+  };
+  protoOf(RecognitionAmbiguityChoice).copy_lrd397_k$ = function (key, title, normalized, detail, combinations, totalJiao) {
+    return new RecognitionAmbiguityChoice(key, title, normalized, detail, combinations, totalJiao);
+  };
+  protoOf(RecognitionAmbiguityChoice).copy$default_8mhetl_k$ = function (key, title, normalized, detail, combinations, totalJiao, $super) {
+    key = key === VOID ? this.key_1 : key;
+    title = title === VOID ? this.title_1 : title;
+    normalized = normalized === VOID ? this.normalized_1 : normalized;
+    detail = detail === VOID ? this.detail_1 : detail;
+    combinations = combinations === VOID ? this.combinations_1 : combinations;
+    totalJiao = totalJiao === VOID ? this.totalJiao_1 : totalJiao;
+    return $super === VOID ? this.copy_lrd397_k$(key, title, normalized, detail, combinations, totalJiao) : $super.copy_lrd397_k$.call(this, key, title, normalized, detail, combinations, totalJiao);
+  };
+  protoOf(RecognitionAmbiguityChoice).toString = function () {
+    return 'RecognitionAmbiguityChoice(key=' + this.key_1 + ', title=' + this.title_1 + ', normalized=' + this.normalized_1 + ', detail=' + this.detail_1 + ', combinations=' + toString_3(this.combinations_1) + ', totalJiao=' + toString_3(this.totalJiao_1) + ')';
+  };
+  protoOf(RecognitionAmbiguityChoice).hashCode = function () {
+    var result = getStringHashCode(this.key_1);
+    result = imul(result, 31) + getStringHashCode(this.title_1) | 0;
+    result = imul(result, 31) + getStringHashCode(this.normalized_1) | 0;
+    result = imul(result, 31) + getStringHashCode(this.detail_1) | 0;
+    result = imul(result, 31) + this.combinations_1.hashCode() | 0;
+    result = imul(result, 31) + this.totalJiao_1.hashCode() | 0;
+    return result;
+  };
+  protoOf(RecognitionAmbiguityChoice).equals = function (other) {
+    if (this === other)
+      return true;
+    if (!(other instanceof RecognitionAmbiguityChoice))
+      return false;
+    var tmp0_other_with_cast = other instanceof RecognitionAmbiguityChoice ? other : THROW_CCE();
+    if (!(this.key_1 === tmp0_other_with_cast.key_1))
+      return false;
+    if (!(this.title_1 === tmp0_other_with_cast.title_1))
+      return false;
+    if (!(this.normalized_1 === tmp0_other_with_cast.normalized_1))
+      return false;
+    if (!(this.detail_1 === tmp0_other_with_cast.detail_1))
+      return false;
+    if (!this.combinations_1.equals(tmp0_other_with_cast.combinations_1))
+      return false;
+    if (!this.totalJiao_1.equals(tmp0_other_with_cast.totalJiao_1))
+      return false;
+    return true;
+  };
+  function RecognitionAmbiguity(id, type, source, start, endExclusive, occurrence, explanation, choices) {
+    this.id_1 = id;
+    this.type_1 = type;
+    this.source_1 = source;
+    this.start_1 = start;
+    this.endExclusive_1 = endExclusive;
+    this.occurrence_1 = occurrence;
+    this.explanation_1 = explanation;
+    this.choices_1 = choices;
+  }
+  protoOf(RecognitionAmbiguity).get_id_kntnx8_k$ = function () {
+    return this.id_1;
+  };
+  protoOf(RecognitionAmbiguity).get_type_wovaf7_k$ = function () {
+    return this.type_1;
+  };
+  protoOf(RecognitionAmbiguity).get_source_jl0x7o_k$ = function () {
+    return this.source_1;
+  };
+  protoOf(RecognitionAmbiguity).get_start_iypx6h_k$ = function () {
+    return this.start_1;
+  };
+  protoOf(RecognitionAmbiguity).get_endExclusive_pmwm6k_k$ = function () {
+    return this.endExclusive_1;
+  };
+  protoOf(RecognitionAmbiguity).get_occurrence_7qnxay_k$ = function () {
+    return this.occurrence_1;
+  };
+  protoOf(RecognitionAmbiguity).get_explanation_4e7brk_k$ = function () {
+    return this.explanation_1;
+  };
+  protoOf(RecognitionAmbiguity).get_choices_dp3x1l_k$ = function () {
+    return this.choices_1;
+  };
+  protoOf(RecognitionAmbiguity).component1_7eebsc_k$ = function () {
+    return this.id_1;
+  };
+  protoOf(RecognitionAmbiguity).component2_7eebsb_k$ = function () {
+    return this.type_1;
+  };
+  protoOf(RecognitionAmbiguity).component3_7eebsa_k$ = function () {
+    return this.source_1;
+  };
+  protoOf(RecognitionAmbiguity).component4_7eebs9_k$ = function () {
+    return this.start_1;
+  };
+  protoOf(RecognitionAmbiguity).component5_7eebs8_k$ = function () {
+    return this.endExclusive_1;
+  };
+  protoOf(RecognitionAmbiguity).component6_7eebs7_k$ = function () {
+    return this.occurrence_1;
+  };
+  protoOf(RecognitionAmbiguity).component7_7eebs6_k$ = function () {
+    return this.explanation_1;
+  };
+  protoOf(RecognitionAmbiguity).component8_7eebs5_k$ = function () {
+    return this.choices_1;
+  };
+  protoOf(RecognitionAmbiguity).copy_h3ozp6_k$ = function (id, type, source, start, endExclusive, occurrence, explanation, choices) {
+    return new RecognitionAmbiguity(id, type, source, start, endExclusive, occurrence, explanation, choices);
+  };
+  protoOf(RecognitionAmbiguity).copy$default_kh5gf_k$ = function (id, type, source, start, endExclusive, occurrence, explanation, choices, $super) {
+    id = id === VOID ? this.id_1 : id;
+    type = type === VOID ? this.type_1 : type;
+    source = source === VOID ? this.source_1 : source;
+    start = start === VOID ? this.start_1 : start;
+    endExclusive = endExclusive === VOID ? this.endExclusive_1 : endExclusive;
+    occurrence = occurrence === VOID ? this.occurrence_1 : occurrence;
+    explanation = explanation === VOID ? this.explanation_1 : explanation;
+    choices = choices === VOID ? this.choices_1 : choices;
+    return $super === VOID ? this.copy_h3ozp6_k$(id, type, source, start, endExclusive, occurrence, explanation, choices) : $super.copy_h3ozp6_k$.call(this, id, type, source, start, endExclusive, occurrence, explanation, choices);
+  };
+  protoOf(RecognitionAmbiguity).toString = function () {
+    return 'RecognitionAmbiguity(id=' + this.id_1 + ', type=' + this.type_1 + ', source=' + this.source_1 + ', start=' + this.start_1 + ', endExclusive=' + this.endExclusive_1 + ', occurrence=' + this.occurrence_1 + ', explanation=' + this.explanation_1 + ', choices=' + this.choices_1 + ')';
+  };
+  protoOf(RecognitionAmbiguity).hashCode = function () {
+    var result = getStringHashCode(this.id_1);
+    result = imul(result, 31) + getStringHashCode(this.type_1) | 0;
+    result = imul(result, 31) + getStringHashCode(this.source_1) | 0;
+    result = imul(result, 31) + this.start_1 | 0;
+    result = imul(result, 31) + this.endExclusive_1 | 0;
+    result = imul(result, 31) + this.occurrence_1 | 0;
+    result = imul(result, 31) + getStringHashCode(this.explanation_1) | 0;
+    result = imul(result, 31) + hashCode(this.choices_1) | 0;
+    return result;
+  };
+  protoOf(RecognitionAmbiguity).equals = function (other) {
+    if (this === other)
+      return true;
+    if (!(other instanceof RecognitionAmbiguity))
+      return false;
+    var tmp0_other_with_cast = other instanceof RecognitionAmbiguity ? other : THROW_CCE();
+    if (!(this.id_1 === tmp0_other_with_cast.id_1))
+      return false;
+    if (!(this.type_1 === tmp0_other_with_cast.type_1))
+      return false;
+    if (!(this.source_1 === tmp0_other_with_cast.source_1))
+      return false;
+    if (!(this.start_1 === tmp0_other_with_cast.start_1))
+      return false;
+    if (!(this.endExclusive_1 === tmp0_other_with_cast.endExclusive_1))
+      return false;
+    if (!(this.occurrence_1 === tmp0_other_with_cast.occurrence_1))
+      return false;
+    if (!(this.explanation_1 === tmp0_other_with_cast.explanation_1))
+      return false;
+    if (!equals_0(this.choices_1, tmp0_other_with_cast.choices_1))
+      return false;
+    return true;
+  };
+  function RecognitionAmbiguitySelection(type, source, occurrence, choiceKey) {
+    this.type_1 = type;
+    this.source_1 = source;
+    this.occurrence_1 = occurrence;
+    this.choiceKey_1 = choiceKey;
+  }
+  protoOf(RecognitionAmbiguitySelection).get_type_wovaf7_k$ = function () {
+    return this.type_1;
+  };
+  protoOf(RecognitionAmbiguitySelection).get_source_jl0x7o_k$ = function () {
+    return this.source_1;
+  };
+  protoOf(RecognitionAmbiguitySelection).get_occurrence_7qnxay_k$ = function () {
+    return this.occurrence_1;
+  };
+  protoOf(RecognitionAmbiguitySelection).get_choiceKey_mjq6ol_k$ = function () {
+    return this.choiceKey_1;
+  };
+  protoOf(RecognitionAmbiguitySelection).component1_7eebsc_k$ = function () {
+    return this.type_1;
+  };
+  protoOf(RecognitionAmbiguitySelection).component2_7eebsb_k$ = function () {
+    return this.source_1;
+  };
+  protoOf(RecognitionAmbiguitySelection).component3_7eebsa_k$ = function () {
+    return this.occurrence_1;
+  };
+  protoOf(RecognitionAmbiguitySelection).component4_7eebs9_k$ = function () {
+    return this.choiceKey_1;
+  };
+  protoOf(RecognitionAmbiguitySelection).copy_qoz6st_k$ = function (type, source, occurrence, choiceKey) {
+    return new RecognitionAmbiguitySelection(type, source, occurrence, choiceKey);
+  };
+  protoOf(RecognitionAmbiguitySelection).copy$default_jkowro_k$ = function (type, source, occurrence, choiceKey, $super) {
+    type = type === VOID ? this.type_1 : type;
+    source = source === VOID ? this.source_1 : source;
+    occurrence = occurrence === VOID ? this.occurrence_1 : occurrence;
+    choiceKey = choiceKey === VOID ? this.choiceKey_1 : choiceKey;
+    return $super === VOID ? this.copy_qoz6st_k$(type, source, occurrence, choiceKey) : $super.copy_qoz6st_k$.call(this, type, source, occurrence, choiceKey);
+  };
+  protoOf(RecognitionAmbiguitySelection).toString = function () {
+    return 'RecognitionAmbiguitySelection(type=' + this.type_1 + ', source=' + this.source_1 + ', occurrence=' + this.occurrence_1 + ', choiceKey=' + this.choiceKey_1 + ')';
+  };
+  protoOf(RecognitionAmbiguitySelection).hashCode = function () {
+    var result = getStringHashCode(this.type_1);
+    result = imul(result, 31) + getStringHashCode(this.source_1) | 0;
+    result = imul(result, 31) + this.occurrence_1 | 0;
+    result = imul(result, 31) + getStringHashCode(this.choiceKey_1) | 0;
+    return result;
+  };
+  protoOf(RecognitionAmbiguitySelection).equals = function (other) {
+    if (this === other)
+      return true;
+    if (!(other instanceof RecognitionAmbiguitySelection))
+      return false;
+    var tmp0_other_with_cast = other instanceof RecognitionAmbiguitySelection ? other : THROW_CCE();
+    if (!(this.type_1 === tmp0_other_with_cast.type_1))
+      return false;
+    if (!(this.source_1 === tmp0_other_with_cast.source_1))
+      return false;
+    if (!(this.occurrence_1 === tmp0_other_with_cast.occurrence_1))
+      return false;
+    if (!(this.choiceKey_1 === tmp0_other_with_cast.choiceKey_1))
+      return false;
+    return true;
+  };
+  function _get_byKey__j8eapj($this) {
+    return $this.byKey_1;
+  }
+  function _get_nextOccurrence__qi3lgn($this) {
+    return $this.nextOccurrence_1;
+  }
+  function RecognitionAmbiguityChoices(selections) {
+    var tmp = this;
+    // Inline function 'kotlin.collections.associateBy' call
+    var capacity = coerceAtLeast(mapCapacity(collectionSizeOrDefault(selections, 10)), 16);
+    // Inline function 'kotlin.collections.associateByTo' call
+    var tmp0_associateByTo = LinkedHashMap_init_$Create$_2(capacity);
+    var tmp0_iterator = selections.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var element = tmp0_iterator.next_20eer_k$();
+      var tmp$ret$0;
+      // Inline function 'com.example.remotea.RecognitionAmbiguityChoices.byKey.<anonymous>' call
+      tmp$ret$0 = new Triple(element.type_1, element.source_1, element.occurrence_1);
+      tmp0_associateByTo.put_3mhbri_k$(tmp$ret$0, element);
+    }
+    tmp.byKey_1 = tmp0_associateByTo;
+    var tmp_0 = this;
+    // Inline function 'kotlin.collections.mutableMapOf' call
+    tmp_0.nextOccurrence_1 = LinkedHashMap_init_$Create$();
+  }
+  protoOf(RecognitionAmbiguityChoices).next_xee9n3_k$ = function (type, source) {
+    var key = to(type, source);
+    var tmp0_elvis_lhs = this.nextOccurrence_1.get_1mhr4y_k$(key);
+    var occurrence = tmp0_elvis_lhs == null ? 0 : tmp0_elvis_lhs;
+    // Inline function 'kotlin.collections.set' call
+    var tmp0_set = this.nextOccurrence_1;
+    var tmp1_set = occurrence + 1 | 0;
+    tmp0_set.put_3mhbri_k$(key, tmp1_set);
+    var tmp1_safe_receiver = this.byKey_1.get_1mhr4y_k$(new Triple(type, source, occurrence));
+    return tmp1_safe_receiver == null ? null : tmp1_safe_receiver.choiceKey_1;
+  };
+  function RecognitionRuleSpec(id, name, pattern, replacement, sourceTemplate, targetTemplate, enabled, ruleType, dslVersion, minClientCode) {
+    sourceTemplate = sourceTemplate === VOID ? '' : sourceTemplate;
+    targetTemplate = targetTemplate === VOID ? '' : targetTemplate;
+    enabled = enabled === VOID ? true : enabled;
+    ruleType = ruleType === VOID ? 'style' : ruleType;
+    dslVersion = dslVersion === VOID ? 1 : dslVersion;
+    minClientCode = minClientCode === VOID ? 0 : minClientCode;
+    this.id_1 = id;
+    this.name_1 = name;
+    this.pattern_1 = pattern;
+    this.replacement_1 = replacement;
+    this.sourceTemplate_1 = sourceTemplate;
+    this.targetTemplate_1 = targetTemplate;
+    this.enabled_1 = enabled;
+    this.ruleType_1 = ruleType;
+    this.dslVersion_1 = dslVersion;
+    this.minClientCode_1 = minClientCode;
+  }
+  protoOf(RecognitionRuleSpec).get_id_kntnx8_k$ = function () {
+    return this.id_1;
+  };
+  protoOf(RecognitionRuleSpec).get_name_woqyms_k$ = function () {
+    return this.name_1;
+  };
+  protoOf(RecognitionRuleSpec).get_pattern_btfv4p_k$ = function () {
+    return this.pattern_1;
+  };
+  protoOf(RecognitionRuleSpec).get_replacement_l0rc89_k$ = function () {
+    return this.replacement_1;
+  };
+  protoOf(RecognitionRuleSpec).get_sourceTemplate_b1n5tu_k$ = function () {
+    return this.sourceTemplate_1;
+  };
+  protoOf(RecognitionRuleSpec).get_targetTemplate_etqci4_k$ = function () {
+    return this.targetTemplate_1;
+  };
+  protoOf(RecognitionRuleSpec).get_enabled_pcr8o8_k$ = function () {
+    return this.enabled_1;
+  };
+  protoOf(RecognitionRuleSpec).get_ruleType_j6drz5_k$ = function () {
+    return this.ruleType_1;
+  };
+  protoOf(RecognitionRuleSpec).get_dslVersion_2qux2c_k$ = function () {
+    return this.dslVersion_1;
+  };
+  protoOf(RecognitionRuleSpec).get_minClientCode_rr9vkx_k$ = function () {
+    return this.minClientCode_1;
+  };
+  protoOf(RecognitionRuleSpec).component1_7eebsc_k$ = function () {
+    return this.id_1;
+  };
+  protoOf(RecognitionRuleSpec).component2_7eebsb_k$ = function () {
+    return this.name_1;
+  };
+  protoOf(RecognitionRuleSpec).component3_7eebsa_k$ = function () {
+    return this.pattern_1;
+  };
+  protoOf(RecognitionRuleSpec).component4_7eebs9_k$ = function () {
+    return this.replacement_1;
+  };
+  protoOf(RecognitionRuleSpec).component5_7eebs8_k$ = function () {
+    return this.sourceTemplate_1;
+  };
+  protoOf(RecognitionRuleSpec).component6_7eebs7_k$ = function () {
+    return this.targetTemplate_1;
+  };
+  protoOf(RecognitionRuleSpec).component7_7eebs6_k$ = function () {
+    return this.enabled_1;
+  };
+  protoOf(RecognitionRuleSpec).component8_7eebs5_k$ = function () {
+    return this.ruleType_1;
+  };
+  protoOf(RecognitionRuleSpec).component9_7eebs4_k$ = function () {
+    return this.dslVersion_1;
+  };
+  protoOf(RecognitionRuleSpec).component10_gazzfo_k$ = function () {
+    return this.minClientCode_1;
+  };
+  protoOf(RecognitionRuleSpec).copy_6yk556_k$ = function (id, name, pattern, replacement, sourceTemplate, targetTemplate, enabled, ruleType, dslVersion, minClientCode) {
+    return new RecognitionRuleSpec(id, name, pattern, replacement, sourceTemplate, targetTemplate, enabled, ruleType, dslVersion, minClientCode);
+  };
+  protoOf(RecognitionRuleSpec).copy$default_gszl3j_k$ = function (id, name, pattern, replacement, sourceTemplate, targetTemplate, enabled, ruleType, dslVersion, minClientCode, $super) {
+    id = id === VOID ? this.id_1 : id;
+    name = name === VOID ? this.name_1 : name;
+    pattern = pattern === VOID ? this.pattern_1 : pattern;
+    replacement = replacement === VOID ? this.replacement_1 : replacement;
+    sourceTemplate = sourceTemplate === VOID ? this.sourceTemplate_1 : sourceTemplate;
+    targetTemplate = targetTemplate === VOID ? this.targetTemplate_1 : targetTemplate;
+    enabled = enabled === VOID ? this.enabled_1 : enabled;
+    ruleType = ruleType === VOID ? this.ruleType_1 : ruleType;
+    dslVersion = dslVersion === VOID ? this.dslVersion_1 : dslVersion;
+    minClientCode = minClientCode === VOID ? this.minClientCode_1 : minClientCode;
+    return $super === VOID ? this.copy_6yk556_k$(id, name, pattern, replacement, sourceTemplate, targetTemplate, enabled, ruleType, dslVersion, minClientCode) : $super.copy_6yk556_k$.call(this, id, name, pattern, replacement, sourceTemplate, targetTemplate, enabled, ruleType, dslVersion, minClientCode);
+  };
+  protoOf(RecognitionRuleSpec).toString = function () {
+    return 'RecognitionRuleSpec(id=' + this.id_1 + ', name=' + this.name_1 + ', pattern=' + this.pattern_1 + ', replacement=' + this.replacement_1 + ', sourceTemplate=' + this.sourceTemplate_1 + ', targetTemplate=' + this.targetTemplate_1 + ', enabled=' + this.enabled_1 + ', ruleType=' + this.ruleType_1 + ', dslVersion=' + this.dslVersion_1 + ', minClientCode=' + this.minClientCode_1 + ')';
+  };
+  protoOf(RecognitionRuleSpec).hashCode = function () {
+    var result = getStringHashCode(this.id_1);
+    result = imul(result, 31) + getStringHashCode(this.name_1) | 0;
+    result = imul(result, 31) + getStringHashCode(this.pattern_1) | 0;
+    result = imul(result, 31) + getStringHashCode(this.replacement_1) | 0;
+    result = imul(result, 31) + getStringHashCode(this.sourceTemplate_1) | 0;
+    result = imul(result, 31) + getStringHashCode(this.targetTemplate_1) | 0;
+    result = imul(result, 31) + (this.enabled_1 | 0) | 0;
+    result = imul(result, 31) + getStringHashCode(this.ruleType_1) | 0;
+    result = imul(result, 31) + this.dslVersion_1 | 0;
+    result = imul(result, 31) + this.minClientCode_1 | 0;
+    return result;
+  };
+  protoOf(RecognitionRuleSpec).equals = function (other) {
+    if (this === other)
+      return true;
+    if (!(other instanceof RecognitionRuleSpec))
+      return false;
+    var tmp0_other_with_cast = other instanceof RecognitionRuleSpec ? other : THROW_CCE();
+    if (!(this.id_1 === tmp0_other_with_cast.id_1))
+      return false;
+    if (!(this.name_1 === tmp0_other_with_cast.name_1))
+      return false;
+    if (!(this.pattern_1 === tmp0_other_with_cast.pattern_1))
+      return false;
+    if (!(this.replacement_1 === tmp0_other_with_cast.replacement_1))
+      return false;
+    if (!(this.sourceTemplate_1 === tmp0_other_with_cast.sourceTemplate_1))
+      return false;
+    if (!(this.targetTemplate_1 === tmp0_other_with_cast.targetTemplate_1))
+      return false;
+    if (!(this.enabled_1 === tmp0_other_with_cast.enabled_1))
+      return false;
+    if (!(this.ruleType_1 === tmp0_other_with_cast.ruleType_1))
+      return false;
+    if (!(this.dslVersion_1 === tmp0_other_with_cast.dslVersion_1))
+      return false;
+    if (!(this.minClientCode_1 === tmp0_other_with_cast.minClientCode_1))
+      return false;
+    return true;
+  };
+  function _get_token__auim88($this) {
+    return $this.token_1;
+  }
+  function _get_numeric__40icv8($this) {
+    return $this.numeric_1;
+  }
+  function amountScales($this, template) {
+    var tmp = $this.token_1.findAll$default_n4kn43_k$(template);
+    var tmp_0 = filter_0(tmp, RecognitionRuleTemplate$amountScales$lambda);
+    return toList_1(map_0(tmp_0, RecognitionRuleTemplate$amountScales$lambda_0(template)));
+  }
+  function sourceLiteralPattern($this, literal, previousKind) {
+    var tmp;
+    if (!(previousKind === '\u91D1\u989D')) {
+      tmp = true;
+    } else {
+      // Inline function 'kotlin.text.isEmpty' call
+      tmp = charSequenceLength(literal) === 0;
+    }
+    if (tmp)
+      return Companion_getInstance_22().escape_s7n2bk_k$(literal);
+    var yuanAliases = listOf(['\u5143', '\u5757', '\u7EC4']);
+    var jiaoAliases = listOf(['\u89D2\u94B1', '\u6BDB\u94B1', '\u89D2', '\u6BDB']);
+    var tmp$ret$2;
+    $l$block: {
+      // Inline function 'kotlin.collections.firstOrNull' call
+      var tmp0_iterator = yuanAliases.iterator_jk1svi_k$();
+      while (tmp0_iterator.hasNext_bitz1p_k$()) {
+        var element = tmp0_iterator.next_20eer_k$();
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.sourceLiteralPattern.<anonymous>' call
+        if (startsWith_1(literal, element)) {
+          tmp$ret$2 = element;
+          break $l$block;
+        }
+      }
+      tmp$ret$2 = null;
+    }
+    var yuan = tmp$ret$2;
+    if (!(yuan == null)) {
+      var tmp_0 = Companion_getInstance_22();
+      var tmp$ret$4;
+      // Inline function 'kotlin.text.substring' call
+      var tmp0_substring = yuan.length;
+      // Inline function 'kotlin.js.asDynamic' call
+      tmp$ret$4 = literal.substring(tmp0_substring);
+      return '(?:\u5143|\u5757|\u7EC4)' + tmp_0.escape_s7n2bk_k$(tmp$ret$4);
+    }
+    var tmp$ret$6;
+    $l$block_0: {
+      // Inline function 'kotlin.collections.firstOrNull' call
+      var tmp0_iterator_0 = jiaoAliases.iterator_jk1svi_k$();
+      while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+        var element_0 = tmp0_iterator_0.next_20eer_k$();
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.sourceLiteralPattern.<anonymous>' call
+        if (startsWith_1(literal, element_0)) {
+          tmp$ret$6 = element_0;
+          break $l$block_0;
+        }
+      }
+      tmp$ret$6 = null;
+    }
+    var jiao = tmp$ret$6;
+    if (!(jiao == null)) {
+      var tmp_1 = Companion_getInstance_22();
+      var tmp$ret$8;
+      // Inline function 'kotlin.text.substring' call
+      var tmp1_substring = jiao.length;
+      // Inline function 'kotlin.js.asDynamic' call
+      tmp$ret$8 = literal.substring(tmp1_substring);
+      return '(?:\u89D2\u94B1|\u6BDB\u94B1|\u89D2|\u6BDB)' + tmp_1.escape_s7n2bk_k$(tmp$ret$8);
+    }
+    return Companion_getInstance_22().escape_s7n2bk_k$(literal);
+  }
+  function varyYuanAmountUnit($this, template, unit) {
+    var tmp = Regex_init_$Create$_0('\\{\u91D1\u989D\\}(\u5143|\u5757|\u7EC4)');
+    return tmp.replace_8a09nm_k$(template, RecognitionRuleTemplate$varyYuanAmountUnit$lambda(unit));
+  }
+  function sampleValues($this) {
+    var digits = listOf(['12', '357', '1278', '38', '6', '9031', '45', '8']);
+    var amounts = listOf(['1', '1.5', '60', '120', '2', '0.5', '80', '5']);
+    return to(digits, amounts);
+  }
+  function fillTemplate($this, template, digits, amounts) {
+    var di = {_v: 0};
+    var ai = {_v: 0};
+    return $this.token_1.replace_8a09nm_k$(template, RecognitionRuleTemplate$fillTemplate$lambda(di, digits, ai, amounts));
+  }
+  function replaceNumbersWithTokens($this, text, matches, kinds) {
+    var out = StringBuilder_init_$Create$_1();
+    var at = 0;
+    // Inline function 'kotlin.collections.forEachIndexed' call
+    var index = 0;
+    var tmp0_iterator = matches.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var item = tmp0_iterator.next_20eer_k$();
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.replaceNumbersWithTokens.<anonymous>' call
+      var tmp1 = index;
+      index = tmp1 + 1 | 0;
+      var tmp0_anonymous = checkIndexOverflow(tmp1);
+      var tmp$ret$1;
+      // Inline function 'kotlin.text.substring' call
+      var tmp0_substring = at;
+      var tmp1_substring = item.get_range_ixu978_k$().first_1;
+      // Inline function 'kotlin.js.asDynamic' call
+      tmp$ret$1 = text.substring(tmp0_substring, tmp1_substring);
+      out.append_ssq29y_k$(tmp$ret$1);
+      out.append_t8oh9e_k$(_Char___init__impl__6a9atx(123)).append_ssq29y_k$(kinds.get_fkrdnv_k$(tmp0_anonymous)).append_t8oh9e_k$(_Char___init__impl__6a9atx(125));
+      at = item.get_range_ixu978_k$().last_1 + 1 | 0;
+    }
+    var tmp$ret$3;
+    // Inline function 'kotlin.text.substring' call
+    var tmp1_substring_0 = at;
+    // Inline function 'kotlin.js.asDynamic' call
+    tmp$ret$3 = text.substring(tmp1_substring_0);
+    out.append_ssq29y_k$(tmp$ret$3);
+    return out.toString();
+  }
+  function replaceSelectedNumbersWithTokens($this, text, allMatches, selectedIndices, kinds) {
+    // Inline function 'kotlin.collections.associate' call
+    var tmp0_associate = withIndex(selectedIndices);
+    var capacity = coerceAtLeast(mapCapacity(collectionSizeOrDefault(tmp0_associate, 10)), 16);
+    // Inline function 'kotlin.collections.associateTo' call
+    var tmp0_associateTo = LinkedHashMap_init_$Create$_2(capacity);
+    var tmp0_iterator = tmp0_associate.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var element = tmp0_iterator.next_20eer_k$();
+      // Inline function 'kotlin.collections.plusAssign' call
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.replaceSelectedNumbersWithTokens.<anonymous>' call
+      var tmp0_plusAssign = to(element.value_1, element.index_1);
+      tmp0_associateTo.put_3mhbri_k$(tmp0_plusAssign.first_1, tmp0_plusAssign.second_1);
+    }
+    var selected = tmp0_associateTo;
+    var out = StringBuilder_init_$Create$_1();
+    var at = 0;
+    // Inline function 'kotlin.collections.forEachIndexed' call
+    var index = 0;
+    var tmp0_iterator_0 = allMatches.iterator_jk1svi_k$();
+    while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+      var item = tmp0_iterator_0.next_20eer_k$();
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.replaceSelectedNumbersWithTokens.<anonymous>' call
+      var tmp1 = index;
+      index = tmp1 + 1 | 0;
+      var tmp1_anonymous = checkIndexOverflow(tmp1);
+      var tmp$ret$4;
+      // Inline function 'kotlin.text.substring' call
+      var tmp0_substring = at;
+      var tmp1_substring = item.get_range_ixu978_k$().first_1;
+      // Inline function 'kotlin.js.asDynamic' call
+      tmp$ret$4 = text.substring(tmp0_substring, tmp1_substring);
+      out.append_ssq29y_k$(tmp$ret$4);
+      var sourceIndex = selected.get_1mhr4y_k$(tmp1_anonymous);
+      if (sourceIndex == null) {
+        out.append_ssq29y_k$(item.get_value_j01efc_k$());
+      } else {
+        out.append_t8oh9e_k$(_Char___init__impl__6a9atx(123)).append_ssq29y_k$(kinds.get_fkrdnv_k$(sourceIndex)).append_t8oh9e_k$(_Char___init__impl__6a9atx(125));
+      }
+      at = item.get_range_ixu978_k$().last_1 + 1 | 0;
+    }
+    var tmp$ret$6;
+    // Inline function 'kotlin.text.substring' call
+    var tmp2_substring = at;
+    // Inline function 'kotlin.js.asDynamic' call
+    tmp$ret$6 = text.substring(tmp2_substring);
+    out.append_ssq29y_k$(tmp$ret$6);
+    return out.toString();
+  }
+  function isAmountContext($this, text, m) {
+    if (contains_12(m.get_value_j01efc_k$(), _Char___init__impl__6a9atx(46)))
+      return true;
+    var tmp$ret$1;
+    // Inline function 'kotlin.text.substring' call
+    var tmp0_substring = m.get_range_ixu978_k$().first_1;
+    // Inline function 'kotlin.js.asDynamic' call
+    tmp$ret$1 = text.substring(0, tmp0_substring);
+    var before = takeLast(tmp$ret$1, 4);
+    var tmp$ret$3;
+    // Inline function 'kotlin.text.substring' call
+    var tmp1_substring = m.get_range_ixu978_k$().last_1 + 1 | 0;
+    // Inline function 'kotlin.js.asDynamic' call
+    tmp$ret$3 = text.substring(tmp1_substring);
+    var after = take_0(tmp$ret$3, 4);
+    var tmp$ret$5;
+    $l$block: {
+      // Inline function 'kotlin.text.any' call
+      var inductionVariable = 0;
+      var last = before.length;
+      while (inductionVariable < last) {
+        var element = charSequenceGet(before, inductionVariable);
+        inductionVariable = inductionVariable + 1 | 0;
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.isAmountContext.<anonymous>' call
+        if (contains_12('\u5404\u6BCF=\u6253', element)) {
+          tmp$ret$5 = true;
+          break $l$block;
+        }
+      }
+      tmp$ret$5 = false;
+    }
+    if (tmp$ret$5)
+      return true;
+    if (((((startsWith_1(after, '\u5143') ? true : startsWith_1(after, '\u5757')) ? true : startsWith_1(after, '\u89D2')) ? true : startsWith_1(after, '\u7EC4')) ? true : startsWith_1(after, '\u6CE8')) ? true : startsWith_1(after, '\u4EFD'))
+      return true;
+    return false;
+  }
+  function RecognitionRuleTemplate$compile$lambda(it) {
+    return it.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
+  }
+  function RecognitionRuleTemplate$compile$lambda_0(it) {
+    return it.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
+  }
+  function _no_name_provided__qut3iv_11($sourceTokens) {
+    this.$sourceTokens_1 = $sourceTokens;
+  }
+  protoOf(_no_name_provided__qut3iv_11).sourceIterator_2zqxcn_k$ = function () {
+    return this.$sourceTokens_1.iterator_jk1svi_k$();
+  };
+  protoOf(_no_name_provided__qut3iv_11).keyOf_35n1uz_k$ = function (element) {
+    // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+    return element;
+  };
+  protoOf(_no_name_provided__qut3iv_11).keyOf_dhlc0l_k$ = function (element) {
+    return this.keyOf_35n1uz_k$((!(element == null) ? typeof element === 'string' : false) ? element : THROW_CCE());
+  };
+  function _no_name_provided__qut3iv_12($targetTokens) {
+    this.$targetTokens_1 = $targetTokens;
+  }
+  protoOf(_no_name_provided__qut3iv_12).sourceIterator_2zqxcn_k$ = function () {
+    return this.$targetTokens_1.iterator_jk1svi_k$();
+  };
+  protoOf(_no_name_provided__qut3iv_12).keyOf_35n1uz_k$ = function (element) {
+    // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+    return element;
+  };
+  protoOf(_no_name_provided__qut3iv_12).keyOf_dhlc0l_k$ = function (element) {
+    return this.keyOf_35n1uz_k$((!(element == null) ? typeof element === 'string' : false) ? element : THROW_CCE());
+  };
+  function RecognitionRuleTemplate$amountScales$lambda(it) {
+    return it.get_groupValues_rkv314_k$().get_fkrdnv_k$(1) === '\u91D1\u989D';
+  }
+  function RecognitionRuleTemplate$amountScales$lambda_0($template) {
+    return function (m) {
+      var tmp$ret$2;
+      // Inline function 'kotlin.text.trimStart' call
+      var tmp$ret$1;
+      // Inline function 'kotlin.text.substring' call
+      var tmp0_substring = m.get_range_ixu978_k$().last_1 + 1 | 0;
+      var tmp$ret$0;
+      // Inline function 'kotlin.js.asDynamic' call
+      tmp$ret$0 = $template;
+      tmp$ret$1 = tmp$ret$0.substring(tmp0_substring);
+      var tmp1_trimStart = tmp$ret$1;
+      tmp$ret$2 = toString_3(trimStart_3(isCharSequence(tmp1_trimStart) ? tmp1_trimStart : THROW_CCE()));
+      var tail = tmp$ret$2;
+      return (((startsWith_1(tail, '\u89D2\u94B1') ? true : startsWith_1(tail, '\u6BDB\u94B1')) ? true : startsWith_1(tail, '\u89D2')) ? true : startsWith_1(tail, '\u6BDB')) ? 1 : 10;
+    };
+  }
+  function RecognitionRuleTemplate$varyYuanAmountUnit$lambda($unit) {
+    return function (it) {
+      return '{\u91D1\u989D}' + $unit;
+    };
+  }
+  function RecognitionRuleTemplate$fillTemplate$lambda($di, $digits, $ai, $amounts) {
+    return function (m) {
+      var tmp0_subject = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
+      var tmp;
+      if (tmp0_subject === '\u6570\u5B57') {
+        var tmp$ret$1;
+        // Inline function 'kotlin.collections.getOrElse' call
+        var tmp1 = $di._v;
+        $di._v = tmp1 + 1 | 0;
+        var tmp0_getOrElse = tmp1;
+        var tmp_0;
+        if (tmp0_getOrElse >= 0 ? tmp0_getOrElse <= get_lastIndex_5($digits) : false) {
+          tmp_0 = $digits.get_fkrdnv_k$(tmp0_getOrElse);
+        } else {
+          var tmp$ret$0;
+          // Inline function 'com.example.remotea.RecognitionRuleTemplate.fillTemplate.<anonymous>.<anonymous>' call
+          tmp$ret$0 = '7';
+          tmp_0 = tmp$ret$0;
+        }
+        tmp$ret$1 = tmp_0;
+        tmp = tmp$ret$1;
+      } else {
+        var tmp$ret$3;
+        // Inline function 'kotlin.collections.getOrElse' call
+        var tmp2 = $ai._v;
+        $ai._v = tmp2 + 1 | 0;
+        var tmp1_getOrElse = tmp2;
+        var tmp_1;
+        if (tmp1_getOrElse >= 0 ? tmp1_getOrElse <= get_lastIndex_5($amounts) : false) {
+          tmp_1 = $amounts.get_fkrdnv_k$(tmp1_getOrElse);
+        } else {
+          var tmp$ret$2;
+          // Inline function 'com.example.remotea.RecognitionRuleTemplate.fillTemplate.<anonymous>.<anonymous>' call
+          tmp$ret$2 = '1';
+          tmp_1 = tmp$ret$2;
+        }
+        tmp$ret$3 = tmp_1;
+        tmp = tmp$ret$3;
+      }
+      return tmp;
+    };
+  }
+  function RecognitionRuleTemplate() {
+    RecognitionRuleTemplate_instance = this;
+    this.token_1 = Regex_init_$Create$_0('\\{(\u6570\u5B57|\u91D1\u989D)\\}');
+    this.numeric_1 = Regex_init_$Create$_0('\\d+(?:\\.\\d+)?');
+  }
+  protoOf(RecognitionRuleTemplate).compile_n474z5_k$ = function (source, target) {
+    // Inline function 'kotlin.require' call
+    var tmp;
+    // Inline function 'kotlin.text.isNotBlank' call
+    if (!isBlank(source)) {
+      // Inline function 'kotlin.text.isNotBlank' call
+      tmp = !isBlank(target);
+    } else {
+      tmp = false;
+    }
+    // Inline function 'kotlin.contracts.contract' call
+    if (!tmp) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+      var message = '\u89C4\u5219\u6A21\u677F\u4E0D\u80FD\u4E3A\u7A7A';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message));
+    }
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(source.length <= 160 ? target.length <= 240 : false)) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+      var message_0 = '\u89C4\u5219\u6A21\u677F\u8FC7\u957F';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_0));
+    }
+    var tmp_0 = this.token_1.findAll$default_n4kn43_k$(source);
+    var sourceTokens = toList_1(map_0(tmp_0, RecognitionRuleTemplate$compile$lambda));
+    var tmp_1 = this.token_1.findAll$default_n4kn43_k$(target);
+    var targetTokens = toList_1(map_0(tmp_1, RecognitionRuleTemplate$compile$lambda_0));
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.collections.isNotEmpty' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!!sourceTokens.isEmpty_y1axqb_k$()) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+      var message_1 = '\u89C4\u5219\u5FC5\u987B\u81F3\u5C11\u5305\u542B\u4E00\u4E2A {\u6570\u5B57} \u6216 {\u91D1\u989D}';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_1));
+    }
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(sourceTokens.get_size_woubt6_k$() <= 8)) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+      var message_2 = '\u5355\u6761\u89C4\u5219\u5360\u4F4D\u7B26\u8FC7\u591A';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_2));
+    }
+    // Inline function 'kotlin.require' call
+    var tmp$ret$7;
+    // Inline function 'kotlin.collections.groupingBy' call
+    tmp$ret$7 = new _no_name_provided__qut3iv_11(sourceTokens);
+    var tmp_2 = eachCount(tmp$ret$7);
+    var tmp$ret$8;
+    // Inline function 'kotlin.collections.groupingBy' call
+    tmp$ret$8 = new _no_name_provided__qut3iv_12(targetTokens);
+    // Inline function 'kotlin.contracts.contract' call
+    if (!equals_0(tmp_2, eachCount(tmp$ret$8))) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+      var message_3 = '\u6807\u51C6\u5199\u6CD5\u5FC5\u987B\u5B8C\u6574\u4FDD\u7559\u539F\u5199\u6CD5\u4E2D\u7684\u6240\u6709 {\u6570\u5B57}/{\u91D1\u989D}';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_3));
+    }
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!equals_0(amountScales(this, source), amountScales(this, target))) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+      var message_4 = '\u5199\u6CD5\u9002\u914D\u89C4\u5219\u4E0D\u80FD\u6539\u53D8\u91D1\u989D\u500D\u7387\uFF08\u5143/\u5757/\u7EC4 \u4E0E \u89D2/\u6BDB \u4E0D\u53EF\u4E92\u6362\uFF09';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_4));
+    }
+    // Inline function 'kotlin.collections.mutableMapOf' call
+    var used = LinkedHashMap_init_$Create$();
+    var group = 0;
+    // Inline function 'kotlin.text.buildString' call
+    // Inline function 'kotlin.contracts.contract' call
+    // Inline function 'kotlin.apply' call
+    var tmp0_apply = StringBuilder_init_$Create$_1();
+    // Inline function 'kotlin.contracts.contract' call
+    // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+    var at = 0;
+    var previousKind = null;
+    var tmp0_iterator = RecognitionRuleTemplate_getInstance().token_1.findAll$default_n4kn43_k$(source).iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var m = tmp0_iterator.next_20eer_k$();
+      var tmp_3 = RecognitionRuleTemplate_getInstance();
+      var tmp$ret$13;
+      // Inline function 'kotlin.text.substring' call
+      var tmp0_substring = at;
+      var tmp1_substring = m.get_range_ixu978_k$().first_1;
+      // Inline function 'kotlin.js.asDynamic' call
+      tmp$ret$13 = source.substring(tmp0_substring, tmp1_substring);
+      tmp0_apply.append_ssq29y_k$(sourceLiteralPattern(tmp_3, tmp$ret$13, previousKind));
+      group = group + 1 | 0;
+      var kind = m.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
+      // Inline function 'kotlin.collections.getOrPut' call
+      var value = used.get_1mhr4y_k$(kind);
+      var tmp_4;
+      if (value == null) {
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>.<anonymous>' call
+        // Inline function 'kotlin.collections.mutableListOf' call
+        var answer = ArrayList_init_$Create$();
+        used.put_3mhbri_k$(kind, answer);
+        tmp_4 = answer;
+      } else {
+        tmp_4 = value;
+      }
+      tmp_4.add_1j60pz_k$(group);
+      tmp0_apply.append_ssq29y_k$(kind === '\u6570\u5B57' ? '([0-9]{1,10})' : '(\\d+(?:\\.\\d+)?)');
+      previousKind = kind;
+      at = m.get_range_ixu978_k$().last_1 + 1 | 0;
+    }
+    var tmp_5 = RecognitionRuleTemplate_getInstance();
+    var tmp$ret$18;
+    // Inline function 'kotlin.text.substring' call
+    var tmp2_substring = at;
+    // Inline function 'kotlin.js.asDynamic' call
+    tmp$ret$18 = source.substring(tmp2_substring);
+    tmp0_apply.append_ssq29y_k$(sourceLiteralPattern(tmp_5, tmp$ret$18, previousKind));
+    var body = tmp0_apply.toString();
+    // Inline function 'kotlin.collections.mutableMapOf' call
+    var cursor = LinkedHashMap_init_$Create$();
+    // Inline function 'kotlin.text.buildString' call
+    // Inline function 'kotlin.contracts.contract' call
+    // Inline function 'kotlin.apply' call
+    var tmp0_apply_0 = StringBuilder_init_$Create$_1();
+    // Inline function 'kotlin.contracts.contract' call
+    // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>' call
+    var at_0 = 0;
+    var tmp0_iterator_0 = RecognitionRuleTemplate_getInstance().token_1.findAll$default_n4kn43_k$(target).iterator_jk1svi_k$();
+    while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+      var m_0 = tmp0_iterator_0.next_20eer_k$();
+      var tmp$ret$23;
+      // Inline function 'kotlin.text.substring' call
+      var tmp0_substring_0 = at_0;
+      var tmp1_substring_0 = m_0.get_range_ixu978_k$().first_1;
+      // Inline function 'kotlin.js.asDynamic' call
+      tmp$ret$23 = target.substring(tmp0_substring_0, tmp1_substring_0);
+      tmp0_apply_0.append_ssq29y_k$(replace_2(tmp$ret$23, '$', '\\$'));
+      var kind_0 = m_0.get_groupValues_rkv314_k$().get_fkrdnv_k$(1);
+      var tmp1_elvis_lhs = cursor.get_1mhr4y_k$(kind_0);
+      var index = tmp1_elvis_lhs == null ? 0 : tmp1_elvis_lhs;
+      // Inline function 'kotlin.collections.orEmpty' call
+      var tmp0_elvis_lhs = used.get_1mhr4y_k$(kind_0);
+      var groups = tmp0_elvis_lhs == null ? emptyList() : tmp0_elvis_lhs;
+      // Inline function 'kotlin.require' call
+      // Inline function 'kotlin.contracts.contract' call
+      if (!(index < groups.get_size_woubt6_k$())) {
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.compile.<anonymous>.<anonymous>' call
+        var message_5 = '\u6807\u51C6\u5199\u6CD5\u4E2D\u7684 {' + kind_0 + '} \u5728\u539F\u5199\u6CD5\u4E2D\u6CA1\u6709\u5BF9\u5E94\u5360\u4F4D\u7B26';
+        throw IllegalArgumentException_init_$Create$_0(toString_3(message_5));
+      }
+      tmp0_apply_0.append_t8oh9e_k$(_Char___init__impl__6a9atx(36)).append_t8pm91_k$(groups.get_fkrdnv_k$(index));
+      // Inline function 'kotlin.collections.set' call
+      var tmp4_set = index + 1 | 0;
+      cursor.put_3mhbri_k$(kind_0, tmp4_set);
+      at_0 = m_0.get_range_ixu978_k$().last_1 + 1 | 0;
+    }
+    var tmp$ret$27;
+    // Inline function 'kotlin.text.substring' call
+    var tmp5_substring = at_0;
+    // Inline function 'kotlin.js.asDynamic' call
+    tmp$ret$27 = target.substring(tmp5_substring);
+    tmp0_apply_0.append_ssq29y_k$(replace_2(tmp$ret$27, '$', '\\$'));
+    var replacement = tmp0_apply_0.toString();
+    var pattern = '(?m)^' + body + '$';
+    Regex_init_$Create$_0(pattern);
+    return to(pattern, replacement);
+  };
+  protoOf(RecognitionRuleTemplate).inferFromExample_zcfek0_k$ = function (sourceExample, targetExample) {
+    // Inline function 'kotlin.text.trim' call
+    var source = toString_3(trim_3(isCharSequence(sourceExample) ? sourceExample : THROW_CCE()));
+    // Inline function 'kotlin.text.trim' call
+    var target = toString_3(trim_3(isCharSequence(targetExample) ? targetExample : THROW_CCE()));
+    // Inline function 'kotlin.require' call
+    var tmp;
+    // Inline function 'kotlin.text.isNotBlank' call
+    if (!isBlank(source)) {
+      // Inline function 'kotlin.text.isNotBlank' call
+      tmp = !isBlank(target);
+    } else {
+      tmp = false;
+    }
+    // Inline function 'kotlin.contracts.contract' call
+    if (!tmp) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+      var message = '\u539F\u6587\u548C\u6B63\u786E\u7ED3\u679C\u4E0D\u80FD\u4E3A\u7A7A';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message));
+    }
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(source.length <= 160 ? target.length <= 240 : false)) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+      var message_0 = '\u793A\u4F8B\u8FC7\u957F';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_0));
+    }
+    var chineseAmount = Regex_init_$Create$_0('[\u96F6\u3007\u4E00\u4E8C\u4E24\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D\u5341\u767E\u534A]+(?:\u5757\u94B1|\u5143|\u5757|\u89D2\u94B1|\u6BDB\u94B1|\u89D2|\u6BDB)');
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!!chineseAmount.containsMatchIn_vhqhsg_k$(source)) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+      var message_1 = '\u4E2D\u6587\u91D1\u989D\u5C5E\u4E8E\u6838\u5FC3\u8BED\u4E49\uFF08\u5982\u4E94\u5757/\u4E24\u6BDB\uFF09\uFF0C\u65E0\u9700\u65B0\u589E\u4E91\u7AEF\u89C4\u5219\uFF1B\u8BF7\u76F4\u63A5\u7528 v4.1.0 \u8BC6\u522B';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_1));
+    }
+    var s = toList_1(this.numeric_1.findAll$default_n4kn43_k$(source));
+    var t = toList_1(this.numeric_1.findAll$default_n4kn43_k$(target));
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.collections.isNotEmpty' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!!s.isEmpty_y1axqb_k$()) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+      var message_2 = '\u539F\u6587\u5FC5\u987B\u81F3\u5C11\u5305\u542B\u4E00\u4E2A\u6570\u5B57';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_2));
+    }
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(s.get_size_woubt6_k$() <= 8)) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+      var message_3 = '\u5355\u6761\u89C4\u5219\u6570\u5B57\u6BB5\u8FC7\u591A';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_3));
+    }
+    // Inline function 'kotlin.collections.mutableListOf' call
+    var targetIndexForSource = ArrayList_init_$Create$();
+    var seek = 0;
+    // Inline function 'kotlin.collections.forEachIndexed' call
+    var index = 0;
+    var tmp0_iterator = s.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var item = tmp0_iterator.next_20eer_k$();
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+      var tmp1 = index;
+      index = tmp1 + 1 | 0;
+      var tmp5_anonymous = checkIndexOverflow(tmp1);
+      var tmp$ret$12;
+      $l$block: {
+        // Inline function 'kotlin.collections.firstOrNull' call
+        var tmp0_firstOrNull = until(seek, t.get_size_woubt6_k$());
+        var inductionVariable = tmp0_firstOrNull.first_1;
+        var last_0 = tmp0_firstOrNull.last_1;
+        if (inductionVariable <= last_0)
+          do {
+            var element = inductionVariable;
+            inductionVariable = inductionVariable + 1 | 0;
+            // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>.<anonymous>' call
+            if (t.get_fkrdnv_k$(element).get_value_j01efc_k$() === item.get_value_j01efc_k$()) {
+              tmp$ret$12 = element;
+              break $l$block;
+            }
+          }
+           while (!(element === last_0));
+        tmp$ret$12 = null;
+      }
+      var found = tmp$ret$12;
+      // Inline function 'kotlin.require' call
+      // Inline function 'kotlin.contracts.contract' call
+      if (!!(found == null)) {
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>.<anonymous>' call
+        var message_4 = '\u6B63\u786E\u7ED3\u679C\u5FC5\u987B\u4FDD\u7559\u539F\u6587\u6570\u5B57\u4E14\u987A\u5E8F\u4E0D\u53D8\uFF08\u7B2C ' + (tmp5_anonymous + 1 | 0) + ' \u4E2A\u6570\u5B57\u672A\u4FDD\u7559\uFF09';
+        throw IllegalArgumentException_init_$Create$_0(toString_3(message_4));
+      }
+      // Inline function 'kotlin.collections.plusAssign' call
+      targetIndexForSource.add_1j60pz_k$(found);
+      seek = found + 1 | 0;
+    }
+    // Inline function 'kotlin.collections.map' call
+    var tmp6_map = get_indices_5(s);
+    // Inline function 'kotlin.collections.mapTo' call
+    var tmp0_mapTo = ArrayList_init_$Create$_0(collectionSizeOrDefault(tmp6_map, 10));
+    var inductionVariable_0 = tmp6_map.first_1;
+    var last_1 = tmp6_map.last_1;
+    if (inductionVariable_0 <= last_1)
+      do {
+        var item_0 = inductionVariable_0;
+        inductionVariable_0 = inductionVariable_0 + 1 | 0;
+        var tmp$ret$14;
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+        var tm = t.get_fkrdnv_k$(targetIndexForSource.get_fkrdnv_k$(item_0));
+        tmp$ret$14 = (isAmountContext(RecognitionRuleTemplate_getInstance(), source, s.get_fkrdnv_k$(item_0)) ? true : isAmountContext(RecognitionRuleTemplate_getInstance(), target, tm)) ? '\u91D1\u989D' : '\u6570\u5B57';
+        tmp0_mapTo.add_1j60pz_k$(tmp$ret$14);
+      }
+       while (!(item_0 === last_1));
+    var kinds = toMutableList_0(tmp0_mapTo);
+    // Inline function 'kotlin.collections.forEach' call
+    var tmp7_forEach = get_indices_5(s);
+    var inductionVariable_1 = tmp7_forEach.first_1;
+    var last_2 = tmp7_forEach.last_1;
+    if (inductionVariable_1 <= last_2)
+      do {
+        var element_0 = inductionVariable_1;
+        inductionVariable_1 = inductionVariable_1 + 1 | 0;
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+        if (contains_12(s.get_fkrdnv_k$(element_0).get_value_j01efc_k$(), _Char___init__impl__6a9atx(46))) {
+          kinds.set_meu351_k$(element_0, '\u91D1\u989D');
+        }
+      }
+       while (!(element_0 === last_2));
+    var tmp_0;
+    var tmp$ret$17;
+    $l$block_1: {
+      // Inline function 'kotlin.collections.none' call
+      var tmp_1;
+      if (isInterface(kinds, Collection)) {
+        tmp_1 = kinds.isEmpty_y1axqb_k$();
+      } else {
+        tmp_1 = false;
+      }
+      if (tmp_1) {
+        tmp$ret$17 = true;
+        break $l$block_1;
+      }
+      var tmp0_iterator_0 = kinds.iterator_jk1svi_k$();
+      while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+        var element_1 = tmp0_iterator_0.next_20eer_k$();
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+        if (element_1 === '\u91D1\u989D') {
+          tmp$ret$17 = false;
+          break $l$block_1;
+        }
+      }
+      tmp$ret$17 = true;
+    }
+    if (tmp$ret$17) {
+      // Inline function 'kotlin.collections.isNotEmpty' call
+      tmp_0 = !s.isEmpty_y1axqb_k$();
+    } else {
+      tmp_0 = false;
+    }
+    if (tmp_0) {
+      var last_3 = last(s);
+      var tmp$ret$21;
+      // Inline function 'kotlin.text.substring' call
+      var tmp8_substring = last_3.get_range_ixu978_k$().first_1;
+      // Inline function 'kotlin.js.asDynamic' call
+      tmp$ret$21 = source.substring(0, tmp8_substring);
+      var prefix = takeLast(tmp$ret$21, 3);
+      var tmp$ret$23;
+      $l$block_2: {
+        // Inline function 'kotlin.text.any' call
+        var inductionVariable_2 = 0;
+        var last_4 = prefix.length;
+        while (inductionVariable_2 < last_4) {
+          var element_2 = charSequenceGet(prefix, inductionVariable_2);
+          inductionVariable_2 = inductionVariable_2 + 1 | 0;
+          // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+          if (contains_12('\u5404\u6BCF=\u6253', element_2)) {
+            tmp$ret$23 = true;
+            break $l$block_2;
+          }
+        }
+        tmp$ret$23 = false;
+      }
+      if (tmp$ret$23) {
+        kinds.set_meu351_k$(get_lastIndex_5(kinds), '\u91D1\u989D');
+      }
+    }
+    var sourceTemplate = replaceNumbersWithTokens(this, source, s, kinds);
+    var targetTemplate = replaceSelectedNumbersWithTokens(this, target, t, targetIndexForSource, kinds);
+    var tmp0_container = this.compile_n474z5_k$(sourceTemplate, targetTemplate);
+    var pattern = tmp0_container.component1_7eebsc_k$();
+    var replacement = tmp0_container.component2_7eebsb_k$();
+    var actual = Regex_init_$Create$_0(pattern).replace_838ra0_k$(source, replacement);
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(actual === target)) {
+      // Inline function 'com.example.remotea.RecognitionRuleTemplate.inferFromExample.<anonymous>' call
+      var message_5 = '\u65E0\u6CD5\u4ECE\u8BE5\u793A\u4F8B\u5B89\u5168\u63A8\u5BFC\u901A\u7528\u89C4\u5219\uFF0C\u8BF7\u6539\u7528\u66F4\u660E\u786E\u7684\u6B63\u786E\u7ED3\u679C';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_5));
+    }
+    return to(sourceTemplate, targetTemplate);
+  };
+  protoOf(RecognitionRuleTemplate).examplePair_cmyvmq_k$ = function (sourceTemplate, targetTemplate) {
+    var values = sampleValues(this);
+    return to(fillTemplate(this, sourceTemplate, values.first_1, values.second_1), fillTemplate(this, targetTemplate, values.first_1, values.second_1));
+  };
+  protoOf(RecognitionRuleTemplate).generalizedPairs_vxi8ld_k$ = function (sourceTemplate, targetTemplate) {
+    var digitSets = listOf([listOf(['7', '38', '812', '12678', '45', '9031', '6', '1234567890']), listOf(['12', '357', '1278', '38', '6', '90', '12345', '8']), listOf(['812', '357', '12678', '38', '91', '4', '765432', '3']), listOf(['1', '23', '456', '7890', '5', '67', '89012', '4'])]);
+    var amounts = listOf([listOf(['1', '1.5', '60', '120']), listOf(['2', '0.5', '80', '3']), listOf(['60', '120', '1', '2.5']), listOf(['5', '20', '0.2', '88'])]);
+    var yuanUnits = listOf(['\u7EC4', '\u5143', '\u5757', '\u5143']);
+    // Inline function 'kotlin.collections.map' call
+    var tmp0_map = get_indices_5(digitSets);
+    // Inline function 'kotlin.collections.mapTo' call
+    var tmp0_mapTo = ArrayList_init_$Create$_0(collectionSizeOrDefault(tmp0_map, 10));
+    var inductionVariable = tmp0_map.first_1;
+    var last = tmp0_map.last_1;
+    if (inductionVariable <= last)
+      do {
+        var item = inductionVariable;
+        inductionVariable = inductionVariable + 1 | 0;
+        var tmp$ret$0;
+        // Inline function 'com.example.remotea.RecognitionRuleTemplate.generalizedPairs.<anonymous>' call
+        var sourceVariant = varyYuanAmountUnit(RecognitionRuleTemplate_getInstance(), sourceTemplate, yuanUnits.get_fkrdnv_k$(item));
+        tmp$ret$0 = to(fillTemplate(RecognitionRuleTemplate_getInstance(), sourceVariant, digitSets.get_fkrdnv_k$(item), amounts.get_fkrdnv_k$(item)), fillTemplate(RecognitionRuleTemplate_getInstance(), targetTemplate, digitSets.get_fkrdnv_k$(item), amounts.get_fkrdnv_k$(item)));
+        tmp0_mapTo.add_1j60pz_k$(tmp$ret$0);
+      }
+       while (!(item === last));
+    return tmp0_mapTo;
+  };
+  protoOf(RecognitionRuleTemplate).hasTemplateToken_ycdvdw_k$ = function (text) {
+    return this.token_1.containsMatchIn_vhqhsg_k$(text);
+  };
+  var RecognitionRuleTemplate_instance;
+  function RecognitionRuleTemplate_getInstance() {
+    if (RecognitionRuleTemplate_instance == null)
+      new RecognitionRuleTemplate();
+    return RecognitionRuleTemplate_instance;
+  }
+  function _set_rules__kbu04u($this, _set____db54di) {
+    $this.rules_1 = _set____db54di;
+  }
+  function _get_rules__bpagcm($this) {
+    return $this.rules_1;
+  }
+  function _set_version__ry5i99($this, _set____db54di) {
+    $this.version_1 = _set____db54di;
+  }
+  function _get_edgeNoiseLabels__nd91rf($this) {
+    return $this.edgeNoiseLabels_1;
+  }
+  function _get_edgeNoiseAlt__2bzjr3($this) {
+    return $this.edgeNoiseAlt_1;
+  }
+  function _get_edgeNoisePrefix__rlcfha($this) {
+    return $this.edgeNoisePrefix_1;
+  }
+  function _get_edgeNoiseSuffix__hvj2yr($this) {
+    return $this.edgeNoiseSuffix_1;
+  }
+  function rewriteLineCandidate($this, line, rule) {
+    var regex = Regex_init_$Create$_0(rule.pattern_1);
+    if (regex.matches_qvb2fs_k$(line))
+      return regex.replace_838ra0_k$(line, rule.replacement_1);
+    // Inline function 'kotlin.text.orEmpty' call
+    var tmp0_safe_receiver = $this.edgeNoisePrefix_1.find$default_bc99zm_k$(line);
+    var tmp0_elvis_lhs = tmp0_safe_receiver == null ? null : tmp0_safe_receiver.get_value_j01efc_k$();
+    var prefix = tmp0_elvis_lhs == null ? '' : tmp0_elvis_lhs;
+    // Inline function 'kotlin.text.substring' call
+    var tmp1_substring = prefix.length;
+    // Inline function 'kotlin.js.asDynamic' call
+    var remaining = line.substring(tmp1_substring);
+    // Inline function 'kotlin.text.orEmpty' call
+    var tmp1_safe_receiver = $this.edgeNoiseSuffix_1.find$default_bc99zm_k$(remaining);
+    var tmp0_elvis_lhs_0 = tmp1_safe_receiver == null ? null : tmp1_safe_receiver.get_value_j01efc_k$();
+    var suffix = tmp0_elvis_lhs_0 == null ? '' : tmp0_elvis_lhs_0;
+    var tmp;
+    // Inline function 'kotlin.text.isEmpty' call
+    if (charSequenceLength(prefix) === 0) {
+      // Inline function 'kotlin.text.isEmpty' call
+      tmp = charSequenceLength(suffix) === 0;
+    } else {
+      tmp = false;
+    }
+    if (tmp)
+      return null;
+    var coreEnd = coerceAtLeast(remaining.length - suffix.length | 0, 0);
+    // Inline function 'kotlin.text.substring' call
+    // Inline function 'kotlin.js.asDynamic' call
+    var core = remaining.substring(0, coreEnd);
+    if (isBlank(core) ? true : !regex.matches_qvb2fs_k$(core))
+      return null;
+    return prefix + regex.replace_838ra0_k$(core, rule.replacement_1) + suffix;
+  }
+  function sam$kotlin_Comparator$0_9(function_0) {
+    this.function_1 = function_0;
+  }
+  protoOf(sam$kotlin_Comparator$0_9).compare_6tbigh_k$ = function (a, b) {
+    return this.function_1(a, b);
+  };
+  protoOf(sam$kotlin_Comparator$0_9).compare = function (a, b) {
+    return this.compare_6tbigh_k$(a, b);
+  };
+  function RecognitionRuleRuntime$edgeNoiseLabels$lambda(a, b) {
+    // Inline function 'kotlin.comparisons.compareValuesBy' call
+    // Inline function 'com.example.remotea.RecognitionRuleRuntime.edgeNoiseLabels.<anonymous>' call
+    var tmp = b.length;
+    var tmp$ret$1;
+    // Inline function 'com.example.remotea.RecognitionRuleRuntime.edgeNoiseLabels.<anonymous>' call
+    tmp$ret$1 = a.length;
+    return compareValues(tmp, tmp$ret$1);
+  }
+  function RecognitionRuleRuntime$edgeNoiseAlt$lambda(it) {
+    return Companion_getInstance_22().escape_s7n2bk_k$(it);
+  }
+  function RecognitionRuleRuntime$apply$lambda(rawLine) {
+    var cr = endsWith(rawLine, _Char___init__impl__6a9atx(13)) ? '\r' : '';
+    var tmp;
+    // Inline function 'kotlin.text.isEmpty' call
+    if (charSequenceLength(cr) === 0) {
+      tmp = rawLine;
+    } else {
+      tmp = dropLast(rawLine, 1);
+    }
+    var line = tmp;
+    // Inline function 'kotlin.collections.mapNotNull' call
+    // Inline function 'kotlin.collections.filter' call
+    var tmp0_filter = RecognitionRuleRuntime_getInstance().rules_1;
+    // Inline function 'kotlin.collections.filterTo' call
+    var tmp0_filterTo = ArrayList_init_$Create$();
+    var tmp0_iterator = tmp0_filter.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var element = tmp0_iterator.next_20eer_k$();
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.apply.<anonymous>.<anonymous>' call
+      if (element.enabled_1) {
+        tmp0_filterTo.add_1j60pz_k$(element);
+      }
+    }
+    // Inline function 'kotlin.collections.mapNotNullTo' call
+    var tmp0_mapNotNullTo = ArrayList_init_$Create$();
+    // Inline function 'kotlin.collections.forEach' call
+    var tmp0_iterator_0 = tmp0_filterTo.iterator_jk1svi_k$();
+    while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+      var element_0 = tmp0_iterator_0.next_20eer_k$();
+      // Inline function 'kotlin.collections.mapNotNullTo.<anonymous>' call
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.apply.<anonymous>.<anonymous>' call
+      var tmp0_safe_receiver = rewriteLineCandidate(RecognitionRuleRuntime_getInstance(), line, element_0);
+      if (tmp0_safe_receiver == null)
+        null;
+      else {
+        // Inline function 'kotlin.let' call
+        // Inline function 'kotlin.contracts.contract' call
+        tmp0_mapNotNullTo.add_1j60pz_k$(tmp0_safe_receiver);
+      }
+    }
+    var outputs = distinct(tmp0_mapNotNullTo);
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(outputs.get_size_woubt6_k$() <= 1)) {
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.apply.<anonymous>.<anonymous>' call
+      var message = '\u4E91\u7AEF\u8BC6\u522B\u89C4\u5219\u51B2\u7A81\uFF1A\u540C\u4E00\u884C\u5B58\u5728\u591A\u4E2A\u4E0D\u540C\u89E3\u91CA\uFF0C\u5DF2\u505C\u6B62\u8BC6\u522B';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message));
+    }
+    var tmp0_elvis_lhs = singleOrNull(outputs);
+    return (tmp0_elvis_lhs == null ? line : tmp0_elvis_lhs) + cr;
+  }
+  function RecognitionRuleRuntime() {
+    RecognitionRuleRuntime_instance = this;
+    this.CLIENT_CODE_1 = 173;
+    this.SUPPORTED_DSL_VERSION_1 = 1;
+    this.SUPPORTED_RULE_TYPE_1 = 'style';
+    this.rules_1 = emptyList();
+    this.version_1 = new Long(0, 0);
+    var tmp = this;
+    // Inline function 'kotlin.collections.sortedByDescending' call
+    var tmp0_sortedByDescending = listOf(['\u4E03\u661F\u5F69', '\u6392\u5217\u4E94', '\u4E03\u4E94', '\u4E94\u4E03', '\u4E03\u661F', '\u4E03\u5B50', '\u4E03\u4ED4', '\u4E94\u5B50', '\u4E94\u4ED4', '\u6392\u4E94', '\u6392\u5217']);
+    var tmp$ret$0;
+    // Inline function 'kotlin.comparisons.compareByDescending' call
+    var tmp_0 = RecognitionRuleRuntime$edgeNoiseLabels$lambda;
+    tmp$ret$0 = new sam$kotlin_Comparator$0_9(tmp_0);
+    tmp.edgeNoiseLabels_1 = sortedWith(tmp0_sortedByDescending, tmp$ret$0);
+    var tmp_1 = this;
+    tmp_1.edgeNoiseAlt_1 = joinToString_0(this.edgeNoiseLabels_1, '|', VOID, VOID, VOID, VOID, RecognitionRuleRuntime$edgeNoiseAlt$lambda);
+    this.edgeNoisePrefix_1 = Regex_init_$Create$_0('^\\s*(?:(?:' + this.edgeNoiseAlt_1 + ')\\s*)*');
+    this.edgeNoiseSuffix_1 = Regex_init_$Create$_0('(?:(?:\\s*(?:' + this.edgeNoiseAlt_1 + ')))*\\s*$');
+  }
+  protoOf(RecognitionRuleRuntime).get_CLIENT_CODE_nx7f60_k$ = function () {
+    return this.CLIENT_CODE_1;
+  };
+  protoOf(RecognitionRuleRuntime).get_SUPPORTED_DSL_VERSION_8x21mk_k$ = function () {
+    return this.SUPPORTED_DSL_VERSION_1;
+  };
+  protoOf(RecognitionRuleRuntime).get_SUPPORTED_RULE_TYPE_1g4c03_k$ = function () {
+    return this.SUPPORTED_RULE_TYPE_1;
+  };
+  protoOf(RecognitionRuleRuntime).get_version_72w4j3_k$ = function () {
+    return this.version_1;
+  };
+  protoOf(RecognitionRuleRuntime).install_ocxgph_k$ = function (newVersion, newRules) {
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(newVersion.compareTo_n4fqi2_k$(new Long(0, 0)) >= 0)) {
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.install.<anonymous>' call
+      var message = '\u89C4\u5219\u7248\u672C\u65E0\u6548';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message));
+    }
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(newRules.get_size_woubt6_k$() <= 100)) {
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.install.<anonymous>' call
+      var message_0 = '\u89C4\u5219\u6570\u91CF\u8D85\u8FC7\u4E0A\u9650';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message_0));
+    }
+    // Inline function 'kotlin.collections.forEach' call
+    // Inline function 'kotlin.collections.filter' call
+    // Inline function 'kotlin.collections.filterTo' call
+    var tmp0_filterTo = ArrayList_init_$Create$();
+    var tmp0_iterator = newRules.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var element = tmp0_iterator.next_20eer_k$();
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.install.<anonymous>' call
+      if (element.enabled_1) {
+        tmp0_filterTo.add_1j60pz_k$(element);
+      }
+    }
+    var tmp0_iterator_0 = tmp0_filterTo.iterator_jk1svi_k$();
+    while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+      var element_0 = tmp0_iterator_0.next_20eer_k$();
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.install.<anonymous>' call
+      // Inline function 'kotlin.require' call
+      RecognitionRuleRuntime_getInstance();
+      // Inline function 'kotlin.contracts.contract' call
+      if (!(element_0.ruleType_1 === 'style')) {
+        // Inline function 'com.example.remotea.RecognitionRuleRuntime.install.<anonymous>.<anonymous>' call
+        var message_1 = '\u5F53\u524D\u5BA2\u6237\u7AEF\u4E0D\u652F\u6301\u89C4\u5219\u7C7B\u578B\uFF1A' + element_0.ruleType_1;
+        throw IllegalArgumentException_init_$Create$_0(toString_3(message_1));
+      }
+      // Inline function 'kotlin.require' call
+      RecognitionRuleRuntime_getInstance();
+      // Inline function 'kotlin.contracts.contract' call
+      if (!(element_0.dslVersion_1 <= 1)) {
+        // Inline function 'com.example.remotea.RecognitionRuleRuntime.install.<anonymous>.<anonymous>' call
+        var message_2 = '\u89C4\u5219\u683C\u5F0F\u7248\u672C\u8FC7\u65B0\uFF0C\u8BF7\u5347\u7EA7 A \u7AEF';
+        throw IllegalArgumentException_init_$Create$_0(toString_3(message_2));
+      }
+      // Inline function 'kotlin.require' call
+      RecognitionRuleRuntime_getInstance();
+      // Inline function 'kotlin.contracts.contract' call
+      if (!(element_0.minClientCode_1 <= 173)) {
+        // Inline function 'com.example.remotea.RecognitionRuleRuntime.install.<anonymous>.<anonymous>' call
+        var message_3 = '\u8BE5\u89C4\u5219\u8981\u6C42\u66F4\u9AD8\u7248\u672C A \u7AEF\uFF0C\u8BF7\u5148\u5347\u7EA7';
+        throw IllegalArgumentException_init_$Create$_0(toString_3(message_3));
+      }
+      // Inline function 'kotlin.require' call
+      // Inline function 'kotlin.contracts.contract' call
+      if (!(element_0.pattern_1.length <= 500 ? element_0.replacement_1.length <= 600 : false)) {
+        // Inline function 'com.example.remotea.RecognitionRuleRuntime.install.<anonymous>.<anonymous>' call
+        var message_4 = '\u89C4\u5219\u8FC7\u957F\uFF1A' + element_0.name_1;
+        throw IllegalArgumentException_init_$Create$_0(toString_3(message_4));
+      }
+      Regex_init_$Create$_0(element_0.pattern_1);
+    }
+    this.rules_1 = toList(newRules);
+    this.version_1 = newVersion;
+  };
+  protoOf(RecognitionRuleRuntime).snapshot_4plubo_k$ = function () {
+    return toList(this.rules_1);
+  };
+  protoOf(RecognitionRuleRuntime).apply_hgk8r7_k$ = function (raw) {
+    // Inline function 'kotlin.also' call
+    var tmp = split(raw, charArrayOf_0([_Char___init__impl__6a9atx(10)]));
+    var tmp0_also = joinToString_0(tmp, '\n', VOID, VOID, VOID, VOID, RecognitionRuleRuntime$apply$lambda);
+    // Inline function 'kotlin.contracts.contract' call
+    // Inline function 'com.example.remotea.RecognitionRuleRuntime.apply.<anonymous>' call
+    // Inline function 'kotlin.require' call
+    // Inline function 'kotlin.contracts.contract' call
+    if (!(tmp0_also.length <= 20000)) {
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.apply.<anonymous>.<anonymous>' call
+      var message = '\u89C4\u5219\u5C55\u5F00\u540E\u7684\u8F93\u5165\u8FC7\u957F\uFF0C\u5DF2\u62D2\u7EDD\u8BC6\u522B';
+      throw IllegalArgumentException_init_$Create$_0(toString_3(message));
+    }
+    return tmp0_also;
+  };
+  protoOf(RecognitionRuleRuntime).validateForPublish_e47w1d_k$ = function (candidate) {
+    // Inline function 'kotlin.collections.filter' call
+    // Inline function 'kotlin.collections.filterTo' call
+    var tmp0_filterTo = ArrayList_init_$Create$();
+    var tmp0_iterator = candidate.iterator_jk1svi_k$();
+    while (tmp0_iterator.hasNext_bitz1p_k$()) {
+      var element = tmp0_iterator.next_20eer_k$();
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>' call
+      if (element.enabled_1) {
+        tmp0_filterTo.add_1j60pz_k$(element);
+      }
+    }
+    var enabled = tmp0_filterTo;
+    var generalized = 0;
+    var semanticChecks = 0;
+    // Inline function 'kotlin.collections.mutableListOf' call
+    var samples = ArrayList_init_$Create$();
+    // Inline function 'kotlin.collections.forEach' call
+    var tmp0_iterator_0 = enabled.iterator_jk1svi_k$();
+    while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+      var element_0 = tmp0_iterator_0.next_20eer_k$();
+      $l$block: {
+        // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>' call
+        // Inline function 'kotlin.check' call
+        var tmp;
+        RecognitionRuleRuntime_getInstance();
+        if (element_0.ruleType_1 === 'style') {
+          RecognitionRuleRuntime_getInstance();
+          tmp = element_0.dslVersion_1 <= 1;
+        } else {
+          tmp = false;
+        }
+        // Inline function 'kotlin.contracts.contract' call
+        if (!tmp) {
+          // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>.<anonymous>' call
+          var message = '\u89C4\u5219\u201C' + element_0.name_1 + '\u201D\u4F7F\u7528\u4E86\u5F53\u524D\u7248\u672C\u4E0D\u652F\u6301\u7684\u89C4\u5219\u7C7B\u578B/\u683C\u5F0F';
+          throw IllegalStateException_init_$Create$_0(toString_3(message));
+        }
+        if (isBlank(element_0.sourceTemplate_1) ? true : isBlank(element_0.targetTemplate_1)) {
+          break $l$block;
+        }
+        var pairs = RecognitionRuleTemplate_getInstance().generalizedPairs_vxi8ld_k$(element_0.sourceTemplate_1, element_0.targetTemplate_1);
+        // Inline function 'kotlin.collections.forEach' call
+        var tmp0_iterator_1 = pairs.iterator_jk1svi_k$();
+        while (tmp0_iterator_1.hasNext_bitz1p_k$()) {
+          var element_1 = tmp0_iterator_1.next_20eer_k$();
+          // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>.<anonymous>' call
+          var regex = Regex_init_$Create$_0(element_0.pattern_1);
+          // Inline function 'kotlin.check' call
+          // Inline function 'kotlin.contracts.contract' call
+          if (!regex.matches_qvb2fs_k$(element_1.first_1)) {
+            // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>.<anonymous>.<anonymous>' call
+            var message_0 = '\u89C4\u5219\u201C' + element_0.name_1 + '\u201D\u65E0\u6CD5\u5B8C\u6574\u5339\u914D\u6CDB\u5316\u6837\u4F8B\uFF1A' + element_1.first_1;
+            throw IllegalStateException_init_$Create$_0(toString_3(message_0));
+          }
+          // Inline function 'kotlin.check' call
+          // Inline function 'kotlin.contracts.contract' call
+          if (!(regex.replace_838ra0_k$(element_1.first_1, element_0.replacement_1) === element_1.second_1)) {
+            // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>.<anonymous>.<anonymous>' call
+            var message_1 = '\u89C4\u5219\u201C' + element_0.name_1 + '\u201D\u6CDB\u5316\u7ED3\u679C\u9519\u8BEF\uFF1A' + element_1.first_1;
+            throw IllegalStateException_init_$Create$_0(toString_3(message_1));
+          }
+          // Inline function 'kotlin.check' call
+          // Inline function 'kotlin.contracts.contract' call
+          if (!(regex.replace_838ra0_k$('\u524D\u7F00' + element_1.first_1, element_0.replacement_1) === '\u524D\u7F00' + element_1.first_1)) {
+            // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>.<anonymous>.<anonymous>' call
+            var message_2 = '\u89C4\u5219\u201C' + element_0.name_1 + '\u201D\u5B58\u5728\u524D\u7F00\u5B50\u4E32\u8BEF\u5339\u914D\u98CE\u9669';
+            throw IllegalStateException_init_$Create$_0(toString_3(message_2));
+          }
+          // Inline function 'kotlin.check' call
+          // Inline function 'kotlin.contracts.contract' call
+          if (!(regex.replace_838ra0_k$(element_1.first_1 + '\u540E\u7F00', element_0.replacement_1) === element_1.first_1 + '\u540E\u7F00')) {
+            // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>.<anonymous>.<anonymous>' call
+            var message_3 = '\u89C4\u5219\u201C' + element_0.name_1 + '\u201D\u5B58\u5728\u540E\u7F00\u5B50\u4E32\u8BEF\u5339\u914D\u98CE\u9669';
+            throw IllegalStateException_init_$Create$_0(toString_3(message_3));
+          }
+          var semantic = MixedParser_getInstance().inspectCanonical_26tfcv_k$(element_1.second_1);
+          // Inline function 'kotlin.check' call
+          // Inline function 'kotlin.contracts.contract' call
+          if (!((semantic.get_valid_j01e4z_k$() ? !(semantic.batch_1 == null) : false) ? semantic.batch_1.get_totalJiao_11cql4_k$().compareTo_n4fqi2_k$(new Long(0, 0)) > 0 : false)) {
+            // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>.<anonymous>.<anonymous>' call
+            var message_4 = '\u89C4\u5219\u201C' + element_0.name_1 + '\u201D\u7684\u6807\u51C6\u7ED3\u679C\u65E0\u6CD5\u901A\u8FC7\u6838\u5FC3\u8BED\u4E49\u89E3\u6790\uFF1A' + element_1.second_1;
+            throw IllegalStateException_init_$Create$_0(toString_3(message_4));
+          }
+          // Inline function 'kotlin.collections.plusAssign' call
+          var tmp5_plusAssign = to(element_0, element_1);
+          samples.add_1j60pz_k$(tmp5_plusAssign);
+          generalized = generalized + 1 | 0;
+          semanticChecks = semanticChecks + 1 | 0;
+        }
+      }
+    }
+    // Inline function 'kotlin.collections.forEach' call
+    var tmp0_iterator_2 = samples.iterator_jk1svi_k$();
+    while (tmp0_iterator_2.hasNext_bitz1p_k$()) {
+      var element_2 = tmp0_iterator_2.next_20eer_k$();
+      // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>' call
+      var pair = element_2.component2_7eebsb_k$();
+      // Inline function 'kotlin.collections.mapNotNull' call
+      // Inline function 'kotlin.collections.mapNotNullTo' call
+      var tmp0_mapNotNullTo = ArrayList_init_$Create$();
+      // Inline function 'kotlin.collections.forEach' call
+      var tmp0_iterator_3 = enabled.iterator_jk1svi_k$();
+      while (tmp0_iterator_3.hasNext_bitz1p_k$()) {
+        var element_3 = tmp0_iterator_3.next_20eer_k$();
+        // Inline function 'kotlin.collections.mapNotNullTo.<anonymous>' call
+        // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>.<anonymous>' call
+        var tmp0_safe_receiver = rewriteLineCandidate(RecognitionRuleRuntime_getInstance(), pair.first_1, element_3);
+        if (tmp0_safe_receiver == null)
+          null;
+        else {
+          // Inline function 'kotlin.let' call
+          // Inline function 'kotlin.contracts.contract' call
+          tmp0_mapNotNullTo.add_1j60pz_k$(tmp0_safe_receiver);
+        }
+      }
+      var outputs = distinct(tmp0_mapNotNullTo);
+      // Inline function 'kotlin.check' call
+      // Inline function 'kotlin.contracts.contract' call
+      if (!(outputs.get_size_woubt6_k$() <= 1)) {
+        // Inline function 'com.example.remotea.RecognitionRuleRuntime.validateForPublish.<anonymous>.<anonymous>' call
+        var message_5 = '\u89C4\u5219\u51B2\u7A81\uFF1A\u540C\u4E00\u8F93\u5165\u201C' + pair.first_1 + '\u201D\u4F1A\u5F97\u5230\u4E0D\u540C\u6807\u51C6\u5316\u7ED3\u679C';
+        throw IllegalStateException_init_$Create$_0(toString_3(message_5));
+      }
+    }
+    return '' + generalized + ' \u4E2A\u6CDB\u5316\u6837\u4F8B + ' + semanticChecks + ' \u4E2A\u6700\u7EC8\u8BED\u4E49\u6821\u9A8C\u901A\u8FC7\uFF1B\u89C4\u5219\u4E0D\u94FE\u5F0F\u6267\u884C\uFF0C\u672A\u53D1\u73B0\u51B2\u7A81';
+  };
+  var RecognitionRuleRuntime_instance;
+  function RecognitionRuleRuntime_getInstance() {
+    if (RecognitionRuleRuntime_instance == null)
+      new RecognitionRuleRuntime();
+    return RecognitionRuleRuntime_instance;
+  }
   function expand$generate(code, $suite, result, position) {
     if (position === 4) {
       // Inline function 'kotlin.collections.plusAssign' call
@@ -24066,7 +26804,7 @@ var parser = function (_) {
   protoOf(SuiteToScatter).convertAndVerify_co58qk_k$ = function (batch, suiteIndex) {
     var result = this.convert_fu1lvy_k$(batch, suiteIndex);
     var text = this.editableText_m9ffgv_k$(result);
-    var reparsed = MixedParser_getInstance().inspect_h150z1_k$(text);
+    var reparsed = MixedParser_getInstance().inspect$default_a8xtc4_k$(text);
     // Inline function 'kotlin.require' call
     var tmp;
     if (reparsed.get_valid_j01e4z_k$()) {
@@ -24088,6 +26826,143 @@ var parser = function (_) {
     if (SuiteToScatter_instance == null)
       new SuiteToScatter();
     return SuiteToScatter_instance;
+  }
+  function _get_RS__ndblnu($this) {
+    return $this.RS_1;
+  }
+  function _get_US__ndbnvx($this) {
+    return $this.US_1;
+  }
+  function encodeReport($this, input, selections) {
+    var tmp;
+    try {
+      var report = MixedParser_getInstance().inspect_fp3eb4_k$(input, selections);
+      var batch = report.batch_1;
+      var issueJson = joinToString_0(report.issues_1, ',', VOID, VOID, VOID, VOID, WebParser$encodeReport$lambda);
+      var tmp1_safe_receiver = batch == null ? null : batch.scatter_1;
+      var tmp2_safe_receiver = tmp1_safe_receiver == null ? null : tmp1_safe_receiver.items_1;
+      var tmp_0;
+      if (tmp2_safe_receiver == null) {
+        tmp_0 = null;
+      } else {
+        tmp_0 = joinToString_0(tmp2_safe_receiver, ',', VOID, VOID, VOID, VOID, WebParser$encodeReport$lambda_0);
+      }
+      var tmp3_elvis_lhs = tmp_0;
+      var scat = tmp3_elvis_lhs == null ? '' : tmp3_elvis_lhs;
+      var tmp5_safe_receiver = batch == null ? null : batch.suites_1;
+      var tmp_1;
+      if (tmp5_safe_receiver == null) {
+        tmp_1 = null;
+      } else {
+        tmp_1 = joinToString_0(tmp5_safe_receiver, ',', VOID, VOID, VOID, VOID, WebParser$encodeReport$lambda_1);
+      }
+      var tmp6_elvis_lhs = tmp_1;
+      var suite = tmp6_elvis_lhs == null ? '' : tmp6_elvis_lhs;
+      var tmp_2 = report.get_valid_j01e4z_k$();
+      var tmp_3 = batch == null ? 'null' : '"' + esc($this, batch.get_command_gze7aa_k$()) + '"';
+      var tmp8_elvis_lhs = batch == null ? null : batch.get_totalJiao_11cql4_k$();
+      var tmp_4 = toString_3(tmp8_elvis_lhs == null ? new Long(0, 0) : tmp8_elvis_lhs);
+      var tmp10_elvis_lhs = batch == null ? null : batch.get_totalLines_w4v1i4_k$();
+      var tmp_5 = tmp10_elvis_lhs == null ? 0 : tmp10_elvis_lhs;
+      var tmp12_elvis_lhs = batch == null ? null : batch.get_turnCount_612twp_k$();
+      tmp = '{"valid":' + tmp_2 + ',"command":' + tmp_3 + ',"totalJiao":' + tmp_4 + ',"totalLines":' + tmp_5 + ',"issues":[' + issueJson + '],"scatter":[' + scat + '],"suites":[' + suite + '],"turnCount":' + (tmp12_elvis_lhs == null ? 0 : tmp12_elvis_lhs) + '}';
+    } catch ($p) {
+      var tmp_6;
+      if ($p instanceof Error) {
+        var e = $p;
+        var tmp_7 = input.length;
+        var tmp13_elvis_lhs = e.message;
+        tmp_6 = '{"valid":false,"command":null,"totalJiao":0,"issues":[{"start":0,"end":' + tmp_7 + ',"severity":"ERROR","message":"' + esc($this, tmp13_elvis_lhs == null ? '\u89E3\u6790\u51FA\u9519' : tmp13_elvis_lhs) + '"}],"scatter":[],"suites":[],"turnCount":0}';
+      } else {
+        throw $p;
+      }
+      tmp = tmp_6;
+    }
+    return tmp;
+  }
+  function encodePlan($this, input, screenshot, convertedOdds, selections) {
+    var tmp;
+    try {
+      var report = MixedParser_getInstance().inspect_fp3eb4_k$(input, selections);
+      // Inline function 'kotlin.require' call
+      // Inline function 'kotlin.contracts.contract' call
+      if (!(report.get_valid_j01e4z_k$() ? !(report.batch_1 == null) : false)) {
+        // Inline function 'com.example.remotea.WebParser.encodePlan.<anonymous>' call
+        var message = '\u53F7\u7801\u672A\u6B63\u786E\u8BC6\u522B';
+        throw IllegalArgumentException_init_$Create$_0(toString_3(message));
+      }
+      var original = ensureNotNull(report.batch_1);
+      var adjusted = original.copy$default_qtii0z_k$(VOID, VOID, original.suites_1.isEmpty_y1axqb_k$() ? ScreenshotMode_LEGACY_getInstance() : screenshot ? ScreenshotMode_ROUTED_getInstance() : ScreenshotMode_UNIFIED_HOME_getInstance(), convertedOdds);
+      MixedProtocol_getInstance().validate_vqvp97_k$(adjusted);
+      // Inline function 'kotlin.require' call
+      // Inline function 'kotlin.contracts.contract' call
+      if (!(MixedProtocol_getInstance().decode_5vkj71_k$(adjusted.get_command_gze7aa_k$()).get_command_gze7aa_k$() === adjusted.get_command_gze7aa_k$())) {
+        // Inline function 'com.example.remotea.WebParser.encodePlan.<anonymous>' call
+        var message_0 = 'B \u7AEF M1 \u6307\u4EE4\u5F80\u8FD4\u4E0D\u4E00\u81F4\uFF0C\u62D2\u7EDD\u63D0\u4EA4';
+        throw IllegalArgumentException_init_$Create$_0(toString_3(message_0));
+      }
+      tmp = '{"valid":true,"command":"' + esc($this, adjusted.get_command_gze7aa_k$()) + '","totalJiao":' + toString_3(adjusted.get_totalJiao_11cql4_k$()) + ',"totalLines":' + adjusted.get_totalLines_w4v1i4_k$() + ',"screenshotMode":"' + adjusted.screenshotMode_1.name_1 + '"}';
+    } catch ($p) {
+      var tmp_0;
+      if ($p instanceof Error) {
+        var e = $p;
+        var tmp0_elvis_lhs = e.message;
+        tmp_0 = '{"valid":false,"error":"' + esc($this, tmp0_elvis_lhs == null ? '\u7F16\u5236\u534F\u8BAE\u5931\u8D25' : tmp0_elvis_lhs) + '"}';
+      } else {
+        throw $p;
+      }
+      tmp = tmp_0;
+    }
+    return tmp;
+  }
+  function parseSelections($this, packed) {
+    var tmp;
+    if (isBlank(packed)) {
+      tmp = emptyList();
+    } else {
+      // Inline function 'kotlin.collections.mapIndexed' call
+      // Inline function 'kotlin.collections.filter' call
+      var tmp0_filter = split_2(packed, ['\x1E']);
+      // Inline function 'kotlin.collections.filterTo' call
+      var tmp0_filterTo = ArrayList_init_$Create$();
+      var tmp0_iterator = tmp0_filter.iterator_jk1svi_k$();
+      while (tmp0_iterator.hasNext_bitz1p_k$()) {
+        var element = tmp0_iterator.next_20eer_k$();
+        // Inline function 'com.example.remotea.WebParser.parseSelections.<anonymous>' call
+        // Inline function 'kotlin.text.isNotEmpty' call
+        if (charSequenceLength(element) > 0) {
+          tmp0_filterTo.add_1j60pz_k$(element);
+        }
+      }
+      // Inline function 'kotlin.collections.mapIndexedTo' call
+      var tmp0_mapIndexedTo = ArrayList_init_$Create$_0(collectionSizeOrDefault(tmp0_filterTo, 10));
+      var index = 0;
+      var tmp0_iterator_0 = tmp0_filterTo.iterator_jk1svi_k$();
+      while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+        var item = tmp0_iterator_0.next_20eer_k$();
+        var tmp$ret$5;
+        // Inline function 'com.example.remotea.WebParser.parseSelections.<anonymous>' call
+        var tmp1 = index;
+        index = tmp1 + 1 | 0;
+        var tmp2_anonymous = checkIndexOverflow(tmp1);
+        WebParser_getInstance();
+        var f = split_2(item, ['\x1F']);
+        // Inline function 'kotlin.require' call
+        // Inline function 'kotlin.contracts.contract' call
+        if (!(f.get_size_woubt6_k$() === 4)) {
+          // Inline function 'com.example.remotea.WebParser.parseSelections.<anonymous>.<anonymous>' call
+          var message = '\u6B67\u4E49\u9009\u62E9\u7B2C ' + (tmp2_anonymous + 1 | 0) + ' \u6761\u683C\u5F0F\u9519\u8BEF';
+          throw IllegalArgumentException_init_$Create$_0(toString_3(message));
+        }
+        var tmp_0 = f.get_fkrdnv_k$(0);
+        var tmp_1 = f.get_fkrdnv_k$(1);
+        var tmp0_elvis_lhs = toIntOrNull(f.get_fkrdnv_k$(2));
+        tmp$ret$5 = new RecognitionAmbiguitySelection(tmp_0, tmp_1, tmp0_elvis_lhs == null ? 0 : tmp0_elvis_lhs, f.get_fkrdnv_k$(3));
+        tmp0_mapIndexedTo.add_1j60pz_k$(tmp$ret$5);
+      }
+      tmp = tmp0_mapIndexedTo;
+    }
+    return tmp;
   }
   function esc($this, s) {
     // Inline function 'kotlin.text.buildString' call
@@ -24117,99 +26992,141 @@ var parser = function (_) {
     }
     return tmp0_apply.toString();
   }
-  function WebParser$inspect$lambda(it) {
+  function WebParser$ambiguities$lambda(x) {
+    var choices = joinToString_0(x.choices_1, ',', VOID, VOID, VOID, VOID, WebParser$ambiguities$lambda$lambda);
+    return '{"id":"' + esc(WebParser_getInstance(), x.id_1) + '","type":"' + esc(WebParser_getInstance(), x.type_1) + '","source":"' + esc(WebParser_getInstance(), x.source_1) + '","start":' + x.start_1 + ',"end":' + x.endExclusive_1 + ',"occurrence":' + x.occurrence_1 + ',"explanation":"' + esc(WebParser_getInstance(), x.explanation_1) + '","choices":[' + choices + ']}';
+  }
+  function WebParser$ambiguities$lambda$lambda(c) {
+    return '{"key":"' + esc(WebParser_getInstance(), c.key_1) + '","title":"' + esc(WebParser_getInstance(), c.title_1) + '","normalized":"' + esc(WebParser_getInstance(), c.normalized_1) + '","detail":"' + esc(WebParser_getInstance(), c.detail_1) + '","combinations":' + toString_3(c.combinations_1) + ',"totalJiao":' + toString_3(c.totalJiao_1) + '}';
+  }
+  function WebParser$encodeReport$lambda(it) {
     return '{"start":' + it.start_1 + ',"end":' + it.endExclusive_1 + ',"severity":"' + it.severity_1.name_1 + '","notice":"' + it.notice_1.name_1 + '","message":"' + esc(WebParser_getInstance(), it.message_1) + '"}';
   }
-  function WebParser$inspect$lambda_0(it) {
+  function WebParser$encodeReport$lambda_0(it) {
     return '{"number":"' + esc(WebParser_getInstance(), it.number_1) + '","amountJiao":' + it.amountJiao_1 + ',"groupId":' + it.groupId_1 + '}';
   }
-  function WebParser$inspect$lambda_1(it) {
+  function WebParser$encodeReport$lambda_1(it) {
     return '{"canonical":"' + esc(WebParser_getInstance(), it.get_canonicalText_xvz1ug_k$()) + '","source":"' + esc(WebParser_getInstance(), it.get_previewText_7gk6l0_k$()) + '","amountJiao":' + it.amountJiao_1 + ',"expectedCount":' + it.get_expectedCount_c2bua6_k$() + '}';
   }
   function WebParser() {
     WebParser_instance = this;
+    this.RS_1 = '\x1E';
+    this.US_1 = '\x1F';
   }
-  protoOf(WebParser).inspect = function (input) {
+  protoOf(WebParser).installRules = function (version, packed) {
     var tmp;
     try {
-      var report = MixedParser_getInstance().inspect_h150z1_k$(input);
-      var batch = report.batch_1;
-      var issueJson = joinToString_0(report.issues_1, ',', VOID, VOID, VOID, VOID, WebParser$inspect$lambda);
-      var tmp1_safe_receiver = batch == null ? null : batch.scatter_1;
-      var tmp2_safe_receiver = tmp1_safe_receiver == null ? null : tmp1_safe_receiver.items_1;
       var tmp_0;
-      if (tmp2_safe_receiver == null) {
-        tmp_0 = null;
+      if (isBlank(packed)) {
+        tmp_0 = emptyList();
       } else {
-        tmp_0 = joinToString_0(tmp2_safe_receiver, ',', VOID, VOID, VOID, VOID, WebParser$inspect$lambda_0);
+        // Inline function 'kotlin.collections.mapIndexed' call
+        // Inline function 'kotlin.collections.filter' call
+        var tmp0_filter = split_2(packed, ['\x1E']);
+        // Inline function 'kotlin.collections.filterTo' call
+        var tmp0_filterTo = ArrayList_init_$Create$();
+        var tmp0_iterator = tmp0_filter.iterator_jk1svi_k$();
+        while (tmp0_iterator.hasNext_bitz1p_k$()) {
+          var element = tmp0_iterator.next_20eer_k$();
+          // Inline function 'com.example.remotea.WebParser.installRules.<anonymous>' call
+          // Inline function 'kotlin.text.isNotEmpty' call
+          if (charSequenceLength(element) > 0) {
+            tmp0_filterTo.add_1j60pz_k$(element);
+          }
+        }
+        // Inline function 'kotlin.collections.mapIndexedTo' call
+        var tmp0_mapIndexedTo = ArrayList_init_$Create$_0(collectionSizeOrDefault(tmp0_filterTo, 10));
+        var index = 0;
+        var tmp0_iterator_0 = tmp0_filterTo.iterator_jk1svi_k$();
+        while (tmp0_iterator_0.hasNext_bitz1p_k$()) {
+          var item = tmp0_iterator_0.next_20eer_k$();
+          var tmp$ret$7;
+          // Inline function 'com.example.remotea.WebParser.installRules.<anonymous>' call
+          var tmp1 = index;
+          index = tmp1 + 1 | 0;
+          var tmp2_anonymous = checkIndexOverflow(tmp1);
+          WebParser_getInstance();
+          var f = split_2(item, ['\x1F']);
+          // Inline function 'kotlin.require' call
+          // Inline function 'kotlin.contracts.contract' call
+          if (!(f.get_size_woubt6_k$() === 10)) {
+            // Inline function 'com.example.remotea.WebParser.installRules.<anonymous>.<anonymous>' call
+            var message = '\u89C4\u5219\u5305\u7B2C ' + (tmp2_anonymous + 1 | 0) + ' \u6761\u5B57\u6BB5\u4E0D\u5B8C\u6574';
+            throw IllegalArgumentException_init_$Create$_0(toString_3(message));
+          }
+          var tmp_1 = f.get_fkrdnv_k$(0);
+          var tmp_2 = f.get_fkrdnv_k$(1);
+          var tmp_3 = removePrefix(f.get_fkrdnv_k$(2), '(?m)');
+          var tmp_4 = f.get_fkrdnv_k$(3);
+          var tmp_5 = f.get_fkrdnv_k$(4);
+          var tmp_6 = f.get_fkrdnv_k$(5);
+          var tmp_7 = f.get_fkrdnv_k$(6) === '1';
+          // Inline function 'kotlin.text.ifBlank' call
+          var tmp1_ifBlank = f.get_fkrdnv_k$(7);
+          var tmp_8;
+          if (isBlank(tmp1_ifBlank)) {
+            // Inline function 'com.example.remotea.WebParser.installRules.<anonymous>.<anonymous>' call
+            tmp_8 = 'style';
+          } else {
+            tmp_8 = tmp1_ifBlank;
+          }
+          var tmp_9 = tmp_8;
+          var tmp0_elvis_lhs = toIntOrNull(f.get_fkrdnv_k$(8));
+          var tmp_10 = tmp0_elvis_lhs == null ? 1 : tmp0_elvis_lhs;
+          var tmp1_elvis_lhs = toIntOrNull(f.get_fkrdnv_k$(9));
+          tmp$ret$7 = new RecognitionRuleSpec(tmp_1, tmp_2, tmp_3, tmp_4, tmp_5, tmp_6, tmp_7, tmp_9, tmp_10, tmp1_elvis_lhs == null ? 0 : tmp1_elvis_lhs);
+          tmp0_mapIndexedTo.add_1j60pz_k$(tmp$ret$7);
+        }
+        tmp_0 = tmp0_mapIndexedTo;
       }
-      var tmp3_elvis_lhs = tmp_0;
-      var scat = tmp3_elvis_lhs == null ? '' : tmp3_elvis_lhs;
-      var tmp5_safe_receiver = batch == null ? null : batch.suites_1;
-      var tmp_1;
-      if (tmp5_safe_receiver == null) {
-        tmp_1 = null;
-      } else {
-        tmp_1 = joinToString_0(tmp5_safe_receiver, ',', VOID, VOID, VOID, VOID, WebParser$inspect$lambda_1);
-      }
-      var tmp6_elvis_lhs = tmp_1;
-      var suite = tmp6_elvis_lhs == null ? '' : tmp6_elvis_lhs;
-      var tmp_2 = report.get_valid_j01e4z_k$();
-      var tmp_3 = batch == null ? 'null' : '"' + esc(this, batch.get_command_gze7aa_k$()) + '"';
-      var tmp8_elvis_lhs = batch == null ? null : batch.get_totalJiao_11cql4_k$();
-      var tmp_4 = toString_3(tmp8_elvis_lhs == null ? new Long(0, 0) : tmp8_elvis_lhs);
-      var tmp10_elvis_lhs = batch == null ? null : batch.get_totalLines_w4v1i4_k$();
-      var tmp_5 = tmp10_elvis_lhs == null ? 0 : tmp10_elvis_lhs;
-      var tmp12_elvis_lhs = batch == null ? null : batch.get_turnCount_612twp_k$();
-      tmp = '{"valid":' + tmp_2 + ',"command":' + tmp_3 + ',"totalJiao":' + tmp_4 + ',"totalLines":' + tmp_5 + ',"issues":[' + issueJson + '],"scatter":[' + scat + '],"suites":[' + suite + '],"turnCount":' + (tmp12_elvis_lhs == null ? 0 : tmp12_elvis_lhs) + '}';
+      var specs = tmp_0;
+      RecognitionRuleRuntime_getInstance().install_ocxgph_k$(numberToLong(version), specs);
+      tmp = '{"ok":true,"version":' + toString_3(RecognitionRuleRuntime_getInstance().version_1) + ',"count":' + specs.get_size_woubt6_k$() + '}';
     } catch ($p) {
-      var tmp_6;
+      var tmp_11;
       if ($p instanceof Error) {
         var e = $p;
-        var tmp_7 = input.length;
-        var tmp13_elvis_lhs = e.message;
-        tmp_6 = '{"valid":false,"command":null,"totalJiao":0,"issues":[{"start":0,"end":' + tmp_7 + ',"severity":"ERROR","message":"' + esc(this, tmp13_elvis_lhs == null ? '\u89E3\u6790\u51FA\u9519' : tmp13_elvis_lhs) + '"}],"scatter":[],"suites":[],"turnCount":0}';
+        var tmp0_elvis_lhs_0 = e.message;
+        tmp_11 = '{"ok":false,"error":"' + esc(this, tmp0_elvis_lhs_0 == null ? '\u89C4\u5219\u5B89\u88C5\u5931\u8D25' : tmp0_elvis_lhs_0) + '"}';
       } else {
         throw $p;
       }
-      tmp = tmp_6;
+      tmp = tmp_11;
     }
     return tmp;
   };
-  protoOf(WebParser).plan = function (input, screenshot, convertedOdds) {
+  protoOf(WebParser).ruleVersion = function () {
+    return RecognitionRuleRuntime_getInstance().version_1.toDouble_ygsx0s_k$();
+  };
+  protoOf(WebParser).ambiguities = function (input) {
     var tmp;
     try {
-      var report = MixedParser_getInstance().inspect_h150z1_k$(input);
-      // Inline function 'kotlin.require' call
-      // Inline function 'kotlin.contracts.contract' call
-      if (!(report.get_valid_j01e4z_k$() ? !(report.batch_1 == null) : false)) {
-        // Inline function 'com.example.remotea.WebParser.plan.<anonymous>' call
-        var message = '\u53F7\u7801\u672A\u6B63\u786E\u8BC6\u522B';
-        throw IllegalArgumentException_init_$Create$_0(toString_3(message));
-      }
-      var original = ensureNotNull(report.batch_1);
-      var adjusted = original.copy$default_qtii0z_k$(VOID, VOID, original.suites_1.isEmpty_y1axqb_k$() ? ScreenshotMode_LEGACY_getInstance() : screenshot ? ScreenshotMode_ROUTED_getInstance() : ScreenshotMode_UNIFIED_HOME_getInstance(), convertedOdds);
-      MixedProtocol_getInstance().validate_vqvp97_k$(adjusted);
-      // Inline function 'kotlin.require' call
-      // Inline function 'kotlin.contracts.contract' call
-      if (!(MixedProtocol_getInstance().decode_5vkj71_k$(adjusted.get_command_gze7aa_k$()).get_command_gze7aa_k$() === adjusted.get_command_gze7aa_k$())) {
-        // Inline function 'com.example.remotea.WebParser.plan.<anonymous>' call
-        var message_0 = 'B \u7AEF M1 \u6307\u4EE4\u5F80\u8FD4\u4E0D\u4E00\u81F4\uFF0C\u62D2\u7EDD\u63D0\u4EA4';
-        throw IllegalArgumentException_init_$Create$_0(toString_3(message_0));
-      }
-      tmp = '{"valid":true,"command":"' + esc(this, adjusted.get_command_gze7aa_k$()) + '","totalJiao":' + toString_3(adjusted.get_totalJiao_11cql4_k$()) + ',"totalLines":' + adjusted.get_totalLines_w4v1i4_k$() + ',"screenshotMode":"' + adjusted.screenshotMode_1.name_1 + '"}';
+      var a = ChineseCodeParser_getInstance().findAmbiguities_jakvhr_k$(input);
+      var rows = joinToString_0(a, ',', VOID, VOID, VOID, VOID, WebParser$ambiguities$lambda);
+      tmp = '[' + rows + ']';
     } catch ($p) {
       var tmp_0;
       if ($p instanceof Error) {
         var e = $p;
-        var tmp0_elvis_lhs = e.message;
-        tmp_0 = '{"valid":false,"error":"' + esc(this, tmp0_elvis_lhs == null ? '\u7F16\u5236\u534F\u8BAE\u5931\u8D25' : tmp0_elvis_lhs) + '"}';
+        tmp_0 = '[]';
       } else {
         throw $p;
       }
       tmp = tmp_0;
     }
     return tmp;
+  };
+  protoOf(WebParser).inspect = function (input) {
+    return encodeReport(this, input, emptyList());
+  };
+  protoOf(WebParser).inspectWithSelections = function (input, packedSelections) {
+    return encodeReport(this, input, parseSelections(this, packedSelections));
+  };
+  protoOf(WebParser).plan = function (input, screenshot, convertedOdds) {
+    return encodePlan(this, input, screenshot, convertedOdds, emptyList());
+  };
+  protoOf(WebParser).planWithSelections = function (input, screenshot, convertedOdds, packedSelections) {
+    return encodePlan(this, input, screenshot, convertedOdds, parseSelections(this, packedSelections));
   };
   var WebParser_instance;
   function WebParser_getInstance() {

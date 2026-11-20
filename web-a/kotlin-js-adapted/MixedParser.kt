@@ -33,7 +33,7 @@ object MixedParser {
         if (FullTurnParser.applies(suiteText))
             return MixedParseReport(null, listOf(BatchIssue(suiteAt, raw.length,
                 "套码后不支持继续全转；请将套码放在本单最后")))
-        val second = inspect(suiteText)
+        val second = inspectCore(suiteText)
         if (!second.valid) return MixedParseReport(null, second.issues.map { issue ->
             issue.copy(start = issue.start + suiteAt, endExclusive = issue.endExclusive + suiteAt)
         })
@@ -75,7 +75,7 @@ object MixedParser {
         if (FullTurnParser.applies(prefixText))
             return reject("仅允许将单一尾部全倒段提前；混合多个全倒段需人工拆分核对")
 
-        val prefix = inspect(prefixText)
+        val prefix = inspectCore(prefixText)
         if (!prefix.valid) return prefix
         val prefixBatch = prefix.batch ?: return reject("套码与全倒无法安全合并，整单停止")
         if (prefixBatch.suites.isEmpty())
@@ -148,7 +148,23 @@ object MixedParser {
         }
     }
 
-    fun inspect(raw: String): MixedParseReport {
+    fun inspect(raw: String, ambiguitySelections: List<RecognitionAmbiguitySelection> = emptyList()): MixedParseReport {
+        val rewritten = try { RecognitionRuleRuntime.apply(raw) } catch (e: Exception) {
+            return MixedParseReport(null, listOf(BatchIssue(0, raw.length, e.message ?: "云端识别规则执行失败")))
+        }
+        val report = inspectCore(rewritten, ambiguitySelections)
+        if (rewritten == raw || report.valid) return report
+        // Rewrites may change string length. Fail closed and highlight the original whole input
+        // rather than painting an incorrect offset range.
+        return MixedParseReport(null, report.issues.map {
+            it.copy(start = 0, endExclusive = raw.length, message = "规则转换后：${it.message}")
+        })
+    }
+
+    /** Core deterministic parser entry used by v4.1 rule publication checks. */
+    internal fun inspectCanonical(raw: String): MixedParseReport = inspectCore(raw)
+
+    private fun inspectCore(raw: String, ambiguitySelections: List<RecognitionAmbiguitySelection> = emptyList()): MixedParseReport {
         if (FullTurnParser.applies(raw)) {
             val suiteStart = namedSuiteStart.find(raw)?.range?.first
             if (suiteStart != null) {
@@ -159,13 +175,13 @@ object MixedParser {
             }
             return FullTurnParser.inspect(raw)
         }
-        val result = try { ChineseCodeParser.parse(raw) } catch (_: Exception) {
+        val result = try { ChineseCodeParser.parse(raw, ambiguitySelections) } catch (_: Exception) {
             return MixedParseReport(null, listOf(BatchIssue(0, raw.length, "输入太长或金额超出范围")))
         }
         // Keep the legacy scatter-only grammar as a compatibility path.
         // Prefer the suite-aware parser whenever it finds a suite, even if a legacy
         // scatter expression superficially resembles a dash-separated suite.
-        if (result.suites.isEmpty()) {
+        if (result.suites.isEmpty() && ambiguitySelections.isEmpty()) {
             val legacy = BatchParser.inspect(raw)
             if (legacy.valid) {
                 val legacyIssues = legacy.issues
@@ -235,9 +251,7 @@ object MixedParser {
             } else {
                 val keys = "HBTW"
                 val values = entry.positions.mapKeys { keys[it.key] }
-                // WAP preview only: retain the same ChineseCodeParser.Entry.source used to build
-                // this suite; wire canonicalText / amount / execution remain unchanged.
-                val suite = SuiteBet(values, amount, entry.source)
+                val suite = SuiteBet(values, amount, entry.source.ifBlank { entry.canonical.substringBefore('=') })
                 if (runCatching { suite.validate() }.isFailure) {
                     issues += BatchIssue(itemSpan.start, itemSpan.endExclusive, "套码格式错误")
                     continue
